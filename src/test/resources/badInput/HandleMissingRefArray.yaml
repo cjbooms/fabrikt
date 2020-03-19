@@ -1,0 +1,17 @@
+openapi: 3.0.0
+components:
+  schemas:
+    Organisation:
+      type: object
+      x-fabric-resource-definition: true
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        icon:
+          type: string
+        hooks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Webhook"

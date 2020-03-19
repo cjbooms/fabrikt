@@ -1,3 +1,3 @@
-# Api-Ponics (Work with Apis)
+# Fabrikt - Fabricates Kotlin code from OpenApi3 specifications
 
-This library allows you to work with OpenApi3 specifications.
+This library generates Kotlin code from OpenApi3 specifications to ensure your code matches your API contract.
