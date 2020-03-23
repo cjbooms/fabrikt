@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+paths:
+components:
+  schemas:
+    ContainsOneOfPolymorphicTypes:
+      type: object
+      properties:
+        one_one_of:
+          oneOf:
+            - $ref: "#/components/schemas/PolyTypeOne"
+            - $ref: "#/components/schemas/PolyTypeTwo"
+        many_one_of:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/PolyTypeOne"
+              - $ref: "#/components/schemas/PolyTypeTwo"
+            discriminator:
+              propertyName: generation
+
+    PolySuperType:
+      type: object
+      discriminator:
+        propertyName: generation
+      required:
+        - generation
+        - first_name
+        - last_name
+      properties:
+        generation:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+    PolyTypeOne:
+      allOf:
+        - $ref: "#/components/schemas/PolySuperType"
+        - type: object
+          properties:
+            child_one_name:
+              type: string
+    PolyTypeTwo:
+      allOf:
+        - $ref: "#/components/schemas/PolySuperType"
+        - type: object
+          properties:
+            child_two_age:
+              type: integer
+              format: int32

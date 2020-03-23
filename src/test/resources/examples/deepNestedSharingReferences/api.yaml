@@ -1,0 +1,30 @@
+openapi: 3.0.0
+components:
+  schemas:
+    Department:
+      type: object
+      properties:
+        supervisor:
+          $ref: "#/components/schemas/Person"
+        manager:
+          $ref: "#/components/schemas/Person"
+
+    Company:
+      type: object
+      properties:
+        owner:
+          $ref: "#/components/schemas/Person"
+        employee:
+          $ref: "#/components/schemas/Person"
+
+    Person:
+      type: object
+      properties:
+        home_address:
+          $ref: "#/components/schemas/Address"
+
+    Address:
+      type: object
+      properties:
+        eircode:
+          type: string

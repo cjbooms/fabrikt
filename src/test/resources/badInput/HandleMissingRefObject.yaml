@@ -2,7 +2,6 @@ openapi: 3.0.0
 components:
   schemas:
     ContainsAllOf:
-      x-fabric-resource-definition: true
       type: object
       required:
         - propA

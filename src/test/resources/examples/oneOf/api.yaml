@@ -1,0 +1,25 @@
+openapi: 3.0.0
+components:
+  schemas:
+    OneOf:
+      oneOf:
+        - $ref: "#/components/schemas/FirstOneC"
+        - $ref: "#/components/schemas/SecondOneC"
+
+    FirstOneC:
+      type: object
+      required:
+        - first_property
+      properties:
+        first_property:
+          type: string
+
+    SecondOneC:
+      type: object
+      required:
+        - second_property
+      properties:
+        second_property:
+          type: string
+        third_property:
+          type: string

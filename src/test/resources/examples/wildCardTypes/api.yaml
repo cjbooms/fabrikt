@@ -1,0 +1,13 @@
+openapi: 3.0.0
+components:
+  schemas:
+    WildCardTypes:
+      type: object
+      required:
+        - user_name
+        - meta
+      properties:
+        user_name:
+          type: string
+        meta:
+          type: object

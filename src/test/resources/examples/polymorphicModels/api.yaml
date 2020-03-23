@@ -1,0 +1,33 @@
+openapi: 3.0.0
+components:
+  schemas:
+    PolymorphicSuperType:
+      type: object
+      discriminator:
+        propertyName: generation
+      required:
+        - generation
+        - first_name
+        - last_name
+      properties:
+        generation:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+    PolymorphicTypeOne:
+      allOf:
+        - $ref: "#/components/schemas/PolymorphicSuperType"
+        - type: object
+          properties:
+            child_one_name:
+              type: string
+    PolymorphicTypeTwo:
+      allOf:
+        - $ref: "#/components/schemas/PolymorphicSuperType"
+        - type: object
+          properties:
+            child_two_age:
+              type: integer
+              format: int32

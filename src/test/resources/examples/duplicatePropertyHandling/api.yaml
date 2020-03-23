@@ -1,0 +1,31 @@
+openapi: 3.0.0
+components:
+  schemas:
+    DuplicatesParent:
+      allOf:
+        - $ref: '#/components/schemas/ContainsNestedOneOfWithDupes'
+        - type: object
+          properties:
+            top_level_duplicate:
+              type: number
+
+    ContainsNestedOneOfWithDupes:
+      oneOf:
+        - $ref: "#/components/schemas/FirstOneD"
+        - $ref: "#/components/schemas/FirstOneD"
+        - $ref: "#/components/schemas/FirstOneBDuplicate"
+
+    FirstOneD:
+      type: object
+      properties:
+        child_duplicate:
+          type: string
+
+    TheDuplicator:
+      type: object
+      properties:
+        top_level_duplicate:
+          type: string
+        child_duplicate:
+          type: string
+

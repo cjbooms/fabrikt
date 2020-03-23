@@ -1,16 +1,14 @@
 openapi: 3.0.0
 components:
   schemas:
-    Organisation:
+    NullableListTypes:
       type: object
       required:
         - name
       properties:
         name:
           type: string
-        icon:
-          type: string
-        hooks:
+        tags:
           type: array
           items:
-            $ref: "#/components/schemas/Webhook"
+            type: string

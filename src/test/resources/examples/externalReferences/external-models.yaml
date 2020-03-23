@@ -1,0 +1,7 @@
+components:
+  schemas:
+    ExternalObject:
+      type: object
+      properties:
+        some-string:
+          type: string

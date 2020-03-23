@@ -1,0 +1,49 @@
+openapi: 3.0.0
+components:
+  schemas:
+    ComplexParent:
+      allOf:
+        - $ref: '#/components/schemas/ContainsNestedOneOf'
+        - $ref: '#/components/schemas/ContainsNestedAnyOf'
+        - type: object
+          properties:
+            top_level_prop:
+              type: number
+
+    ContainsNestedOneOf:
+      oneOf:
+        - $ref: "#/components/schemas/FirstOneA"
+        - $ref: "#/components/schemas/ComplexSecondOneA"
+
+    ContainsNestedAnyOf:
+      anyOf:
+        - $ref: "#/components/schemas/FirstAnyA"
+        - $ref: "#/components/schemas/SecondAnyA"
+
+    FirstOneA:
+      type: object
+      properties:
+        first_nested_one_of_prop:
+          type: string
+
+    ComplexSecondOneA:
+      allOf:
+        - $ref: '#/components/schemas/MoreNesting'
+
+    MoreNesting:
+      type: object
+      properties:
+        more_nested_prop_one:
+          type: string
+
+    FirstAnyA:
+      type: object
+      properties:
+        first_nested_any_of_prop:
+          type: string
+
+    SecondAnyA:
+      type: object
+      properties:
+        second_nested_any_of_prop:
+          type: string

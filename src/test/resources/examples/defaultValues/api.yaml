@@ -1,0 +1,25 @@
+openapi: 3.0.0
+components:
+  schemas:
+    PersonWithDefaults:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        age:
+          type: integer
+          default: 18
+        height_category:
+          type: string
+          enum:
+            - tall
+            - short
+          default: tall
+        has_hair:
+          type: boolean
+          default: true
+        catch_phrase:
+          type: string
+          default: Cowabunga Dude

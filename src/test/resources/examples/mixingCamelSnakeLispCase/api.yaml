@@ -1,0 +1,14 @@
+openapi: 3.0.0
+components:
+  schemas:
+    MixingCamelSnakeLispCase:
+      type: object
+      properties:
+        camelCase:
+          type: string
+        snake_case:
+          type: string
+        lisp-case:
+          type: string
+        PascalCase:
+          type: string

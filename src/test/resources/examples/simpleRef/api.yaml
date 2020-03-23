@@ -1,0 +1,13 @@
+openapi: 3.0.0
+components:
+  schemas:
+    ContainsSimpleRef:
+      type: object
+      required:
+        - weight_on_mars
+      properties:
+        weight_on_mars:
+          $ref: "#/components/schemas/SimpleRef"
+    SimpleRef:
+      type: integer
+      example: 100

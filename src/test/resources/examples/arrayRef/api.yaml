@@ -1,0 +1,20 @@
+openapi: 3.0.0
+components:
+  schemas:
+    ContainsArrayRef:
+      type: object
+      required:
+        - weight_on_mars
+      properties:
+        weight_on_mars:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArrayRef"
+    ArrayRef:
+      type: object
+      required:
+        grams
+      properties:
+        grams:
+          type: integer
+          example: 100

@@ -1,6 +1,6 @@
 package com.cjbooms.fabrikt.cli
 
-enum class CodeGenerationType(private val description: String, private val requires: Set<InternalCodeGenGenType>) {
+enum class CodeGenerationType(val description: String, val requires: Set<InternalCodeGenGenType>) {
     HTTP_MODELS(
         "Jackson annotated data classes to represent the schema objects defined in the input.",
         setOf(InternalCodeGenGenType.MODELS)

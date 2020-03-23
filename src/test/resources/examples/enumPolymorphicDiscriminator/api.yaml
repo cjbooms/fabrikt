@@ -1,0 +1,42 @@
+openapi: 3.0.0
+paths: {}
+info:
+  title: ""
+  version: ""
+components:
+  schemas:
+    PolymorphicEnumDiscriminator:
+      type: object
+      discriminator:
+        propertyName: some_enum
+        mapping:
+          obj_one: '#/components/schemas/ConcreteImplOne'
+          obj_two: '#/components/schemas/ConcreteImplTwo'
+      properties:
+        some_enum:
+          $ref: '#/components/schemas/EnumDiscriminator'
+
+    ConcreteImplOne:
+      allOf:
+        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
+        - type: object
+          properties:
+            some_prop:
+              type: string
+
+    ConcreteImplTwo:
+      allOf:
+        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
+        - type: object
+          properties:
+            some_prop:
+              type: string
+
+    EnumDiscriminator:
+      type: string
+      x-extensible-enum:
+        - obj_one
+        - obj_two
+
+
+

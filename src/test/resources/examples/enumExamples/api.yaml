@@ -1,0 +1,48 @@
+openapi: 3.0.0
+paths:
+info:
+  title:
+  version:
+components:
+  schemas:
+    EnumHolder:
+      type: object
+      properties:
+        array_of_enums:
+          type: array
+          items:
+            type: string
+            x-extensible-enum:
+              - array_enum_one
+              - array_enum_two
+        inlined_enum:
+          type: string
+          enum:
+            - inlined_one
+            - inlined_two
+            - inlined_three
+        inlined_extensible_enum:
+          type: string
+          x-extensible-enum:
+            - inlined_one
+            - inlined_two
+            - inlined_three
+        enum_ref:
+          $ref: '#/components/schemas/EnumObject'
+        extensible_enum_ref:
+          $ref: '#/components/schemas/ExtensibleEnumObject'
+
+    EnumObject:
+      type: string
+      enum:
+        - one
+        - two
+        - three
+
+    ExtensibleEnumObject:
+      type: string
+      x-extensible-enum:
+        - active
+        - inactive
+
+

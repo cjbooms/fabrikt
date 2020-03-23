@@ -1,0 +1,18 @@
+openapi: 3.0.0
+components:
+  schemas:
+    ContainsAllOfWithNestedOneOf:
+      allOf:
+        - $ref: '#/components/schemas/ContainsNestedOneOfA'
+        - type: object
+          properties:
+            top_level_prop:
+              type: number
+    ContainsNestedOneOfA:
+      oneOf:
+        - $ref: "#/components/schemas/TheOne"
+    TheOne:
+      type: object
+      properties:
+        nested_one_of_prop:
+          type: string
