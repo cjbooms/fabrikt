@@ -1,0 +1,65 @@
+package examples.okHttpClient.client
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import okhttp3.FormBody
+import okhttp3.Headers
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody
+
+@Suppress("unused")
+fun <T : Any> HttpUrl.Builder.queryParam(key: String, value: T?): HttpUrl.Builder {
+    value?.let { this.addQueryParameter(key, it.toString()) }
+    return this
+}
+
+@Suppress("unused")
+fun <T : Any> FormBody.Builder.formParam(key: String, value: T?): FormBody.Builder {
+    value?.let { this.add(key, it.toString()) }
+    return this
+}
+
+@Suppress("unused")
+fun HttpUrl.Builder.queryParam(key: String, values: List<String>?, delimiter: String): HttpUrl.Builder {
+    values?.let { this.addQueryParameter(key, it.joinToString(delimiter)) }
+    return this
+}
+
+@Suppress("unused")
+fun Headers.Builder.header(key: String, value: String?): Headers.Builder {
+    value?.let { this.add(key, it) }
+    return this
+}
+
+@Throws(ApiException::class)
+fun <T> Request.execute(client: OkHttpClient, objectMapper: ObjectMapper, classOfT: Class<T>): ApiResponse<T?> =
+    client.newCall(this).execute().use { response ->
+        when {
+            response.isSuccessful ->
+                ApiResponse(response.code, response.headers, response.body?.deserialize(objectMapper, classOfT))
+            response.isBadRequest() ->
+                throw ApiClientException(response.code, response.headers, response.errorMessage())
+            response.isServerError() ->
+                throw ApiServerException(response.code, response.headers, response.errorMessage())
+            else -> throw ApiException("[${response.code}]: ${response.errorMessage()}")
+        }
+    }
+
+@Suppress("unused")
+fun String.pathParam(vararg params: Pair<String, Any>): String = params.asSequence()
+    .joinToString { param ->
+        this.replace(param.first, param.second.toString())
+    }
+
+fun <T> ResponseBody.deserialize(objectMapper: ObjectMapper, classOfT: Class<T>) =
+    this.string().isNotBlankOrNull()?.let { objectMapper.readValue(it, classOfT) }
+
+fun String?.isNotBlankOrNull() = if (this.isNullOrBlank()) null else this
+
+private fun Response.errorMessage(): String = this.body?.string() ?: this.message
+
+private fun Response.isBadRequest(): Boolean = this.code in 400..499
+
+private fun Response.isServerError(): Boolean = this.code in 500..599

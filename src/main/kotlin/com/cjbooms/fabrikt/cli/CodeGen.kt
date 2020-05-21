@@ -46,11 +46,7 @@ object CodeGen {
                         baseDir = baseDir
                 )
 
-        CodeGenerator.generate(
-                basePackage,
-                sourceApi,
-                codeGenTypes,
-                clientOptions
-        ).forEach { it.writeFileTo(outputDir.toFile()) }
+        val generator = CodeGenerator(basePackage, sourceApi, codeGenTypes, clientOptions)
+        generator.generate().forEach { it.writeFileTo(outputDir.toFile()) }
     }
 }
