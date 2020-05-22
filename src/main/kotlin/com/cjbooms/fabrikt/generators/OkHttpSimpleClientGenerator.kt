@@ -1,6 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
-import com.cjbooms.fabrikt.configurations.PackagesConfig
+import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.functionName
 import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.getBodyResponses
 import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.getHeaderParams
@@ -38,7 +38,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 
 class OkHttpSimpleClientGenerator(
-    private val config: PackagesConfig,
+    private val packages: Packages,
     private val api: SourceApi
 ) {
 
@@ -51,12 +51,12 @@ class OkHttpSimpleClientGenerator(
                         .addModifiers(KModifier.PUBLIC)
                         .addKdoc(operation.toKdoc())
                         .addAnnotation(AnnotationSpec.builder(Throws::class)
-                            .addMember("%T::class", "ApiException".toClassName(config.packages.client)).build()
+                            .addMember("%T::class", "ApiException".toClassName(packages.client)).build()
                         )
-                        .addParameters(operation.requestBody.toBodyParameterSpec(config.packages.base))
-                        .addParameters(operation.parameters.map { it.toParameterSpec(config.packages.base) })
-                        .addCode(SimpleClientOperationStatement(config, resource, verb, operation).toStatement())
-                        .returns(operation.toReturnType(config))
+                        .addParameters(operation.requestBody.toBodyParameterSpec(packages.base))
+                        .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
+                        .addCode(SimpleClientOperationStatement(packages, resource, verb, operation).toStatement())
+                        .returns(operation.toReturnType(packages))
                         .build()
                 }
             }
@@ -71,35 +71,35 @@ class OkHttpSimpleClientGenerator(
                 .addFunctions(funcSpecs)
                 .build()
 
-            ClientType(clientType, config.packages.base)
+            ClientType(clientType, packages.base)
         }.toSet()
     }
 
     fun generateLibrary(): Collection<GeneratedFile> {
-        val codeDir = Destinations.MAIN_KT_SRC.resolve(CodeGenerationUtils.packageToPath(config.packages.base))
+        val codeDir = Destinations.MAIN_KT_SRC.resolve(CodeGenerationUtils.packageToPath(packages.base))
         val clientDir = codeDir.resolve("client")
         return setOf(
             HandlebarsTemplates.applyTemplate(
                 HandlebarsTemplates.clientApiModels,
-                config,
+                packages,
                 clientDir,
                 "ApiModels.kt"
             ),
             HandlebarsTemplates.applyTemplate(
                 HandlebarsTemplates.clientHttpUtils,
-                config,
+                packages,
                 clientDir,
                 "HttpUtil.kt"
             ),
             HandlebarsTemplates.applyTemplate(
                 HandlebarsTemplates.clientOAuth,
-                config,
+                packages,
                 clientDir,
                 "OAuth.kt"
             ),
             HandlebarsTemplates.applyTemplate(
                 HandlebarsTemplates.clientLoggingInterceptor,
-                config,
+                packages,
                 clientDir,
                 "LoggingInterceptor.kt"
             )
@@ -108,7 +108,7 @@ class OkHttpSimpleClientGenerator(
 }
 
 data class SimpleClientOperationStatement(
-    private val config: PackagesConfig,
+    private val packages: Packages,
     private val resource: String,
     private val verb: String,
     private val operation: Operation
@@ -141,8 +141,8 @@ data class SimpleClientOperationStatement(
     private fun CodeBlock.Builder.addQueryParamStatement(): CodeBlock.Builder {
         operation.getQueryParams().map {
             when (KotlinTypeInfo.from(it.schema)) {
-                is KotlinTypeInfo.Array -> this.add("\n.%T(%S, %N, %S)", "queryParam".toClassName(config.packages.client), it.name, it.name.toKCodeName(), ",")
-                else -> this.add("\n.%T(%S, %N)", "queryParam".toClassName(config.packages.client), it.name, it.name.toKCodeName())
+                is KotlinTypeInfo.Array -> this.add("\n.%T(%S, %N, %S)", "queryParam".toClassName(packages.client), it.name, it.name.toKCodeName(), ",")
+                else -> this.add("\n.%T(%S, %N)", "queryParam".toClassName(packages.client), it.name, it.name.toKCodeName())
             }
         }
         return this.add("\n.build()\n")
@@ -151,10 +151,10 @@ data class SimpleClientOperationStatement(
     private fun CodeBlock.Builder.addHeaderParamStatement(): CodeBlock.Builder {
         this.add("\nval httpHeaders: %T = Headers.Builder()", "Headers".toClassName("okhttp3"))
         operation.getHeaderParams().map {
-            this.add("\n.%T(%S, %N)", "header".toClassName(config.packages.client), it.name, it.name.toKCodeName())
+            this.add("\n.%T(%S, %N)", "header".toClassName(packages.client), it.name, it.name.toKCodeName())
         }
         operation.getBodyResponses().firstOrNull()?.let {
-            this.add("\n.%T(%S, %S)", "header".toClassName(config.packages.client), "Accept", "application/json")
+            this.add("\n.%T(%S, %S)", "header".toClassName(packages.client), "Accept", "application/json")
         }
         return this.add("\n.build()\n")
     }
@@ -176,7 +176,7 @@ data class SimpleClientOperationStatement(
 
     private fun CodeBlock.Builder.addRequestExecutionStatement(): CodeBlock.Builder {
         val returnType = operation.getPrimaryAcceptMediaType()?.value?.schema?.let {
-            toModelType(config.packages.base, KotlinTypeInfo.from(it))
+            toModelType(packages.base, KotlinTypeInfo.from(it))
         }
         return this.add("\nreturn request.execute(client, objectMapper, %T::class.java)", returnType ?: Unit::class.asTypeName())
     }

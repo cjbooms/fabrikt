@@ -1,17 +1,17 @@
 package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
-import com.cjbooms.fabrikt.configurations.PackagesConfig
+import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.model.Clients
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.SourceApi
 
 class OkHttpClientGenerator(
-    config: PackagesConfig,
+    packages: Packages,
     api: SourceApi
 ) {
-    private val simpleClientGenerator = OkHttpSimpleClientGenerator(config, api)
-    private val enhancedClientGenerator = OkHttpEnhancedClientGenerator(config, api)
+    private val simpleClientGenerator = OkHttpSimpleClientGenerator(packages, api)
+    private val enhancedClientGenerator = OkHttpEnhancedClientGenerator(packages, api)
 
     fun generate(options: Set<ClientCodeGenOptionType>): Clients {
         val simpleClient = simpleClientGenerator.generateDynamicClientCode()

@@ -1,7 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
-import com.cjbooms.fabrikt.configurations.PackagesConfig
+import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.enhancedClientName
 import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.functionName
 import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.simpleClientName
@@ -30,7 +30,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 
 class OkHttpEnhancedClientGenerator(
-    private val config: PackagesConfig,
+    private val packages: Packages,
     private val api: SourceApi
 ) {
 
@@ -48,12 +48,12 @@ class OkHttpEnhancedClientGenerator(
                         .addModifiers(KModifier.PUBLIC)
                         .addAnnotation(
                             AnnotationSpec.builder(Throws::class)
-                                .addMember("%T::class", "ApiException".toClassName(config.packages.client)).build()
+                                .addMember("%T::class", "ApiException".toClassName(packages.client)).build()
                         )
-                        .addParameters(operation.requestBody.toBodyParameterSpec(config.packages.base))
-                        .addParameters(operation.parameters.map { it.toParameterSpec(config.packages.base) })
-                        .addCode(Resilience4jClientOperationStatement(config, resource, verb, operation).toStatement())
-                        .returns(operation.toReturnType(config))
+                        .addParameters(operation.requestBody.toBodyParameterSpec(packages.base))
+                        .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
+                        .addCode(Resilience4jClientOperationStatement(packages, resource, verb, operation).toStatement())
+                        .returns(operation.toReturnType(packages))
                         .build()
                 }
             }
@@ -63,7 +63,7 @@ class OkHttpEnhancedClientGenerator(
     }
 
     private fun generateCircuitBreakerClientCode(resourceName: String, funSpecs: List<FunSpec>): ClientType {
-        val apiClientClassName = simpleClientName(resourceName).toClassName(config.packages.client)
+        val apiClientClassName = simpleClientName(resourceName).toClassName(packages.client)
         val circuitBreakerRegistryClassName =
             "CircuitBreakerRegistry".toClassName("io.github.resilience4j.circuitbreaker")
 
@@ -104,17 +104,17 @@ class OkHttpEnhancedClientGenerator(
             .addFunctions(funSpecs)
             .build()
 
-        return ClientType(clientType, config.packages.base)
+        return ClientType(clientType, packages.base)
     }
 
     fun generateLibrary(options: Set<ClientCodeGenOptionType>): Collection<GeneratedFile> {
-        val codeDir = Destinations.MAIN_KT_SRC.resolve(CodeGenerationUtils.packageToPath(config.packages.base))
+        val codeDir = Destinations.MAIN_KT_SRC.resolve(CodeGenerationUtils.packageToPath(packages.base))
         val clientDir = codeDir.resolve("client")
         return listOfNotNull(
             applyTemplateIfOptionIsEnabled(options, ClientCodeGenOptionType.RESILIENCE4J) {
                 HandlebarsTemplates.applyTemplate(
                     HandlebarsTemplates.clientHttpResilience4jUtils,
-                    config,
+                    packages,
                     clientDir,
                     "HttpResilience4jUtil.kt"
                 )
@@ -144,7 +144,7 @@ class OkHttpEnhancedClientGenerator(
 }
 
 class Resilience4jClientOperationStatement(
-    private val config: PackagesConfig,
+    private val packages: Packages,
     private val resource: String,
     private val verb: String,
     private val operation: Operation
@@ -162,8 +162,8 @@ class Resilience4jClientOperationStatement(
     }
 
     private fun CodeBlock.Builder.addClientCallStatement(): CodeBlock.Builder {
-        val params = operation.requestBody.toBodyParameterSpec(config.packages.base).plus(
-            operation.parameters.map { it.toParameterSpec(config.packages.base) }
+        val params = operation.requestBody.toBodyParameterSpec(packages.base).plus(
+            operation.parameters.map { it.toParameterSpec(packages.base) }
         )
         this.add("apiClient.%N(%L)", functionName(resource, verb), params.joinToString(",") { it.name })
         return this

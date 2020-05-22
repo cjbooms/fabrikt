@@ -32,10 +32,7 @@ paths:
             Location:
               $ref: "#/components/headers/Location"
           description: "Successful operation"
-      security:
-        - oauth2:
-            - "uid"
-            - "brownie.write"
+
   /example-path-2/{path_param}:
     get:
       summary: "GET example path 2"
@@ -78,8 +75,6 @@ paths:
 
     put:
       summary: "PUT example path 2"
-      tags:
-        - "logistics-product"
       parameters:
         - $ref: "#/components/parameters/PathParam"
         - $ref: "#/components/parameters/IfMatch"

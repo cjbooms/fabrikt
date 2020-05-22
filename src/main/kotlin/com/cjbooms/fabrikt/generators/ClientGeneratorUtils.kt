@@ -1,6 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
-import com.cjbooms.fabrikt.configurations.PackagesConfig
+import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
@@ -54,14 +54,14 @@ object ClientGeneratorUtils {
      * reference of the first media type found, otherwise it'll resolve to Unit by assuming no response body
      * for the given operation.
      */
-    fun Operation.toReturnType(config: PackagesConfig): TypeName {
+    fun Operation.toReturnType(packages: Packages): TypeName {
         val returnType = this.getPrimaryAcceptMediaType()?.let {
             toModelType(
-                config.packages.base,
+                packages.base,
                     KotlinTypeInfo.from(it.value.schema)
             )
         } ?: Unit::class.asTypeName()
-        return "ApiResponse".toClassName(config.packages.client)
+        return "ApiResponse".toClassName(packages.client)
             .parameterizedBy(returnType.copy(nullable = true))
     }
 

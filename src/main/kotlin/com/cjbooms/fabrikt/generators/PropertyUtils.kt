@@ -124,7 +124,7 @@ object PropertyUtils {
     /**
      * Current Open API v3 Spec validation keys:
      *
-     *   multipleOf             - Not Supported. No equivalent javax validation. We could add our own as a 
+     *   multipleOf             - Not Supported. No equivalent javax validation. We could add our own as a
      *   maximum                - Supported
      *   minimum                - Supported
      *   exclusiveMaximum       - Support - Used to mark the above as exclusive checks
@@ -134,10 +134,10 @@ object PropertyUtils {
      *   pattern                - Supported
      *   maxItems               - Supported
      *   minItems               - Supported
-     *   uniqueItems            - Not Supported. No equivalent javax validation. We could add our own as a 
-     *   maxProperties          - Not Supported. No equivalent javax validation. We could add our own as a 
-     *   minProperties          - Not Supported. No equivalent javax validation. We could add our own as a 
-     *   enum                   - Not currently supported. Possible to do as a regex maybe. 
+     *   uniqueItems            - Not Supported. No equivalent javax validation. We could add our own as a
+     *   maxProperties          - Not Supported. No equivalent javax validation. We could add our own as a
+     *   minProperties          - Not Supported. No equivalent javax validation. We could add our own as a
+     *   enum                   - Not currently supported. Possible to do as a regex maybe.
      */
     private fun PropertySpec.Builder.addValidationAnnotations(info: PropertyInfo) {
         if (info.isRequired) addAnnotation(ValidationAnnotations.NON_NULL_ANNOTATION)

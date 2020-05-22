@@ -1,7 +1,7 @@
 package com.cjbooms.fabrikt.client
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
-import com.cjbooms.fabrikt.configurations.PackagesConfig
+import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.JacksonModelGenerator
 import com.cjbooms.fabrikt.generators.OkHttpEnhancedClientGenerator
 import com.cjbooms.fabrikt.generators.OkHttpSimpleClientGenerator
@@ -27,14 +27,14 @@ class OkHttpClientGeneratorTest {
     @ParameterizedTest
     @MethodSource("fullApiTestCases")
     fun `correct api simple client is generated from a full API definition`(testCaseName: String) {
-        val basePackage = "examples.$testCaseName"
+        val packages = Packages("examples.$testCaseName")
         val sourceApi = SourceApi(javaClass.getResource("/examples/$testCaseName/api.yaml").readText())
 
         val expectedModel = javaClass.getResource("/examples/$testCaseName/models/Models.kt").readText()
         val expectedClient = javaClass.getResource("/examples/$testCaseName/client/ApiClient.kt").readText()
 
-        val models = JacksonModelGenerator(basePackage, sourceApi).generate().toSingleFile()
-        val simpleClientCode = OkHttpSimpleClientGenerator(PackagesConfig.build(basePackage), sourceApi)
+        val models = JacksonModelGenerator(packages.base, sourceApi).generate().toSingleFile()
+        val simpleClientCode = OkHttpSimpleClientGenerator(packages, sourceApi)
             .generateDynamicClientCode()
             .toSingleFile()
 
@@ -45,24 +45,29 @@ class OkHttpClientGeneratorTest {
     @ParameterizedTest
     @MethodSource("fullApiTestCases")
     fun `correct api fault-tolerant service client is generated when the resilience4j option is set`(testCaseName: String) {
-        val basePackage = "examples.$testCaseName"
+        val packages = Packages("examples.$testCaseName")
         val sourceApi = SourceApi(javaClass.getResource("/examples/$testCaseName/api.yaml").readText())
 
+        val expectedLibUtil = javaClass.getResource("/examples/$testCaseName/client/HttpResilience4jUtil.kt").readText()
         val expectedClientCode = javaClass.getResource("/examples/$testCaseName/client/ApiService.kt").readText()
 
-        val enhancedClientCode = OkHttpEnhancedClientGenerator(PackagesConfig.build(basePackage), sourceApi)
-            .generateDynamicClientCode(setOf(ClientCodeGenOptionType.RESILIENCE4J))
+        val generator = OkHttpEnhancedClientGenerator(packages, sourceApi)
+        val enhancedLibUtil = generator.generateLibrary(setOf(ClientCodeGenOptionType.RESILIENCE4J))
+                .filterIsInstance<SimpleFile>()
+                .first { it.path.fileName.toString() == "HttpResilience4jUtil.kt" }
+        val enhancedClientCode = generator.generateDynamicClientCode(setOf(ClientCodeGenOptionType.RESILIENCE4J))
 
+        assertThat(enhancedLibUtil.content).isEqualTo(expectedLibUtil)
         assertThat(enhancedClientCode.toSingleFile()).isEqualTo(expectedClientCode)
     }
 
     @ParameterizedTest
     @MethodSource("fullApiTestCases")
     fun `the enhanced client is not generated when no specific options are provided`(testCaseName: String) {
-        val basePackage = "examples.$testCaseName"
+        val packages = Packages("examples.$testCaseName")
         val sourceApi = SourceApi(javaClass.getResource("/examples/$testCaseName/api.yaml").readText())
 
-        val enhancedClientCode = OkHttpEnhancedClientGenerator(PackagesConfig.build(basePackage), sourceApi)
+        val enhancedClientCode = OkHttpEnhancedClientGenerator(packages, sourceApi)
             .generateDynamicClientCode(emptySet())
 
         assertThat(enhancedClientCode).isEqualTo(emptySet<ClientType>())
@@ -71,12 +76,12 @@ class OkHttpClientGeneratorTest {
     @ParameterizedTest
     @MethodSource("fullApiTestCases")
     fun `correct http utitlity libraries are generated`(testCaseName: String) {
-        val basePackage = "examples.$testCaseName"
+        val packages = Packages("examples.$testCaseName")
         val sourceApi = SourceApi(javaClass.getResource("/examples/$testCaseName/api.yaml").readText())
 
         val expectedHttpUtils = javaClass.getResource("/examples/$testCaseName/client/HttpUtil.kt").readText()
 
-        val generatedHttpUtils = OkHttpSimpleClientGenerator(PackagesConfig.build(basePackage), sourceApi).generateLibrary().filterIsInstance<SimpleFile>()
+        val generatedHttpUtils = OkHttpSimpleClientGenerator(packages, sourceApi).generateLibrary().filterIsInstance<SimpleFile>()
             .first { it.path.fileName.toString() == "HttpUtil.kt" }
 
         assertThat(generatedHttpUtils.content).isEqualTo(expectedHttpUtils)
@@ -85,12 +90,12 @@ class OkHttpClientGeneratorTest {
     @ParameterizedTest
     @MethodSource("fullApiTestCases")
     fun `correct logging interceptor libraries are generated`(testCaseName: String) {
-        val basePackage = "examples.$testCaseName"
+        val packages = Packages("examples.$testCaseName")
         val sourceApi = SourceApi(javaClass.getResource("/examples/$testCaseName/api.yaml").readText())
 
         val expectedLoggingInterceptor = javaClass.getResource("/examples/$testCaseName/client/LoggingInterceptor.kt").readText()
 
-        val generatedLoggingInterceptor = OkHttpSimpleClientGenerator(PackagesConfig.build(basePackage), sourceApi).generateLibrary().filterIsInstance<SimpleFile>()
+        val generatedLoggingInterceptor = OkHttpSimpleClientGenerator(packages, sourceApi).generateLibrary().filterIsInstance<SimpleFile>()
             .first { it.path.fileName.toString() == "LoggingInterceptor.kt" }
 
         assertThat(generatedLoggingInterceptor.content).isEqualTo(expectedLoggingInterceptor)
