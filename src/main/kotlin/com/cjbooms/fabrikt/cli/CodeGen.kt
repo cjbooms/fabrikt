@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.cli
 
 import com.beust.jcommander.ParameterException
+import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.model.SourceApi
 import java.nio.file.Files
 import java.nio.file.Path
@@ -40,17 +41,10 @@ object CodeGen {
 
         logger.info("Generating code and dumping to $outputDir/")
 
-        val sourceApi = SourceApi.create(
-                        baseApi = suppliedApi,
-                        apiFragments = apiFragments,
-                        baseDir = baseDir
-                )
+        val packages = Packages(basePackage)
+        val sourceApi = SourceApi.create(suppliedApi, apiFragments, baseDir)
+        val generator = CodeGenerator(packages, sourceApi, codeGenTypes, clientOptions)
 
-        CodeGenerator.generate(
-                basePackage,
-                sourceApi,
-                codeGenTypes,
-                clientOptions
-        ).forEach { it.writeFileTo(outputDir.toFile()) }
+        generator.generate().forEach { it.writeFileTo(outputDir.toFile()) }
     }
 }
