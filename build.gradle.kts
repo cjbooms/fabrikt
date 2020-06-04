@@ -1,10 +1,15 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.3.61" // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jmailen.kotlinter") version "2.3.2" // Lint and formatting for Kotlin using ktlint
-    
+    id("com.github.johnrengelman.shadow") version "4.0.1"
    
     `java-library` // For API and implementation separation.
 }
+
+val executableName = "fabrikt"
+group = "com.cjbooms"
 
 repositories {
     jcenter()
@@ -37,6 +42,23 @@ dependencies {
 }
 
 tasks {
+    val fatJar = getByName<ShadowJar>("shadowJar") {
+        manifest {
+            attributes["Main-Class"] = "com.cjbooms.fabrikt.cli.CodeGen"
+            attributes["Implementation-Title"] = "fabrikt"
+            attributes["Implementation-Version"] = project.version
+        }
+        archiveBaseName.set(executableName)
+        archiveClassifier.set("")
+    }
+
+    val printCodeGenUsage by creating(JavaExec::class) {
+        dependsOn(fatJar)
+        classpath = project.files("./build/libs/$executableName.jar")
+        main = "com.cjbooms.fabrikt.cli.CodeGen"
+        args = listOf("--help")
+    }
+
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
@@ -46,5 +68,4 @@ tasks {
     withType<Test> {
         useJUnitPlatform()
     }
-
 }
