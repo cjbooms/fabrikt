@@ -1,0 +1,15 @@
+name: Publish package to the Maven Central Repository
+# The job will be triggered when a release is created
+on:
+  release:
+    types: [created]
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish to the Maven Central Repository
+        run: ./gradlew clean -PsigningKey=${{ secrets.GPG_SIGNING_KEY }} -PsigningPassword=${{ secrets.GPG_SIGNING_PASSWORD }} publish
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
