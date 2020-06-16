@@ -15,7 +15,7 @@ plugins {
 val executableName = "fabrikt"
 
 group = "com.cjbooms"
-version = "1.0.0"
+version = "1.0.0.RC1"
 
 val projectUrl = "https://github.com/cjbooms/fabrikt"
 val projectScmUrl = "scm:https://cjbooms@github.com/cjbooms/fabrikt.git"
