@@ -6,16 +6,18 @@ plugins {
     id("org.jmailen.kotlinter") version "2.3.2" // Lint and formatting for Kotlin using ktlint
     id("com.github.johnrengelman.shadow") version "4.0.1"
     id("org.jetbrains.dokka") version "0.10.1"
+    id("com.palantir.git-version") version "0.12.3"
     id("maven-publish")
     id("signing")
-   
+
     `java-library` // For API and implementation separation.
 }
 
 val executableName = "fabrikt"
 
 group = "com.cjbooms"
-version = "1.0.0.RC1"
+val gitVersion: groovy.lang.Closure<*> by extra
+version = gitVersion.call()
 
 val projectUrl = "https://github.com/cjbooms/fabrikt"
 val projectScmUrl = "scm:https://cjbooms@github.com/cjbooms/fabrikt.git"
