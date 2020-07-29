@@ -1,13 +1,15 @@
-package com.cjbooms.fabrikt.generators
+package com.cjbooms.fabrikt.generators.model
 
-import com.cjbooms.fabrikt.generators.JacksonAnnotations.JSON_VALUE
-import com.cjbooms.fabrikt.generators.JacksonAnnotations.basePolymorphicType
-import com.cjbooms.fabrikt.generators.JacksonAnnotations.polymorphicSubTypes
+import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.ClassType
 import com.cjbooms.fabrikt.generators.PropertyUtils.addToClass
 import com.cjbooms.fabrikt.generators.TypeFactory.createList
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfMapsStringToStringAny
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfStringToType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfStringToType
+import com.cjbooms.fabrikt.generators.model.JacksonAnnotations.JSON_VALUE
+import com.cjbooms.fabrikt.generators.model.JacksonAnnotations.basePolymorphicType
+import com.cjbooms.fabrikt.generators.model.JacksonAnnotations.polymorphicSubTypes
 import com.cjbooms.fabrikt.model.Destinations.modelsPackage
 import com.cjbooms.fabrikt.model.GeneratedType
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
@@ -36,20 +38,44 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 
-class JacksonModelGenerator(private val basePackage: String, private val sourceApi: SourceApi) {
+class JacksonModelGenerator(private val packages: Packages, private val sourceApi: SourceApi) {
     companion object {
         fun toModelType(basePackage: String, typeInfo: KotlinTypeInfo, isRequired: Boolean = true): TypeName {
-            val className = toClassName(basePackage, typeInfo)
+            val className =
+                toClassName(
+                    basePackage,
+                    typeInfo
+                )
             val typeName = when (typeInfo) {
-                is KotlinTypeInfo.Array -> createList(toModelType(basePackage, typeInfo.parameterizedType))
+                is KotlinTypeInfo.Array -> createList(
+                    toModelType(
+                        basePackage,
+                        typeInfo.parameterizedType
+                    )
+                )
                 is KotlinTypeInfo.Map ->
                     when (val paramType = typeInfo.parameterizedType) {
                         is KotlinTypeInfo.UntypedProperties -> createMapOfMapsStringToStringAny()
                         is KotlinTypeInfo.UnknownProperties ->
-                            createMapOfStringToType(toClassName(basePackage, paramType))
+                            createMapOfStringToType(
+                                toClassName(
+                                    basePackage,
+                                    paramType
+                                )
+                            )
                         is KotlinTypeInfo.TypedProperties ->
-                            createMapOfStringToType(toClassName(basePackage, paramType))
-                        else -> createMapOfStringToType(toModelType(basePackage, paramType))
+                            createMapOfStringToType(
+                                toClassName(
+                                    basePackage,
+                                    paramType
+                                )
+                            )
+                        else -> createMapOfStringToType(
+                            toModelType(
+                                basePackage,
+                                paramType
+                            )
+                        )
                     }
                 is KotlinTypeInfo.UntypedObject -> createMapOfStringToType(className)
                 is KotlinTypeInfo.UnknownProperties -> createMutableMapOfStringToType(className)
@@ -62,7 +88,10 @@ class JacksonModelGenerator(private val basePackage: String, private val sourceA
 
         private fun toClassName(basePackage: String, typeInfo: KotlinTypeInfo): ClassName =
             if (typeInfo.modelKClass == GeneratedType::class)
-                generatedType(basePackage, typeInfo.generatedModelClassName!!)
+                generatedType(
+                    basePackage,
+                    typeInfo.generatedModelClassName!!
+                )
             else typeInfo.modelKClass.asTypeName()
 
         fun generatedType(basePackage: String, modelName: String) = ClassName(modelsPackage(basePackage), modelName)
@@ -78,7 +107,7 @@ class JacksonModelGenerator(private val basePackage: String, private val sourceA
                     } else emptyList()
                 }.toMutableSet()
 
-        return Models(models.map { ModelType(it, basePackage) })
+        return Models(models.map { ModelType(it, packages.base) })
     }
 
     private fun buildPrimaryModel(modelInfo: ModelInfo, properties: Collection<PropertyInfo>): TypeSpec {
@@ -141,7 +170,12 @@ class JacksonModelGenerator(private val basePackage: String, private val sourceA
 
     private fun buildEnumClass(enum: KotlinTypeInfo.Enum): TypeSpec {
         val classBuilder = TypeSpec
-            .enumBuilder(generatedType(basePackage, enum.enumClassName))
+            .enumBuilder(
+                generatedType(
+                    packages.base,
+                    enum.enumClassName
+                )
+            )
             .primaryConstructor(
                 FunSpec.constructorBuilder()
                     .addParameter("value", String::class)
@@ -175,7 +209,12 @@ class JacksonModelGenerator(private val basePackage: String, private val sourceA
     private fun standardDataClass(modelName: String, properties: Collection<PropertyInfo>): TypeSpec =
         properties.addToClass(
             TypeSpec
-                .classBuilder(generatedType(basePackage, modelName))
+                .classBuilder(
+                    generatedType(
+                        packages.base,
+                        modelName
+                    )
+                )
                 .addModifiers(KModifier.DATA),
             ClassType.VANILLA_MODEL
         )
@@ -185,7 +224,12 @@ class JacksonModelGenerator(private val basePackage: String, private val sourceA
         properties: Collection<PropertyInfo>,
         discriminator: Discriminator
     ): TypeSpec {
-        val classBuilder = TypeSpec.classBuilder(generatedType(basePackage, modelName))
+        val classBuilder = TypeSpec.classBuilder(
+            generatedType(
+                packages.base,
+                modelName
+            )
+        )
             .addModifiers(KModifier.SEALED)
         classBuilder.addAnnotation(basePolymorphicType(discriminator.propertyName))
 
@@ -193,14 +237,16 @@ class JacksonModelGenerator(private val basePackage: String, private val sourceA
             .filter { model -> model.schema.allOfSchemas.any { allOfRef -> allOfRef.discriminator == discriminator } }
             .map {
                 discriminator.mappingKey(it.schema) to toModelType(
-                    basePackage,
+                    packages.base,
                     KotlinTypeInfo.from(it.schema, it.name)
                 )
             }
             .toMap()
         classBuilder.addAnnotation(polymorphicSubTypes(subTypes))
 
-        return properties.addToClass(classBuilder, ClassType.SUPER_MODEL)
+        return properties.addToClass(classBuilder,
+            ClassType.SUPER_MODEL
+        )
     }
 
     private fun polymorphicSubType(
@@ -210,9 +256,19 @@ class JacksonModelGenerator(private val basePackage: String, private val sourceA
     ): TypeSpec =
         properties.addToClass(
             TypeSpec
-                .classBuilder(generatedType(basePackage, modelName))
+                .classBuilder(
+                    generatedType(
+                        packages.base,
+                        modelName
+                    )
+                )
                 .addModifiers(KModifier.DATA)
-                .superclass(toModelType(basePackage, KotlinTypeInfo.from(superType.schema, superType.name))),
+                .superclass(
+                    toModelType(
+                        packages.base,
+                        KotlinTypeInfo.from(superType.schema, superType.name)
+                    )
+                ),
             ClassType.SUB_MODEL
         )
 
@@ -220,8 +276,15 @@ class JacksonModelGenerator(private val basePackage: String, private val sourceA
         val constructorBuilder = FunSpec.constructorBuilder()
         this.forEach {
             it.addToClass(
-                toModelType(basePackage, it.typeInfo, it.isRequired),
-                toClassName(basePackage, it.typeInfo),
+                toModelType(
+                    packages.base,
+                    it.typeInfo,
+                    it.isRequired
+                ),
+                toClassName(
+                    packages.base,
+                    it.typeInfo
+                ),
                 classBuilder,
                 constructorBuilder,
                 classType

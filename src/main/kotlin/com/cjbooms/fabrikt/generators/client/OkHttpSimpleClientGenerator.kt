@@ -1,24 +1,24 @@
-package com.cjbooms.fabrikt.generators
+package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.functionName
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.getBodyResponses
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.getHeaderParams
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.getPathParams
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.getPrimaryAcceptMediaType
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.getPrimaryContentMediaType
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.getQueryParams
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.primaryPropertiesConstructor
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.simpleClientName
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toBodyParameterSpec
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toBodyRequestSchema
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toClassName
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toKCodeName
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toKdoc
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toParameterSpec
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toReturnType
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toVarName
-import com.cjbooms.fabrikt.generators.JacksonModelGenerator.Companion.toModelType
+import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getBodyResponses
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getHeaderParams
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getPathParams
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryAcceptMediaType
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getQueryParams
+import com.cjbooms.fabrikt.generators.GeneratorUtils.primaryPropertiesConstructor
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyParameterSpec
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyRequestSchema
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toParameterSpec
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toVarName
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
+import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.model.GeneratedFile
@@ -55,8 +55,14 @@ class OkHttpSimpleClientGenerator(
                         )
                         .addParameters(operation.requestBody.toBodyParameterSpec(packages.base))
                         .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
-                        .addCode(SimpleClientOperationStatement(packages, resource, verb, operation).toStatement())
-                        .returns(operation.toReturnType(packages))
+                        .addCode(
+                            SimpleClientOperationStatement(
+                                packages,
+                                resource,
+                                verb,
+                                operation
+                            ).toStatement())
+                        .returns(operation.toClientReturnType(packages))
                         .build()
                 }
             }

@@ -1,0 +1,1198 @@
+openapi: 3.0.0
+info:
+  description: Some description
+  version: 1.0.0
+  title: The API title
+  contact:
+    name: cjbooms
+    email: api@cjbooms.com
+externalDocs:
+  description: The docs are great.
+  url: http://find.them.here
+
+paths:
+  /contributors:
+    get:
+      summary: Page through all the Contributor resources matching the query filters
+      tags:
+      - contributor
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IncludeInactive'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        200:
+          description: successful operation
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributorQueryResult'
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    post:
+      summary: Create a new Contributor
+      tags:
+      - contributor
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/ContributorBody'
+      responses:
+        201:
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          description: Contributor successfully created
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /contributors/{id}:
+    get:
+      summary: Get a Contributor by ID
+      tags:
+      - contributor
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      - $ref: '#/components/parameters/StatusQueryParam'
+      responses:
+        200:
+          description: successful operation
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contributor'
+        304:
+          description: |
+            Returned in conjunction with use of the If-None-Match header. Indicates that the resource as described by the passed etag value has not changed
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    head:
+      summary: Validate that a Contributor exists
+      tags:
+      - contributor
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      - $ref: '#/components/parameters/StatusQueryParam'
+      responses:
+        200:
+          description: Record Exists
+        304:
+          description: |
+            Returned in conjunction with use of the If-None-Match header. Indicates that the resource as described by the passed etag value has not changed
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    put:
+      summary: Update an existing Contributor
+      tags:
+      - contributor
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/ContributorBody'
+      responses:
+        204:
+          description: Contributor successfully updated
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /organisations:
+    get:
+      summary: Page through all the Organisation resources matching the query filters
+      tags:
+      - organisation
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IncludeInactive'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        200:
+          description: successful operation
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganisationQueryResult'
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    post:
+      summary: Create a new Organisation
+      tags:
+      - organisation
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/OrganisationBody'
+      responses:
+        201:
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          description: Organisation successfully created
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /organisations/{id}:
+    get:
+      summary: Get a Organisation by ID
+      tags:
+      - organisation
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      - $ref: '#/components/parameters/StatusQueryParam'
+      responses:
+        200:
+          description: successful operation
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organisation'
+        304:
+          description: |
+            Returned in conjunction with use of the If-None-Match header. Indicates that the resource as described by the passed etag value has not changed
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    head:
+      summary: Validate that a Organisation exists
+      tags:
+      - organisation
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      - $ref: '#/components/parameters/StatusQueryParam'
+      responses:
+        200:
+          description: Record Exists
+        304:
+          description: |
+            Returned in conjunction with use of the If-None-Match header. Indicates that the resource as described by the passed etag value has not changed
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    put:
+      summary: Update an existing Organisation
+      tags:
+      - organisation
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/OrganisationBody'
+      responses:
+        204:
+          description: Organisation successfully updated
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /organisations/{parent-id}/contributors:
+    get:
+      summary: Page through all the Contributor resources for this parent Organisation
+        matching the query filters
+      tags:
+      - organisation
+      - contributor
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/ParentIdPathParam'
+      - $ref: '#/components/parameters/IncludeInactive'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        200:
+          description: successful operation
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributorQueryResult'
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /organisations/{parent-id}/contributors/{id}:
+    get:
+      summary: Get a Contributor for this Organisation by ID
+      tags:
+      - organisation
+      - contributor
+      parameters:
+      - $ref: '#/components/parameters/ParentIdPathParam'
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        200:
+          description: successful operation
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contributor'
+        304:
+          description: |
+            Returned in conjunction with use of the If-None-Match header. Indicates that the resource as described by the passed etag value has not changed
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    head:
+      summary: Validate that a Contributor exists for this parent Organisation
+      tags:
+      - organisation
+      - contributor
+      parameters:
+      - $ref: '#/components/parameters/ParentIdPathParam'
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        200:
+          description: Record Exists
+        304:
+          description: |
+            Returned in conjunction with use of the If-None-Match header. Indicates that the resource as described by the passed etag value has not changed
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    put:
+      summary: Add an existing Contributor to this Organisation
+      tags:
+      - organisation
+      - contributor
+      parameters:
+      - $ref: '#/components/parameters/ParentIdPathParam'
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        204:
+          description: Contributor successfully updated
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    delete:
+      summary: Remove Contributor from this Organisation. Does not delete the underlying
+        Contributor.
+      tags:
+      - organisation
+      - contributor
+      parameters:
+      - $ref: '#/components/parameters/ParentIdPathParam'
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      responses:
+        200:
+          description: Contributor successfully removed from Organisation
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /repositories:
+    get:
+      summary: Page through all the Repository resources matching the query filters
+      tags:
+      - repository
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/SlugQueryParam'
+      - $ref: '#/components/parameters/NameQueryParam'
+      - $ref: '#/components/parameters/IncludeInactive'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        200:
+          description: successful operation
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryQueryResult'
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    post:
+      summary: Create a new Repository
+      tags:
+      - repository
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/RepositoryBody'
+      responses:
+        201:
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          description: Repository successfully created
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /repositories/{id}:
+    get:
+      summary: Get a Repository by ID
+      tags:
+      - repository
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      - $ref: '#/components/parameters/StatusQueryParam'
+      responses:
+        200:
+          description: successful operation
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        304:
+          description: |
+            Returned in conjunction with use of the If-None-Match header. Indicates that the resource as described by the passed etag value has not changed
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    head:
+      summary: Validate that a Repository exists
+      tags:
+      - repository
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      - $ref: '#/components/parameters/StatusQueryParam'
+      responses:
+        200:
+          description: Record Exists
+        304:
+          description: |
+            Returned in conjunction with use of the If-None-Match header. Indicates that the resource as described by the passed etag value has not changed
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    put:
+      summary: Update an existing Repository
+      tags:
+      - repository
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/RepositoryBody'
+      responses:
+        204:
+          description: Repository successfully updated
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /repositories/{parent-id}/pull-requests:
+    get:
+      summary: Page through all the PullRequest resources for this parent Repository
+        matching the query filters
+      tags:
+      - repository
+      - pullrequest
+      parameters:
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/ParentIdPathParam'
+      - $ref: '#/components/parameters/IncludeInactive'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        200:
+          description: successful operation
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequestQueryResult'
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    post:
+      summary: Create a new PullRequest for this parent Repository
+      tags:
+      - repository
+      - pullrequest
+      parameters:
+      - $ref: '#/components/parameters/ParentIdPathParam'
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/PullRequestBody'
+      responses:
+        201:
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          description: PullRequest successfully created
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /repositories/{parent-id}/pull-requests/{id}:
+    get:
+      summary: Get a PullRequest for this Repository by ID
+      tags:
+      - repository
+      - pullrequest
+      parameters:
+      - $ref: '#/components/parameters/ParentIdPathParam'
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        200:
+          description: successful operation
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequest'
+        304:
+          description: |
+            Returned in conjunction with use of the If-None-Match header. Indicates that the resource as described by the passed etag value has not changed
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    head:
+      summary: Validate that a PullRequest exists for this parent Repository
+      tags:
+      - repository
+      - pullrequest
+      parameters:
+      - $ref: '#/components/parameters/ParentIdPathParam'
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        200:
+          description: Record Exists
+        304:
+          description: |
+            Returned in conjunction with use of the If-None-Match header. Indicates that the resource as described by the passed etag value has not changed
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    put:
+      summary: Update the PullRequest owned by this Repository
+      tags:
+      - repository
+      - pullrequest
+      parameters:
+      - $ref: '#/components/parameters/ParentIdPathParam'
+      - $ref: '#/components/parameters/FlowId'
+      - $ref: '#/components/parameters/IdPathParam'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/PullRequestBody'
+      responses:
+        204:
+          description: PullRequest successfully updated
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+components:
+  parameters:
+    IdPathParam:
+      name: id
+      description: The unique id for the resource
+      in: path
+      required: true
+      schema:
+        type: string
+    ParentIdPathParam:
+      name: parent-id
+      description: The unique id for the parent resource
+      in: path
+      required: true
+      schema:
+        type: string
+    IncludeInactive:
+      name: include_inactive
+      description: A query parameter to request both active and inactive entities
+      in: query
+      required: false
+      schema:
+        type: boolean
+    IdempotencyKey:
+      name: Idempotency-Key
+      description: |
+        This unique identifier can be used to allow for clients to safely retry requests without accidentally performing the same operation twice. This is useful in cases such as network failures. This Id should remain the same for a given operation, so that the server can use it to recognise subsequent retries of the same request. Clients should be careful in using this key as subsequent requests with the same key return the same result. How the key is generated is up to the client, but it is suggested to use UUID (v4), or any other random string with enough entropy to avoid collisions.
+      in: header
+      required: false
+      schema:
+        type: string
+      example: 84035561-4e44-4a06-98d2-1744eeefca6d
+    FlowId:
+      name: X-Flow-Id
+      description: |
+        A custom header that will be passed onto any further requests and can be used for diagnosing.
+      in: header
+      required: false
+      schema:
+        type: string
+    Limit:
+      name: limit
+      description: |
+        Upper bound for number of results to be returned from query api. A default limit will be applied if this is not present
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+    Cursor:
+      name: cursor
+      description: |
+        An encoded value which represents a point in the data from where pagination will commence. The pagination direction (either forward or backward) will also be encoded within the cursor value. The cursor value will always be generated server side
+      in: query
+      required: false
+      schema:
+        type: string
+    StatusQueryParam:
+      name: status
+      description: |
+        Changes the behavior of GET | HEAD based on the value of the status property. Will return a 404 if the status property does not match the query parameter."
+      in: query
+      schema:
+        type: string
+        x-extensible-enum:
+        - active
+        - inactive
+        - all
+        default: all
+    IfMatch:
+      name: If-Match
+      description: |
+        The RFC7232 If-Match header field in a request requires the server to only operate on the resource that matches at least one of the provided entity-tags. This allows clients express a precondition that prevent the method from being applied if there have been any changes to the resource.
+      in: header
+      schema:
+        type: string
+      required: true
+      example: 7da7a728-f910-11e6-942a-68f728c1ba70
+    IfNoneMatch:
+      name: If-None-Match
+      description: |
+        The RFC7232 If-None-Match header field in a request requires the server to only operate on the resource if it does not match any of the provided entity-tags. If the provided entity-tag is `*`, it is required that the resource does not exist at all.
+      in: header
+      schema:
+        type: string
+      required: false
+      example: 7da7a728-f910-11e6-942a-68f728c1ba70
+    SlugQueryParam:
+      name: slug
+      description: |
+        Filters resources by the [slug] property. Accepts comma-delimited values
+      in: query
+      schema:
+        type: array
+        items:
+          type: string
+      required: false
+      allowEmptyValue: false
+      example: ?slug=value1,value2,value3
+    NameQueryParam:
+      name: name
+      description: |
+        Filters resources by the [name] property. Accepts comma-delimited values
+      in: query
+      schema:
+        type: array
+        items:
+          type: string
+      required: false
+      allowEmptyValue: false
+      example: ?name=value1,value2,value3
+  headers:
+    Location:
+      description: The Location header indicates the URL of a newly created resource
+      schema:
+        type: string
+      example: /organisations/{id}
+    CacheControl:
+      description: |
+        As per the [RFC](https://tools.ietf.org/html/rfc7234#section-5.2.2) a Cache Control header will be returned by the server indicating whether or not it is possible for clients to use stale data (if must-revalidate is included then client may not use cached data after it has expired) and also, the recommended amount of time that a client would cache for
+      schema:
+        type: string
+      example: must-revalidate, max-age=300
+    RetryAfter:
+      description: |
+        This header will be retrieved in tandem with a '429' HTTP response code. The value of the header will be the number of seconds that a client should wait before attempting a new request.
+      schema:
+        type: integer
+    RateLimit:
+      description: |
+        This header will be retrieved in tandem with a '429' HTTP response code. The value of the header indicates how many requests per hour the client is allowed to make. The actual rate limiting will typically be applied per minute though. So if your hourly limit is 1800, you will be allowed to make (1800 / 60 = 30) requests per minute before being rate limited for the remainder of that minute window.
+      schema:
+        type: integer
+
+  requestBodies:
+    ContributorBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Contributor'
+    OrganisationBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Organisation'
+    RepositoryBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Repository'
+    PullRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PullRequest'
+  schemas:
+    PaginationLink:
+      type: string
+      format: uri
+      description: The hyperlink to a page of data
+      readOnly: true
+      example: https://github.cjbooms.com/api/{resource}?cursor=NDI%3D&limit=5
+    ContributorQueryResult:
+      type: object
+      required:
+      - items
+      properties:
+        prev:
+          $ref: '#/components/schemas/PaginationLink'
+        next:
+          $ref: '#/components/schemas/PaginationLink'
+        items:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Contributor'
+    OrganisationQueryResult:
+      type: object
+      required:
+      - items
+      properties:
+        prev:
+          $ref: '#/components/schemas/PaginationLink'
+        next:
+          $ref: '#/components/schemas/PaginationLink'
+        items:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Organisation'
+    RepositoryQueryResult:
+      type: object
+      required:
+      - items
+      properties:
+        prev:
+          $ref: '#/components/schemas/PaginationLink'
+        next:
+          $ref: '#/components/schemas/PaginationLink'
+        items:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Repository'
+    PullRequestQueryResult:
+      type: object
+      required:
+      - items
+      properties:
+        prev:
+          $ref: '#/components/schemas/PaginationLink'
+        next:
+          $ref: '#/components/schemas/PaginationLink'
+        items:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/PullRequest'
+    Contributor:
+      type: object
+      required:
+      - id
+      - created
+      - created_by
+      - created_by_uid
+      - modified
+      - modified_by
+      - modified_by_uid
+      - status
+      - etag
+      - audit_actor
+      - username
+      properties:
+        id:
+          description: This unique server-generated identity will always be present
+            in the response.
+          type: string
+          readOnly: true
+        audit_actor:
+          description: |
+            The actor authoring a write to a resource
+          type: string
+          writeOnly: true
+        created:
+          description: Indicates the timestamp that this resource was initially created
+            at
+          type: string
+          format: date-time
+          readOnly: true
+        created_by:
+          description: Represents the actor/user who first created this resource
+          type: string
+          readOnly: true
+        created_by_uid:
+          description: Represents the uid from the auth token that first created this
+            resource
+          type: string
+          readOnly: true
+        modified:
+          description: Indicates the timestamp that this resource was last modified
+            at
+          type: string
+          format: date-time
+          readOnly: true
+        modified_by:
+          description: Represents the actor/user who last modified this resource
+          type: string
+          readOnly: true
+        modified_by_uid:
+          description: Represents the uid from the auth token that last modified this
+            resource
+          type: string
+          readOnly: true
+        status:
+          type: string
+          x-extensible-enum:
+          - active
+          - inactive
+          description: States whether the entity is currently active or inactive
+        etag:
+          type: string
+          description: |
+            Server generated value which is used as a version for the resource. This value is to be used in conjunction with If-Match headers for optimistic locking purposes
+          readOnly: true
+        username:
+          type: string
+        name:
+          type: string
+    Organisation:
+      type: object
+      required:
+      - id
+      - created
+      - created_by
+      - created_by_uid
+      - modified
+      - modified_by
+      - modified_by_uid
+      - status
+      - etag
+      - audit_actor
+      - name
+      properties:
+        id:
+          description: This unique server-generated identity will always be present
+            in the response.
+          type: string
+          readOnly: true
+        audit_actor:
+          description: |
+            The actor authoring a write to a resource
+          type: string
+          writeOnly: true
+        created:
+          description: Indicates the timestamp that this resource was initially created
+            at
+          type: string
+          format: date-time
+          readOnly: true
+        created_by:
+          description: Represents the actor/user who first created this resource
+          type: string
+          readOnly: true
+        created_by_uid:
+          description: Represents the uid from the auth token that first created this
+            resource
+          type: string
+          readOnly: true
+        modified:
+          description: Indicates the timestamp that this resource was last modified
+            at
+          type: string
+          format: date-time
+          readOnly: true
+        modified_by:
+          description: Represents the actor/user who last modified this resource
+          type: string
+          readOnly: true
+        modified_by_uid:
+          description: Represents the uid from the auth token that last modified this
+            resource
+          type: string
+          readOnly: true
+        status:
+          type: string
+          x-extensible-enum:
+          - active
+          - inactive
+          description: States whether the entity is currently active or inactive
+        etag:
+          type: string
+          description: |
+            Server generated value which is used as a version for the resource. This value is to be used in conjunction with If-Match headers for optimistic locking purposes
+          readOnly: true
+        name:
+          type: string
+        icon:
+          type: string
+        hooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Webhook'
+    Repository:
+      type: object
+      required:
+      - id
+      - created
+      - created_by
+      - created_by_uid
+      - modified
+      - modified_by
+      - modified_by_uid
+      - status
+      - etag
+      - audit_actor
+      - slug
+      - name
+      properties:
+        id:
+          description: This unique server-generated identity will always be present
+            in the response.
+          type: string
+          readOnly: true
+        audit_actor:
+          description: |
+            The actor authoring a write to a resource
+          type: string
+          writeOnly: true
+        created:
+          description: Indicates the timestamp that this resource was initially created
+            at
+          type: string
+          format: date-time
+          readOnly: true
+        created_by:
+          description: Represents the actor/user who first created this resource
+          type: string
+          readOnly: true
+        created_by_uid:
+          description: Represents the uid from the auth token that first created this
+            resource
+          type: string
+          readOnly: true
+        modified:
+          description: Indicates the timestamp that this resource was last modified
+            at
+          type: string
+          format: date-time
+          readOnly: true
+        modified_by:
+          description: Represents the actor/user who last modified this resource
+          type: string
+          readOnly: true
+        modified_by_uid:
+          description: Represents the uid from the auth token that last modified this
+            resource
+          type: string
+          readOnly: true
+        status:
+          type: string
+          x-extensible-enum:
+          - active
+          - inactive
+          description: States whether the entity is currently active or inactive
+        etag:
+          type: string
+          description: |
+            Server generated value which is used as a version for the resource. This value is to be used in conjunction with If-Match headers for optimistic locking purposes
+          readOnly: true
+        slug:
+          type: string
+        name:
+          type: string
+        visibility:
+          type: string
+          x-extensible-enum:
+          - Private
+          - Public
+        tags:
+          type: array
+          items:
+            type: string
+    PullRequest:
+      type: object
+      required:
+      - id
+      - created
+      - created_by
+      - created_by_uid
+      - modified
+      - modified_by
+      - modified_by_uid
+      - status
+      - etag
+      - audit_actor
+      - title
+      properties:
+        id:
+          description: This unique server-generated identity will always be present
+            in the response.
+          type: string
+          readOnly: true
+        audit_actor:
+          description: |
+            The actor authoring a write to a resource
+          type: string
+          writeOnly: true
+        created:
+          description: Indicates the timestamp that this resource was initially created
+            at
+          type: string
+          format: date-time
+          readOnly: true
+        created_by:
+          description: Represents the actor/user who first created this resource
+          type: string
+          readOnly: true
+        created_by_uid:
+          description: Represents the uid from the auth token that first created this
+            resource
+          type: string
+          readOnly: true
+        modified:
+          description: Indicates the timestamp that this resource was last modified
+            at
+          type: string
+          format: date-time
+          readOnly: true
+        modified_by:
+          description: Represents the actor/user who last modified this resource
+          type: string
+          readOnly: true
+        modified_by_uid:
+          description: Represents the uid from the auth token that last modified this
+            resource
+          type: string
+          readOnly: true
+        status:
+          type: string
+          x-extensible-enum:
+          - active
+          - inactive
+          description: States whether the entity is currently active or inactive
+        etag:
+          type: string
+          description: |
+            Server generated value which is used as a version for the resource. This value is to be used in conjunction with If-Match headers for optimistic locking purposes
+          readOnly: true
+        title:
+          type: string
+        description:
+          type: string
+        author:
+          $ref: '#/components/schemas/Author'
+    Webhook:
+      type: object
+      required:
+      - url
+      properties:
+        url:
+          type: string
+        name:
+          type: string
+    Author:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string

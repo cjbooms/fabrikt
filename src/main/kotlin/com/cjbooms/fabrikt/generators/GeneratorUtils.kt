@@ -1,8 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
-import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.JacksonModelGenerator.Companion.toModelType
-import com.cjbooms.fabrikt.model.ClientType
+import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.reprezen.kaizen.oasparser.model3.MediaType
 import com.reprezen.kaizen.oasparser.model3.Operation
@@ -14,13 +12,11 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 
-object ClientGeneratorUtils {
+object GeneratorUtils {
     /**
      * It resolves the API operation body request to its body type. If multiple content medias are found, then it will
      * resolve to the schema reference of the first media type, otherwise it assumes no request body defined for
@@ -47,23 +43,6 @@ object ClientGeneratorUtils {
             this.name.toKCodeName(),
             toModelType(basePackage, KotlinTypeInfo.from(this.schema), this.isRequired)
         ).build()
-
-    /**
-     * It resolves the API operation response to its body type. It iterates over all non-default responses
-     * by filtering those ones with content media. If multiple medias are found, then it will resolve to the schema
-     * reference of the first media type found, otherwise it'll resolve to Unit by assuming no response body
-     * for the given operation.
-     */
-    fun Operation.toReturnType(packages: Packages): TypeName {
-        val returnType = this.getPrimaryAcceptMediaType()?.let {
-            toModelType(
-                packages.base,
-                    KotlinTypeInfo.from(it.value.schema)
-            )
-        } ?: Unit::class.asTypeName()
-        return "ApiResponse".toClassName(packages.client)
-            .parameterizedBy(returnType.copy(nullable = true))
-    }
 
     /**
      * It converts any string to a variable or function name by removing all non-letter-or-digit characters and transforms
@@ -101,10 +80,6 @@ object ClientGeneratorUtils {
         val constructor = FunSpec.constructorBuilder().addParameters(parameters).build()
         return this.primaryConstructor(constructor).addProperties(propertySpecs)
     }
-
-    fun simpleClientName(resourceName: String) = "$resourceName${ClientType.SIMPLE_CLIENT_SUFFIX}"
-
-    fun enhancedClientName(resourceName: String) = "$resourceName${ClientType.ENHANCED_CLIENT_SUFFIX}"
 
     fun functionName(resource: String, verb: String) = "$verb $resource".toKCodeName()
 

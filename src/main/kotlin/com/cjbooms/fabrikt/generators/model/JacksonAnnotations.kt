@@ -1,4 +1,4 @@
-package com.cjbooms.fabrikt.generators
+package com.cjbooms.fabrikt.generators.model
 
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName

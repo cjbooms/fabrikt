@@ -5,6 +5,21 @@ enum class CodeGenerationType(val description: String, val requires: Set<Interna
         "Jackson annotated data classes to represent the schema objects defined in the input.",
         setOf(InternalCodeGenGenType.MODELS)
     ),
+    CONTROLLERS(
+        "Spring annotated HTTP controllers for each of the endpoints defined in the input.",
+        setOf(
+            InternalCodeGenGenType.MODELS,
+            InternalCodeGenGenType.SERVICE_INTERFACES,
+            InternalCodeGenGenType.CONTROLLERS
+        )
+    ),
+    SERVICES(
+        "Default service implementations.",
+        setOf(
+            InternalCodeGenGenType.MODELS,
+            InternalCodeGenGenType.SERVICE_INTERFACES
+        )
+    ),
     CLIENT(
         "Simple http rest client.",
         setOf(
@@ -19,6 +34,8 @@ enum class CodeGenerationType(val description: String, val requires: Set<Interna
 // Ordering is important here...
 enum class InternalCodeGenGenType {
     MODELS,
+    CONTROLLERS,
+    SERVICE_INTERFACES,
     CLIENT
 }
 

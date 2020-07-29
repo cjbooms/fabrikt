@@ -1,5 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.validation.Linter
@@ -57,7 +59,10 @@ class ModelGeneratorTest {
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
         val expectedModels = javaClass.getResource("/examples/$testCaseName/models/Models.kt").readText()
 
-        val models = JacksonModelGenerator(basePackage, sourceApi).generate().toSingleFile()
+        val models = JacksonModelGenerator(
+            Packages(basePackage),
+            sourceApi
+        ).generate().toSingleFile()
 
         assertThat(models).isEqualTo(expectedModels)
     }
@@ -68,7 +73,10 @@ class ModelGeneratorTest {
         val spec = javaClass.getResource("/examples/polymorphicModels/api.yaml").readText()
         val expectedModels = javaClass.getResource("/examples/polymorphicModels/models/Models.kt").readText()
 
-        val models = JacksonModelGenerator(basePackage, SourceApi(spec)).generate()
+        val models = JacksonModelGenerator(
+            Packages(basePackage),
+            SourceApi(spec)
+        ).generate()
 
         assertThat(Linter.lintString(models.files.first().toString())).isEqualTo(expectedModels)
     }

@@ -1,0 +1,462 @@
+openapi: 3.0.0
+info:
+  description: Eample API
+  version: 1.0.0
+  title: example-api
+  contact:
+    name: cjbooms
+    email: example@cjbooms.com
+    url: http://example.docs.cjbooms.com/
+externalDocs:
+  description: Example API Docs
+  url: https://example.docs.cjbooms.com/
+servers:
+  - url: https://example.docs.cjbooms.com/api
+    description: API service url
+
+paths:
+  /customers/{customer_number}:
+    get:
+      summary: Information about a customer.
+      parameters:
+        - $ref: '#/components/parameters/FlowId'
+        - $ref: '#/components/parameters/CustomerNumberPathParameter'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /delete-requests:
+    get:
+      summary: Page through all the DeleteRequest resources matching the query filters
+      parameters:
+        - $ref: '#/components/parameters/FlowId'
+        - $ref: '#/components/parameters/CustomerNumberQueryParam'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteRequestQueryResult'
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    post:
+      summary: Create a new DeleteRequest
+      parameters:
+        - $ref: '#/components/parameters/FlowId'
+      requestBody:
+        $ref: '#/components/requestBodies/DeleteRequestBody'
+      responses:
+        201:
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          description: DeleteRequest successfully created
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /delete-requests/{id}:
+    get:
+      summary: Get a DeleteRequest by ID
+      tags:
+        - deleterequest
+      parameters:
+        - $ref: '#/components/parameters/FlowId'
+        - $ref: '#/components/parameters/IdPathParam'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteRequest'
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    put:
+      summary: Update an existing DeleteRequest
+      tags:
+        - deleterequest
+      parameters:
+        - $ref: '#/components/parameters/FlowId'
+        - $ref: '#/components/parameters/IdPathParam'
+      requestBody:
+        $ref: '#/components/requestBodies/DeleteRequestBody'
+      responses:
+        204:
+          description: DeleteRequest successfully updated
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /data-access-requests:
+    get:
+      summary: Page through all the DataAccessRequest resources matching the query filters
+      parameters:
+        - $ref: '#/components/parameters/FlowId'
+        - $ref: '#/components/parameters/CustomerNumberQueryParam'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataAccessRequestQueryResult'
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    post:
+      summary: Create a new DataAccessRequest
+      parameters:
+        - $ref: '#/components/parameters/FlowId'
+      requestBody:
+        $ref: '#/components/requestBodies/DataAccessRequestBody'
+      responses:
+        201:
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          description: DataAccessRequest successfully created
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+  /data-access-requests/{id}:
+    get:
+      summary: Get a DataAccessRequest by ID
+      tags:
+        - dataaccessrequest
+      parameters:
+        - $ref: '#/components/parameters/FlowId'
+        - $ref: '#/components/parameters/IdPathParam'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataAccessRequest'
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+    put:
+      summary: Update an existing DataAccessRequest
+      parameters:
+        - $ref: '#/components/parameters/FlowId'
+        - $ref: '#/components/parameters/IdPathParam'
+      requestBody:
+        $ref: '#/components/requestBodies/DataAccessRequestBody'
+      responses:
+        204:
+          description: DataAccessRequest successfully updated
+        429:
+          description: User requests are being throttled
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+            X-Rate-Limit:
+              $ref: '#/components/headers/RateLimit'
+
+components:
+  parameters:
+    IdPathParam:
+      name: id
+      description: The unique id for the resource
+      in: path
+      required: true
+      schema:
+        type: string
+    CustomerNumberPathParameter:
+      name: customer_number
+      description: The unique customer number
+      in: path
+      required: true
+      schema:
+        type: string
+    FlowId:
+      name: X-Flow-Id
+      description: |
+        A custom header that will be passed onto any further requests and can be used for diagnosing.
+      in: header
+      required: false
+      schema:
+        type: string
+    Limit:
+      name: limit
+      description: |
+        Upper bound for number of results to be returned from query api. A default limit will be applied if this is not present
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+    Cursor:
+      name: cursor
+      description: |
+        An encoded value which represents a point in the data from where pagination will commence. The pagination direction (either forward or backward) will also be encoded within the cursor value. The cursor value will always be generated server side
+      in: query
+      required: false
+      schema:
+        type: string
+    CustomerNumberQueryParam:
+      name: customer_number
+      description: |
+        Filters search results to those matching the customer number
+      in: query
+      schema:
+        type: string
+
+  headers:
+    Location:
+      description: The Location header indicates the URL of a newly created resource
+      schema:
+        type: string
+      example: /eligibility-rule-statuses/{id}
+    RetryAfter:
+      description: |
+        This header will be retrieved in tandem with a '429' HTTP response code. The value of the header will be the number of seconds that a client should wait before attempting a new request.
+      schema:
+        type: integer
+    RateLimit:
+      description: |
+        This header will be retrieved in tandem with a '429' HTTP response code. The value of the header indicates how many requests per hour the client is allowed to make. The actual rate limiting will typically be applied per minute though. So if your hourly limit is 1800, you will be allowed to make (1800 / 60 = 30) requests per minute before being rate limited for the remainder of that minute window.
+      schema:
+        type: integer
+
+  requestBodies:
+    DeleteRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeleteRequest'
+
+    DataAccessRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataAccessRequest'
+  schemas:
+    PaginationLink:
+      type: string
+      format: uri
+      description: The hyperlink to a page of data
+      readOnly: true
+      example: https://example.docs.cjbooms.com/api/{resource}?cursor=NDI%3D&limit=5
+
+    DeleteRequestQueryResult:
+      type: object
+      required:
+        - items
+      properties:
+        prev:
+          $ref: '#/components/schemas/PaginationLink'
+        next:
+          $ref: '#/components/schemas/PaginationLink'
+        items:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/DeleteRequest'
+
+    DataAccessRequestQueryResult:
+      type: object
+      required:
+        - items
+      properties:
+        prev:
+          $ref: '#/components/schemas/PaginationLink'
+        next:
+          $ref: '#/components/schemas/PaginationLink'
+        items:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/DataAccessRequest'
+
+    Customer:
+      type: object
+      description: Customer data in the context of data deletion
+      properties:
+        is_eligible:
+          type: boolean
+        eligibility_results:
+          type: array
+          description: List of all rules checked and their statuses that make a customer
+            eligible or not for deletion.
+          items:
+            $ref: '#/components/schemas/EligibilityRule'
+
+    DeleteRequest:
+      type: object
+      description: Deletion request object.
+      required:
+        - id
+        - created
+        - created_by_uid
+        - modified
+        - modified_by_uid
+      properties:
+        id:
+          description: This unique server-generated security token will always be present
+            in the response.
+          type: string
+          readOnly: true
+        customer_number:
+          type: integer
+          format: int32
+        status:
+          $ref: '#/components/schemas/RequestStatus'
+        expiry_date:
+          type: string
+          format: date-time
+        created:
+          description: Indicates the timestamp that this resource was initially created
+            at
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          description: Indicates the timestamp that this resource was last modified
+            at
+          type: string
+          format: date-time
+          readOnly: true
+        created_by_uid:
+          description: Represents the uid from the auth token that first created this
+            resource
+          type: string
+          readOnly: true
+        modified_by_uid:
+          description: Represents the uid from the auth token that last modified this
+            resource
+          type: string
+          readOnly: true
+
+    DataAccessRequest:
+      type: object
+      description: Data access request object.
+      required:
+        - id
+        - created
+        - created_by_uid
+        - modified
+        - modified_by_uid
+      properties:
+        id:
+          description: This unique server-generated security token identifier will always be present
+            in the response.
+          type: string
+          readOnly: true
+        customer_number:
+          type: integer
+          format: int32
+        status:
+          $ref: '#/components/schemas/RequestStatus'
+        expiry_date:
+          type: string
+          format: date-time
+        created:
+          description: Indicates the timestamp that this resource was initially created at
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          description: Indicates the timestamp that this resource was last modified
+            at
+          type: string
+          format: date-time
+          readOnly: true
+        created_by_uid:
+          description: Represents the uid from the auth token that first created this
+            resource
+          type: string
+          readOnly: true
+        modified_by_uid:
+          description: Represents the uid from the auth token that last modified this
+            resource
+          type: string
+          readOnly: true
+
+    EligibilityRule:
+      type: object
+      description: Deletion eligibility rule
+      properties:
+        code:
+          type: string
+          description: Eligibility rule code
+          example: 444
+        message:
+          type: string
+          description: Definition of the error code
+          example: Customer is blacklisted and cannot receive emails
+        status:
+          $ref: '#/components/schemas/EligibilityRuleStatus'
+
+    EligibilityRuleStatus:
+      type: string
+      description: Status of the rule
+      x-extensible-enum:
+        - fail
+        - pass
+    RequestStatus:
+      type: string
+      x-extensible-enum:
+        - OPEN
+        - IN_PROGRESS
+        - DONE
+        - CANCELLED
+        - ERROR
+

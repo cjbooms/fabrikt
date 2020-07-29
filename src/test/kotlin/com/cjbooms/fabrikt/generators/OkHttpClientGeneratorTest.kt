@@ -1,10 +1,10 @@
-package com.cjbooms.fabrikt.client
+package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.JacksonModelGenerator
-import com.cjbooms.fabrikt.generators.OkHttpEnhancedClientGenerator
-import com.cjbooms.fabrikt.generators.OkHttpSimpleClientGenerator
+import com.cjbooms.fabrikt.generators.client.OkHttpEnhancedClientGenerator
+import com.cjbooms.fabrikt.generators.client.OkHttpSimpleClientGenerator
+import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SimpleFile
@@ -33,8 +33,14 @@ class OkHttpClientGeneratorTest {
         val expectedModel = javaClass.getResource("/examples/$testCaseName/models/Models.kt").readText()
         val expectedClient = javaClass.getResource("/examples/$testCaseName/client/ApiClient.kt").readText()
 
-        val models = JacksonModelGenerator(packages.base, sourceApi).generate().toSingleFile()
-        val simpleClientCode = OkHttpSimpleClientGenerator(packages, sourceApi)
+        val models = JacksonModelGenerator(
+            packages,
+            sourceApi
+        ).generate().toSingleFile()
+        val simpleClientCode = OkHttpSimpleClientGenerator(
+            packages,
+            sourceApi
+        )
             .generateDynamicClientCode()
             .toSingleFile()
 
@@ -51,7 +57,8 @@ class OkHttpClientGeneratorTest {
         val expectedLibUtil = javaClass.getResource("/examples/$testCaseName/client/HttpResilience4jUtil.kt").readText()
         val expectedClientCode = javaClass.getResource("/examples/$testCaseName/client/ApiService.kt").readText()
 
-        val generator = OkHttpEnhancedClientGenerator(packages, sourceApi)
+        val generator =
+            OkHttpEnhancedClientGenerator(packages, sourceApi)
         val enhancedLibUtil = generator.generateLibrary(setOf(ClientCodeGenOptionType.RESILIENCE4J))
                 .filterIsInstance<SimpleFile>()
                 .first { it.path.fileName.toString() == "HttpResilience4jUtil.kt" }
@@ -67,7 +74,10 @@ class OkHttpClientGeneratorTest {
         val packages = Packages("examples.$testCaseName")
         val sourceApi = SourceApi(javaClass.getResource("/examples/$testCaseName/api.yaml").readText())
 
-        val enhancedClientCode = OkHttpEnhancedClientGenerator(packages, sourceApi)
+        val enhancedClientCode = OkHttpEnhancedClientGenerator(
+            packages,
+            sourceApi
+        )
             .generateDynamicClientCode(emptySet())
 
         assertThat(enhancedClientCode).isEqualTo(emptySet<ClientType>())
@@ -81,7 +91,10 @@ class OkHttpClientGeneratorTest {
 
         val expectedHttpUtils = javaClass.getResource("/examples/$testCaseName/client/HttpUtil.kt").readText()
 
-        val generatedHttpUtils = OkHttpSimpleClientGenerator(packages, sourceApi).generateLibrary().filterIsInstance<SimpleFile>()
+        val generatedHttpUtils = OkHttpSimpleClientGenerator(
+            packages,
+            sourceApi
+        ).generateLibrary().filterIsInstance<SimpleFile>()
             .first { it.path.fileName.toString() == "HttpUtil.kt" }
 
         assertThat(generatedHttpUtils.content).isEqualTo(expectedHttpUtils)
@@ -95,7 +108,10 @@ class OkHttpClientGeneratorTest {
 
         val expectedLoggingInterceptor = javaClass.getResource("/examples/$testCaseName/client/LoggingInterceptor.kt").readText()
 
-        val generatedLoggingInterceptor = OkHttpSimpleClientGenerator(packages, sourceApi).generateLibrary().filterIsInstance<SimpleFile>()
+        val generatedLoggingInterceptor = OkHttpSimpleClientGenerator(
+            packages,
+            sourceApi
+        ).generateLibrary().filterIsInstance<SimpleFile>()
             .first { it.path.fileName.toString() == "LoggingInterceptor.kt" }
 
         assertThat(generatedLoggingInterceptor.content).isEqualTo(expectedLoggingInterceptor)

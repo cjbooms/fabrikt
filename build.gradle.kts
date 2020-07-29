@@ -92,7 +92,7 @@ tasks {
 
     val printCodeGenUsage by creating(JavaExec::class) {
         dependsOn(shadowJar)
-        classpath = project.files("./build/libs/$executableName.jar")
+        classpath = project.files("./build/libs/$executableName-$version.jar")
         main = "com.cjbooms.fabrikt.cli.CodeGen"
         args = listOf("--help")
     }

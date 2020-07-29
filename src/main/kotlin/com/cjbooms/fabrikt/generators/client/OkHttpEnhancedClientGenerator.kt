@@ -1,15 +1,15 @@
-package com.cjbooms.fabrikt.generators
+package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.enhancedClientName
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.functionName
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.simpleClientName
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toBodyParameterSpec
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toClassName
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toKCodeName
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toParameterSpec
-import com.cjbooms.fabrikt.generators.ClientGeneratorUtils.toReturnType
+import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyParameterSpec
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toParameterSpec
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.enhancedClientName
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.model.GeneratedFile
@@ -52,8 +52,14 @@ class OkHttpEnhancedClientGenerator(
                         )
                         .addParameters(operation.requestBody.toBodyParameterSpec(packages.base))
                         .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
-                        .addCode(Resilience4jClientOperationStatement(packages, resource, verb, operation).toStatement())
-                        .returns(operation.toReturnType(packages))
+                        .addCode(
+                            Resilience4jClientOperationStatement(
+                                packages,
+                                resource,
+                                verb,
+                                operation
+                            ).toStatement())
+                        .returns(operation.toClientReturnType(packages))
                         .build()
                 }
             }

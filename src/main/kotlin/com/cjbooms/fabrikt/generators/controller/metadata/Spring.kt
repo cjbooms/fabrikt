@@ -1,0 +1,77 @@
+package com.cjbooms.fabrikt.generators.controller.metadata
+
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
+
+object SpringImports {
+
+    private object Packages {
+        private const val SPRING_BASE = "org.springframework"
+
+        const val HTTP = "$SPRING_BASE.http"
+
+        const val STEREOTYPE = "$SPRING_BASE.stereotype"
+
+        const val WEB_BIND_ANNOTATION = "$SPRING_BASE.web.bind.annotation"
+
+        const val SERVLET_SUPPORT = "$SPRING_BASE.web.servlet.support"
+
+        const val VALIDATION_ANNOTATION = "$SPRING_BASE.validation.annotation"
+    }
+
+    val CONTROLLER = ClassName(Packages.STEREOTYPE, "Controller")
+
+    val RESPONSE_ENTITY = ClassName(Packages.HTTP, "ResponseEntity")
+
+    val REQUEST_HEADER = ClassName(Packages.WEB_BIND_ANNOTATION, "RequestHeader")
+
+    val REQUEST_BODY = ClassName(Packages.WEB_BIND_ANNOTATION, "RequestBody")
+
+    val REQUEST_PARAM = ClassName(Packages.WEB_BIND_ANNOTATION, "RequestParam")
+
+    val PATH_VARIABLE = ClassName(Packages.WEB_BIND_ANNOTATION, "PathVariable")
+
+    val REQUEST_MAPPING = ClassName(Packages.WEB_BIND_ANNOTATION, "RequestMapping")
+
+    val VALIDATED = ClassName(Packages.VALIDATION_ANNOTATION, "Validated")
+
+    val URI_BUILDER = ClassName(Packages.SERVLET_SUPPORT, "ServletUriComponentsBuilder")
+
+    object Static {
+        val RESPONSE_STATUS = Pair(Packages.HTTP, "HttpStatus")
+
+        val REQUEST_METHOD = Pair(Packages.WEB_BIND_ANNOTATION, "RequestMethod")
+    }
+}
+
+object SpringAnnotations {
+    val CONTROLLER: AnnotationSpec =
+        AnnotationSpec
+            .builder(SpringImports.CONTROLLER)
+            .build()
+
+    val VALIDATED: AnnotationSpec =
+        AnnotationSpec
+            .builder(SpringImports.VALIDATED)
+            .build()
+
+    fun requestMappingBuilder(): AnnotationSpec.Builder =
+        AnnotationSpec
+            .builder(SpringImports.REQUEST_MAPPING)
+
+    fun requestHeaderBuilder(): AnnotationSpec.Builder =
+        AnnotationSpec
+            .builder(SpringImports.REQUEST_HEADER)
+
+    fun requestBodyBuilder(): AnnotationSpec.Builder =
+        AnnotationSpec
+            .builder(SpringImports.REQUEST_BODY)
+
+    fun requestParamBuilder(): AnnotationSpec.Builder =
+        AnnotationSpec
+            .builder(SpringImports.REQUEST_PARAM)
+
+    fun requestPathVariableBuilder(): AnnotationSpec.Builder =
+        AnnotationSpec
+            .builder(SpringImports.PATH_VARIABLE)
+}
