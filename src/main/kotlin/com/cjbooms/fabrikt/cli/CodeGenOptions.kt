@@ -13,13 +13,6 @@ enum class CodeGenerationType(val description: String, val requires: Set<Interna
             InternalCodeGenGenType.CONTROLLERS
         )
     ),
-    SERVICES(
-        "Default service implementations.",
-        setOf(
-            InternalCodeGenGenType.MODELS,
-            InternalCodeGenGenType.SERVICE_INTERFACES
-        )
-    ),
     CLIENT(
         "Simple http rest client.",
         setOf(

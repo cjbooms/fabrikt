@@ -9,14 +9,13 @@ import com.cjbooms.fabrikt.generators.controller.ControllerCodeBlocks.postWithLo
 import com.cjbooms.fabrikt.generators.controller.ControllerCodeBlocks.postWithResponsebody
 import com.cjbooms.fabrikt.generators.controller.ControllerCodeBlocks.putWithNoContent
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.controllerName
-import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.defaultResponse
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.generators.service.SpringServiceInterfaceGenerator
-import com.cjbooms.fabrikt.model.BodyParam
 import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.Controllers
@@ -113,7 +112,7 @@ class SpringControllerGenerator(
         serviceFunc: FunSpec?
     ): FunSpec {
         val methodName = methodName(verb, pathString.isSingleResource())
-        val (_, returnType) = op.defaultResponse(packages.base)
+        val (_, returnType) = op.happyPathResponse(packages.base)
         val parameters = op.toIncomingParameters(packages.base)
         val happyResponseCodes = op.responses.keys.filter { it.startsWith("2") }.mapNotNull { it.toIntOrNull() }
 
@@ -202,7 +201,6 @@ class SpringControllerGenerator(
 
     private fun ParameterSpec.Builder.addSpringParamAnnotation(parameter: RequestParameter): ParameterSpec.Builder =
         when (parameter.parameterLocation) {
-            BodyParam -> SpringAnnotations.requestBodyBuilder()
             QueryParam -> SpringAnnotations.requestParamBuilder()
             HeaderParam -> SpringAnnotations.requestHeaderBuilder()
             PathParam -> SpringAnnotations.requestPathVariableBuilder()

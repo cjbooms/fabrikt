@@ -3,7 +3,6 @@ package com.cjbooms.fabrikt.cli
 import com.cjbooms.fabrikt.cli.CodeGenerationType.CLIENT
 import com.cjbooms.fabrikt.cli.CodeGenerationType.CONTROLLERS
 import com.cjbooms.fabrikt.cli.CodeGenerationType.HTTP_MODELS
-import com.cjbooms.fabrikt.cli.CodeGenerationType.SERVICES
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerGenerator
@@ -30,7 +29,6 @@ class CodeGenerator(
     private fun generateCode(generationType: CodeGenerationType): Collection<GeneratedFile> =
         when (generationType) {
             CLIENT -> generateClient()
-            SERVICES -> generateServiceInterfaces()
             CONTROLLERS -> generateControllers()
             HTTP_MODELS -> generateModels()
         }

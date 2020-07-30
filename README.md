@@ -24,7 +24,6 @@ This section documents the available CLI parameters for controlling what gets ge
  |                        | CHOOSE ANY OF:
  |                        |   `HTTP_MODELS` - Jackson annotated data classes to represent the schema objects defined in the input.
  |                        |   `CONTROLLERS` - Spring annotated HTTP controllers for each of the endpoints defined in the input.
- |                        |   `SERVICES` - Default service interfaces.
  |                        |   `CLIENT` - Simple http rest client.
 
 ## Examples

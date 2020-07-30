@@ -113,7 +113,7 @@ class BodyParameter(oasName: String, type: TypeName, val schema: Schema) : Incom
 class RequestParameter(
     oasName: String,
     type: TypeName,
-    val parameterLocation: ParameterLocation,
+    val parameterLocation: RequestParameterLocation,
     val typeInfo: KotlinTypeInfo,
     val minimum: Number? = null,
     val maximum: Number? = null,
@@ -126,7 +126,7 @@ class RequestParameter(
         typeInfo = KotlinTypeInfo.from(parameter.schema, oasName),
         minimum = parameter.schema.minimum,
         maximum = parameter.schema.maximum,
-        parameterLocation = ParameterLocation.getLocation(parameter.`in`),
+        parameterLocation = RequestParameterLocation(parameter.`in`),
         isRequired = parameter.isRequired,
         defaultValue = parameter.schema.default
     )
@@ -137,8 +137,6 @@ object MethodNames {
     const val QUERY = "query"
     const val CREATE = "create"
     const val UPDATE = "update"
-    const val READ_SUBRESOURCE = READ
-    const val QUERY_SUBRESOURCE = QUERY
     const val REMOVE_SUBRESOURCE = "removeSubresource"
     const val ADD_SUBRESOURCE = "addSubresource"
 }

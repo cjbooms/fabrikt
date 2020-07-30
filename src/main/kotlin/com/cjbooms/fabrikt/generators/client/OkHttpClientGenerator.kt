@@ -10,10 +10,8 @@ class OkHttpClientGenerator(
     packages: Packages,
     api: SourceApi
 ) {
-    private val simpleClientGenerator =
-        OkHttpSimpleClientGenerator(packages, api)
-    private val enhancedClientGenerator =
-        OkHttpEnhancedClientGenerator(packages, api)
+    private val simpleClientGenerator = OkHttpSimpleClientGenerator(packages, api)
+    private val enhancedClientGenerator = OkHttpEnhancedClientGenerator(packages, api)
 
     fun generate(options: Set<ClientCodeGenOptionType>): Clients {
         val simpleClient = simpleClientGenerator.generateDynamicClientCode()

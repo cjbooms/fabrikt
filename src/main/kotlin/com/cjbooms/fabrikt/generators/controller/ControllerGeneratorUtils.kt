@@ -19,9 +19,9 @@ object ControllerGeneratorUtils {
      * Pulling out the first response. This assumes first is happy path
      * may need to revisit if we want to have conditional responses
      */
-    fun Operation.defaultResponse(basePackage: String): Pair<Int, TypeName> {
+    fun Operation.happyPathResponse(basePackage: String): Pair<Int, TypeName> {
         // Map of response code to nullable name of schema
-        val responseDetails = defaultResponseObject()
+        val responseDetails = happyPathResponseObject()
         return responseDetails.first to (responseDetails
             .second
             .contentMediaTypes
@@ -32,17 +32,16 @@ object ControllerGeneratorUtils {
             ?: Unit::class.asTypeName())
     }
 
-    fun Operation.defaultResponseObject(): Pair<Int, Response> {
-        val toResponseMapping = responses
+    fun Operation.happyPathResponseObject(): Pair<Int, Response> {
+        val toResponseMapping: Map<Int, Response> = responses
             .filter { it.key != "default" }
             .map { (code, body) ->
                 code.toInt() to body
             }.toMap()
 
-        // Happy path, just pull out first. Later we may have conditional responses
-        val code = responses.keys.first().toInt()
-        val response =
-            toResponseMapping[code] ?: throw IllegalStateException("Could not extract the response for $this")
+        // Happy path, just pull out the http code with the lowest value. Later we may have conditional responses
+        val code: Int = toResponseMapping.keys.min() ?: throw IllegalStateException("Could not extract the response for $this")
+        val response = toResponseMapping[code]!!
 
         return code to response
     }

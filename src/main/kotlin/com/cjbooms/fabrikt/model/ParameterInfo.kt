@@ -1,20 +1,17 @@
 package com.cjbooms.fabrikt.model
 
-sealed class ParameterLocation {
+sealed class RequestParameterLocation {
     companion object {
-        fun getLocation(location: String): ParameterLocation {
-            return when (location) {
-                "body" -> BodyParam
+        operator fun invoke(location: String): RequestParameterLocation =
+            when (location) {
                 "query" -> QueryParam
                 "header" -> HeaderParam
                 "path" -> PathParam
-                else -> throw IllegalStateException("Unknown parameter location: $location")
+                else -> throw IllegalStateException("Invalid request parameter location: $location")
             }
-        }
     }
 }
 
-object BodyParam : ParameterLocation()
-object QueryParam : ParameterLocation()
-object HeaderParam : ParameterLocation()
-object PathParam : ParameterLocation()
+object QueryParam : RequestParameterLocation()
+object HeaderParam : RequestParameterLocation()
+object PathParam : RequestParameterLocation()
