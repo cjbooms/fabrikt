@@ -26,6 +26,7 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
+import java.net.URI
 
 class SpringServiceInterfaceGenerator(
     private val packages: Packages,
@@ -50,7 +51,7 @@ class SpringServiceInterfaceGenerator(
         path.operations
             .map { (verb, operation) ->
                 toMethod(
-                    packages.base,
+                    packages,
                     verb,
                     operation,
                     path,
@@ -77,7 +78,7 @@ class SpringServiceInterfaceGenerator(
 
     companion object {
         fun toMethod(
-            basePackage: String,
+            packages: Packages,
             verb: String,
             operation: Operation,
             path: Path,
@@ -86,7 +87,7 @@ class SpringServiceInterfaceGenerator(
         ): MethodSignature? {
             val supportedOperation = OperationUtils.supportedOperationFrom(verb, operation, path, api)
 
-            return toMethod(basePackage, operation, models, supportedOperation)
+            return toMethod(packages, operation, models, supportedOperation)
         }
 
         /**
@@ -94,7 +95,7 @@ class SpringServiceInterfaceGenerator(
          * build a service like interface representation
          */
         private fun toMethod(
-            basePackage: String,
+            packages: Packages,
             operation: Operation,
             models: Collection<ModelType>,
             supportedOperation: SupportedOperation?
@@ -105,9 +106,9 @@ class SpringServiceInterfaceGenerator(
                         if (OperationUtils.isResponseBodyPresent(operation)) responseType(operation)
                         else requestType(operation)
 
-                    val returnType =
+                    val objectResponseType =
                         if (type != null) {
-                            if (type.isSimpleType()) toModelType(basePackage, KotlinTypeInfo.from(type))
+                            if (type.isSimpleType()) toModelType(packages.base, KotlinTypeInfo.from(type))
                             else models.find { it.spec.name == type.safeName() }?.className
                                 ?: throw RuntimeException(
                                     "Could not find `${type.safeName()}` schema when trying to create Service Interface for `$supportedOp` " +
@@ -115,10 +116,13 @@ class SpringServiceInterfaceGenerator(
                                 )
                         } else Unit::class.asTypeName()
 
+                    val returnType = Pair::class.asTypeName()
+                        .parameterizedBy(URI::class.asTypeName(), objectResponseType.copy(nullable = true))
+
                     MethodSignature(
                         name = MethodNames.CREATE,
                         returnType = returnType,
-                        parameters = operation.toIncomingParameters(basePackage)
+                        parameters = operation.toIncomingParameters(packages.base)
                     )
                 }
                 SupportedOperation.READ, SupportedOperation.READ_SUBRESOURCE, SupportedOperation.READ_TOP_LEVEL_SUBRESOURCE, SupportedOperation.DEFAULT_GET -> {
@@ -127,7 +131,7 @@ class SpringServiceInterfaceGenerator(
                             MethodSignature(
                                 name = MethodNames.READ,
                                 returnType = models.first { it.spec.name == responseType.safeName() }.className,
-                                parameters = operation.toIncomingParameters(basePackage)
+                                parameters = operation.toIncomingParameters(packages.base)
                             )
                         }
                 }
@@ -140,7 +144,7 @@ class SpringServiceInterfaceGenerator(
                     MethodSignature(
                         name = MethodNames.UPDATE,
                         returnType = returnType,
-                        parameters = operation.toIncomingParameters(basePackage)
+                        parameters = operation.toIncomingParameters(packages.base)
                     )
                 }
                 SupportedOperation.QUERY, SupportedOperation.QUERY_SUBRESOURCE, SupportedOperation.QUERY_TOP_LEVEL_SUBRESOURCE -> {
@@ -148,8 +152,8 @@ class SpringServiceInterfaceGenerator(
                         ?.let { modelName ->
                             MethodSignature(
                                 name = MethodNames.QUERY,
-                                returnType = queryResultOrListType(modelName, basePackage),
-                                parameters = operation.toIncomingParameters(basePackage)
+                                returnType = queryResultOrListType(modelName, packages.base),
+                                parameters = operation.toIncomingParameters(packages.base)
                             )
                         }
                 }
@@ -157,14 +161,14 @@ class SpringServiceInterfaceGenerator(
                     MethodSignature(
                         name = MethodNames.ADD_SUBRESOURCE,
                         returnType = Unit::class.asTypeName(),
-                        parameters = operation.toIncomingParameters(basePackage)
+                        parameters = operation.toIncomingParameters(packages.base)
                     )
                 }
                 SupportedOperation.REMOVE_TOP_LEVEL_SUBRESOURCE, SupportedOperation.DEFAULT_DELETE -> {
                     MethodSignature(
                         name = MethodNames.REMOVE_SUBRESOURCE,
                         returnType = Unit::class.asTypeName(),
-                        parameters = operation.toIncomingParameters(basePackage)
+                        parameters = operation.toIncomingParameters(packages.base)
                     )
                 }
             }

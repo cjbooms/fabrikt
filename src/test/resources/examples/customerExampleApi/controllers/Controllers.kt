@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 @Controller
 @Validated
@@ -126,9 +125,8 @@ class DeleteRequestsController(
         xFlowId: String?
     ): ResponseEntity<Unit> {
         val svcResp = service.create(deleteRequest, xFlowId)
-        val uri =
-            ServletUriComponentsBuilder.fromCurrentRequest().path("/${svcResp.id}").build().toUri()
-        return ResponseEntity.created(uri).build()
+        val response = ResponseEntity.created(svcResp.first)
+        return response.build()
     }
 
     /**
@@ -241,7 +239,7 @@ class DataAccessRequestsController(
      */
     @RequestMapping(
         value = ["/data-access-requests"],
-        produces = [],
+        produces = ["application/json"],
         method = [RequestMethod.POST],
         consumes = ["application/json"]
     )
@@ -254,11 +252,11 @@ class DataAccessRequestsController(
             required = false
         )
         xFlowId: String?
-    ): ResponseEntity<Unit> {
+    ): ResponseEntity<DataAccessRequest> {
         val svcResp = service.create(dataAccessRequest, xFlowId)
-        val uri =
-            ServletUriComponentsBuilder.fromCurrentRequest().path("/${svcResp.id}").build().toUri()
-        return ResponseEntity.created(uri).build()
+        val response = ResponseEntity.created(svcResp.first)
+        if (svcResp.second != null) response.body(svcResp.second)
+        return response.build()
     }
 
     /**

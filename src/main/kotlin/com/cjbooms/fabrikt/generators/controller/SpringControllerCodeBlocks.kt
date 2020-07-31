@@ -10,20 +10,23 @@ fun SimpleCodeBlock.toCodeBlock() = CodeBlock.of(body, *args.toTypedArray())
 
 object ControllerCodeBlocks {
 
-    fun postWithResponsebody(serviceFuncName: String, parameters: List<IncomingParameter>): SimpleCodeBlock {
-        return SimpleCodeBlock(
+    fun postWithResponsebody(serviceFuncName: String, parameters: List<IncomingParameter>): SimpleCodeBlock =
+        SimpleCodeBlock(
             """return ResponseEntity
                 .ok(${serviceCallLine(serviceFuncName, parameters)})
             """
         )
-    }
 
-    fun postWithLocationResponse(serviceFuncName: String, parameters: List<IncomingParameter>): SimpleCodeBlock {
+    fun postWithLocationResponse(serviceFuncName: String, parameters: List<IncomingParameter>, withBody: Boolean): SimpleCodeBlock {
+        val conditionalObjectResponse = "if (svcResp.second != null) response.body(svcResp.second)"
         return SimpleCodeBlock(
             """val svcResp = ${serviceCallLine(serviceFuncName, parameters)}
-            val uri = %T.fromCurrentRequest().path("/${"$"}{svcResp.id}").build().toUri()
-            return ResponseEntity.created(uri).build()
-            """, listOf(SpringImports.URI_BUILDER)
+                val response = %T.created(svcResp.first) ${if (withBody) "\n$conditionalObjectResponse" else "" }
+                return response.build()
+               """.trimIndent(),
+            listOf(
+                SpringImports.RESPONSE_ENTITY
+            )
         )
     }
 

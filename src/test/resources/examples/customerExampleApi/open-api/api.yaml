@@ -156,6 +156,10 @@ paths:
           headers:
             Location:
               $ref: '#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataAccessRequest'
           description: DataAccessRequest successfully created
         429:
           description: User requests are being throttled

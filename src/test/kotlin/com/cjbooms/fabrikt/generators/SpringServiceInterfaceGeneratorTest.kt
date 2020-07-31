@@ -227,7 +227,7 @@ class SpringServiceInterfaceGeneratorTest {
 
         val modelsPackage = modelsPackage(basePackage)
         assertThat(list.returnType.toString()).isEqualTo("kotlin.collections.List<$modelsPackage.Contributor>")
-        assertThat(create.returnType.toString()).isEqualTo("$modelsPackage.Contributor")
+        assertThat(create.returnType.toString()).isEqualTo("kotlin.Pair<java.net.URI, $modelsPackage.Contributor?>")
         assertThat(get.returnType.toString()).isEqualTo("$modelsPackage.Contributor")
         assertThat(update.returnType.toString()).isEqualTo("$modelsPackage.Contributor")
 

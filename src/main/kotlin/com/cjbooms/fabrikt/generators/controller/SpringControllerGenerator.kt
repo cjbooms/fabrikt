@@ -64,7 +64,7 @@ class SpringControllerGenerator(
             path.operations
                 .filter { it.key.toUpperCase() != "HEAD" }
                 .map { op ->
-                    val serviceFunction = SpringServiceInterfaceGenerator.toMethod(packages.base, op.key, op.value, path, models, api)
+                    val serviceFunction = SpringServiceInterfaceGenerator.toMethod(packages, op.key, op.value, path, models, api)
                             ?.let { method ->
                                 service.spec.funSpecs.firstOrNull { it.name == method.name }
                             }
@@ -119,10 +119,11 @@ class SpringControllerGenerator(
         val functionCode: SimpleCodeBlock = if (happyResponseCodes.size == 1 && serviceFunc != null) {
             val upperCaseVerb = verb.toUpperCase()
             val happyResponseCode = happyResponseCodes.first()
+            val isResponseBodyPresent = (op.responses["$happyResponseCode"]?.contentMediaTypes?.isNotEmpty()) ?: false
             when (upperCaseVerb) {
                 "POST" -> when (happyResponseCode) {
                     200 -> postWithResponsebody(serviceFunc.name, parameters)
-                    201 -> postWithLocationResponse(serviceFunc.name, parameters)
+                    201 -> postWithLocationResponse(serviceFunc.name, parameters, isResponseBodyPresent)
                     else -> genericBody(serviceFunc.name, parameters, happyResponseCode)
                 }
                 "GET" -> getSingleResource(serviceFunc.name, parameters)
