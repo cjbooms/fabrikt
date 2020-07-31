@@ -3,6 +3,8 @@
 This library generates Kotlin code from OpenApi3 specifications to ensure your code matches your API contract. The library currently has support for:
 
 * **Jackson annotated data classes**
+* **Spring MVC annotated controllers**
+* **Service interfaces**
 * **OkHttp Client** - with the option for a resilience4j fault-tolerance wrapper
 
 ## Configuration
@@ -21,6 +23,7 @@ This section documents the available CLI parameters for controlling what gets ge
  |   `--targets`          | Targets are the parts of the application that you want to be generated.
  |                        | CHOOSE ANY OF:
  |                        |   `HTTP_MODELS` - Jackson annotated data classes to represent the schema objects defined in the input.
+ |                        |   `CONTROLLERS` - Spring annotated HTTP controllers for each of the endpoints defined in the input.
  |                        |   `CLIENT` - Simple http rest client.
 
 ## Examples

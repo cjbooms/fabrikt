@@ -1,0 +1,140 @@
+openapi: 3.0.0
+info:
+  x-api-id: 6c65f9b1-20ca-42dd-953e-ebbdf25e024e
+  x-audience: company-internal
+  description: Some description
+  version: 1.0.0
+  title: The API title
+externalDocs:
+  description: The docs are great.
+  url: http://find.them.here
+components:
+  schemas:
+    SomeProduct:
+      type: object
+      x-fabric-resource-definition: true
+      description: "Generic representation of Some Product information."
+      required:
+        - product_type
+        - product_id
+      x-fabric-query-params:
+        - product_ids
+      properties:
+        product_id:
+          type: string
+          description: The unique identifier for a single product data.
+        product_type:
+          type: string
+          description: "product data for which type product. It will always be present in the response."
+          x-extensible-enum:
+            - "TypeA"
+            - "TypeB"
+            - "TypeC"
+      discriminator:
+        propertyName: product_type
+    TypeA:
+      allOf:
+        - $ref: '#/components/schemas/SomeProduct'
+        - type: object
+          description: "Represents the Some Product type A information"
+          properties:
+            shared_attribute:
+              $ref: "#/components/schemas/SharedAttribute"
+    TypeB:
+      allOf:
+        - $ref: '#/components/schemas/SomeProduct'
+        - type: object
+          description: "Represents the Some Product type B information"
+          properties:
+            shared_attribute:
+              $ref: "#/components/schemas/SharedAttribute"
+            type_b_attribute:
+              description: Various product flags
+              type: array
+              items:
+                type: string
+                x-extensible-enum:
+                  - "FLAG A"
+                  - "FLAG B"
+            product_customs_numbers:
+              type: array
+              items:
+                $ref: '#/components/schemas/CustomsNumber'
+    TypeC:
+      allOf:
+        - $ref: '#/components/schemas/SomeProduct'
+        - type: object
+          description: "Represents the Some Product type C information"
+          properties:
+            shared_attribute:
+              $ref: "#/components/schemas/SharedAttribute"
+            attribute_a:
+              $ref: "#/components/schemas/AttributeA"
+            attribute_a:
+              $ref: "#/components/schemas/AttributeB"
+            attribute_a:
+              $ref: "#/components/schemas/AttributeC"
+            product_flags:
+              description: Various product flags
+              type: array
+              items:
+                type: string
+                x-extensible-enum:
+                  - "NOTIFICATION_REQUIRED"
+                  - "BLOCKED"
+                  - "LOCKED"
+                  - "RECEIVE"
+                  - "SORTABLE"
+            logistics_simple_preferential_articles:
+              type: array
+              items:
+                $ref: '#/components/schemas/OriginProduct'
+    CustomsNumber:
+      type: object
+      required:
+        - country
+        - number
+      properties:
+        country:
+          type: string
+          description: 2 letter country code
+          format: ISO Alpha-2
+          example: IE
+        number:
+          type: string
+          description: Customs tariff number of the country (also know as Statistical article number)
+          example: "11111111"
+        description:
+          type: string
+          description: Customs tariff number description
+          example: "Eine T-Shirt"
+    OriginProduct:
+      type: object
+      required:
+        - country
+      properties:
+        country:
+          type: string
+          description: 2 letter country code
+          format: ISO Alpha-2
+          example: IE
+    SharedAttribute:
+      type: string
+      description: 2 letter country code
+      format: ISO Alpha-2
+      example: IE
+    AttributeA:
+      type: number
+      format: decimal
+      description: attribute a for product
+      example: 100
+    AttributeB:
+      type: number
+      format: decimal
+      description: attribute b for product
+      example: 400
+    AttributeC:
+      type: number
+      format: decimal
+      description: attribute c for product
+      example: 200

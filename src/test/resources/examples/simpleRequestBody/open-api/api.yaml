@@ -1,0 +1,35 @@
+openapi: "3.0.0"
+info:
+  title: "API Example"
+  version: "1.0"
+servers:
+  - url: https://example.docs.cjbooms.com/api
+    description: API service url
+paths:
+  /upload:
+    post:
+      summary: Create a new Contributor
+      tags:
+        - contributor
+      requestBody:
+        $ref: '#/components/requestBodies/TransformationRequestBody'
+      responses:
+        200:
+          description: Contributor successfully created
+          content:
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/GatewayCRD'
+components:
+  requestBodies:
+    TransformationRequestBody:
+      required: true
+      content:
+        application/x-yaml:
+          schema:
+            $ref: '#/components/schemas/OASDocument'
+  schemas:
+    OASDocument:
+      type: string
+    GatewayCRD:
+      type: string

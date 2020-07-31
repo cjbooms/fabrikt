@@ -1,4 +1,4 @@
-package com.cjbooms.fabrikt.generators
+package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages

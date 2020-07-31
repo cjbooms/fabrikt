@@ -1,13 +1,21 @@
 package com.cjbooms.fabrikt.cli
 
 import com.cjbooms.fabrikt.cli.CodeGenerationType.CLIENT
+import com.cjbooms.fabrikt.cli.CodeGenerationType.CONTROLLERS
 import com.cjbooms.fabrikt.cli.CodeGenerationType.HTTP_MODELS
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.JacksonModelGenerator
-import com.cjbooms.fabrikt.generators.OkHttpClientGenerator
+import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
+import com.cjbooms.fabrikt.generators.controller.SpringControllerGenerator
+import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
+import com.cjbooms.fabrikt.generators.service.SpringServiceInterfaceGenerator
+import com.cjbooms.fabrikt.model.Clients
+import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.KotlinSourceSet
+import com.cjbooms.fabrikt.model.Models
+import com.cjbooms.fabrikt.model.Services
 import com.cjbooms.fabrikt.model.SourceApi
+import com.squareup.kotlinpoet.FileSpec
 
 class CodeGenerator(
     private val packages: Packages,
@@ -21,17 +29,34 @@ class CodeGenerator(
     private fun generateCode(generationType: CodeGenerationType): Collection<GeneratedFile> =
         when (generationType) {
             CLIENT -> generateClient()
+            CONTROLLERS -> generateControllers()
             HTTP_MODELS -> generateModels()
         }
 
-    private fun generateModels(): Collection<GeneratedFile> =
-            setOf(KotlinSourceSet(JacksonModelGenerator(packages.base, sourceApi).generate().files))
+    private fun generateModels(): Collection<GeneratedFile> = sourceSet(models().files)
+
+    private fun generateServiceInterfaces(): Collection<GeneratedFile> =
+        sourceSet(services().files).plus(sourceSet(models().files))
+
+    private fun generateControllers(): Collection<GeneratedFile> =
+        sourceSet(controllers().files).plus(generateServiceInterfaces())
 
     private fun generateClient(): Collection<GeneratedFile> {
-        val clientGenerator = OkHttpClientGenerator(packages, sourceApi)
-        val models = generateModels()
-        val client = clientGenerator.generate(codeGenOptions).files
-        val lib = clientGenerator.generateLibrary(codeGenOptions)
-        return setOf(KotlinSourceSet(client)).plus(lib).plus(models)
+        val lib = OkHttpClientGenerator(packages, sourceApi).generateLibrary(codeGenOptions)
+        return sourceSet(client().files).plus(lib).plus(sourceSet(models().files))
     }
+
+    private fun sourceSet(fileSpec: Collection<FileSpec>) = setOf(KotlinSourceSet(fileSpec))
+
+    private fun models(): Models =
+        JacksonModelGenerator(packages, sourceApi).generate()
+
+    private fun services(): Services =
+        SpringServiceInterfaceGenerator(packages, sourceApi, models().models).generate()
+
+    private fun controllers(): Controllers =
+        SpringControllerGenerator(packages, sourceApi, services().services, models().models).generate()
+
+    private fun client(): Clients =
+        OkHttpClientGenerator(packages, sourceApi).generate(codeGenOptions)
 }

@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.generators.ValidationAnnotations.fieldValid
+import com.cjbooms.fabrikt.generators.model.JacksonAnnotations
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PropertyInfo
 import com.squareup.kotlinpoet.ClassName

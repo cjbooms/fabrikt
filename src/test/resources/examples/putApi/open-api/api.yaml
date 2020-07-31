@@ -1,0 +1,54 @@
+openapi: 3.0.0
+paths:
+  /contributors/{id}:
+    put:
+      summary: "Update an existing Contributor"
+      tags:
+        - "contributor"
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        $ref: "#/components/requestBodies/ContributorBody"
+      responses:
+        204:
+          description: "Contributor successfully updated"
+
+components:
+  requestBodies:
+    ContributorBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Contributor"
+  schemas:
+    Contributor:
+      type: object
+      x-fabric-resource-definition: true
+      required:
+        - username
+      properties:
+        username:
+          type: string
+        name:
+          type: string
+  parameters:
+    IdPathParam:
+      name: "id"
+      description: "The unique id for entity"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+    IfMatch:
+      name: "If-Match"
+      description: "The RFC7232 If-Match header field in a request requires the server\
+            \ to only operate on the resource that matches at least one of the provided\
+            \ entity-tags. This allows clients express a precondition that prevent the\
+            \ method from being applied if there have been any changes to the resource.\n"
+      in: "header"
+      schema:
+        type: "string"
+      required: true
+      example: "7da7a728-f910-11e6-942a-68f728c1ba70"
