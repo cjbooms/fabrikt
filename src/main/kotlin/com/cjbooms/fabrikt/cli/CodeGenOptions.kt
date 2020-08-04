@@ -38,6 +38,12 @@ enum class ClientCodeGenOptionType(private val description: String) {
     override fun toString() = "`${super.toString()}` - $description"
 }
 
+enum class ModelCodeGenOptionType(val description: String) {
+    JAVA_SERIALIZATION("This option adds Java Serializable interface to the generated models");
+
+    override fun toString() = "`${super.toString()}` - $description"
+}
+
 data class CodeGenOptions(
     val clientOptions: Set<ClientCodeGenOptionType> = emptySet()
 )

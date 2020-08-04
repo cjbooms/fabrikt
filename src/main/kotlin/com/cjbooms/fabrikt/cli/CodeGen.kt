@@ -24,6 +24,7 @@ object CodeGen {
             codeGenArgs.outputDirectory,
             codeGenArgs.targets,
             codeGenArgs.apiFragments.map { it.toFile().readText() },
+            codeGenArgs.modelOptions,
             codeGenArgs.clientOptions
         )
     }
@@ -34,6 +35,7 @@ object CodeGen {
         outputDir: Path,
         codeGenTypes: Set<CodeGenerationType>,
         apiFragments: List<String> = emptyList(),
+        modelOptions: Set<ModelCodeGenOptionType>,
         clientOptions: Set<ClientCodeGenOptionType>
     ) {
         val suppliedApi = pathToApi.toFile().readText()
@@ -43,7 +45,7 @@ object CodeGen {
 
         val packages = Packages(basePackage)
         val sourceApi = SourceApi.create(suppliedApi, apiFragments, baseDir)
-        val generator = CodeGenerator(packages, sourceApi, codeGenTypes, clientOptions)
+        val generator = CodeGenerator(packages, sourceApi, codeGenTypes, modelOptions, clientOptions)
 
         generator.generate().forEach { it.writeFileTo(outputDir.toFile()) }
     }

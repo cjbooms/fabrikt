@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators.model
 
+import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.ClassType
 import com.cjbooms.fabrikt.generators.PropertyUtils.addToClass
@@ -37,8 +38,13 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
+import java.io.Serializable
 
-class JacksonModelGenerator(private val packages: Packages, private val sourceApi: SourceApi) {
+class JacksonModelGenerator(
+    private val packages: Packages,
+    private val sourceApi: SourceApi,
+    private val options: Set<ModelCodeGenOptionType> = emptySet()
+) {
     companion object {
         fun toModelType(basePackage: String, typeInfo: KotlinTypeInfo, isRequired: Boolean = true): TypeName {
             val className =
@@ -215,7 +221,8 @@ class JacksonModelGenerator(private val packages: Packages, private val sourceAp
                         modelName
                     )
                 )
-                .addModifiers(KModifier.DATA),
+                .addModifiers(KModifier.DATA)
+                .addSerializableInterface(),
             ClassType.VANILLA_MODEL
         )
 
@@ -263,6 +270,7 @@ class JacksonModelGenerator(private val packages: Packages, private val sourceAp
                     )
                 )
                 .addModifiers(KModifier.DATA)
+                .addSerializableInterface()
                 .superclass(
                     toModelType(
                         packages.base,
@@ -292,4 +300,15 @@ class JacksonModelGenerator(private val packages: Packages, private val sourceAp
         }
         return classBuilder.primaryConstructor(constructorBuilder.build()).build()
     }
+
+    private fun TypeSpec.Builder.addSerializableInterface(): TypeSpec.Builder =
+        ifJavaSerializableIsEnabled(this) {
+            it.addSuperinterface(Serializable::class)
+        }
+
+    private fun ifJavaSerializableIsEnabled(builder: TypeSpec.Builder, block: (TypeSpec.Builder) -> TypeSpec.Builder): TypeSpec.Builder =
+        if (options.any { it == ModelCodeGenOptionType.JAVA_SERIALIZATION })
+            block(builder)
+        else
+            builder
 }
