@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Publish to the Maven Central Repository
-        run: ./gradlew clean -PsigningKey=${{ secrets.GPG_SIGNING_KEY }} -PsigningPassword=${{ secrets.GPG_SIGNING_PASSWORD }} publish
+        run: ./gradlew clean -PsigningKey='${{ secrets.GPG_SIGNING_KEY }}' -PsigningPassword='${{ secrets.GPG_SIGNING_PASSWORD }}' publish
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
