@@ -19,6 +19,9 @@ This section documents the available CLI parameters for controlling what gets ge
  |   `--http-client-opts` | Select the options for the http client code that you want to be generated.
  |                        | CHOOSE ANY OF:
  |                        |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:1.2.0"
+ |   `--http-model-opts`  | Select the options for the http models that you want to be generated.
+ |                        | CHOOSE ANY OF:
+ |                        |   `JAVA_SERIALIZATION` - This option adds Java Serializable interface to the generated models
  |   `--output-directory` | Allows the generation dir to be overridden. Defaults to current dir
  |   `--targets`          | Targets are the parts of the application that you want to be generated.
  |                        | CHOOSE ANY OF:

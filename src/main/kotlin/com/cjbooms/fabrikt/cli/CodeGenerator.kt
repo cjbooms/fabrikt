@@ -21,6 +21,7 @@ class CodeGenerator(
     private val packages: Packages,
     private val sourceApi: SourceApi,
     private val generationTypes: Set<CodeGenerationType>,
+    private val modelOptions: Set<ModelCodeGenOptionType>,
     private val codeGenOptions: Set<ClientCodeGenOptionType>
 ) {
 
@@ -49,7 +50,7 @@ class CodeGenerator(
     private fun sourceSet(fileSpec: Collection<FileSpec>) = setOf(KotlinSourceSet(fileSpec))
 
     private fun models(): Models =
-        JacksonModelGenerator(packages, sourceApi).generate()
+        JacksonModelGenerator(packages, sourceApi, modelOptions).generate()
 
     private fun services(): Services =
         SpringServiceInterfaceGenerator(packages, sourceApi, models().models).generate()

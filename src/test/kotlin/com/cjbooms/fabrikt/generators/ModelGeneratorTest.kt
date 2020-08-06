@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.Models
@@ -79,6 +80,19 @@ class ModelGeneratorTest {
         ).generate()
 
         assertThat(Linter.lintString(models.files.first().toString())).isEqualTo(expectedModels)
+    }
+
+    @Test
+    fun `serializable models are generated from a full API definition when the java-serialized option is set`() {
+        val basePackage = "examples.javaSerializableModels"
+        val spec = javaClass.getResource("/examples/javaSerializableModels/open-api/api.yaml").readText()
+        val expectedModels = javaClass.getResource("/examples/javaSerializableModels/models/Models.kt").readText()
+
+        val models = JacksonModelGenerator(Packages(basePackage), SourceApi(spec), setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION))
+            .generate()
+            .toSingleFile()
+
+        assertThat(models).isEqualTo(expectedModels)
     }
 
     private fun Models.toSingleFile(): String {

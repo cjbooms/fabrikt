@@ -77,6 +77,13 @@ class CodeGenArgs {
     var targets: Set<CodeGenerationType> = emptySet()
 
     @Parameter(
+        names = ["--http-model-opts"],
+        description = "Select the options for the http models that you want to be generated.",
+        converter = ModelCodeGenOptionConverter::class
+    )
+    var modelOptions: Set<ModelCodeGenOptionType> = emptySet()
+
+    @Parameter(
         names = ["--http-client-opts"],
         description = "Select the options for the http client code that you want to be generated.",
         converter = ClientCodeGenOptionConverter::class
@@ -87,6 +94,10 @@ class CodeGenArgs {
 class CodeGenerationTypesConverter : IStringConverter<CodeGenerationType> {
     override fun convert(value: String): CodeGenerationType =
         convertToEnumValue(value)
+}
+
+class ModelCodeGenOptionConverter : IStringConverter<ModelCodeGenOptionType> {
+    override fun convert(value: String): ModelCodeGenOptionType = convertToEnumValue(value)
 }
 
 class ClientCodeGenOptionConverter : IStringConverter<ClientCodeGenOptionType> {
