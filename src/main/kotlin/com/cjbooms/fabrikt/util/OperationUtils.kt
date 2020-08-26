@@ -78,14 +78,12 @@ object OperationUtils {
             verb
         ) && operation.isListResponseType()
 
-    fun Operation.isListResponseType(): Boolean = maybeListResponseType() != null
-
-    fun Operation.maybeListResponseType(): String? = responses
+    fun Operation.isListResponseType(): Boolean = responses
         .filter { it.key != "default" }
         .flatMap { resp -> resp.value.contentMediaTypes.map { it.value.schema.properties["items"]?.itemsSchema?.safeName() } }
         .asSequence()
         .filterNotNull()
-        .firstOrNull()
+        .any()
 
     private fun isCreate(verb: String, path: Path): Boolean =
         isTopLevelResource(path) && !path.isSingleResource() && isPost(
