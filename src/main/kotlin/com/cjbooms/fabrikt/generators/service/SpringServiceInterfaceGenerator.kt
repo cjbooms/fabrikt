@@ -15,7 +15,6 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.OperationUtils
-import com.cjbooms.fabrikt.util.OperationUtils.maybeListResponseType
 import com.cjbooms.fabrikt.util.SupportedOperation
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Path
@@ -148,11 +147,11 @@ class SpringServiceInterfaceGenerator(
                     )
                 }
                 SupportedOperation.QUERY, SupportedOperation.QUERY_SUBRESOURCE, SupportedOperation.QUERY_TOP_LEVEL_SUBRESOURCE -> {
-                    operation.maybeListResponseType()
-                        ?.let { modelName ->
+                    responseType(operation)
+                        ?.let { responseType ->
                             MethodSignature(
                                 name = MethodNames.QUERY,
-                                returnType = queryResultOrListType(modelName, packages.base),
+                                returnType = models.first { it.spec.name == responseType.safeName() }.className,
                                 parameters = operation.toIncomingParameters(packages.base)
                             )
                         }

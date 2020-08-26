@@ -85,7 +85,7 @@ class ModelGeneratorTest {
     @Test
     fun `serializable models are generated from a full API definition when the java-serialized option is set`() {
         val basePackage = "examples.javaSerializableModels"
-        val spec = javaClass.getResource("/examples/javaSerializableModels/open-api/api.yaml").readText()
+        val spec = javaClass.getResource("/examples/javaSerializableModels/api.yaml").readText()
         val expectedModels = javaClass.getResource("/examples/javaSerializableModels/models/Models.kt").readText()
 
         val models = JacksonModelGenerator(Packages(basePackage), SourceApi(spec), setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION))

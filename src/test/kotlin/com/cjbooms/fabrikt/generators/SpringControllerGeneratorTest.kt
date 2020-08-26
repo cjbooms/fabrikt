@@ -31,7 +31,7 @@ class SpringControllerGeneratorTest {
     )
 
     private fun setupGithubApiTestEnv() {
-        val api = SourceApi(javaClass.getResource("/examples/githubApi/open-api/api.yaml").readText())
+        val api = SourceApi(javaClass.getResource("/examples/githubApi/api.yaml").readText())
         val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
         val services = SpringServiceInterfaceGenerator(Packages(basePackage), api, models).generate().services
         generated = SpringControllerGenerator(Packages(basePackage), api, services, models).generate().files
@@ -117,7 +117,7 @@ class SpringControllerGeneratorTest {
 
     @Test
     fun `ensure that subresource specific controllers are created`() {
-        val api = SourceApi(javaClass.getResource("/examples/githubApi/open-api/api.yaml").readText())
+        val api = SourceApi(javaClass.getResource("/examples/githubApi/api.yaml").readText())
         val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
         val services = SpringServiceInterfaceGenerator(Packages(basePackage), api, models).generate().services
         val controllers = SpringControllerGenerator(Packages(basePackage), api, services, models).generate()
@@ -159,7 +159,7 @@ class SpringControllerGeneratorTest {
     @MethodSource("testCases")
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         val basePackage = "examples.$testCaseName"
-        val api = SourceApi(javaClass.getResource("/examples/$testCaseName/open-api/api.yaml").readText())
+        val api = SourceApi(javaClass.getResource("/examples/$testCaseName/api.yaml").readText())
         val expectedControllers = javaClass.getResource("/examples/$testCaseName/controllers/Controllers.kt").readText()
 
         val models = JacksonModelGenerator(Packages(basePackage), api).generate().models

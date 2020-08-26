@@ -21,7 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SpringServiceInterfaceGeneratorTest {
 
-    val api = SourceApi(javaClass.getResource("/examples/githubApi/open-api/api.yaml").readText())
+    val api = SourceApi(javaClass.getResource("/examples/githubApi/api.yaml").readText())
 
     private fun testCases(): Stream<String> = Stream.of(
         "putApi",
@@ -70,7 +70,7 @@ class SpringServiceInterfaceGeneratorTest {
 
     @Test
     fun `test service operations map correctly`() {
-        val apiSeed = SourceApi(javaClass.getResource("/examples/githubApi/open-api/api.yaml").readText())
+        val apiSeed = SourceApi(javaClass.getResource("/examples/githubApi/api.yaml").readText())
 
         assertThat(supportedOperationFrom("get", "/contributors/{id}", apiSeed))
             .isEqualTo(SupportedOperation.READ)
@@ -226,7 +226,7 @@ class SpringServiceInterfaceGeneratorTest {
         val get = methods.first { it.name == "read" }
 
         val modelsPackage = modelsPackage(basePackage)
-        assertThat(list.returnType.toString()).isEqualTo("kotlin.collections.List<$modelsPackage.Contributor>")
+        assertThat(list.returnType.toString()).isEqualTo("$modelsPackage.ContributorQueryResult")
         assertThat(create.returnType.toString()).isEqualTo("kotlin.Pair<java.net.URI, $modelsPackage.Contributor?>")
         assertThat(get.returnType.toString()).isEqualTo("$modelsPackage.Contributor")
         assertThat(update.returnType.toString()).isEqualTo("$modelsPackage.Contributor")
@@ -241,7 +241,7 @@ class SpringServiceInterfaceGeneratorTest {
     @MethodSource("testCases")
     fun `correct services are generated for different OpenApi Specifications`(testCaseName: String) {
         val basePackage = "examples.${testCaseName.decapitalize()}"
-        val api = SourceApi(javaClass.getResource("/examples/$testCaseName/open-api/api.yaml").readText())
+        val api = SourceApi(javaClass.getResource("/examples/$testCaseName/api.yaml").readText())
         val expectedServices = javaClass.getResource("/examples/$testCaseName/service/Services.kt").readText()
         val jackson = JacksonModelGenerator(Packages(basePackage), api).generate()
 

@@ -2,12 +2,13 @@ package examples.customerExampleApi.service
 
 import examples.customerExampleApi.models.Customer
 import examples.customerExampleApi.models.DataAccessRequest
+import examples.customerExampleApi.models.DataAccessRequestQueryResult
 import examples.customerExampleApi.models.DeleteRequest
+import examples.customerExampleApi.models.DeleteRequestQueryResult
 import java.net.URI
 import kotlin.Int
 import kotlin.Pair
 import kotlin.String
-import kotlin.collections.List
 
 interface CustomersService {
     fun read(customerNumber: String, xFlowId: String?): Customer
@@ -19,7 +20,7 @@ interface DeleteRequestsService {
         xFlowId: String?,
         customerNumber: String?,
         cursor: String?
-    ): List<DeleteRequest>
+    ): DeleteRequestQueryResult
 
     fun create(deleteRequest: DeleteRequest, xFlowId: String?): Pair<URI, DeleteRequest?>
 
@@ -38,7 +39,7 @@ interface DataAccessRequestsService {
         xFlowId: String?,
         customerNumber: String?,
         cursor: String?
-    ): List<DataAccessRequest>
+    ): DataAccessRequestQueryResult
 
     fun create(dataAccessRequest: DataAccessRequest, xFlowId: String?): Pair<URI, DataAccessRequest?>
 
