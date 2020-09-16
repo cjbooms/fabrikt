@@ -10,12 +10,19 @@ Generates Kotlin code from OpenApi3 specifications, ensuring code matches API co
 </dependency>
 ```
 
-The library currently has support for:
+## Features
+
+The library currently has support for generating:
 
 * **Jackson annotated data classes**
 * **Spring MVC annotated controllers**
 * **Service interfaces**
 * **OkHttp Client** - with the option for a resilience4j fault-tolerance wrapper
+
+## Examples
+
+The test directory forms a living documentation full of [code examples](src/test/resources/examples) generated from different OpenApi3 permutations. 
+
 
 ## Configuration
 
