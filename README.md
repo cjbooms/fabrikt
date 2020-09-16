@@ -1,6 +1,16 @@
 # Fabrikt - Fabricates Kotlin code from OpenApi3 specifications
 
-This library generates Kotlin code from OpenApi3 specifications to ensure your code matches your API contract. The library currently has support for:
+Generates Kotlin code from OpenApi3 specifications, ensuring code matches API contracts. This library was built at [Zalando Tech](https://opensource.zalando.com/) and is battle-tested in production there. It is particulary well suited to API's built according to Zalando's [REST API guidelines](https://opensource.zalando.com/restful-api-guidelines/). It is [available on Maven Central](https://search.maven.org/artifact/com.cjbooms/fabrikt) at the following coordinates:
+
+```
+<dependency>
+  <groupId>com.cjbooms</groupId>
+  <artifactId>fabrikt</artifactId>
+  <version>1.0.0.RC4</version>
+</dependency>
+```
+
+The library currently has support for:
 
 * **Jackson annotated data classes**
 * **Spring MVC annotated controllers**
