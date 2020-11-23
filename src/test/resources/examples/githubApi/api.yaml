@@ -11,6 +11,31 @@ externalDocs:
   url: http://find.them.here
 
 paths:
+  /internal/events:
+    post:
+      tags:
+        - events
+      summary: Generate change events for a list of entities
+      requestBody:
+        $ref: '#/components/requestBodies/BulkEventGenerationBody'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResults'
+        default:
+          description: >-
+            error occurred - see status code and problem object for more information.
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
+      security:
+        - oauth2:
+            - uid
+            - fabric-event-scheduler.read  
   /contributors:
     get:
       summary: Page through all the Contributor resources matching the query filters
@@ -797,6 +822,12 @@ components:
         type: integer
 
   requestBodies:
+    BulkEventGenerationBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BulkEntityDetails'    
     ContributorBody:
       required: true
       content:
@@ -822,6 +853,56 @@ components:
           schema:
             $ref: '#/components/schemas/PullRequest'
   schemas:
+    BulkEntityDetails:
+      type: object
+      additionalProperties: true
+      required:
+        - entities
+      properties:
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityDetails'
+
+    EntityDetails:
+      type: object
+      additionalProperties: true
+      description: |
+        Describes the SQL entity we are requesting events for.
+      required:
+        - id
+      properties:
+        id:
+          description: |
+            The value from the table:column which is being monitored by ferit.
+          type: string
+
+    EventResults:
+      type: object
+      additionalProperties: true
+      required:
+        - change_events
+      properties:
+        change_events:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Event'
+
+    Event:
+      type: object
+      additionalProperties: true
+      required:
+        - entity_id
+        - data
+      properties:
+        entity_id:
+          type: string
+          description: The id of the entity this event belongs to
+        data:
+          type: object
+          description: This unstructured event content must conform to the Nakadi Event Type's schema
+
     PaginationLink:
       type: string
       format: uri

@@ -29,5 +29,5 @@ class UploadController(
         @RequestBody @Valid
         oASDocument: String
     ): ResponseEntity<String> = ResponseEntity
-        .ok(service.create(oASDocument))
+        .ok(service.create(oASDocument).second!!)
 }

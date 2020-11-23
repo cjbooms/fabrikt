@@ -48,7 +48,8 @@ class ModelGeneratorTest {
         "arrayOfArrays",
         "defaultValues",
         "enumPolymorphicDiscriminator",
-        "externalReferences"
+        "externalReferences",
+        "githubApi"
     )
 
     @ParameterizedTest
