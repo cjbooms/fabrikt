@@ -27,7 +27,7 @@ class SpringControllerGeneratorTest {
     private fun testCases(): Stream<String> = Stream.of(
         "simpleRequestBody",
         "putApi",
-        "customerExampleApi"
+        "githubApi"
     )
 
     private fun setupGithubApiTestEnv() {
@@ -40,7 +40,7 @@ class SpringControllerGeneratorTest {
     @Test
     fun `should contain correct number of controller classes`() {
         setupGithubApiTestEnv()
-        assertThat(generated.size).isEqualTo(5)
+        assertThat(generated.size).isEqualTo(6)
     }
 
     @Test
@@ -48,6 +48,7 @@ class SpringControllerGeneratorTest {
         setupGithubApiTestEnv()
         assertThat(generated.map { it.name })
             .containsOnly(
+                "InternalEventsController",
                 "ContributorsController",
                 "OrganisationsController",
                 "OrganisationsContributorsController",
@@ -84,6 +85,7 @@ class SpringControllerGeneratorTest {
             generated.flatMap { it.members.flatMap { (it as TypeSpec).propertySpecs.map { it.type.toString() } } }
         val servicePackage = servicesPackage(basePackage)
         assertThat(controllerServices).containsOnly(
+            "$servicePackage.InternalEventsService",
             "$servicePackage.ContributorsService",
             "$servicePackage.OrganisationsService",
             "$servicePackage.OrganisationsContributorsService",
@@ -93,36 +95,13 @@ class SpringControllerGeneratorTest {
     }
 
     @Test
-    fun `ensure controllers have all functions`() {
-        setupGithubApiTestEnv()
-        val manyToMany = listOf("OrganisationsContributorsController")
-        val manyToOne = listOf(
-            "ContributorsController",
-            "OrganisationsController",
-            "RepositoriesController",
-            "RepositoriesPullRequestsController"
-        )
-
-        assertThat(generated.map { it.name }).containsExactlyInAnyOrderElementsOf(manyToMany.union(manyToOne))
-
-        generated.forEach { gen ->
-            if (manyToMany.contains(gen.name))
-                assertThat(gen.members.flatMap { mem -> (mem as TypeSpec).funSpecs.map { it.name } })
-                    .containsExactlyInAnyOrder("get", "deleteById", "getById", "putById")
-            else
-                assertThat(gen.members.flatMap { mem -> (mem as TypeSpec).funSpecs.map { it.name } })
-                    .containsExactlyInAnyOrder("get", "post", "getById", "putById")
-        }
-    }
-
-    @Test
     fun `ensure that subresource specific controllers are created`() {
         val api = SourceApi(javaClass.getResource("/examples/githubApi/api.yaml").readText())
         val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
         val services = SpringServiceInterfaceGenerator(Packages(basePackage), api, models).generate().services
         val controllers = SpringControllerGenerator(Packages(basePackage), api, services, models).generate()
 
-        assertThat(controllers.files).size().isEqualTo(5)
+        assertThat(controllers.files).size().isEqualTo(6)
         assertThat(controllers.files.map { it.name }).containsAll(
             listOf(
                 "ContributorsController",

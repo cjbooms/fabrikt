@@ -26,7 +26,7 @@ class SpringServiceInterfaceGeneratorTest {
     private fun testCases(): Stream<String> = Stream.of(
         "putApi",
         "simpleRequestBody",
-        "customerExampleApi"
+        "githubApi"
     )
 
     private val basePackage = "testdata"
@@ -39,6 +39,7 @@ class SpringServiceInterfaceGeneratorTest {
 
         assertThat(generated.map { it.name })
             .containsOnly(
+                "InternalEventsService",
                 "ContributorsService",
                 "OrganisationsService",
                 "OrganisationsContributorsService",
