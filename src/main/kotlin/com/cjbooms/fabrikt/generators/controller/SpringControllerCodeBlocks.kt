@@ -13,7 +13,7 @@ object ControllerCodeBlocks {
     fun postWithResponsebody(serviceFuncName: String, parameters: List<IncomingParameter>): SimpleCodeBlock =
         SimpleCodeBlock(
             """return ResponseEntity
-                .ok(${serviceCallLine(serviceFuncName, parameters)})
+                .ok(${serviceCallLine(serviceFuncName, parameters)}.second!!)
             """
         )
 
