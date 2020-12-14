@@ -24,8 +24,6 @@ class SpringServiceInterfaceGeneratorTest {
     val api = SourceApi(javaClass.getResource("/examples/githubApi/api.yaml").readText())
 
     private fun testCases(): Stream<String> = Stream.of(
-        "putApi",
-        "simpleRequestBody",
         "githubApi"
     )
 
@@ -249,16 +247,6 @@ class SpringServiceInterfaceGeneratorTest {
         val services = SpringServiceInterfaceGenerator(Packages(basePackage), api, jackson.models).generate()
 
         assertThat(services.toSingleFile()).isEqualTo(expectedServices)
-    }
-
-    @Test
-    fun `schema only code gen for Service Interfaces is not Empty`() {
-        val rawApiSeed = SourceApi(javaClass.getResource("/examples/schemaOnlyApi/api.yaml").readText())
-        val models = JacksonModelGenerator(Packages(basePackage), rawApiSeed).generate().models
-
-        val generated = SpringServiceInterfaceGenerator(Packages(basePackage), rawApiSeed, models).generate().files
-
-        assertThat(generated.isNotEmpty())
     }
 
     private fun Services.toSingleFile(): String {
