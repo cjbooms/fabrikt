@@ -18,7 +18,7 @@ class QuarkusReflectionModelGenerator(
     private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule().enable(SerializationFeature.INDENT_OUTPUT)
 
     fun generate(): ResourceFile? {
-        return if (options.any { it == ModelCodeGenOptionType.QUARKUS_REFLECTION_CONFIG }) {
+        return if (options.any { it == ModelCodeGenOptionType.QUARKUS_REFLECTION }) {
             val reflectionConfigs = models.models.map {
                 QuarkusReflectionModel(it.className.canonicalName)
             }

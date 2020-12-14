@@ -96,6 +96,19 @@ class ModelGeneratorTest {
         assertThat(models).isEqualTo(expectedModels)
     }
 
+    @Test
+    fun `quarkus reflection models are generated from a full API definition when the quarkus-reflection option is set`() {
+        val basePackage = "examples.quarkusReflectionModels"
+        val spec = javaClass.getResource("/examples/quarkusReflectionModels/api.yaml").readText()
+        val expectedModels = javaClass.getResource("/examples/quarkusReflectionModels/models/Models.kt").readText()
+
+        val models = JacksonModelGenerator(Packages(basePackage), SourceApi(spec), setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION))
+                .generate()
+                .toSingleFile()
+
+        assertThat(models).isEqualTo(expectedModels)
+    }
+
     private fun Models.toSingleFile(): String {
         val destPackage = if (models.isNotEmpty()) models.first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")

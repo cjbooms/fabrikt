@@ -28,28 +28,13 @@ class ResourceGeneratorTest {
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
         val expectedResource = javaClass.getResource("/examples/$testCaseName/resources/reflection-config.json").readText()
-        val options = setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION_CONFIG)
+        val options = setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION)
 
         val models = JacksonModelGenerator(Packages(basePackage), sourceApi, options).generate()
 
         val resources = QuarkusReflectionModelGenerator(models, options).generate()?.toSingleFile()
 
         assertThat(resources).isEqualTo(expectedResource)
-    }
-
-    @ParameterizedTest
-    @MethodSource("testCases")
-    fun `quarkus reflection resource is not generated if the option is not provided`(testCaseName: String) {
-        print("Testcase: $testCaseName")
-        val basePackage = "examples.$testCaseName"
-        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")
-        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
-
-        val models = JacksonModelGenerator(Packages(basePackage), sourceApi).generate()
-
-        val resources = QuarkusReflectionModelGenerator(models).generate()?.toSingleFile()
-
-        assertThat(resources).isNull()
     }
 
     private fun ResourceFile.toSingleFile(): String = String(inputStream.readAllBytes())

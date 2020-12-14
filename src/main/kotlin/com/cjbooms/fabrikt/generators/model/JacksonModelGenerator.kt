@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.generators.model
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.ClassType
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.PropertyUtils.addToClass
 import com.cjbooms.fabrikt.generators.TypeFactory.createList
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfMapsStringToStringAny
@@ -30,6 +31,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.kaizen.oasparser.model3.Discriminator
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
@@ -187,6 +189,7 @@ class JacksonModelGenerator(
                     .addParameter("value", String::class)
                     .build()
             )
+            .addQuarkusReflectionAnnotation()
         enum.entries.forEach {
             classBuilder.addEnumConstant(
                 it.toUpperCase(),
@@ -222,7 +225,8 @@ class JacksonModelGenerator(
                     )
                 )
                 .addModifiers(KModifier.DATA)
-                .addSerializableInterface(),
+                .addSerializableInterface()
+                .addQuarkusReflectionAnnotation(),
             ClassType.VANILLA_MODEL
         )
 
@@ -249,7 +253,7 @@ class JacksonModelGenerator(
                 )
             }
             .toMap()
-        classBuilder.addAnnotation(polymorphicSubTypes(subTypes))
+        classBuilder.addAnnotation(polymorphicSubTypes(subTypes)).addQuarkusReflectionAnnotation()
 
         return properties.addToClass(classBuilder,
             ClassType.SUPER_MODEL
@@ -271,6 +275,7 @@ class JacksonModelGenerator(
                 )
                 .addModifiers(KModifier.DATA)
                 .addSerializableInterface()
+                .addQuarkusReflectionAnnotation()
                 .superclass(
                     toModelType(
                         packages.base,
@@ -301,14 +306,15 @@ class JacksonModelGenerator(
         return classBuilder.primaryConstructor(constructorBuilder.build()).build()
     }
 
-    private fun TypeSpec.Builder.addSerializableInterface(): TypeSpec.Builder =
-        ifJavaSerializableIsEnabled(this) {
-            it.addSuperinterface(Serializable::class)
-        }
-
-    private fun ifJavaSerializableIsEnabled(builder: TypeSpec.Builder, block: (TypeSpec.Builder) -> TypeSpec.Builder): TypeSpec.Builder =
+    private fun TypeSpec.Builder.addSerializableInterface(): TypeSpec.Builder {
         if (options.any { it == ModelCodeGenOptionType.JAVA_SERIALIZATION })
-            block(builder)
-        else
-            builder
+            this.addSuperinterface(Serializable::class)
+        return this
+    }
+
+    private fun TypeSpec.Builder.addQuarkusReflectionAnnotation(): TypeSpec.Builder {
+        if (options.any { it == ModelCodeGenOptionType.QUARKUS_REFLECTION })
+            this.addAnnotation(AnnotationSpec.builder("RegisterForReflection".toClassName("io.quarkus.runtime.annotations")).build())
+        return this
+    }
 }

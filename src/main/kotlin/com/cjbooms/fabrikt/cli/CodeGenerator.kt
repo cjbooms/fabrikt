@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.cli
 import com.cjbooms.fabrikt.cli.CodeGenerationType.CLIENT
 import com.cjbooms.fabrikt.cli.CodeGenerationType.CONTROLLERS
 import com.cjbooms.fabrikt.cli.CodeGenerationType.HTTP_MODELS
+import com.cjbooms.fabrikt.cli.CodeGenerationType.QUARKUS_REFLECTION_CONFIG
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerGenerator
@@ -35,13 +36,10 @@ class CodeGenerator(
             CLIENT -> generateClient()
             CONTROLLERS -> generateControllers()
             HTTP_MODELS -> generateModels()
+            QUARKUS_REFLECTION_CONFIG -> generateQuarkusReflectionResource()
         }
 
-    private fun generateModels(): Collection<GeneratedFile> {
-        val models = models()
-        val resources = resources(models)
-        return sourceSet(models.files).plus(resourceSet(resources))
-    }
+    private fun generateModels(): Collection<GeneratedFile> = sourceSet(models().files)
 
     private fun generateServiceInterfaces(): Collection<GeneratedFile> =
         sourceSet(services().files).plus(sourceSet(models().files))
@@ -54,9 +52,11 @@ class CodeGenerator(
         return sourceSet(client().files).plus(lib).plus(sourceSet(models().files))
     }
 
+    private fun generateQuarkusReflectionResource(): Collection<GeneratedFile> = resourceSet(resources(models()))
+
     private fun sourceSet(fileSpec: Collection<FileSpec>) = setOf(KotlinSourceSet(fileSpec))
 
-    private fun resourceSet(fileSpec: Collection<ResourceFile>) = setOf(ResourceSourceSet(fileSpec))
+    private fun resourceSet(resFiles: Collection<ResourceFile>) = setOf(ResourceSourceSet(resFiles))
 
     private fun models(): Models =
         JacksonModelGenerator(packages, sourceApi, modelOptions).generate()

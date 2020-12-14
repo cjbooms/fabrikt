@@ -19,6 +19,12 @@ enum class CodeGenerationType(val description: String, val requires: Set<Interna
             InternalCodeGenGenType.MODELS,
             InternalCodeGenGenType.CLIENT
         )
+    ),
+    QUARKUS_REFLECTION_CONFIG(
+        "This options generates the reflection-config.json file for quarkus integration projects",
+        setOf(
+            InternalCodeGenGenType.QUARKUS_REFLECTION_RESOURCE
+        )
     );
 
     override fun toString() = "`${super.toString()}` - $description"
@@ -29,18 +35,19 @@ enum class InternalCodeGenGenType {
     MODELS,
     CONTROLLERS,
     SERVICE_INTERFACES,
-    CLIENT
+    CLIENT,
+    QUARKUS_REFLECTION_RESOURCE
 }
 
 enum class ClientCodeGenOptionType(private val description: String) {
-    RESILIENCE4J("Generates a fault tolerance service for the client using the following library \"io.github.resilience4j:resilience4j-all:1.2.0\"");
+    RESILIENCE4J("Generates a fault tolerance service for the client using the following library \"io.github.resilience4j:resilience4j-all:+\"");
 
     override fun toString() = "`${super.toString()}` - $description"
 }
 
 enum class ModelCodeGenOptionType(val description: String) {
     JAVA_SERIALIZATION("This option adds Java Serializable interface to the generated models"),
-    QUARKUS_REFLECTION_CONFIG("This options generates the reflection-config.json file for quarkus integration projects");
+    QUARKUS_REFLECTION("This option adds @RegisterForReflection to the generated models. Requires dependency \"'io.quarkus:quarkus-core:+\"");
 
     override fun toString() = "`${super.toString()}` - $description"
 }
