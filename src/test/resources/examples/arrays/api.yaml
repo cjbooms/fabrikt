@@ -1,0 +1,55 @@
+openapi: 3.0.0
+info:
+paths:
+components:
+  schemas:
+    ContainsArrayOfArrays:
+      type: object
+      properties:
+        array_of_arrays:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArrayOfSomething"
+
+    ArrayOfSomething:
+      type: array
+      items:
+        $ref: "#/components/schemas/Something"
+
+    Something:
+      type: object
+      required:
+        grams
+      properties:
+        some_value:
+          type: integer
+          example: 100
+          
+    ArraySimpleInLined:
+      type: object
+      required:
+        - quantities
+      properties:
+        quantities:
+          type: array
+          items:
+            type: integer
+            format: int64
+
+    ContainsArrayRef:
+      type: object
+      required:
+        - weight_on_mars
+      properties:
+        weight_on_mars:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArrayRef"
+    ArrayRef:
+      type: object
+      required:
+        grams
+      properties:
+        grams:
+          type: integer
+          example: 100

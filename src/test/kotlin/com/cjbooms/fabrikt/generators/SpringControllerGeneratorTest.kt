@@ -25,8 +25,6 @@ class SpringControllerGeneratorTest {
     private lateinit var generated: Collection<FileSpec>
 
     private fun testCases(): Stream<String> = Stream.of(
-        "simpleRequestBody",
-        "putApi",
         "githubApi"
     )
 
