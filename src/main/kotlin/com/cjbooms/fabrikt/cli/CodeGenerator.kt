@@ -7,12 +7,15 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
+import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
 import com.cjbooms.fabrikt.generators.service.SpringServiceInterfaceGenerator
 import com.cjbooms.fabrikt.model.Clients
 import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.KotlinSourceSet
 import com.cjbooms.fabrikt.model.Models
+import com.cjbooms.fabrikt.model.ResourceFile
+import com.cjbooms.fabrikt.model.ResourceSourceSet
 import com.cjbooms.fabrikt.model.Services
 import com.cjbooms.fabrikt.model.SourceApi
 import com.squareup.kotlinpoet.FileSpec
@@ -34,7 +37,11 @@ class CodeGenerator(
             HTTP_MODELS -> generateModels()
         }
 
-    private fun generateModels(): Collection<GeneratedFile> = sourceSet(models().files)
+    private fun generateModels(): Collection<GeneratedFile> {
+        val models = models()
+        val resources = resources(models)
+        return sourceSet(models.files).plus(resourceSet(resources))
+    }
 
     private fun generateServiceInterfaces(): Collection<GeneratedFile> =
         sourceSet(services().files).plus(sourceSet(models().files))
@@ -49,8 +56,13 @@ class CodeGenerator(
 
     private fun sourceSet(fileSpec: Collection<FileSpec>) = setOf(KotlinSourceSet(fileSpec))
 
+    private fun resourceSet(fileSpec: Collection<ResourceFile>) = setOf(ResourceSourceSet(fileSpec))
+
     private fun models(): Models =
         JacksonModelGenerator(packages, sourceApi, modelOptions).generate()
+
+    private fun resources(models: Models): List<ResourceFile> =
+        listOfNotNull(QuarkusReflectionModelGenerator(models, modelOptions).generate())
 
     private fun services(): Services =
         SpringServiceInterfaceGenerator(packages, sourceApi, models().models).generate()

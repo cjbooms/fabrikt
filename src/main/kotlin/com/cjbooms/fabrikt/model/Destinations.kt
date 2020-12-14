@@ -7,8 +7,8 @@ object Destinations {
     val PATH_ROOT: Path = Paths.get("")
 
     const val MAIN_KT_SOURCE = "src/main/kotlin/"
+    const val MAIN_RESOURCES = "src/main/resources"
     val MAIN_KT_SRC: Path = PATH_ROOT.resolve(MAIN_KT_SOURCE)
-    private const val MAIN_RESOURCES_STRING = "src/main/resources"
 
     fun servicesPackage(basePackage: String): String = "$basePackage.service"
     fun modelsPackage(basePackage: String): String = "$basePackage.models"

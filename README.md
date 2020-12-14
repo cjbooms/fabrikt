@@ -39,6 +39,7 @@ This section documents the available CLI parameters for controlling what gets ge
  |   `--http-model-opts`  | Select the options for the http models that you want to be generated.
  |                        | CHOOSE ANY OF:
  |                        |   `JAVA_SERIALIZATION` - This option adds Java Serializable interface to the generated models
+ |                        |   `QUARKUS_REFLECTION_CONFIG` - This options generates the reflection-config.json file for quarkus integration projects
  |   `--output-directory` | Allows the generation dir to be overridden. Defaults to current dir
  |   `--targets`          | Targets are the parts of the application that you want to be generated.
  |                        | CHOOSE ANY OF:
@@ -78,7 +79,7 @@ tasks {
         )
     }
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "11"
         dependsOn(generateCode)
     }
 }

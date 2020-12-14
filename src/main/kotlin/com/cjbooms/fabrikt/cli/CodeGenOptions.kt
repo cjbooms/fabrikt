@@ -39,7 +39,8 @@ enum class ClientCodeGenOptionType(private val description: String) {
 }
 
 enum class ModelCodeGenOptionType(val description: String) {
-    JAVA_SERIALIZATION("This option adds Java Serializable interface to the generated models");
+    JAVA_SERIALIZATION("This option adds Java Serializable interface to the generated models"),
+    QUARKUS_REFLECTION_CONFIG("This options generates the reflection-config.json file for quarkus integration projects");
 
     override fun toString() = "`${super.toString()}` - $description"
 }
