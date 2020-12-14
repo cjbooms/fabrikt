@@ -3,16 +3,20 @@ package com.cjbooms.fabrikt.cli
 import com.cjbooms.fabrikt.cli.CodeGenerationType.CLIENT
 import com.cjbooms.fabrikt.cli.CodeGenerationType.CONTROLLERS
 import com.cjbooms.fabrikt.cli.CodeGenerationType.HTTP_MODELS
+import com.cjbooms.fabrikt.cli.CodeGenerationType.QUARKUS_REFLECTION_CONFIG
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
+import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
 import com.cjbooms.fabrikt.generators.service.SpringServiceInterfaceGenerator
 import com.cjbooms.fabrikt.model.Clients
 import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.KotlinSourceSet
 import com.cjbooms.fabrikt.model.Models
+import com.cjbooms.fabrikt.model.ResourceFile
+import com.cjbooms.fabrikt.model.ResourceSourceSet
 import com.cjbooms.fabrikt.model.Services
 import com.cjbooms.fabrikt.model.SourceApi
 import com.squareup.kotlinpoet.FileSpec
@@ -32,6 +36,7 @@ class CodeGenerator(
             CLIENT -> generateClient()
             CONTROLLERS -> generateControllers()
             HTTP_MODELS -> generateModels()
+            QUARKUS_REFLECTION_CONFIG -> generateQuarkusReflectionResource()
         }
 
     private fun generateModels(): Collection<GeneratedFile> = sourceSet(models().files)
@@ -47,10 +52,17 @@ class CodeGenerator(
         return sourceSet(client().files).plus(lib).plus(sourceSet(models().files))
     }
 
+    private fun generateQuarkusReflectionResource(): Collection<GeneratedFile> = resourceSet(resources(models()))
+
     private fun sourceSet(fileSpec: Collection<FileSpec>) = setOf(KotlinSourceSet(fileSpec))
+
+    private fun resourceSet(resFiles: Collection<ResourceFile>) = setOf(ResourceSourceSet(resFiles))
 
     private fun models(): Models =
         JacksonModelGenerator(packages, sourceApi, modelOptions).generate()
+
+    private fun resources(models: Models): List<ResourceFile> =
+        listOfNotNull(QuarkusReflectionModelGenerator(models, modelOptions).generate())
 
     private fun services(): Services =
         SpringServiceInterfaceGenerator(packages, sourceApi, models().models).generate()

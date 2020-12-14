@@ -35,16 +35,18 @@ This section documents the available CLI parameters for controlling what gets ge
  | * `--base-package`     | The base package which all code will be generated under.
  |   `--http-client-opts` | Select the options for the http client code that you want to be generated.
  |                        | CHOOSE ANY OF:
- |                        |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:1.2.0"
+ |                        |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+"
  |   `--http-model-opts`  | Select the options for the http models that you want to be generated.
  |                        | CHOOSE ANY OF:
  |                        |   `JAVA_SERIALIZATION` - This option adds Java Serializable interface to the generated models
+ |                        |   `QUARKUS_REFLECTION` - This option adds @RegisterForReflection to the generated models. Requires dependency "'io.quarkus:quarkus-core:+"
  |   `--output-directory` | Allows the generation dir to be overridden. Defaults to current dir
  |   `--targets`          | Targets are the parts of the application that you want to be generated.
  |                        | CHOOSE ANY OF:
  |                        |   `HTTP_MODELS` - Jackson annotated data classes to represent the schema objects defined in the input.
  |                        |   `CONTROLLERS` - Spring annotated HTTP controllers for each of the endpoints defined in the input.
  |                        |   `CLIENT` - Simple http rest client.
+ |                        |   `QUARKUS_REFLECTION_CONFIG` - This options generates the reflection-config.json file for quarkus integration projects
 
 ## Examples
 
@@ -78,7 +80,7 @@ tasks {
         )
     }
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "11"
         dependsOn(generateCode)
     }
 }
