@@ -34,7 +34,7 @@ components:
 
     EnumDiscriminator:
       type: string
-      x-extensible-enum:
+      enum:
         - obj_one
         - obj_two
 

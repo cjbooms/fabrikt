@@ -38,6 +38,7 @@ This section documents the available CLI parameters for controlling what gets ge
  |                        |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+"
  |   `--http-model-opts`  | Select the options for the http models that you want to be generated.
  |                        | CHOOSE ANY OF:
+ |                        |   `X_EXTENSIBLE_ENUMS` - This option treats x-extensible-enums as enums
  |                        |   `JAVA_SERIALIZATION` - This option adds Java Serializable interface to the generated models
  |                        |   `QUARKUS_REFLECTION` - This option adds @RegisterForReflection to the generated models. Requires dependency "'io.quarkus:quarkus-core:+"
  |   `--output-directory` | Allows the generation dir to be overridden. Defaults to current dir

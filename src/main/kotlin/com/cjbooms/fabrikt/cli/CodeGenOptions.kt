@@ -46,6 +46,7 @@ enum class ClientCodeGenOptionType(private val description: String) {
 }
 
 enum class ModelCodeGenOptionType(val description: String) {
+    X_EXTENSIBLE_ENUMS("This option treats x-extensible-enums as enums"),
     JAVA_SERIALIZATION("This option adds Java Serializable interface to the generated models"),
     QUARKUS_REFLECTION("This option adds @RegisterForReflection to the generated models. Requires dependency \"'io.quarkus:quarkus-core:+\"");
 
