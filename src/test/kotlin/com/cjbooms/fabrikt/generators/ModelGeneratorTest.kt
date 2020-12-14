@@ -19,7 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource
 class ModelGeneratorTest {
 
     private fun testCases(): Stream<String> = Stream.of(
-        "arrays",
+/*        "arrays",
         "anyOfOneOfAllOf",
         "deepNestedSharingReferences",
         "defaultValues",
@@ -30,13 +30,13 @@ class ModelGeneratorTest {
         "githubApi",
         "inLinedObject",
         "mapExamples",
-        "mixingCamelSnakeLispCase",
-        "oneOfPolymorphicModels",
-        "optionalVsRequired",
+        "mixingCamelSnakeLispCase",*/
+        "oneOfPolymorphicModels"
+/*        "optionalVsRequired",
         "polymorphicModels",
         "requiredReadOnly",
         "validationAnnotations",
-        "wildCardTypes"
+        "wildCardTypes"*/
     )
 
     @ParameterizedTest

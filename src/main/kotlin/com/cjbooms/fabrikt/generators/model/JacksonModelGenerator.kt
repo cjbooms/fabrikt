@@ -141,14 +141,16 @@ class JacksonModelGenerator(
             when (it) {
                 is PropertyInfo.SingleRef ->
                     when {
-                        it.schema.isInlinedObjectDefinition() -> it.schema.topLevelProperties(HTTP_SETTINGS).let { props ->
-                            buildInLinedModels(props) +
-                                standardDataClass(it.name.toModelClassName(), props)
-                        }
-                        it.schema.isReferenceObjectDefinition() -> it.schema.topLevelProperties(HTTP_SETTINGS).let { props ->
-                            buildInLinedModels(props) +
-                                standardDataClass(it.schema.safeName().toModelClassName(), props)
-                        }
+                        it.schema.isInlinedObjectDefinition() -> it.schema.topLevelProperties(HTTP_SETTINGS)
+                            .let { props ->
+                                buildInLinedModels(props) +
+                                    standardDataClass(it.name.toModelClassName(), props)
+                            }
+                        it.schema.isReferenceObjectDefinition() -> it.schema.topLevelProperties(HTTP_SETTINGS)
+                            .let { props ->
+                                buildInLinedModels(props) +
+                                    standardDataClass(it.schema.safeName().toModelClassName(), props)
+                            }
                         else -> emptySet()
                     }
                 is PropertyInfo.MapField -> buildMapModel(it)?.let { mapModel -> setOf(mapModel) } ?: emptySet()
@@ -245,7 +247,11 @@ class JacksonModelGenerator(
         classBuilder.addAnnotation(basePolymorphicType(discriminator.propertyName))
 
         val subTypes = sourceApi.modelInfos
-            .filter { model -> model.schema.allOfSchemas.any { allOfRef -> allOfRef.discriminator == discriminator } }
+            .filter { model ->
+                model.schema.allOfSchemas.any { allOfRef ->
+                    allOfRef.name == modelName && allOfRef.discriminator == discriminator
+                }
+            }
             .map {
                 discriminator.mappingKey(it.schema) to toModelType(
                     packages.base,
@@ -255,7 +261,8 @@ class JacksonModelGenerator(
             .toMap()
         classBuilder.addAnnotation(polymorphicSubTypes(subTypes)).addQuarkusReflectionAnnotation()
 
-        return properties.addToClass(classBuilder,
+        return properties.addToClass(
+            classBuilder,
             ClassType.SUPER_MODEL
         )
     }
@@ -314,7 +321,9 @@ class JacksonModelGenerator(
 
     private fun TypeSpec.Builder.addQuarkusReflectionAnnotation(): TypeSpec.Builder {
         if (options.any { it == ModelCodeGenOptionType.QUARKUS_REFLECTION })
-            this.addAnnotation(AnnotationSpec.builder("RegisterForReflection".toClassName("io.quarkus.runtime.annotations")).build())
+            this.addAnnotation(
+                AnnotationSpec.builder("RegisterForReflection".toClassName("io.quarkus.runtime.annotations")).build()
+            )
         return this
     }
 }

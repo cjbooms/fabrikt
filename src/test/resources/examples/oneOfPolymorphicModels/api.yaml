@@ -8,44 +8,64 @@ components:
       properties:
         one_one_of:
           oneOf:
-            - $ref: "#/components/schemas/PolyTypeOne"
-            - $ref: "#/components/schemas/PolyTypeTwo"
+            - $ref: "#/components/schemas/PolymorphicTypeOneA"
+            - $ref: "#/components/schemas/PolymorphicTypeTwoA"
         many_one_of:
           type: array
           items:
             oneOf:
-              - $ref: "#/components/schemas/PolyTypeOne"
-              - $ref: "#/components/schemas/PolyTypeTwo"
+              - $ref: "#/components/schemas/PolymorphicTypeOneB"
+              - $ref: "#/components/schemas/PolymorphicTypeTwoB"
             discriminator:
               propertyName: generation
 
-    PolySuperType:
+    PolymorphicSuperTypeOne:
+      x-fabric-resource-definition: true
       type: object
       discriminator:
-        propertyName: generation
+        propertyName: shared
       required:
-        - generation
-        - first_name
-        - last_name
+        - shared
       properties:
-        generation:
+        shared:
           type: string
-        first_name:
-          type: string
-        last_name:
-          type: string
-    PolyTypeOne:
+    PolymorphicTypeOneA:
       allOf:
-        - $ref: "#/components/schemas/PolySuperType"
+        - $ref: "#/components/schemas/PolymorphicSuperTypeOne"
         - type: object
           properties:
-            child_one_name:
+            whateverA:
               type: string
-    PolyTypeTwo:
+    PolymorphicTypeOneB:
       allOf:
-        - $ref: "#/components/schemas/PolySuperType"
+        - $ref: "#/components/schemas/PolymorphicSuperTypeOne"
         - type: object
           properties:
-            child_two_age:
+            whateverB:
+              type: integer
+              format: int32
+    PolymorphicSuperTypeTwo:
+      x-fabric-resource-definition: true
+      type: object
+      discriminator:
+        propertyName: shared
+      required:
+        - shared
+      properties:
+        shared:
+          type: string
+    PolymorphicTypeTwoA:
+      allOf:
+        - $ref: "#/components/schemas/PolymorphicSuperTypeTwo"
+        - type: object
+          properties:
+            whateverC:
+              type: string
+    PolymorphicTypeTwoB:
+      allOf:
+        - $ref: "#/components/schemas/PolymorphicSuperTypeTwo"
+        - type: object
+          properties:
+            whateverD:
               type: integer
               format: int32
