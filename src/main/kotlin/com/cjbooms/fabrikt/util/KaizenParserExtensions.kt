@@ -47,7 +47,7 @@ object KaizenParserExtensions {
     fun Schema.isReferenceObjectDefinition() =
         isObjectType() && !isSchemaLess() && !Overlay.of(this).pathFromRoot.contains("properties")
 
-    fun Schema.toModelClassName() = safeName().toModelClassName()
+    fun Schema.toModelClassName(enclosingClassName: String = "") = enclosingClassName + safeName().toModelClassName()
 
     fun Schema.toMapValueClassName() = safeName().toMapValueClassName()
 

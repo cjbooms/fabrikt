@@ -6,10 +6,12 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isDiscriminatorProperty
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInLinedObjectUnderAllOf
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isRequired
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeType
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
@@ -81,8 +83,17 @@ sealed class PropertyInfo {
                                 isInherited = settings.markAsInherited,
                                 parentSchema = this
                             )
+                        else if (property.value.isInlinedObjectDefinition())
+                            ObjectInlinedField(
+                                isRequired = isRequired(property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
+                                oasKey = property.key,
+                                schema = property.value,
+                                isInherited = settings.markAsInherited,
+                                parentSchema = this,
+                                enclosingSchema = enclosingSchema
+                            )
                         else
-                            SingleRef(
+                            ObjectRefField(
                                 isRequired(property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
                                 property.key,
                                 property.value,
@@ -198,7 +209,7 @@ sealed class PropertyInfo {
         override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, oasKey)
     }
 
-    data class SingleRef(
+    data class ObjectRefField(
         override val isRequired: Boolean,
         override val oasKey: String,
         val schema: Schema,
@@ -206,6 +217,17 @@ sealed class PropertyInfo {
         val parentSchema: Schema
     ) : PropertyInfo() {
         override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, oasKey)
+    }
+
+    data class ObjectInlinedField(
+        override val isRequired: Boolean,
+        override val oasKey: String,
+        val schema: Schema,
+        override val isInherited: Boolean,
+        val parentSchema: Schema,
+        val enclosingSchema: Schema?
+    ) : PropertyInfo() {
+        override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
     }
 
     data class AdditionalProperties(
