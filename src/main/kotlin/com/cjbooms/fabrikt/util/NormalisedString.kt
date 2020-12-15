@@ -12,9 +12,7 @@ object NormalisedString {
 
     fun String.camelCase(): String = this.pascalCase().decapitalize()
 
-    fun String.toEntityName(): String = "${this.toModelClassName()}Entity"
-
-    fun String.toModelClassName(): String = this.pascalCase()
+    fun String.toModelClassName(parentModelName: String = ""): String = parentModelName + this.pascalCase()
 
     fun String.toMapValueClassName(): String = "${this.pascalCase()}Value"
 

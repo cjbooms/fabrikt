@@ -33,7 +33,7 @@ data class ModelInfo(
     val maybeSuperType: ModelInfo? = schema.getSuperType(api)?.let { ModelInfo(it.name, it, api) }
     val childSchemas: Collection<String> = parentToChildren[key].orEmpty()
     val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, name)
-    val properties: Collection<PropertyInfo> = schema.topLevelProperties(PropertyInfo.HTTP_SETTINGS)
+    val properties: Collection<PropertyInfo> = schema.topLevelProperties(PropertyInfo.HTTP_SETTINGS, schema)
 
     @Suppress("UNCHECKED_CAST")
     companion object {

@@ -47,11 +47,11 @@ data class MapHolder(
     @param:JsonProperty("inlined_complex_object_with_untyped_map")
     @get:JsonProperty("inlined_complex_object_with_untyped_map")
     @get:Valid
-    val inlinedComplexObjectWithUntypedMap: InlinedComplexObjectWithUntypedMap? = null,
+    val inlinedComplexObjectWithUntypedMap: MapHolderInlinedComplexObjectWithUntypedMap? = null,
     @param:JsonProperty("inlined_complex_object_with_typed_map")
     @get:JsonProperty("inlined_complex_object_with_typed_map")
     @get:Valid
-    val inlinedComplexObjectWithTypedMap: InlinedComplexObjectWithTypedMap? = null
+    val inlinedComplexObjectWithTypedMap: MapHolderInlinedComplexObjectWithTypedMap? = null
 )
 
 data class TypedObjectMapValue(
@@ -113,7 +113,7 @@ data class ComplexObjectWithTypedMap(
     }
 }
 
-data class InlinedComplexObjectWithUntypedMap(
+data class MapHolderInlinedComplexObjectWithUntypedMap(
     @param:JsonProperty("text")
     @get:JsonProperty("text")
     val text: String? = null,
@@ -138,7 +138,7 @@ data class InlinedComplexObjectWithTypedMapValue(
     val otherNumber: Int? = null
 )
 
-data class InlinedComplexObjectWithTypedMap(
+data class MapHolderInlinedComplexObjectWithTypedMap(
     @param:JsonProperty("text")
     @get:JsonProperty("text")
     val text: String? = null,

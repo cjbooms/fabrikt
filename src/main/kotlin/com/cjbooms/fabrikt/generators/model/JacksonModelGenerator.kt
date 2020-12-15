@@ -29,8 +29,10 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isReferenceObjectDefiniti
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKey
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.kaizen.oasparser.model3.Discriminator
+import com.reprezen.kaizen.oasparser.model3.Schema
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -111,7 +113,9 @@ class JacksonModelGenerator(
                 .filterNot { it.isSimpleType || it.isInlineableMapDefinition }
                 .flatMap {
                     if (it.properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
-                        listOf(buildPrimaryModel(it, it.properties)) + buildInLinedModels(it.properties)
+                        val primaryModel = buildPrimaryModel(it, it.properties)
+                        val inlinedModels = buildInLinedModels(it.properties, it.schema)
+                        listOf(primaryModel) + inlinedModels
                     } else emptyList()
                 }.toMutableSet()
 
@@ -136,19 +140,24 @@ class JacksonModelGenerator(
         }
     }
 
-    private fun buildInLinedModels(topLevelProperties: Collection<PropertyInfo>): List<TypeSpec> =
+    private fun buildInLinedModels(
+        topLevelProperties: Collection<PropertyInfo>,
+        enclosingSchema: Schema
+    ): List<TypeSpec> =
         topLevelProperties.flatMap {
+            val enclosingModelName = enclosingSchema.toModelClassName()
             when (it) {
-                is PropertyInfo.SingleRef ->
+                is PropertyInfo.ObjectInlinedField -> {
+                    val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
+                    val currentModel = standardDataClass(it.name.toModelClassName(enclosingModelName), props)
+                    val inlinedModels = buildInLinedModels(props, enclosingSchema)
+                    inlinedModels + currentModel
+                }
+                is PropertyInfo.ObjectRefField ->
                     when {
-                        it.schema.isInlinedObjectDefinition() -> it.schema.topLevelProperties(HTTP_SETTINGS)
+                        it.schema.isReferenceObjectDefinition() -> it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
                             .let { props ->
-                                buildInLinedModels(props) +
-                                    standardDataClass(it.name.toModelClassName(), props)
-                            }
-                        it.schema.isReferenceObjectDefinition() -> it.schema.topLevelProperties(HTTP_SETTINGS)
-                            .let { props ->
-                                buildInLinedModels(props) +
+                                buildInLinedModels(props, enclosingSchema) +
                                     standardDataClass(it.schema.safeName().toModelClassName(), props)
                             }
                         else -> emptySet()
@@ -156,7 +165,7 @@ class JacksonModelGenerator(
                 is PropertyInfo.MapField -> buildMapModel(it)?.let { mapModel -> setOf(mapModel) } ?: emptySet()
                 is PropertyInfo.AdditionalProperties ->
                     if (it.schema.isComplexTypedAdditionalProperties("additionalProperties")) setOf(
-                        standardDataClass(it.schema.toMapValueClassName(), it.schema.topLevelProperties(HTTP_SETTINGS))
+                        standardDataClass(it.schema.toMapValueClassName(), it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema))
                     )
                     else emptySet()
                 is PropertyInfo.Field ->
@@ -165,11 +174,13 @@ class JacksonModelGenerator(
                 is PropertyInfo.ListField ->
                     it.schema.itemsSchema.let { items ->
                         when {
-                            items.isInlinedObjectDefinition() -> items.topLevelProperties(HTTP_SETTINGS).let { props ->
-                                buildInLinedModels(props) + standardDataClass(it.name.toModelClassName(), props)
+                            items.isInlinedObjectDefinition() -> items.topLevelProperties(HTTP_SETTINGS, enclosingSchema).let { props ->
+                                buildInLinedModels(props, enclosingSchema) + standardDataClass(
+                                    it.name.toModelClassName(enclosingModelName), props
+                                )
                             }
                             items.isEnumDefinition() ->
-                                setOf(buildEnumClass(KotlinTypeInfo.from(items, "items") as KotlinTypeInfo.Enum))
+                                setOf(buildEnumClass(KotlinTypeInfo.from(items, "items", enclosingModelName) as KotlinTypeInfo.Enum))
                             else -> emptySet()
                         }
                     }

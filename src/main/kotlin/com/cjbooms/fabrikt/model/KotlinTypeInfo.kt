@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.getEnumValues
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
+import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.kaizen.oasparser.model3.Schema
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -39,7 +40,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         }
 
     companion object {
-        fun from(schema: Schema, oasKey: String = ""): KotlinTypeInfo =
+        fun from(schema: Schema, oasKey: String = "", enclosingName: String = ""): KotlinTypeInfo =
             when (schema.toOasType(oasKey)) {
                 OasType.Date -> Date
                 OasType.DateTime -> DateTime
@@ -55,9 +56,9 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Array ->
                     if (schema.itemsSchema.isNotDefined())
                         throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")
-                    else Array(from(schema.itemsSchema, oasKey))
-                OasType.Object -> Object(schema.toModelClassName())
-                OasType.Map -> Map(from(schema.additionalPropertiesSchema, "additionalProperties"))
+                    else Array(from(schema.itemsSchema, oasKey, enclosingName))
+                OasType.Object -> Object(schema.toModelClassName(enclosingName.toModelClassName()))
+                OasType.Map -> Map(from(schema.additionalPropertiesSchema, "additionalProperties", enclosingName))
                 OasType.TypedProperties -> TypedProperties(schema.toMapValueClassName())
                 OasType.UntypedProperties -> UntypedProperties
                 OasType.UntypedObject -> UntypedObject
