@@ -19,7 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource
 class ModelGeneratorTest {
 
     private fun testCases(): Stream<String> = Stream.of(
-/*        "arrays",
+        "arrays",
         "anyOfOneOfAllOf",
         "deepNestedSharingReferences",
         "defaultValues",
@@ -30,19 +30,20 @@ class ModelGeneratorTest {
         "githubApi",
         "inLinedObject",
         "mapExamples",
-        "mixingCamelSnakeLispCase",*/
-        "oneOfPolymorphicModels"
-/*        "optionalVsRequired",
+        "mixingCamelSnakeLispCase",
+        "oneOfPolymorphicModels",
+        "optionalVsRequired",
         "polymorphicModels",
         "requiredReadOnly",
         "validationAnnotations",
-        "wildCardTypes"*/
+        "wildCardTypes"
     )
 
     @ParameterizedTest
     @MethodSource("testCases")
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         print("Testcase: $testCaseName")
+        MutableSettings.modelOptions.add(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS)
         val basePackage = "examples.$testCaseName"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))

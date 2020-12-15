@@ -1,5 +1,7 @@
 package com.cjbooms.fabrikt.util
 
+import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType
 import com.cjbooms.fabrikt.model.PropertyInfo
 import com.cjbooms.fabrikt.util.NormalisedString.toMapValueClassName
@@ -54,12 +56,16 @@ object KaizenParserExtensions {
     fun Schema.isInlineableMapDefinition() = hasAdditionalProperties() && properties?.isEmpty() == true
 
     fun Schema.isEnumDefinition(): Boolean =
-        this.type == OasType.Text.type && (this.hasEnums() || extensions.containsKey(EXTENSIBLE_ENUM_KEY))
+        this.type == OasType.Text.type && (this.hasEnums() ||
+            (MutableSettings.modelOptions.contains(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS) &&
+                extensions.containsKey(EXTENSIBLE_ENUM_KEY)))
 
     @Suppress("UNCHECKED_CAST")
-    fun Schema.getEnumValues(): List<String> =
-        if (this.hasEnums()) this.enums.map { it.toString() }
-        else extensions[EXTENSIBLE_ENUM_KEY]?.let { it as List<String> } ?: emptyList()
+    fun Schema.getEnumValues(): List<String> = when {
+        this.hasEnums() -> this.enums.map { it.toString() }
+        !MutableSettings.modelOptions.contains(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS) -> emptyList()
+        else -> extensions[EXTENSIBLE_ENUM_KEY]?.let { it as List<String> } ?: emptyList()
+    }
 
     fun Schema.hasAdditionalProperties(): Boolean = isObjectType() && Overlay.of(additionalPropertiesSchema).isPresent
 

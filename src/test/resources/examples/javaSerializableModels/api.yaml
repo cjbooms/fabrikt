@@ -219,7 +219,7 @@ components:
           readOnly: true
         third_attr:
           type: "string"
-          x-extensible-enum:
+          enum:
             - "enum_type_1"
             - "enum_type_2"
           description: "Enum types for attribute 3"
@@ -231,7 +231,7 @@ components:
         model_type:
           type: "string"
           description: "The model discrimination type"
-          x-extensible-enum:
+          enum:
             - "first_model"
             - "second_model"
             - "third_model"
