@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.cli.CodeGenerationType.CONTROLLERS
 import com.cjbooms.fabrikt.cli.CodeGenerationType.HTTP_MODELS
 import com.cjbooms.fabrikt.cli.CodeGenerationType.QUARKUS_REFLECTION_CONFIG
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
@@ -21,15 +22,9 @@ import com.cjbooms.fabrikt.model.Services
 import com.cjbooms.fabrikt.model.SourceApi
 import com.squareup.kotlinpoet.FileSpec
 
-class CodeGenerator(
-    private val packages: Packages,
-    private val sourceApi: SourceApi,
-    private val generationTypes: Set<CodeGenerationType>,
-    private val modelOptions: Set<ModelCodeGenOptionType>,
-    private val codeGenOptions: Set<ClientCodeGenOptionType>
-) {
+class CodeGenerator(private val packages: Packages, private val sourceApi: SourceApi) {
 
-    fun generate(): Collection<GeneratedFile> = generationTypes.map(::generateCode).flatten()
+    fun generate(): Collection<GeneratedFile> = MutableSettings.generationTypes().map(::generateCode).flatten()
 
     private fun generateCode(generationType: CodeGenerationType): Collection<GeneratedFile> =
         when (generationType) {
@@ -48,7 +43,7 @@ class CodeGenerator(
         sourceSet(controllers().files).plus(generateServiceInterfaces())
 
     private fun generateClient(): Collection<GeneratedFile> {
-        val lib = OkHttpClientGenerator(packages, sourceApi).generateLibrary(codeGenOptions)
+        val lib = OkHttpClientGenerator(packages, sourceApi).generateLibrary(MutableSettings.clientOptions())
         return sourceSet(client().files).plus(lib).plus(sourceSet(models().files))
     }
 
@@ -59,10 +54,10 @@ class CodeGenerator(
     private fun resourceSet(resFiles: Collection<ResourceFile>) = setOf(ResourceSourceSet(resFiles))
 
     private fun models(): Models =
-        JacksonModelGenerator(packages, sourceApi, modelOptions).generate()
+        JacksonModelGenerator(packages, sourceApi, MutableSettings.modelOptions()).generate()
 
     private fun resources(models: Models): List<ResourceFile> =
-        listOfNotNull(QuarkusReflectionModelGenerator(models, modelOptions).generate())
+        listOfNotNull(QuarkusReflectionModelGenerator(models, MutableSettings.generationTypes()).generate())
 
     private fun services(): Services =
         SpringServiceInterfaceGenerator(packages, sourceApi, models().models).generate()
@@ -71,5 +66,5 @@ class CodeGenerator(
         SpringControllerGenerator(packages, sourceApi, services().services, models().models).generate()
 
     private fun client(): Clients =
-        OkHttpClientGenerator(packages, sourceApi).generate(codeGenOptions)
+        OkHttpClientGenerator(packages, sourceApi).generate(MutableSettings.clientOptions())
 }

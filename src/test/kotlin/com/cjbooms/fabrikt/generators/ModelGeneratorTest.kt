@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
@@ -10,6 +11,7 @@ import com.squareup.kotlinpoet.FileSpec
 import java.nio.file.Paths
 import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
@@ -39,11 +41,16 @@ class ModelGeneratorTest {
         "wildCardTypes"
     )
 
+    @BeforeEach
+    fun init() {
+        MutableSettings.updateSettings(setOf(CodeGenerationType.HTTP_MODELS), emptySet(), emptySet())
+    }
+
     @ParameterizedTest
     @MethodSource("testCases")
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         print("Testcase: $testCaseName")
-        MutableSettings.modelOptions.add(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS)
+        MutableSettings.addOption(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS)
         val basePackage = "examples.$testCaseName"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))

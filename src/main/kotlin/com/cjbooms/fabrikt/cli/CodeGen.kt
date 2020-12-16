@@ -39,6 +39,8 @@ object CodeGen {
         modelOptions: Set<ModelCodeGenOptionType>,
         clientOptions: Set<ClientCodeGenOptionType>
     ) {
+        MutableSettings.updateSettings(codeGenTypes, modelOptions, clientOptions)
+
         val suppliedApi = pathToApi.toFile().readText()
         val baseDir = pathToApi.parent
 
@@ -46,8 +48,7 @@ object CodeGen {
 
         val packages = Packages(basePackage)
         val sourceApi = SourceApi.create(suppliedApi, apiFragments, baseDir)
-        val generator = CodeGenerator(packages, sourceApi, codeGenTypes, modelOptions, clientOptions)
-        MutableSettings.updateSettings(codeGenTypes, modelOptions, clientOptions)
+        val generator = CodeGenerator(packages, sourceApi)
         generator.generate().forEach { it.writeFileTo(outputDir.toFile()) }
     }
 }

@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.SpringControllerGenerator
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
@@ -14,6 +15,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
@@ -33,6 +35,11 @@ class SpringControllerGeneratorTest {
         val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
         val services = SpringServiceInterfaceGenerator(Packages(basePackage), api, models).generate().services
         generated = SpringControllerGenerator(Packages(basePackage), api, services, models).generate().files
+    }
+
+    @BeforeEach
+    fun init() {
+        MutableSettings.updateSettings(setOf(CodeGenerationType.CONTROLLERS), emptySet(), emptySet())
     }
 
     @Test
