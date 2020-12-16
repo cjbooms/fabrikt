@@ -1,11 +1,19 @@
 package com.cjbooms.fabrikt.model
 
 import com.beust.jcommander.ParameterException
+import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.generators.MutableSettings
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class SourceApiTest {
+
+    @BeforeEach
+    fun init() {
+        MutableSettings.updateSettings(setOf(CodeGenerationType.HTTP_MODELS), emptySet(), emptySet())
+    }
 
     @Test
     fun testParentToChildren() {

@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
+import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OkHttpEnhancedClientGenerator
 import com.cjbooms.fabrikt.generators.client.OkHttpSimpleClientGenerator
@@ -13,6 +14,7 @@ import com.cjbooms.fabrikt.validation.Linter
 import com.squareup.kotlinpoet.FileSpec
 import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -23,6 +25,11 @@ class OkHttpClientGeneratorTest {
     private fun fullApiTestCases(): Stream<String> = Stream.of(
         "okHttpClient"
     )
+
+    @BeforeEach
+    fun init() {
+        MutableSettings.updateSettings(setOf(CodeGenerationType.CLIENT), emptySet(), emptySet())
+    }
 
     @ParameterizedTest
     @MethodSource("fullApiTestCases")

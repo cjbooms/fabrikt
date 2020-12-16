@@ -1,6 +1,6 @@
 package com.cjbooms.fabrikt.generators.model
 
-import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.QuarkusReflectionModel
 import com.cjbooms.fabrikt.model.ResourceFile
@@ -10,7 +10,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
 class QuarkusReflectionModelGenerator(
     private val models: Models,
-    private val options: Set<ModelCodeGenOptionType> = emptySet()
+    private val generationTypes: Set<CodeGenerationType> = emptySet()
 ) {
     companion object {
         const val RESOURCE_FILE_NAME = "reflection-config.json"
@@ -18,7 +18,7 @@ class QuarkusReflectionModelGenerator(
     private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule().enable(SerializationFeature.INDENT_OUTPUT)
 
     fun generate(): ResourceFile? {
-        return if (options.any { it == ModelCodeGenOptionType.QUARKUS_REFLECTION }) {
+        return if (generationTypes.any { it == CodeGenerationType.QUARKUS_REFLECTION_CONFIG }) {
             val reflectionConfigs = models.models.map {
                 QuarkusReflectionModel(it.className.canonicalName)
             }
