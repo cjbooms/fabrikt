@@ -6,7 +6,6 @@ Generates Kotlin code from OpenApi3 specifications, ensuring code matches API co
 <dependency>
   <groupId>com.cjbooms</groupId>
   <artifactId>fabrikt</artifactId>
-  <version>1.0.0.RC4</version>
 </dependency>
 ```
 
