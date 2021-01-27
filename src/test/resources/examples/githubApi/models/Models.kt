@@ -91,50 +91,14 @@ data class ContributorQueryResult(
     val items: List<Contributor>
 )
 
-data class OrganisationQueryResult(
-    @param:JsonProperty("prev")
-    @get:JsonProperty("prev")
-    val prev: String? = null,
-    @param:JsonProperty("next")
-    @get:JsonProperty("next")
-    val next: String? = null,
-    @param:JsonProperty("items")
-    @get:JsonProperty("items")
-    @get:NotNull
-    @get:Size(min = 0)
-    @get:Valid
-    val items: List<Organisation>
-)
+enum class Status(
+    @JsonValue
+    val value: String
+) {
+    ACTIVE("active"),
 
-data class RepositoryQueryResult(
-    @param:JsonProperty("prev")
-    @get:JsonProperty("prev")
-    val prev: String? = null,
-    @param:JsonProperty("next")
-    @get:JsonProperty("next")
-    val next: String? = null,
-    @param:JsonProperty("items")
-    @get:JsonProperty("items")
-    @get:NotNull
-    @get:Size(min = 0)
-    @get:Valid
-    val items: List<Repository>
-)
-
-data class PullRequestQueryResult(
-    @param:JsonProperty("prev")
-    @get:JsonProperty("prev")
-    val prev: String? = null,
-    @param:JsonProperty("next")
-    @get:JsonProperty("next")
-    val next: String? = null,
-    @param:JsonProperty("items")
-    @get:JsonProperty("items")
-    @get:NotNull
-    @get:Size(min = 0)
-    @get:Valid
-    val items: List<PullRequest>
-)
+    INACTIVE("inactive");
+}
 
 data class Contributor(
     @param:JsonProperty("id")
@@ -177,14 +141,30 @@ data class Contributor(
     val name: String? = null
 )
 
-enum class Status(
-    @JsonValue
-    val value: String
-) {
-    ACTIVE("active"),
+data class OrganisationQueryResult(
+    @param:JsonProperty("prev")
+    @get:JsonProperty("prev")
+    val prev: String? = null,
+    @param:JsonProperty("next")
+    @get:JsonProperty("next")
+    val next: String? = null,
+    @param:JsonProperty("items")
+    @get:JsonProperty("items")
+    @get:NotNull
+    @get:Size(min = 0)
+    @get:Valid
+    val items: List<Organisation>
+)
 
-    INACTIVE("inactive");
-}
+data class Webhook(
+    @param:JsonProperty("url")
+    @get:JsonProperty("url")
+    @get:NotNull
+    val url: String,
+    @param:JsonProperty("name")
+    @get:JsonProperty("name")
+    val name: String? = null
+)
 
 data class Organisation(
     @param:JsonProperty("id")
@@ -230,6 +210,30 @@ data class Organisation(
     @get:Valid
     val hooks: List<Webhook>? = null
 )
+
+data class RepositoryQueryResult(
+    @param:JsonProperty("prev")
+    @get:JsonProperty("prev")
+    val prev: String? = null,
+    @param:JsonProperty("next")
+    @get:JsonProperty("next")
+    val next: String? = null,
+    @param:JsonProperty("items")
+    @get:JsonProperty("items")
+    @get:NotNull
+    @get:Size(min = 0)
+    @get:Valid
+    val items: List<Repository>
+)
+
+enum class Visibility(
+    @JsonValue
+    val value: String
+) {
+    PRIVATE("Private"),
+
+    PUBLIC("Public");
+}
 
 data class Repository(
     @param:JsonProperty("id")
@@ -279,14 +283,29 @@ data class Repository(
     val tags: List<String>? = null
 )
 
-enum class Visibility(
-    @JsonValue
-    val value: String
-) {
-    PRIVATE("Private"),
+data class PullRequestQueryResult(
+    @param:JsonProperty("prev")
+    @get:JsonProperty("prev")
+    val prev: String? = null,
+    @param:JsonProperty("next")
+    @get:JsonProperty("next")
+    val next: String? = null,
+    @param:JsonProperty("items")
+    @get:JsonProperty("items")
+    @get:NotNull
+    @get:Size(min = 0)
+    @get:Valid
+    val items: List<PullRequest>
+)
 
-    PUBLIC("Public");
-}
+data class Author(
+    @param:JsonProperty("name")
+    @get:JsonProperty("name")
+    val name: String? = null,
+    @param:JsonProperty("email")
+    @get:JsonProperty("email")
+    val email: String? = null
+)
 
 data class PullRequest(
     @param:JsonProperty("id")
@@ -331,25 +350,6 @@ data class PullRequest(
     @get:JsonProperty("author")
     @get:Valid
     val author: Author? = null
-)
-
-data class Author(
-    @param:JsonProperty("name")
-    @get:JsonProperty("name")
-    val name: String? = null,
-    @param:JsonProperty("email")
-    @get:JsonProperty("email")
-    val email: String? = null
-)
-
-data class Webhook(
-    @param:JsonProperty("url")
-    @get:JsonProperty("url")
-    @get:NotNull
-    val url: String,
-    @param:JsonProperty("name")
-    @get:JsonProperty("name")
-    val name: String? = null
 )
 
 enum class StatusQueryParam(

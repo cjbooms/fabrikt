@@ -39,23 +39,7 @@
   "allDeclaredFields" : true,
   "allPublicFields" : true
 }, {
-  "name" : "examples.githubApi.models.OrganisationQueryResult",
-  "allDeclaredConstructors" : true,
-  "allPublicConstructors" : true,
-  "allDeclaredMethods" : true,
-  "allPublicMethods" : true,
-  "allDeclaredFields" : true,
-  "allPublicFields" : true
-}, {
-  "name" : "examples.githubApi.models.RepositoryQueryResult",
-  "allDeclaredConstructors" : true,
-  "allPublicConstructors" : true,
-  "allDeclaredMethods" : true,
-  "allPublicMethods" : true,
-  "allDeclaredFields" : true,
-  "allPublicFields" : true
-}, {
-  "name" : "examples.githubApi.models.PullRequestQueryResult",
+  "name" : "examples.githubApi.models.Status",
   "allDeclaredConstructors" : true,
   "allPublicConstructors" : true,
   "allDeclaredMethods" : true,
@@ -71,7 +55,15 @@
   "allDeclaredFields" : true,
   "allPublicFields" : true
 }, {
-  "name" : "examples.githubApi.models.Status",
+  "name" : "examples.githubApi.models.OrganisationQueryResult",
+  "allDeclaredConstructors" : true,
+  "allPublicConstructors" : true,
+  "allDeclaredMethods" : true,
+  "allPublicMethods" : true,
+  "allDeclaredFields" : true,
+  "allPublicFields" : true
+}, {
+  "name" : "examples.githubApi.models.Webhook",
   "allDeclaredConstructors" : true,
   "allPublicConstructors" : true,
   "allDeclaredMethods" : true,
@@ -87,7 +79,7 @@
   "allDeclaredFields" : true,
   "allPublicFields" : true
 }, {
-  "name" : "examples.githubApi.models.Repository",
+  "name" : "examples.githubApi.models.RepositoryQueryResult",
   "allDeclaredConstructors" : true,
   "allPublicConstructors" : true,
   "allDeclaredMethods" : true,
@@ -103,7 +95,15 @@
   "allDeclaredFields" : true,
   "allPublicFields" : true
 }, {
-  "name" : "examples.githubApi.models.PullRequest",
+  "name" : "examples.githubApi.models.Repository",
+  "allDeclaredConstructors" : true,
+  "allPublicConstructors" : true,
+  "allDeclaredMethods" : true,
+  "allPublicMethods" : true,
+  "allDeclaredFields" : true,
+  "allPublicFields" : true
+}, {
+  "name" : "examples.githubApi.models.PullRequestQueryResult",
   "allDeclaredConstructors" : true,
   "allPublicConstructors" : true,
   "allDeclaredMethods" : true,
@@ -119,7 +119,7 @@
   "allDeclaredFields" : true,
   "allPublicFields" : true
 }, {
-  "name" : "examples.githubApi.models.Webhook",
+  "name" : "examples.githubApi.models.PullRequest",
   "allDeclaredConstructors" : true,
   "allPublicConstructors" : true,
   "allDeclaredMethods" : true,

@@ -3,5 +3,30 @@ components:
     ExternalObject:
       type: object
       properties:
-        some-string:
+        another:
+          $ref: "#/components/schemas/ExternalObjectTwo"
+          
+    ExternalObjectTwo:
+      type: object
+      required:
+        - errors
+      properties:
+        list-others:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalObjectThree'
+   
+    ExternalObjectThree:
+      type: object
+      required:
+        - enum
+        - description
+      properties:
+        enum:
+          type: string
+          enum:
+            - one
+            - two
+            - three
+        description:
           type: string

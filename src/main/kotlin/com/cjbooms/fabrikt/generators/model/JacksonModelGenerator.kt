@@ -179,6 +179,11 @@ class JacksonModelGenerator(
                                     it.name.toModelClassName(enclosingModelName), props
                                 )
                             }
+                            items.isReferenceObjectDefinition() -> items.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
+                                .let { props ->
+                                    buildInLinedModels(props, enclosingSchema) +
+                                        standardDataClass(items.safeName().toModelClassName(), props)
+                                }
                             items.isEnumDefinition() ->
                                 setOf(buildEnumClass(KotlinTypeInfo.from(items, "items", enclosingModelName) as KotlinTypeInfo.Enum))
                             else -> emptySet()
