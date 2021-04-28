@@ -52,7 +52,3 @@ enum class ModelCodeGenOptionType(val description: String) {
 
     override fun toString() = "`${super.toString()}` - $description"
 }
-
-data class CodeGenOptions(
-    val clientOptions: Set<ClientCodeGenOptionType> = emptySet()
-)

@@ -2,13 +2,11 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.controller.SpringControllerGenerator
+import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
-import com.cjbooms.fabrikt.generators.service.SpringServiceInterfaceGenerator
 import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
-import com.cjbooms.fabrikt.model.Destinations.servicesPackage
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.validation.Linter
 import com.squareup.kotlinpoet.FileSpec
@@ -33,8 +31,7 @@ class SpringControllerGeneratorTest {
     private fun setupGithubApiTestEnv() {
         val api = SourceApi(javaClass.getResource("/examples/githubApi/api.yaml").readText())
         val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
-        val services = SpringServiceInterfaceGenerator(Packages(basePackage), api, models).generate().services
-        generated = SpringControllerGenerator(Packages(basePackage), api, services, models).generate().files
+        generated = SpringControllerInterfaceGenerator(Packages(basePackage), api, models).generate().files
     }
 
     @BeforeEach
@@ -84,27 +81,10 @@ class SpringControllerGeneratorTest {
     }
 
     @Test
-    fun `ensure controller has correct service parameter`() {
-        setupGithubApiTestEnv()
-        val controllerServices =
-            generated.flatMap { it.members.flatMap { (it as TypeSpec).propertySpecs.map { it.type.toString() } } }
-        val servicePackage = servicesPackage(basePackage)
-        assertThat(controllerServices).containsOnly(
-            "$servicePackage.InternalEventsService",
-            "$servicePackage.ContributorsService",
-            "$servicePackage.OrganisationsService",
-            "$servicePackage.OrganisationsContributorsService",
-            "$servicePackage.RepositoriesService",
-            "$servicePackage.RepositoriesPullRequestsService"
-        )
-    }
-
-    @Test
     fun `ensure that subresource specific controllers are created`() {
         val api = SourceApi(javaClass.getResource("/examples/githubApi/api.yaml").readText())
         val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
-        val services = SpringServiceInterfaceGenerator(Packages(basePackage), api, models).generate().services
-        val controllers = SpringControllerGenerator(Packages(basePackage), api, services, models).generate()
+        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api, models).generate()
 
         assertThat(controllers.files).size().isEqualTo(6)
         assertThat(controllers.files.map { it.name }).containsAll(
@@ -147,11 +127,9 @@ class SpringControllerGeneratorTest {
         val expectedControllers = javaClass.getResource("/examples/$testCaseName/controllers/Controllers.kt").readText()
 
         val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
-        val services = SpringServiceInterfaceGenerator(Packages(basePackage), api, models).generate().services
-        val controllers = SpringControllerGenerator(
+        val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
             api,
-            services,
             models
         ).generate().toSingleFile()
 

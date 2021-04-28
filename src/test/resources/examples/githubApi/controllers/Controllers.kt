@@ -11,21 +11,13 @@ import examples.githubApi.models.PullRequestQueryResult
 import examples.githubApi.models.Repository
 import examples.githubApi.models.RepositoryQueryResult
 import examples.githubApi.models.StatusQueryParam
-import examples.githubApi.service.ContributorsService
-import examples.githubApi.service.InternalEventsService
-import examples.githubApi.service.OrganisationsContributorsService
-import examples.githubApi.service.OrganisationsService
-import examples.githubApi.service.RepositoriesPullRequestsService
-import examples.githubApi.service.RepositoriesService
 import javax.validation.Valid
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PathVariable
@@ -38,9 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam
 @Controller
 @Validated
 @RequestMapping("")
-class InternalEventsController(
-    val service: InternalEventsService
-) {
+interface InternalEventsController {
     /**
      * Generate change events for a list of entities
      */
@@ -53,17 +43,13 @@ class InternalEventsController(
     fun post(
         @RequestBody @Valid
         bulkEntityDetails: BulkEntityDetails
-    ): ResponseEntity<EventResults> =
-        ResponseEntity
-            .ok(service.create(bulkEntityDetails).second!!)
+    ): EventResults
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-class ContributorsController(
-    val service: ContributorsService
-) {
+interface ContributorsController {
     /**
      * Page through all the Contributor resources matching the query filters
      *
@@ -95,12 +81,7 @@ class ContributorsController(
         includeInactive: Boolean?,
         @RequestParam(value = "cursor", required = false)
         cursor: String?
-    ): ResponseEntity<ContributorQueryResult> {
-        val svcResp = service.query(limit, xFlowId, includeInactive, cursor)
-        return ResponseEntity
-            .ok()
-            .body(svcResp)
-    }
+    ): ContributorQueryResult
 
     /**
      * Create a new Contributor
@@ -130,11 +111,7 @@ class ContributorsController(
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    ): ResponseEntity<Unit> {
-        val svcResp = service.create(contributor, xFlowId, idempotencyKey)
-        val response = ResponseEntity.created(svcResp.first)
-        return response.build()
-    }
+    )
 
     /**
      * Get a Contributor by ID
@@ -165,12 +142,7 @@ class ContributorsController(
         xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false)
         ifNoneMatch: String?
-    ): ResponseEntity<Contributor> {
-        val svcResp = service.read(id, status, xFlowId, ifNoneMatch)
-        return ResponseEntity
-            .ok()
-            .body(svcResp)
-    }
+    ): Contributor
 
     /**
      * Update an existing Contributor
@@ -210,18 +182,13 @@ class ContributorsController(
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    ): ResponseEntity<Unit> {
-        service.update(contributor, id, ifMatch, xFlowId, idempotencyKey)
-        return ResponseEntity.noContent().build()
-    }
+    )
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-class OrganisationsController(
-    val service: OrganisationsService
-) {
+interface OrganisationsController {
     /**
      * Page through all the Organisation resources matching the query filters
      *
@@ -253,12 +220,7 @@ class OrganisationsController(
         includeInactive: Boolean?,
         @RequestParam(value = "cursor", required = false)
         cursor: String?
-    ): ResponseEntity<OrganisationQueryResult> {
-        val svcResp = service.query(limit, xFlowId, includeInactive, cursor)
-        return ResponseEntity
-            .ok()
-            .body(svcResp)
-    }
+    ): OrganisationQueryResult
 
     /**
      * Create a new Organisation
@@ -288,11 +250,7 @@ class OrganisationsController(
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    ): ResponseEntity<Unit> {
-        val svcResp = service.create(organisation, xFlowId, idempotencyKey)
-        val response = ResponseEntity.created(svcResp.first)
-        return response.build()
-    }
+    )
 
     /**
      * Get a Organisation by ID
@@ -323,12 +281,7 @@ class OrganisationsController(
         xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false)
         ifNoneMatch: String?
-    ): ResponseEntity<Organisation> {
-        val svcResp = service.read(id, status, xFlowId, ifNoneMatch)
-        return ResponseEntity
-            .ok()
-            .body(svcResp)
-    }
+    ): Organisation
 
     /**
      * Update an existing Organisation
@@ -368,18 +321,13 @@ class OrganisationsController(
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    ): ResponseEntity<Unit> {
-        service.update(organisation, id, ifMatch, xFlowId, idempotencyKey)
-        return ResponseEntity.noContent().build()
-    }
+    )
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-class OrganisationsContributorsController(
-    val service: OrganisationsContributorsService
-) {
+interface OrganisationsContributorsController {
     /**
      * Page through all the Contributor resources for this parent Organisation matching the query
      * filters
@@ -415,12 +363,7 @@ class OrganisationsContributorsController(
         includeInactive: Boolean?,
         @RequestParam(value = "cursor", required = false)
         cursor: String?
-    ): ResponseEntity<ContributorQueryResult> {
-        val svcResp = service.query(parentId, limit, xFlowId, includeInactive, cursor)
-        return ResponseEntity
-            .ok()
-            .body(svcResp)
-    }
+    ): ContributorQueryResult
 
     /**
      * Get a Contributor for this Organisation by ID
@@ -449,12 +392,7 @@ class OrganisationsContributorsController(
         xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false)
         ifNoneMatch: String?
-    ): ResponseEntity<Contributor> {
-        val svcResp = service.read(parentId, id, xFlowId, ifNoneMatch)
-        return ResponseEntity
-            .ok()
-            .body(svcResp)
-    }
+    ): Contributor
 
     /**
      * Add an existing Contributor to this Organisation
@@ -494,10 +432,7 @@ class OrganisationsContributorsController(
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    ): ResponseEntity<Unit> {
-        service.addSubresource(parentId, id, ifMatch, xFlowId, idempotencyKey)
-        return ResponseEntity.noContent().build()
-    }
+    )
 
     /**
      * Remove Contributor from this Organisation. Does not delete the underlying Contributor.
@@ -520,18 +455,13 @@ class OrganisationsContributorsController(
         id: String,
         @RequestHeader(value = "X-Flow-Id", required = false)
         xFlowId: String?
-    ): ResponseEntity<Unit> {
-        service.removeSubresource(parentId, id, xFlowId)
-        return ResponseEntity.noContent().build()
-    }
+    )
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-class RepositoriesController(
-    val service: RepositoriesService
-) {
+interface RepositoriesController {
     /**
      * Page through all the Repository resources matching the query filters
      *
@@ -573,12 +503,7 @@ class RepositoriesController(
         includeInactive: Boolean?,
         @RequestParam(value = "cursor", required = false)
         cursor: String?
-    ): ResponseEntity<RepositoryQueryResult> {
-        val svcResp = service.query(limit, xFlowId, slug, name, includeInactive, cursor)
-        return ResponseEntity
-            .ok()
-            .body(svcResp)
-    }
+    ): RepositoryQueryResult
 
     /**
      * Create a new Repository
@@ -608,11 +533,7 @@ class RepositoriesController(
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    ): ResponseEntity<Unit> {
-        val svcResp = service.create(repository, xFlowId, idempotencyKey)
-        val response = ResponseEntity.created(svcResp.first)
-        return response.build()
-    }
+    )
 
     /**
      * Get a Repository by ID
@@ -643,12 +564,7 @@ class RepositoriesController(
         xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false)
         ifNoneMatch: String?
-    ): ResponseEntity<Repository> {
-        val svcResp = service.read(id, status, xFlowId, ifNoneMatch)
-        return ResponseEntity
-            .ok()
-            .body(svcResp)
-    }
+    ): Repository
 
     /**
      * Update an existing Repository
@@ -688,18 +604,13 @@ class RepositoriesController(
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    ): ResponseEntity<Unit> {
-        service.update(repository, id, ifMatch, xFlowId, idempotencyKey)
-        return ResponseEntity.noContent().build()
-    }
+    )
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-class RepositoriesPullRequestsController(
-    val service: RepositoriesPullRequestsService
-) {
+interface RepositoriesPullRequestsController {
     /**
      * Page through all the PullRequest resources for this parent Repository matching the query
      * filters
@@ -735,12 +646,7 @@ class RepositoriesPullRequestsController(
         includeInactive: Boolean?,
         @RequestParam(value = "cursor", required = false)
         cursor: String?
-    ): ResponseEntity<PullRequestQueryResult> {
-        val svcResp = service.query(parentId, limit, xFlowId, includeInactive, cursor)
-        return ResponseEntity
-            .ok()
-            .body(svcResp)
-    }
+    ): PullRequestQueryResult
 
     /**
      * Create a new PullRequest for this parent Repository
@@ -773,11 +679,7 @@ class RepositoriesPullRequestsController(
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    ): ResponseEntity<Unit> {
-        val svcResp = service.create(pullRequest, parentId, xFlowId, idempotencyKey)
-        val response = ResponseEntity.created(svcResp.first)
-        return response.build()
-    }
+    )
 
     /**
      * Get a PullRequest for this Repository by ID
@@ -806,12 +708,7 @@ class RepositoriesPullRequestsController(
         xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false)
         ifNoneMatch: String?
-    ): ResponseEntity<PullRequest> {
-        val svcResp = service.read(parentId, id, xFlowId, ifNoneMatch)
-        return ResponseEntity
-            .ok()
-            .body(svcResp)
-    }
+    ): PullRequest
 
     /**
      * Update the PullRequest owned by this Repository
@@ -854,8 +751,5 @@ class RepositoriesPullRequestsController(
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    ): ResponseEntity<Unit> {
-        service.update(pullRequest, parentId, id, ifMatch, xFlowId, idempotencyKey)
-        return ResponseEntity.noContent().build()
-    }
+    )
 }
