@@ -1,10 +1,8 @@
 package com.cjbooms.fabrikt.model
 
-import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.Destinations.clientPackage
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.Destinations.modelsPackage
-import com.cjbooms.fabrikt.model.Destinations.servicesPackage
 import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
 import com.reprezen.kaizen.oasparser.model3.Parameter
 import com.reprezen.kaizen.oasparser.model3.Schema
@@ -36,12 +34,6 @@ class ClientType(spec: TypeSpec, basePackage: String) : GeneratedType(spec, clie
     }
 }
 
-class ServiceType(spec: TypeSpec, basePackage: String) : GeneratedType(spec, servicesPackage(basePackage)) {
-    companion object {
-        const val SUFFIX = "Service"
-    }
-}
-
 class ControllerType(spec: TypeSpec, basePackage: String) : GeneratedType(spec, controllersPackage(basePackage)) {
     companion object {
         const val SUFFIX = "Controller"
@@ -56,20 +48,8 @@ data class Clients(val clients: Collection<ClientType>) : KotlinTypes(clients) {
     override val files: Collection<FileSpec> = clients.toFileSpec()
 }
 
-data class Services(val services: Collection<ServiceType>) : KotlinTypes(services) {
-    override val files: Collection<FileSpec> = services.toFileSpec()
-}
-
 data class Controllers(val controllers: Collection<ControllerType>) : KotlinTypes(controllers) {
-    override val files: Collection<FileSpec> = super.files.map {
-        it.toBuilder()
-            .addImport(SpringImports.Static.REQUEST_METHOD.first, SpringImports.Static.REQUEST_METHOD.second)
-            .addImport(
-                SpringImports.Static.RESPONSE_STATUS.first,
-                SpringImports.Static.RESPONSE_STATUS.second
-            )
-            .build()
-    }
+    override val files: Collection<FileSpec> = controllers.toFileSpec()
 }
 
 data class MethodSignature(val name: String, val returnType: TypeName, val parameters: List<IncomingParameter>)

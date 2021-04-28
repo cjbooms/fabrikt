@@ -10,7 +10,6 @@ object Destinations {
     const val MAIN_RESOURCES = "src/main/resources"
     val MAIN_KT_SRC: Path = PATH_ROOT.resolve(MAIN_KT_SOURCE)
 
-    fun servicesPackage(basePackage: String): String = "$basePackage.service"
     fun modelsPackage(basePackage: String): String = "$basePackage.models"
     fun controllersPackage(basePackage: String): String = "$basePackage.controllers"
     fun clientPackage(basePackage: String) = "$basePackage.client"

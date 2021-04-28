@@ -19,17 +19,17 @@ object ControllerGeneratorUtils {
      * Pulling out the first response. This assumes first is happy path
      * may need to revisit if we want to have conditional responses
      */
-    fun Operation.happyPathResponse(basePackage: String): Pair<Int, TypeName> {
+    fun Operation.happyPathResponse(basePackage: String): TypeName {
         // Map of response code to nullable name of schema
         val responseDetails = happyPathResponseObject()
-        return responseDetails.first to (responseDetails
+        return responseDetails
             .second
             .contentMediaTypes
             .map { it.value?.schema }
             .filterNotNull()
             .firstOrNull()
             ?.let { toModelType(basePackage, KotlinTypeInfo.from(it)) }
-            ?: Unit::class.asTypeName())
+            ?: Unit::class.asTypeName()
     }
 
     fun Operation.happyPathResponseObject(): Pair<Int, Response> {
