@@ -44,6 +44,9 @@ object KaizenParserExtensions {
     fun Schema.isInlinedObjectDefinition() =
         isObjectType() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("properties")
 
+    fun Schema.isInlinedArrayDefinition() =
+        isArrayType() && !isSchemaLess() && this.itemsSchema.isInlinedObjectDefinition()
+
     fun Schema.isReferenceObjectDefinition() =
         isObjectType() && !isSchemaLess() && !Overlay.of(this).pathFromRoot.contains("properties")
 
@@ -84,6 +87,8 @@ object KaizenParserExtensions {
     fun Schema.isSimpleType(): Boolean = simpleTypes.contains(type)
 
     fun Schema.isObjectType() = OasType.Object.type == type
+
+    fun Schema.isArrayType() = OasType.Array.type == type
 
     fun Schema.isNotDefined() = type == null && !(hasAllOfSchemas() || hasOneOfSchemas() || hasAnyOfSchemas())
 

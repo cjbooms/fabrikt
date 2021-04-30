@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import kotlin.String
+import kotlin.collections.List
 
 data class FirstInlineObject(
     @param:JsonProperty("generation")
@@ -73,4 +74,27 @@ data class SecondInlineObjectGeneration(
     @param:JsonProperty("direct")
     @get:JsonProperty("direct")
     val direct: String? = null
+)
+
+data class ThirdInlineObject(
+    @param:JsonProperty("generation")
+    @get:JsonProperty("generation")
+    @get:Valid
+    val generation: ThirdInlineObjectGeneration? = null
+)
+
+data class ThirdInlineObjectUrls(
+    @param:JsonProperty("version")
+    @get:JsonProperty("version")
+    val version: String? = null
+)
+
+data class ThirdInlineObjectGeneration(
+    @param:JsonProperty("urls")
+    @get:JsonProperty("urls")
+    @get:Valid
+    val urls: List<ThirdInlineObjectUrls>? = null,
+    @param:JsonProperty("view_name")
+    @get:JsonProperty("view_name")
+    val viewName: String? = null
 )
