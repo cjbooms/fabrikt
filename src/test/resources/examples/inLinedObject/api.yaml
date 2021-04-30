@@ -46,3 +46,19 @@ components:
                   type: string
             direct:
               type: string
+
+    ThirdInlineObject:
+      type: object
+      properties:
+        generation:
+          type: object
+          properties:
+            urls:
+              type: array
+              items:
+                type: object
+                properties:
+                  version:
+                    type: string
+            view_name:
+              type: string

@@ -1,19 +1,17 @@
 package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getKeyIfDiscriminator
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.getPolymorphicSubTypes
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isDiscriminatorProperty
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInLinedObjectUnderAllOf
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedArrayDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isRequired
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
-import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
 
 sealed class PropertyInfo {
@@ -60,7 +58,7 @@ sealed class PropertyInfo {
             settings: Settings,
             enclosingSchema: Schema? = null
         ): Collection<PropertyInfo> {
-            val mainProperties = properties.map { property ->
+            val mainProperties: List<PropertyInfo> = properties.map { property ->
                 when (property.value.safeType()) {
                     OasType.Array.type ->
                         ListField(
@@ -68,7 +66,8 @@ sealed class PropertyInfo {
                             property.key,
                             property.value,
                             settings.markAsInherited,
-                            this
+                            this,
+                            if (property.value.isInlinedArrayDefinition()) enclosingSchema else null
                         )
                     OasType.Object.type ->
                         if (property.value.isInlineableMapDefinition() || property.value.isSchemaLess())
@@ -115,28 +114,13 @@ sealed class PropertyInfo {
                         }
                 }
             }.filterNotNull()
+
             return if (hasAdditionalProperties())
                 mainProperties
                     .plus(
                         AdditionalProperties(additionalPropertiesSchema, settings.markAsInherited, this)
                     )
             else mainProperties
-        }
-
-        fun Schema.propertiesInPolymorphicHierarchy(api3: OpenApi3, settings: Settings): Collection<PropertyInfo> {
-            if (!isPolymorphicSuperType()) throw IllegalArgumentException("Model is not a polymorphic super type")
-            val results = emptyList<PropertyInfo>() +
-                topLevelProperties(settings.copy(markAsInherited = true)) +
-                getPolymorphicSubTypes(api3).flatMap { subType ->
-                    emptyList<PropertyInfo>() +
-                        subType.getInLinedProperties(settings) +
-                        subType.allOfSchemas
-                            .filterNot { it == this }
-                            .flatMap { it.topLevelProperties(settings.copy(markAsInherited = !it.isInLinedObjectUnderAllOf())) } +
-                        subType.oneOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true)) } +
-                        subType.anyOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true)) }
-                }
-            return results.toSet()
         }
     }
 
@@ -179,22 +163,15 @@ sealed class PropertyInfo {
         val maxItems: Int?
     }
 
-    class DummyField(
-        override val oasKey: String,
-        override val typeInfo: KotlinTypeInfo,
-        override val isRequired: Boolean = true,
-        override val minItems: Int? = null,
-        override val maxItems: Int? = null
-    ) : PropertyInfo(), CollectionValidation
-
     data class ListField(
         override val isRequired: Boolean,
         override val oasKey: String,
         val schema: Schema,
         override val isInherited: Boolean,
-        val parentSchema: Schema
+        val parentSchema: Schema,
+        val enclosingSchema: Schema?
     ) : PropertyInfo(), CollectionValidation {
-        override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, oasKey)
+        override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
         override val minItems: Int? = schema.minItems
         override val maxItems: Int? = schema.maxItems
     }
