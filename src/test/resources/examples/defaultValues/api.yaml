@@ -23,3 +23,17 @@ components:
         catch_phrase:
           type: string
           default: Cowabunga Dude
+
+    ObjectWithRequiredDefaultProperties:
+      type: object
+      required:
+        - name
+        - objectType
+      properties:
+        name:
+          type: string
+        objectType:
+          type: string
+          default: "myObjectType"
+        anotherNonRequiredProperty:
+          type: string

@@ -103,8 +103,8 @@ object PropertyUtils {
             if (this !is PropertyInfo.Field || !isPolymorphicDiscriminator) {
                 property.initializer(name)
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, type)
-                val default = getDefaultValue(this, parameterizedType)
-                if (!isRequired) default?.setDefault(constructorParameter) ?: constructorParameter.defaultValue("null")
+                val default = getDefaultValue(this, parameterizedType)?.setDefault(constructorParameter)
+                if (!isRequired) default ?: constructorParameter.defaultValue("null")
                 constructorBuilder.addParameter(constructorParameter.build())
             }
         }

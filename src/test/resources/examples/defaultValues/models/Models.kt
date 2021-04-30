@@ -34,3 +34,17 @@ enum class HeightCategory(
 
     SHORT("short");
 }
+
+data class ObjectWithRequiredDefaultProperties(
+    @param:JsonProperty("name")
+    @get:JsonProperty("name")
+    @get:NotNull
+    val name: String,
+    @param:JsonProperty("objectType")
+    @get:JsonProperty("objectType")
+    @get:NotNull
+    val objectType: String = "myObjectType",
+    @param:JsonProperty("anotherNonRequiredProperty")
+    @get:JsonProperty("anotherNonRequiredProperty")
+    val anotherNonRequiredProperty: String? = null
+)
