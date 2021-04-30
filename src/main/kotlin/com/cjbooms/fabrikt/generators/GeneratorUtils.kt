@@ -25,9 +25,9 @@ object GeneratorUtils {
     fun RequestBody.toBodyParameterSpec(basePackage: String): List<ParameterSpec> =
         this.toBodyRequestSchema().map {
             val modelType = toModelType(
-                basePackage,
-                KotlinTypeInfo.from(it),
-                this.isRequired
+                basePackage = basePackage,
+                typeInfo = KotlinTypeInfo.from(it),
+                isNullable = !this.isRequired
             )
             ParameterSpec.builder(
                 it.toVarName(),
@@ -41,7 +41,11 @@ object GeneratorUtils {
     fun Parameter.toParameterSpec(basePackage: String): ParameterSpec =
         ParameterSpec.builder(
             this.name.toKCodeName(),
-            toModelType(basePackage, KotlinTypeInfo.from(this.schema), this.isRequired)
+            toModelType(
+                basePackage = basePackage,
+                typeInfo = KotlinTypeInfo.from(this.schema),
+                isNullable = !this.isRequired && this.schema.default == null
+            )
         ).build()
 
     /**

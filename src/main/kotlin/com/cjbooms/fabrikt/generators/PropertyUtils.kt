@@ -103,8 +103,8 @@ object PropertyUtils {
             if (this !is PropertyInfo.Field || !isPolymorphicDiscriminator) {
                 property.initializer(name)
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, type)
-                val default = getDefaultValue(this, parameterizedType)?.setDefault(constructorParameter)
-                if (!isRequired) default ?: constructorParameter.defaultValue("null")
+                val default = getDefaultValue(this, parameterizedType)
+                if (!isRequired) default?.setDefault(constructorParameter) ?: constructorParameter.defaultValue("null")
                 constructorBuilder.addParameter(constructorParameter.build())
             }
         }
@@ -120,6 +120,11 @@ object PropertyUtils {
             }
             else -> null
         }
+    }
+
+    fun PropertyInfo.isNullable() = when (this) {
+        is PropertyInfo.Field -> !isRequired && schema.default == null
+        else -> !isRequired
     }
 
     /**
@@ -141,7 +146,7 @@ object PropertyUtils {
      *   enum                   - Not currently supported. Possible to do as a regex maybe.
      */
     private fun PropertySpec.Builder.addValidationAnnotations(info: PropertyInfo) {
-        if (info.isRequired) addAnnotation(ValidationAnnotations.NON_NULL_ANNOTATION)
+        if (!info.isNullable()) addAnnotation(ValidationAnnotations.NON_NULL_ANNOTATION)
         when (info) {
             is PropertyInfo.Field -> {
                 // Regex validation pattern to validate string input

@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.ClassType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.PropertyUtils.addToClass
+import com.cjbooms.fabrikt.generators.PropertyUtils.isNullable
 import com.cjbooms.fabrikt.generators.TypeFactory.createList
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfMapsStringToStringAny
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfStringToType
@@ -50,7 +51,7 @@ class JacksonModelGenerator(
     private val options: Set<ModelCodeGenOptionType> = emptySet()
 ) {
     companion object {
-        fun toModelType(basePackage: String, typeInfo: KotlinTypeInfo, isRequired: Boolean = true): TypeName {
+        fun toModelType(basePackage: String, typeInfo: KotlinTypeInfo, isNullable: Boolean = false): TypeName {
             val className =
                 toClassName(
                     basePackage,
@@ -93,7 +94,7 @@ class JacksonModelGenerator(
                 is KotlinTypeInfo.TypedProperties -> createMutableMapOfStringToType(className)
                 else -> className
             }
-            return if (isRequired) typeName else typeName.copy(nullable = true)
+            return if (isNullable) typeName.copy(nullable = true) else typeName
         }
 
         private fun toClassName(basePackage: String, typeInfo: KotlinTypeInfo): ClassName =
@@ -315,7 +316,7 @@ class JacksonModelGenerator(
                 toModelType(
                     packages.base,
                     it.typeInfo,
-                    it.isRequired
+                    it.isNullable()
                 ),
                 toClassName(
                     packages.base,
