@@ -1,6 +1,10 @@
-# Fabrikt - Fabricates Kotlin code from OpenApi3 specifications
+# Fabrikt /ˈfa-brikt/ - Kotlin code from OpenApi3 specifications
 
-Generates Kotlin code from OpenApi3 specifications, ensuring code matches API contracts. This library was built at [Zalando Tech](https://opensource.zalando.com/) and is battle-tested in production there. It is particulary well suited to API's built according to Zalando's [REST API guidelines](https://opensource.zalando.com/restful-api-guidelines/). It is [available on Maven Central](https://search.maven.org/artifact/com.cjbooms/fabrikt) at the following coordinates:
+This library was built to take advantage of the complex modeling features available in OpenApi3. It generates null-safe Kotlin models with advanced support for features suchs as: enumerations, sealed classes, `@JsonSubTypes` polymorphic models, maps of maps. 
+
+The team that built this tool initially contributed to the Kotkin code generation ability in [OpenApiTools](https://github.com/OpenAPITools/openapi-generator), but reached the limits of what could be achieved with template-based generation. This library levarages the rich OpenApi3 model provided by [KaiZen-OpenApi-Parser](https://github.com/RepreZen/KaiZen-OpenApi-Parser) and uses [Kotlin Poet](https://square.github.io/kotlinpoet/) to programatically construct Kotlin classes for maximum flexability. 
+
+It was built at [Zalando Tech](https://opensource.zalando.com/) and is battle-tested in production there. It is particulary well suited to API's built according to Zalando's [REST API guidelines](https://opensource.zalando.com/restful-api-guidelines/). It is [available on Maven Central](https://search.maven.org/artifact/com.cjbooms/fabrikt) at the following coordinates:
 
 ```
 <dependency>
@@ -17,12 +21,96 @@ The library currently has support for generating:
 * **Spring MVC annotated controller interfaces**
 * **OkHttp Client** - with the option for a resilience4j fault-tolerance wrapper
 
-## Examples
+### Example Generation
 
 The test directory forms a living documentation full of [code examples](src/test/resources/examples) generated from different OpenApi3 permutations. 
 
+Below showcases one single example from this directory, which uses an enum discriminator to generate polymorphic sealed classes:
+```
+openapi: 3.0.0
+components:
+  schemas:
+    PolymorphicEnumDiscriminator:
+      type: object
+      discriminator:
+        propertyName: some_enum
+        mapping:
+          obj_one: '#/components/schemas/ConcreteImplOne'
+          obj_two: '#/components/schemas/ConcreteImplTwo'
+      properties:
+        some_enum:
+          $ref: '#/components/schemas/EnumDiscriminator'
+    ConcreteImplOne:
+      allOf:
+        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
+        - type: object
+          properties:
+            some_prop:
+              type: string
+    ConcreteImplTwo:
+      allOf:
+        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
+        - type: object
+          properties:
+            some_prop:
+              type: string
+    EnumDiscriminator:
+      type: string
+      enum:
+        - obj_one
+        - obj_two
+```
+```
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "some_enum",
+    visible = true
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(
+        value = ConcreteImplOne::class,
+        name =
+            "obj_one"
+    ),
+    JsonSubTypes.Type(value = ConcreteImplTwo::class, name = "obj_two")
+)
+sealed class PolymorphicEnumDiscriminator() {
+    abstract val someEnum: EnumDiscriminator
+}
 
-## Configuration
+enum class EnumDiscriminator(
+    @JsonValue
+    val value: String
+) {
+    OBJ_ONE("obj_one"),
+
+    OBJ_TWO("obj_two");
+}
+
+data class ConcreteImplOne(
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null
+) : PolymorphicEnumDiscriminator() {
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE
+}
+
+data class ConcreteImplTwo(
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null
+) : PolymorphicEnumDiscriminator() {
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_TWO
+}
+```
+
+
+## Usage Instructions
 
 This section documents the available CLI parameters for controlling what gets generated. This documentation is generated using: `./gradlew printCodeGenUsage`
 
@@ -48,9 +136,19 @@ This section documents the available CLI parameters for controlling what gets ge
  |                        |   `QUARKUS_REFLECTION_CONFIG` - This options generates the reflection-config.json file for quarkus integration projects
 
 
-## Examples
+### Command Line
+Fabrikt is packaged as an executable jar, allowing it to be integrated into any build tool. The CLI can be invoked as follows:
+```
+   java -jar fabrikt.jar \
+             --output-directory '/tmp' \
+             --base-package 'com.example' \
+             --api-file '/path-to-api/open-api.yaml' \
+             --targets 'client' \
+             --targets 'http_models' \
+             --http-client-opts resilience4j
+```
 
-### Gradle Task
+### Gradle example
 
 Here is an example of a Gradle task with code generated to the `build/generated` directory, and execution linked to the compile task. 
 
@@ -90,13 +188,4 @@ dependencies {
      ...
 }
 ```
-### Command Line
-```
-   java -jar fabrikt.jar \
-             --output-directory '/tmp' \
-             --base-package 'com.example' \
-             --api-file '/path-to-api/open-api.yaml' \
-             --targets 'client' \
-             --targets 'http_models' \
-             --http-client-opts resilience4j
-```
+
