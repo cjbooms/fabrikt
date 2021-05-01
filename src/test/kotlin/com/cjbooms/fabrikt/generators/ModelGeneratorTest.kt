@@ -66,9 +66,9 @@ class ModelGeneratorTest {
 
     @Test
     fun `sealed classes are correctly grouped into a single file`() {
-        val basePackage = "examples.polymorphicModels"
+        val basePackage = "examples.polymorphicModels.sealed"
         val spec = javaClass.getResource("/examples/polymorphicModels/api.yaml").readText()
-        val expectedModels = javaClass.getResource("/examples/polymorphicModels/models/Models.kt").readText()
+        val expectedModels = javaClass.getResource("/examples/polymorphicModels/sealed/models/Models.kt").readText()
 
         val models = JacksonModelGenerator(
             Packages(basePackage),
