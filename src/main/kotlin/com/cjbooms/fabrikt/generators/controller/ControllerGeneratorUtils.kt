@@ -66,7 +66,7 @@ object ControllerGeneratorUtils {
             .map {
                 RequestParameter(
                     it.name,
-                    toModelType(basePackage, KotlinTypeInfo.from(it.schema), isRequired(it)),
+                    toModelType(basePackage, KotlinTypeInfo.from(it.schema), isNullable(it)),
                     it
                 )
             }
@@ -75,7 +75,7 @@ object ControllerGeneratorUtils {
         return bodies + parameters
     }
 
-    private fun isRequired(parameter: Parameter): Boolean = parameter.isRequired || parameter.schema.default != null
+    private fun isNullable(parameter: Parameter): Boolean = !parameter.isRequired && parameter.schema.default == null
 
     fun controllerName(resourceName: String) = "$resourceName${ControllerType.SUFFIX}"
 

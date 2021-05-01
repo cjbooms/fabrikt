@@ -4,22 +4,23 @@ components:
     PersonWithDefaults:
       type: object
       required:
-        - name
+        - required_so_default_ignored
       properties:
-        name:
+        required_so_default_ignored:
           type: string
-        age:
+          default: "Some ignored default"
+        integer_default:
           type: integer
           default: 18
-        height_category:
+        enum_default:
           type: string
           enum:
             - tall
             - short
           default: tall
-        has_hair:
+        boolean_default:
           type: boolean
           default: true
-        catch_phrase:
+        string_phrase:
           type: string
           default: Cowabunga Dude

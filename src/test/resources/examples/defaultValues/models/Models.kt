@@ -8,25 +8,29 @@ import kotlin.Int
 import kotlin.String
 
 data class PersonWithDefaults(
-    @param:JsonProperty("name")
-    @get:JsonProperty("name")
+    @param:JsonProperty("required_so_default_ignored")
+    @get:JsonProperty("required_so_default_ignored")
     @get:NotNull
-    val name: String,
-    @param:JsonProperty("age")
-    @get:JsonProperty("age")
-    val age: Int? = 18,
-    @param:JsonProperty("height_category")
-    @get:JsonProperty("height_category")
-    val heightCategory: HeightCategory? = HeightCategory.TALL,
-    @param:JsonProperty("has_hair")
-    @get:JsonProperty("has_hair")
-    val hasHair: Boolean? = true,
-    @param:JsonProperty("catch_phrase")
-    @get:JsonProperty("catch_phrase")
-    val catchPhrase: String? = "Cowabunga Dude"
+    val requiredSoDefaultIgnored: String,
+    @param:JsonProperty("integer_default")
+    @get:JsonProperty("integer_default")
+    @get:NotNull
+    val integerDefault: Int = 18,
+    @param:JsonProperty("enum_default")
+    @get:JsonProperty("enum_default")
+    @get:NotNull
+    val enumDefault: EnumDefault = EnumDefault.TALL,
+    @param:JsonProperty("boolean_default")
+    @get:JsonProperty("boolean_default")
+    @get:NotNull
+    val booleanDefault: Boolean = true,
+    @param:JsonProperty("string_phrase")
+    @get:JsonProperty("string_phrase")
+    @get:NotNull
+    val stringPhrase: String = "Cowabunga Dude"
 )
 
-enum class HeightCategory(
+enum class EnumDefault(
     @JsonValue
     val value: String
 ) {

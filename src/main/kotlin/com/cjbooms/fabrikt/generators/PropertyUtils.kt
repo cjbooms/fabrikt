@@ -122,6 +122,11 @@ object PropertyUtils {
         }
     }
 
+    fun PropertyInfo.isNullable() = when (this) {
+        is PropertyInfo.Field -> !isRequired && schema.default == null
+        else -> !isRequired
+    }
+
     /**
      * Current Open API v3 Spec validation keys:
      *
@@ -141,7 +146,7 @@ object PropertyUtils {
      *   enum                   - Not currently supported. Possible to do as a regex maybe.
      */
     private fun PropertySpec.Builder.addValidationAnnotations(info: PropertyInfo) {
-        if (info.isRequired) addAnnotation(ValidationAnnotations.NON_NULL_ANNOTATION)
+        if (!info.isNullable()) addAnnotation(ValidationAnnotations.NON_NULL_ANNOTATION)
         when (info) {
             is PropertyInfo.Field -> {
                 // Regex validation pattern to validate string input
