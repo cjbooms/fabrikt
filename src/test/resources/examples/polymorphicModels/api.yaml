@@ -26,8 +26,16 @@ components:
     PolymorphicTypeTwo:
       allOf:
         - $ref: "#/components/schemas/PolymorphicSuperType"
+        - $ref: "#/components/schemas/AnotherObject"
         - type: object
           properties:
             child_two_age:
               type: integer
               format: int32
+              
+    AnotherObject:
+      type: object
+      properties:
+        some_integer_propery:
+          type: integer
+          format: int32

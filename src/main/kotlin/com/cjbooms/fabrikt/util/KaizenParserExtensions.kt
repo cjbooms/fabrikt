@@ -141,6 +141,8 @@ object KaizenParserExtensions {
                 path[path.lastIndex].toIntOrNull() != null && (path[path.lastIndex - 1] == "allOf")
             }
 
+    fun Schema.hasNoDiscriminator(): Boolean = this.discriminator.propertyName == null
+
     fun Schema.safeName(): String =
         when {
             isOneOfPolymorphicTypes() -> this.oneOfSchemas.first().allOfSchemas.first().safeName()

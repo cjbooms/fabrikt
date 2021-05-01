@@ -1,4 +1,4 @@
-package examples.polymorphicModels.models
+package examples.polymorphicModels.sealed.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -70,9 +70,3 @@ data class PolymorphicTypeTwo(
     @get:NotNull
     override val generation: String = "PolymorphicTypeTwo"
 }
-
-data class AnotherObject(
-    @param:JsonProperty("some_integer_propery")
-    @get:JsonProperty("some_integer_propery")
-    val someIntegerPropery: Int? = null
-)

@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getKeyIfDiscriminator
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasAdditionalProperties
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasNoDiscriminator
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isDiscriminatorProperty
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInLinedObjectUnderAllOf
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
@@ -52,7 +53,7 @@ sealed class PropertyInfo {
         }
 
         private fun maybeMarkInherited(settings: Settings, it: Schema) =
-            settings.copy(markAsInherited = if (it.isInLinedObjectUnderAllOf()) settings.markAsInherited else true)
+            settings.copy(markAsInherited = if (it.isInLinedObjectUnderAllOf() || it.hasNoDiscriminator()) settings.markAsInherited else true)
 
         private fun Schema.getInLinedProperties(
             settings: Settings,
