@@ -190,8 +190,6 @@ class JacksonModelGenerator(
                             else -> emptySet()
                         }
                     }
-                else ->
-                    emptySet()
             }
         }
 
