@@ -14,8 +14,7 @@ Generates Kotlin code from OpenApi3 specifications, ensuring code matches API co
 The library currently has support for generating:
 
 * **Jackson annotated data classes**
-* **Spring MVC annotated controllers**
-* **Service interfaces**
+* **Spring MVC annotated controller interfaces**
 * **OkHttp Client** - with the option for a resilience4j fault-tolerance wrapper
 
 ## Examples
@@ -25,7 +24,7 @@ The test directory forms a living documentation full of [code examples](src/test
 
 ## Configuration
 
-This section documents the available CLI parameters for controlling what gets generated.
+This section documents the available CLI parameters for controlling what gets generated. This documentation is generated using: `./gradlew printCodeGenUsage`
 
  | Parameter              | Description
  | ---------------------- | ----------------------
@@ -47,6 +46,7 @@ This section documents the available CLI parameters for controlling what gets ge
  |                        |   `CONTROLLERS` - Spring annotated HTTP controllers for each of the endpoints defined in the input.
  |                        |   `CLIENT` - Simple http rest client.
  |                        |   `QUARKUS_REFLECTION_CONFIG` - This options generates the reflection-config.json file for quarkus integration projects
+
 
 ## Examples
 
