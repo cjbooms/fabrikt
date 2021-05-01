@@ -17,7 +17,9 @@ import javax.validation.constraints.Min
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
+import kotlin.Unit
 import kotlin.collections.List
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PathVariable
@@ -43,7 +45,7 @@ interface InternalEventsController {
     fun post(
         @RequestBody @Valid
         bulkEntityDetails: BulkEntityDetails
-    ): EventResults
+    ): ResponseEntity<EventResults>
 }
 
 @Controller
@@ -81,7 +83,7 @@ interface ContributorsController {
         includeInactive: Boolean?,
         @RequestParam(value = "cursor", required = false)
         cursor: String?
-    ): ContributorQueryResult
+    ): ResponseEntity<ContributorQueryResult>
 
     /**
      * Create a new Contributor
@@ -111,7 +113,7 @@ interface ContributorsController {
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    )
+    ): ResponseEntity<Unit>
 
     /**
      * Get a Contributor by ID
@@ -142,7 +144,7 @@ interface ContributorsController {
         xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false)
         ifNoneMatch: String?
-    ): Contributor
+    ): ResponseEntity<Contributor>
 
     /**
      * Update an existing Contributor
@@ -182,7 +184,7 @@ interface ContributorsController {
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    )
+    ): ResponseEntity<Unit>
 }
 
 @Controller
@@ -220,7 +222,7 @@ interface OrganisationsController {
         includeInactive: Boolean?,
         @RequestParam(value = "cursor", required = false)
         cursor: String?
-    ): OrganisationQueryResult
+    ): ResponseEntity<OrganisationQueryResult>
 
     /**
      * Create a new Organisation
@@ -250,7 +252,7 @@ interface OrganisationsController {
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    )
+    ): ResponseEntity<Unit>
 
     /**
      * Get a Organisation by ID
@@ -281,7 +283,7 @@ interface OrganisationsController {
         xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false)
         ifNoneMatch: String?
-    ): Organisation
+    ): ResponseEntity<Organisation>
 
     /**
      * Update an existing Organisation
@@ -321,7 +323,7 @@ interface OrganisationsController {
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    )
+    ): ResponseEntity<Unit>
 }
 
 @Controller
@@ -363,7 +365,7 @@ interface OrganisationsContributorsController {
         includeInactive: Boolean?,
         @RequestParam(value = "cursor", required = false)
         cursor: String?
-    ): ContributorQueryResult
+    ): ResponseEntity<ContributorQueryResult>
 
     /**
      * Get a Contributor for this Organisation by ID
@@ -392,7 +394,7 @@ interface OrganisationsContributorsController {
         xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false)
         ifNoneMatch: String?
-    ): Contributor
+    ): ResponseEntity<Contributor>
 
     /**
      * Add an existing Contributor to this Organisation
@@ -432,7 +434,7 @@ interface OrganisationsContributorsController {
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    )
+    ): ResponseEntity<Unit>
 
     /**
      * Remove Contributor from this Organisation. Does not delete the underlying Contributor.
@@ -455,7 +457,7 @@ interface OrganisationsContributorsController {
         id: String,
         @RequestHeader(value = "X-Flow-Id", required = false)
         xFlowId: String?
-    )
+    ): ResponseEntity<Unit>
 }
 
 @Controller
@@ -503,7 +505,7 @@ interface RepositoriesController {
         includeInactive: Boolean?,
         @RequestParam(value = "cursor", required = false)
         cursor: String?
-    ): RepositoryQueryResult
+    ): ResponseEntity<RepositoryQueryResult>
 
     /**
      * Create a new Repository
@@ -533,7 +535,7 @@ interface RepositoriesController {
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    )
+    ): ResponseEntity<Unit>
 
     /**
      * Get a Repository by ID
@@ -564,7 +566,7 @@ interface RepositoriesController {
         xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false)
         ifNoneMatch: String?
-    ): Repository
+    ): ResponseEntity<Repository>
 
     /**
      * Update an existing Repository
@@ -604,7 +606,7 @@ interface RepositoriesController {
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    )
+    ): ResponseEntity<Unit>
 }
 
 @Controller
@@ -646,7 +648,7 @@ interface RepositoriesPullRequestsController {
         includeInactive: Boolean?,
         @RequestParam(value = "cursor", required = false)
         cursor: String?
-    ): PullRequestQueryResult
+    ): ResponseEntity<PullRequestQueryResult>
 
     /**
      * Create a new PullRequest for this parent Repository
@@ -679,7 +681,7 @@ interface RepositoriesPullRequestsController {
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    )
+    ): ResponseEntity<Unit>
 
     /**
      * Get a PullRequest for this Repository by ID
@@ -708,7 +710,7 @@ interface RepositoriesPullRequestsController {
         xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false)
         ifNoneMatch: String?
-    ): PullRequest
+    ): ResponseEntity<PullRequest>
 
     /**
      * Update the PullRequest owned by this Repository
@@ -751,5 +753,5 @@ interface RepositoriesPullRequestsController {
         xFlowId: String?,
         @RequestHeader(value = "Idempotency-Key", required = false)
         idempotencyKey: String?
-    )
+    ): ResponseEntity<Unit>
 }
