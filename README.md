@@ -23,8 +23,91 @@ The library currently has support for generating:
 
 ### Example Generation
 
-The test directory forms a living documentation full of code examples generated from different OpenApi3 permutations.
+The test directory forms a living documentation full of [code examples](src/test/resources/examples) generated from different OpenApi3 permutations. 
 
+Below showcases one single example from this directory, which uses an enum discriminator to generate polymorphic sealed classes:
+```
+openapi: 3.0.0
+components:
+  schemas:
+    PolymorphicEnumDiscriminator:
+      type: object
+      discriminator:
+        propertyName: some_enum
+        mapping:
+          obj_one: '#/components/schemas/ConcreteImplOne'
+          obj_two: '#/components/schemas/ConcreteImplTwo'
+      properties:
+        some_enum:
+          $ref: '#/components/schemas/EnumDiscriminator'
+    ConcreteImplOne:
+      allOf:
+        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
+        - type: object
+          properties:
+            some_prop:
+              type: string
+    ConcreteImplTwo:
+      allOf:
+        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
+        - type: object
+          properties:
+            some_prop:
+              type: string
+    EnumDiscriminator:
+      type: string
+      enum:
+        - obj_one
+        - obj_two
+```
+```
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "some_enum",
+    visible = true
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(
+        value = ConcreteImplOne::class,
+        name =
+            "obj_one"
+    ),
+    JsonSubTypes.Type(value = ConcreteImplTwo::class, name = "obj_two")
+)
+sealed class PolymorphicEnumDiscriminator() {
+    abstract val someEnum: EnumDiscriminator
+}
+
+enum class EnumDiscriminator(
+    @JsonValue
+    val value: String
+) {
+    OBJ_ONE("obj_one"),
+
+    OBJ_TWO("obj_two");
+}
+
+data class ConcreteImplOne(
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null
+) : PolymorphicEnumDiscriminator() {
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE
+}
+
+data class ConcreteImplTwo(
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null
+) : PolymorphicEnumDiscriminator() {
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_TWO
+}
+```
 
 
 ## Usage Instructions
