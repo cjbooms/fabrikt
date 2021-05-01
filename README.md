@@ -1,4 +1,4 @@
-# Fabrikt /ˈfa-brikt/ - Kotlin code from OpenApi3 specifications
+# Fabrikt `/ˈfa-brikt/` - Kotlin code from OpenApi3 specifications
 
 This library was built to take advantage of the complex modeling features available in OpenApi3. It generates null-safe Kotlin models with advanced support for features suchs as: enumerations, sealed classes, `@JsonSubTypes` polymorphic models, maps of maps. 
 
