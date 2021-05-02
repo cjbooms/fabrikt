@@ -23,7 +23,6 @@ object ControllerGeneratorUtils {
         // Map of response code to nullable name of schema
         val responseDetails = happyPathResponseObject()
         return responseDetails
-            .second
             .contentMediaTypes
             .map { it.value?.schema }
             .filterNotNull()
@@ -32,7 +31,7 @@ object ControllerGeneratorUtils {
             ?: Unit::class.asTypeName()
     }
 
-    fun Operation.happyPathResponseObject(): Pair<Int, Response> {
+    fun Operation.happyPathResponseObject(): Response {
         val toResponseMapping: Map<Int, Response> = responses
             .filter { it.key != "default" }
             .map { (code, body) ->
@@ -43,7 +42,7 @@ object ControllerGeneratorUtils {
         val code: Int = toResponseMapping.keys.min() ?: throw IllegalStateException("Could not extract the response for $this")
         val response = toResponseMapping[code]!!
 
-        return code to response
+        return response
     }
 
     /**

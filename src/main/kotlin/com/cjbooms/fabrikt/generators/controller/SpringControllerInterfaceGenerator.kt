@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.method
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
+import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.Controllers
@@ -25,6 +26,7 @@ import com.reprezen.kaizen.oasparser.model3.Path
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 
 class SpringControllerInterfaceGenerator(
@@ -88,7 +90,7 @@ class SpringControllerInterfaceGenerator(
             .addModifiers(KModifier.ABSTRACT)
             .addKdoc(op.toKdoc())
             .addSpringFunAnnotation(op, verb, pathString)
-            .returns(returnType)
+            .returns(SpringImports.RESPONSE_ENTITY.parameterizedBy(returnType))
 
         parameters
             .map {
