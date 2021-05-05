@@ -1,6 +1,6 @@
 # Fabrikt `/ˈfa-brikt/` - Kotlin code from OpenApi3 specifications
 
-This library was built to take advantage of the complex modeling features available in OpenApi3. It generates null-safe Kotlin models with advanced support for features suchs as: enumerations, sealed classes, polymorphic models (`@JsonSubTypes`), maps of maps. 
+This library was built to take advantage of the complex modeling features available in OpenApi3. It generates null-safe Kotlin models with advanced support for features suchs as: enumerations, sealed classes, polymorphic models (`@JsonSubTypes`), maps of maps, GraalVM native support. 
 
 The team that built this tool initially contributed to the Kotlin code generation ability in [OpenApiTools](https://github.com/OpenAPITools/openapi-generator), but reached the limits of what could be achieved with template-based generation. This library levarages the rich OpenApi3 model provided by [KaiZen-OpenApi-Parser](https://github.com/RepreZen/KaiZen-OpenApi-Parser) and uses [Kotlin Poet](https://square.github.io/kotlinpoet/) to programatically construct Kotlin classes for maximum flexability. 
 
