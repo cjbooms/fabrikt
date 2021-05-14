@@ -117,7 +117,7 @@ class JacksonModelGenerator(
     fun generate(): Models {
         val models: MutableSet<TypeSpec> =
             sourceApi.allSchemas
-                .filterNot { (it.schema.isSimpleType() && !it.schema.isEnumDefinition()) || it.schema.isInlineableMapDefinition() }
+                .filterNot { it.schema.isSimpleType() }
                 .flatMap {
                     val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
                     if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
