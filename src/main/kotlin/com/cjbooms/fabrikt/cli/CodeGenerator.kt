@@ -55,7 +55,7 @@ class CodeGenerator(private val packages: Packages, private val sourceApi: Sourc
         listOfNotNull(QuarkusReflectionModelGenerator(models, MutableSettings.generationTypes()).generate())
 
     private fun controllers(): Controllers =
-        SpringControllerInterfaceGenerator(packages, sourceApi, models().models).generate()
+        SpringControllerInterfaceGenerator(packages, sourceApi).generate()
 
     private fun client(): Clients =
         OkHttpClientGenerator(packages, sourceApi).generate(MutableSettings.clientOptions())

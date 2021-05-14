@@ -4,7 +4,6 @@ import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
@@ -32,8 +31,7 @@ class SpringControllerGeneratorTest {
 
     private fun setupGithubApiTestEnv() {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
-        generated = SpringControllerInterfaceGenerator(Packages(basePackage), api, models).generate().files
+        generated = SpringControllerInterfaceGenerator(Packages(basePackage), api).generate().files
     }
 
     @BeforeEach
@@ -85,8 +83,7 @@ class SpringControllerGeneratorTest {
     @Test
     fun `ensure that subresource specific controllers are created`() {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
-        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api, models).generate()
+        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api).generate()
 
         assertThat(controllers.files).size().isEqualTo(6)
         assertThat(controllers.files.map { it.name }).containsAll(
@@ -128,11 +125,9 @@ class SpringControllerGeneratorTest {
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
         val expectedControllers = readTextResource("/examples/$testCaseName/controllers/Controllers.kt")
 
-        val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
-            api,
-            models
+            api
         ).generate().toSingleFile()
 
         assertThat(controllers).isEqualTo(expectedControllers)

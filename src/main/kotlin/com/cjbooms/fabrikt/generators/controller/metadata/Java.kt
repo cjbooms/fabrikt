@@ -19,8 +19,6 @@ object JavaXAnnotations {
         AnnotationSpec
             .builder(Imports.VALID)
 
-    fun fieldValid(): AnnotationSpec = validBuilder().useSiteTarget(AnnotationSpec.UseSiteTarget.GET).build()
-
     private fun minBuilder(): AnnotationSpec.Builder =
         AnnotationSpec
             .builder(Imports.MIN)

@@ -188,12 +188,4 @@ object KaizenParserExtensions {
 
     fun String.isSingleResource(): Boolean =
         count { it == '/' } % 2 == 0 && endsWith("}")
-
-    fun Path.isSingleResource(): Boolean =
-        pathString.isSingleResource()
-
-    fun Path.getResourceName() = pathString
-        .split("/")
-        .filterNot { it.isBlank() || it.matches("\\{.*}".toRegex()) }
-        .last()
 }

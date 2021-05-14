@@ -39,10 +39,10 @@ object ControllerGeneratorUtils {
             }.toMap()
 
         // Happy path, just pull out the http code with the lowest value. Later we may have conditional responses
-        val code: Int = toResponseMapping.keys.minOrNull() ?: throw IllegalStateException("Could not extract the response for $this")
-        val response = toResponseMapping[code]!!
+        val code: Int = toResponseMapping.keys.minOrNull()
+            ?: throw IllegalStateException("Could not extract the response for $this")
 
-        return response
+        return toResponseMapping[code]!!
     }
 
     /**

@@ -4,7 +4,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 object Destinations {
-    val PATH_ROOT: Path = Paths.get("")
+    private val PATH_ROOT: Path = Paths.get("")
 
     const val MAIN_KT_SOURCE = "src/main/kotlin/"
     const val MAIN_RESOURCES = "src/main/resources"
