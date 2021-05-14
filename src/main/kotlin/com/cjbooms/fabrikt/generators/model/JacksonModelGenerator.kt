@@ -25,8 +25,10 @@ import com.cjbooms.fabrikt.model.PropertyInfo.Companion.topLevelProperties
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isReferenceObjectDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKey
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
@@ -111,7 +113,7 @@ class JacksonModelGenerator(
     fun generate(): Models {
         val models: MutableSet<TypeSpec> =
             sourceApi.modelInfos
-                .filterNot { it.isSimpleType || it.isInlineableMapDefinition }
+                .filterNot { (it.schema.isSimpleType() && !it.schema.isEnumDefinition()) || it.schema.isInlineableMapDefinition() }
                 .flatMap {
                     if (it.properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
                         val primaryModel = buildPrimaryModel(it, it.properties)

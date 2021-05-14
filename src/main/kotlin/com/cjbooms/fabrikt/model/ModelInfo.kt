@@ -2,12 +2,8 @@ package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.model.PropertyInfo.Companion.topLevelProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSubType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSuperType
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleType
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
 
@@ -18,9 +14,6 @@ data class ModelInfo(
     val children: List<ModelInfo> = emptyList()
 ) {
     val name = key
-    val safeName = schema.safeName()
-    var isSimpleType: Boolean = schema.isSimpleType() && !schema.isEnumDefinition()
-    var isInlineableMapDefinition: Boolean = schema.isInlineableMapDefinition()
     val isPolymorphicSuperType: Boolean = schema.isPolymorphicSuperType()
     val isPolymorphicSubType: Boolean = schema.isPolymorphicSubType(api)
     val maybeSuperType: ModelInfo? = schema.getSuperType(api)?.let { ModelInfo(it.name, it, api) }
