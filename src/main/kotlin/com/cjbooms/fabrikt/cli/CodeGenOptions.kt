@@ -1,42 +1,20 @@
 package com.cjbooms.fabrikt.cli
 
-enum class CodeGenerationType(val description: String, val requires: Set<InternalCodeGenGenType>) {
+enum class CodeGenerationType(val description: String) {
     HTTP_MODELS(
-        "Jackson annotated data classes to represent the schema objects defined in the input.",
-        setOf(InternalCodeGenGenType.MODELS)
+        "Jackson annotated data classes to represent the schema objects defined in the input."
     ),
     CONTROLLERS(
-        "Spring annotated HTTP controllers for each of the endpoints defined in the input.",
-        setOf(
-            InternalCodeGenGenType.MODELS,
-            InternalCodeGenGenType.SERVICE_INTERFACES,
-            InternalCodeGenGenType.CONTROLLERS
-        )
+        "Spring annotated HTTP controllers for each of the endpoints defined in the input."
     ),
     CLIENT(
-        "Simple http rest client.",
-        setOf(
-            InternalCodeGenGenType.MODELS,
-            InternalCodeGenGenType.CLIENT
-        )
+        "Simple http rest client."
     ),
     QUARKUS_REFLECTION_CONFIG(
-        "This options generates the reflection-config.json file for quarkus integration projects",
-        setOf(
-            InternalCodeGenGenType.QUARKUS_REFLECTION_RESOURCE
-        )
+        "This options generates the reflection-config.json file for quarkus integration projects"
     );
 
     override fun toString() = "`${super.toString()}` - $description"
-}
-
-// Ordering is important here...
-enum class InternalCodeGenGenType {
-    MODELS,
-    CONTROLLERS,
-    SERVICE_INTERFACES,
-    CLIENT,
-    QUARKUS_REFLECTION_RESOURCE
 }
 
 enum class ClientCodeGenOptionType(private val description: String) {

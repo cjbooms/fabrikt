@@ -6,7 +6,6 @@ import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.ServiceLoader
-import java.util.function.BiPredicate
 
 object Linter {
 
@@ -22,9 +21,10 @@ object Linter {
 
     fun lint(directory: Path) {
         val matcher = FileSystems.getDefault().getPathMatcher("glob:**.$KOTLIN_EXTENSION")
-        val ktSourceFiles = Files.find(directory, ARBITRARY_FOLDER_DEPTH, BiPredicate { file, _ ->
-            matcher.matches(file)
-        })
+        val ktSourceFiles = Files.find(
+            directory, ARBITRARY_FOLDER_DEPTH,
+            { file, _ -> matcher.matches(file) }
+        )
         ktSourceFiles.forEach { path ->
             val file = path.toFile()
             val fileContent = file.readText()
@@ -41,6 +41,7 @@ object Linter {
         KtLint.Params(
             text = rawText,
             ruleSets = lintRuleSets,
-            cb = { _, _ -> })
+            cb = { _, _ -> }
+        )
     )
 }

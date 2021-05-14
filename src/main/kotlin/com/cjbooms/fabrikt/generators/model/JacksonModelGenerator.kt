@@ -26,7 +26,6 @@ import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSubType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSuperType
@@ -290,14 +289,12 @@ class JacksonModelGenerator(
                 model.schema.allOfSchemas.any { allOfRef ->
                     allOfRef.name == modelName && allOfRef.discriminator == discriminator
                 }
-            }
-            .map {
+            }.associate {
                 discriminator.mappingKey(it.schema) to toModelType(
                     packages.base,
                     KotlinTypeInfo.from(it.schema, it.name)
                 )
             }
-            .toMap()
         classBuilder.addAnnotation(polymorphicSubTypes(subTypes)).addQuarkusReflectionAnnotation()
 
         return properties.addToClass(

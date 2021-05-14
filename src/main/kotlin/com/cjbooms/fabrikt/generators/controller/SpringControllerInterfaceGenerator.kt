@@ -13,7 +13,6 @@ import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.HeaderParam
-import com.cjbooms.fabrikt.model.ModelType
 import com.cjbooms.fabrikt.model.PathParam
 import com.cjbooms.fabrikt.model.QueryParam
 import com.cjbooms.fabrikt.model.RequestParameter
@@ -31,8 +30,7 @@ import com.squareup.kotlinpoet.TypeSpec
 
 class SpringControllerInterfaceGenerator(
     private val packages: Packages,
-    private val api: SourceApi,
-    private val models: Collection<ModelType>
+    private val api: SourceApi
 ) {
 
     fun generate(): Controllers =
@@ -95,16 +93,18 @@ class SpringControllerInterfaceGenerator(
         parameters
             .map {
                 when (it) {
-                    is BodyParameter -> it
-                        .toParameterSpecBuilder()
-                        .addAnnotation(SpringAnnotations.requestBodyBuilder().build())
-                        .addAnnotation(JavaXAnnotations.validBuilder().build())
-                        .build()
-                    is RequestParameter -> it
-                        .toParameterSpecBuilder()
-                        .addValidationAnnotations(it)
-                        .addSpringParamAnnotation(it)
-                        .build()
+                    is BodyParameter ->
+                        it
+                            .toParameterSpecBuilder()
+                            .addAnnotation(SpringAnnotations.requestBodyBuilder().build())
+                            .addAnnotation(JavaXAnnotations.validBuilder().build())
+                            .build()
+                    is RequestParameter ->
+                        it
+                            .toParameterSpecBuilder()
+                            .addValidationAnnotations(it)
+                            .addSpringParamAnnotation(it)
+                            .build()
                 }
             }
             .forEach { funcSpec.addParameter(it) }

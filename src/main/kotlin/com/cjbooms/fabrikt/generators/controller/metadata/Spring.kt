@@ -14,8 +14,6 @@ object SpringImports {
 
         const val WEB_BIND_ANNOTATION = "$SPRING_BASE.web.bind.annotation"
 
-        const val SERVLET_SUPPORT = "$SPRING_BASE.web.servlet.support"
-
         const val VALIDATION_ANNOTATION = "$SPRING_BASE.validation.annotation"
     }
 
@@ -34,8 +32,6 @@ object SpringImports {
     val REQUEST_MAPPING = ClassName(Packages.WEB_BIND_ANNOTATION, "RequestMapping")
 
     val VALIDATED = ClassName(Packages.VALIDATION_ANNOTATION, "Validated")
-
-    val URI_BUILDER = ClassName(Packages.SERVLET_SUPPORT, "ServletUriComponentsBuilder")
 
     object Static {
         val RESPONSE_STATUS = Pair(Packages.HTTP, "HttpStatus")

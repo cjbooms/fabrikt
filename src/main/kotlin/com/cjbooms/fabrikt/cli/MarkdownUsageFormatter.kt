@@ -63,10 +63,10 @@ class MarkdownUsageFormatter(commander: JCommander) : DefaultUsageFormatter(comm
     private fun Parameterized.isSingleEnum() = Enum::class.java.isAssignableFrom(type)
 
     private fun getFirstColumnWidth(sortedParameters: List<ParameterDescription>): Int =
-        sortedParameters.fold(0, { currentMaxWidth, pd ->
+        sortedParameters.fold(0) { currentMaxWidth, pd ->
             val entry = pd.getParameterKey()
             if (entry.length > currentMaxWidth) entry.length else currentMaxWidth
-        })
+        }
 
     @Suppress("UNCHECKED_CAST")
     private fun getEnumValues(parameterized: Parameterized): List<Enum<*>> {

@@ -18,10 +18,6 @@ object NormalisedString {
 
     fun String.toKotlinParameterName(): String = this.camelCase()
 
-    fun String.toDbTableName(): String = this.removeSuffix("Entity").camelToSnakeCase()
-
-    fun String.toDbFieldName(): String = this.camelToSnakeCase()
-
     fun String.camelToSnakeCase(): String =
         Regex("[A-Z]").replace(this.camelCase()) {
             "_${it.value.toLowerCase()}"

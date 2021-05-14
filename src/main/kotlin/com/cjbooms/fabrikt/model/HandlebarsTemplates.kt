@@ -1,6 +1,5 @@
 package com.cjbooms.fabrikt.model
 
-import com.github.javaparser.utils.CodeGenerationUtils.packageToPath
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
 import com.github.jknack.handlebars.Options
@@ -40,15 +39,6 @@ object HandlebarsTemplates {
         FirstOccurrenceChecker.STATE_BAG.clear()
         return SimpleFile(outputDirPath.resolve(fileName), fileContents)
     }
-
-    fun applyTemplate(
-        template: Template,
-        input: Any,
-        srcDir: Path,
-        basePackage: String,
-        fileName: String,
-        postProcessor: (String) -> String = { it }
-    ) = applyTemplate(template, input, srcDir.resolve(packageToPath(basePackage)), fileName, postProcessor)
 }
 
 private class FirstOccurrenceChecker : Helper<String> {
