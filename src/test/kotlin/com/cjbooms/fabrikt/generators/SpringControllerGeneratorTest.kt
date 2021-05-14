@@ -8,28 +8,30 @@ import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.cjbooms.fabrikt.validation.Linter
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
-import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SpringControllerGeneratorTest {
     private val basePackage = "ie.zalando"
     private lateinit var generated: Collection<FileSpec>
 
+    @Suppress("unused")
     private fun testCases(): Stream<String> = Stream.of(
         "githubApi"
     )
 
     private fun setupGithubApiTestEnv() {
-        val api = SourceApi(javaClass.getResource("/examples/githubApi/api.yaml").readText())
+        val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
         val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
         generated = SpringControllerInterfaceGenerator(Packages(basePackage), api, models).generate().files
     }
@@ -82,7 +84,7 @@ class SpringControllerGeneratorTest {
 
     @Test
     fun `ensure that subresource specific controllers are created`() {
-        val api = SourceApi(javaClass.getResource("/examples/githubApi/api.yaml").readText())
+        val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
         val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
         val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api, models).generate()
 
@@ -123,8 +125,8 @@ class SpringControllerGeneratorTest {
     @MethodSource("testCases")
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         val basePackage = "examples.$testCaseName"
-        val api = SourceApi(javaClass.getResource("/examples/$testCaseName/api.yaml").readText())
-        val expectedControllers = javaClass.getResource("/examples/$testCaseName/controllers/Controllers.kt").readText()
+        val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
+        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/Controllers.kt")
 
         val models = JacksonModelGenerator(Packages(basePackage), api).generate().models
         val controllers = SpringControllerInterfaceGenerator(

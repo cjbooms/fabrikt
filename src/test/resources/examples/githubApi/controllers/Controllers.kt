@@ -11,14 +11,6 @@ import examples.githubApi.models.PullRequestQueryResult
 import examples.githubApi.models.Repository
 import examples.githubApi.models.RepositoryQueryResult
 import examples.githubApi.models.StatusQueryParam
-import javax.validation.Valid
-import javax.validation.constraints.Max
-import javax.validation.constraints.Min
-import kotlin.Boolean
-import kotlin.Int
-import kotlin.String
-import kotlin.Unit
-import kotlin.collections.List
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.annotation.Validated
@@ -28,6 +20,14 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
+import javax.validation.Valid
+import javax.validation.constraints.Max
+import javax.validation.constraints.Min
+import kotlin.Boolean
+import kotlin.Int
+import kotlin.String
+import kotlin.Unit
+import kotlin.collections.List
 
 @Controller
 @Validated
@@ -73,16 +73,11 @@ interface ContributorsController {
         method = [RequestMethod.GET]
     )
     fun get(
-        @Min(1)
-        @Max(100)
-        @RequestParam(value = "limit", required = false, defaultValue = "10")
+        @Min(1) @Max(100) @RequestParam(value = "limit", required = false, defaultValue = "10")
         limit: Int,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestParam(value = "include_inactive", required = false)
-        includeInactive: Boolean?,
-        @RequestParam(value = "cursor", required = false)
-        cursor: String?
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestParam(value = "include_inactive", required = false) includeInactive: Boolean?,
+        @RequestParam(value = "cursor", required = false) cursor: String?
     ): ResponseEntity<ContributorQueryResult>
 
     /**
@@ -109,10 +104,8 @@ interface ContributorsController {
     fun post(
         @RequestBody @Valid
         contributor: Contributor,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false)
-        idempotencyKey: String?
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
     ): ResponseEntity<Unit>
 
     /**
@@ -136,14 +129,11 @@ interface ContributorsController {
         method = [RequestMethod.GET]
     )
     fun getById(
-        @PathVariable(value = "id", required = true)
-        id: String,
+        @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
         status: StatusQueryParam,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "If-None-Match", required = false)
-        ifNoneMatch: String?
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
     ): ResponseEntity<Contributor>
 
     /**
@@ -176,14 +166,10 @@ interface ContributorsController {
     fun putById(
         @RequestBody @Valid
         contributor: Contributor,
-        @PathVariable(value = "id", required = true)
-        id: String,
-        @RequestHeader(value = "If-Match", required = true)
-        ifMatch: String,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false)
-        idempotencyKey: String?
+        @PathVariable(value = "id", required = true) id: String,
+        @RequestHeader(value = "If-Match", required = true) ifMatch: String,
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
     ): ResponseEntity<Unit>
 }
 
@@ -212,16 +198,11 @@ interface OrganisationsController {
         method = [RequestMethod.GET]
     )
     fun get(
-        @Min(1)
-        @Max(100)
-        @RequestParam(value = "limit", required = false, defaultValue = "10")
+        @Min(1) @Max(100) @RequestParam(value = "limit", required = false, defaultValue = "10")
         limit: Int,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestParam(value = "include_inactive", required = false)
-        includeInactive: Boolean?,
-        @RequestParam(value = "cursor", required = false)
-        cursor: String?
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestParam(value = "include_inactive", required = false) includeInactive: Boolean?,
+        @RequestParam(value = "cursor", required = false) cursor: String?
     ): ResponseEntity<OrganisationQueryResult>
 
     /**
@@ -248,10 +229,8 @@ interface OrganisationsController {
     fun post(
         @RequestBody @Valid
         organisation: Organisation,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false)
-        idempotencyKey: String?
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
     ): ResponseEntity<Unit>
 
     /**
@@ -275,14 +254,11 @@ interface OrganisationsController {
         method = [RequestMethod.GET]
     )
     fun getById(
-        @PathVariable(value = "id", required = true)
-        id: String,
+        @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
         status: StatusQueryParam,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "If-None-Match", required = false)
-        ifNoneMatch: String?
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
     ): ResponseEntity<Organisation>
 
     /**
@@ -315,14 +291,10 @@ interface OrganisationsController {
     fun putById(
         @RequestBody @Valid
         organisation: Organisation,
-        @PathVariable(value = "id", required = true)
-        id: String,
-        @RequestHeader(value = "If-Match", required = true)
-        ifMatch: String,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false)
-        idempotencyKey: String?
+        @PathVariable(value = "id", required = true) id: String,
+        @RequestHeader(value = "If-Match", required = true) ifMatch: String,
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
     ): ResponseEntity<Unit>
 }
 
@@ -353,18 +325,12 @@ interface OrganisationsContributorsController {
         method = [RequestMethod.GET]
     )
     fun get(
-        @PathVariable(value = "parent-id", required = true)
-        parentId: String,
-        @Min(1)
-        @Max(100)
-        @RequestParam(value = "limit", required = false, defaultValue = "10")
+        @PathVariable(value = "parent-id", required = true) parentId: String,
+        @Min(1) @Max(100) @RequestParam(value = "limit", required = false, defaultValue = "10")
         limit: Int,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestParam(value = "include_inactive", required = false)
-        includeInactive: Boolean?,
-        @RequestParam(value = "cursor", required = false)
-        cursor: String?
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestParam(value = "include_inactive", required = false) includeInactive: Boolean?,
+        @RequestParam(value = "cursor", required = false) cursor: String?
     ): ResponseEntity<ContributorQueryResult>
 
     /**
@@ -386,14 +352,10 @@ interface OrganisationsContributorsController {
         method = [RequestMethod.GET]
     )
     fun getById(
-        @PathVariable(value = "parent-id", required = true)
-        parentId: String,
-        @PathVariable(value = "id", required = true)
-        id: String,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "If-None-Match", required = false)
-        ifNoneMatch: String?
+        @PathVariable(value = "parent-id", required = true) parentId: String,
+        @PathVariable(value = "id", required = true) id: String,
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
     ): ResponseEntity<Contributor>
 
     /**
@@ -424,16 +386,11 @@ interface OrganisationsContributorsController {
         method = [RequestMethod.PUT]
     )
     fun putById(
-        @PathVariable(value = "parent-id", required = true)
-        parentId: String,
-        @PathVariable(value = "id", required = true)
-        id: String,
-        @RequestHeader(value = "If-Match", required = true)
-        ifMatch: String,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false)
-        idempotencyKey: String?
+        @PathVariable(value = "parent-id", required = true) parentId: String,
+        @PathVariable(value = "id", required = true) id: String,
+        @RequestHeader(value = "If-Match", required = true) ifMatch: String,
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
     ): ResponseEntity<Unit>
 
     /**
@@ -451,12 +408,9 @@ interface OrganisationsContributorsController {
         method = [RequestMethod.DELETE]
     )
     fun deleteById(
-        @PathVariable(value = "parent-id", required = true)
-        parentId: String,
-        @PathVariable(value = "id", required = true)
-        id: String,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?
+        @PathVariable(value = "parent-id", required = true) parentId: String,
+        @PathVariable(value = "id", required = true) id: String,
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?
     ): ResponseEntity<Unit>
 }
 
@@ -489,22 +443,15 @@ interface RepositoriesController {
         method = [RequestMethod.GET]
     )
     fun get(
-        @Min(1)
-        @Max(100)
-        @RequestParam(value = "limit", required = false, defaultValue = "10")
+        @Min(1) @Max(100) @RequestParam(value = "limit", required = false, defaultValue = "10")
         limit: Int,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @Valid
-        @RequestParam(value = "slug", required = false)
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @Valid @RequestParam(value = "slug", required = false)
         slug: List<String>?,
-        @Valid
-        @RequestParam(value = "name", required = false)
+        @Valid @RequestParam(value = "name", required = false)
         name: List<String>?,
-        @RequestParam(value = "include_inactive", required = false)
-        includeInactive: Boolean?,
-        @RequestParam(value = "cursor", required = false)
-        cursor: String?
+        @RequestParam(value = "include_inactive", required = false) includeInactive: Boolean?,
+        @RequestParam(value = "cursor", required = false) cursor: String?
     ): ResponseEntity<RepositoryQueryResult>
 
     /**
@@ -531,10 +478,8 @@ interface RepositoriesController {
     fun post(
         @RequestBody @Valid
         repository: Repository,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false)
-        idempotencyKey: String?
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
     ): ResponseEntity<Unit>
 
     /**
@@ -558,14 +503,11 @@ interface RepositoriesController {
         method = [RequestMethod.GET]
     )
     fun getById(
-        @PathVariable(value = "id", required = true)
-        id: String,
+        @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
         status: StatusQueryParam,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "If-None-Match", required = false)
-        ifNoneMatch: String?
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
     ): ResponseEntity<Repository>
 
     /**
@@ -598,14 +540,10 @@ interface RepositoriesController {
     fun putById(
         @RequestBody @Valid
         repository: Repository,
-        @PathVariable(value = "id", required = true)
-        id: String,
-        @RequestHeader(value = "If-Match", required = true)
-        ifMatch: String,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false)
-        idempotencyKey: String?
+        @PathVariable(value = "id", required = true) id: String,
+        @RequestHeader(value = "If-Match", required = true) ifMatch: String,
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
     ): ResponseEntity<Unit>
 }
 
@@ -636,18 +574,12 @@ interface RepositoriesPullRequestsController {
         method = [RequestMethod.GET]
     )
     fun get(
-        @PathVariable(value = "parent-id", required = true)
-        parentId: String,
-        @Min(1)
-        @Max(100)
-        @RequestParam(value = "limit", required = false, defaultValue = "10")
+        @PathVariable(value = "parent-id", required = true) parentId: String,
+        @Min(1) @Max(100) @RequestParam(value = "limit", required = false, defaultValue = "10")
         limit: Int,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestParam(value = "include_inactive", required = false)
-        includeInactive: Boolean?,
-        @RequestParam(value = "cursor", required = false)
-        cursor: String?
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestParam(value = "include_inactive", required = false) includeInactive: Boolean?,
+        @RequestParam(value = "cursor", required = false) cursor: String?
     ): ResponseEntity<PullRequestQueryResult>
 
     /**
@@ -675,12 +607,9 @@ interface RepositoriesPullRequestsController {
     fun post(
         @RequestBody @Valid
         pullRequest: PullRequest,
-        @PathVariable(value = "parent-id", required = true)
-        parentId: String,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false)
-        idempotencyKey: String?
+        @PathVariable(value = "parent-id", required = true) parentId: String,
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
     ): ResponseEntity<Unit>
 
     /**
@@ -702,14 +631,10 @@ interface RepositoriesPullRequestsController {
         method = [RequestMethod.GET]
     )
     fun getById(
-        @PathVariable(value = "parent-id", required = true)
-        parentId: String,
-        @PathVariable(value = "id", required = true)
-        id: String,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "If-None-Match", required = false)
-        ifNoneMatch: String?
+        @PathVariable(value = "parent-id", required = true) parentId: String,
+        @PathVariable(value = "id", required = true) id: String,
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
     ): ResponseEntity<PullRequest>
 
     /**
@@ -743,15 +668,10 @@ interface RepositoriesPullRequestsController {
     fun putById(
         @RequestBody @Valid
         pullRequest: PullRequest,
-        @PathVariable(value = "parent-id", required = true)
-        parentId: String,
-        @PathVariable(value = "id", required = true)
-        id: String,
-        @RequestHeader(value = "If-Match", required = true)
-        ifMatch: String,
-        @RequestHeader(value = "X-Flow-Id", required = false)
-        xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false)
-        idempotencyKey: String?
+        @PathVariable(value = "parent-id", required = true) parentId: String,
+        @PathVariable(value = "id", required = true) id: String,
+        @RequestHeader(value = "If-Match", required = true) ifMatch: String,
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
     ): ResponseEntity<Unit>
 }

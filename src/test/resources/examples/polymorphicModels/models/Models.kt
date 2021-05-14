@@ -17,12 +17,12 @@ import kotlin.String
     JsonSubTypes.Type(
         value = PolymorphicTypeOne::class,
         name =
-            "PolymorphicTypeOne"
+        "PolymorphicTypeOne"
     ),
     JsonSubTypes.Type(
         value = PolymorphicTypeTwo::class,
         name =
-            "PolymorphicTypeTwo"
+        "PolymorphicTypeTwo"
     )
 )
 sealed class PolymorphicSuperType(

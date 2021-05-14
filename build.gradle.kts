@@ -2,8 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.3.61" // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jmailen.kotlinter") version "2.3.2" // Lint and formatting for Kotlin using ktlint
+    id("org.jetbrains.kotlin.jvm") version "1.4.0" // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("com.github.johnrengelman.shadow") version "4.0.1"
     id("org.jetbrains.dokka") version "0.10.1"
     id("com.palantir.git-version") version "0.12.3"
@@ -49,8 +48,9 @@ dependencies {
     implementation("com.reprezen.jsonoverlay:jsonoverlay:4.0.3")
     implementation("com.squareup:kotlinpoet:1.3.0") { exclude(module = "kotlin-stdlib-jre7") }
     implementation("com.google.flogger:flogger:0.4")
-    implementation("com.pinterest:ktlint:0.35.0") // In 0.36.0 programmatic linting is removed :'(
-
+    implementation("com.pinterest.ktlint:ktlint-core:0.41.0")
+    implementation("com.pinterest:ktlint:0.41.0")
+    
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.1.0")
@@ -67,8 +67,8 @@ tasks {
             attributes["Main-Class"] = "com.cjbooms.fabrikt.cli.CodeGen"
             attributes["Implementation-Title"] = "fabrikt"
             attributes["Implementation-Version"] = project.version
-            attributes["Built-JDK"] =  System.getProperty("java.version")
-            attributes["Built-Gradle"] =  gradle.gradleVersion
+            attributes["Built-JDK"] = System.getProperty("java.version")
+            attributes["Built-Gradle"] = gradle.gradleVersion
         }
         archiveBaseName.set(executableName)
         archiveClassifier.set("")
@@ -103,7 +103,6 @@ tasks {
         kotlinOptions {
             jvmTarget = "11"
         }
-        dependsOn(formatKotlin)
     }
 
     withType<Test> {
@@ -143,7 +142,7 @@ publishing {
                 developers {
                     developer {
                         id.set("cjbooms")
-                        name.set("Conor Gallaguer")
+                        name.set("Conor Gallagher")
                         email.set("cjbooms@gmail.com")
                     }
                     developer {
@@ -157,7 +156,6 @@ publishing {
                     developerConnection.set(projectScmDevUrl)
                     url.set(projectScmUrl)
                 }
-
             }
         }
     }
