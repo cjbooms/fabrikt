@@ -16,12 +16,12 @@ import com.cjbooms.fabrikt.generators.model.JacksonMetadata.polymorphicSubTypes
 import com.cjbooms.fabrikt.model.Destinations.modelsPackage
 import com.cjbooms.fabrikt.model.GeneratedType
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
-import com.cjbooms.fabrikt.model.ModelInfo
 import com.cjbooms.fabrikt.model.ModelType
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.PropertyInfo
 import com.cjbooms.fabrikt.model.PropertyInfo.Companion.HTTP_SETTINGS
 import com.cjbooms.fabrikt.model.PropertyInfo.Companion.topLevelProperties
+import com.cjbooms.fabrikt.model.SchemaInfo
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedAdditionalProperties
@@ -116,7 +116,7 @@ class JacksonModelGenerator(
 
     fun generate(): Models {
         val models: MutableSet<TypeSpec> =
-            sourceApi.modelInfos
+            sourceApi.allSchemas
                 .filterNot { (it.schema.isSimpleType() && !it.schema.isEnumDefinition()) || it.schema.isInlineableMapDefinition() }
                 .flatMap {
                     val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
@@ -130,20 +130,24 @@ class JacksonModelGenerator(
         return Models(models.map { ModelType(it, packages.base) })
     }
 
-    private fun buildPrimaryModel(api: OpenApi3, modelInfo: ModelInfo, properties: Collection<PropertyInfo>): TypeSpec {
-        val modelName = modelInfo.name.toModelClassName()
+    private fun buildPrimaryModel(
+        api: OpenApi3,
+        schemaInfo: SchemaInfo,
+        properties: Collection<PropertyInfo>
+    ): TypeSpec {
+        val modelName = schemaInfo.name.toModelClassName()
         return when {
-            modelInfo.schema.isPolymorphicSuperType() -> polymorphicSuperType(
+            schemaInfo.schema.isPolymorphicSuperType() -> polymorphicSuperType(
                 modelName,
                 properties,
-                modelInfo.schema.discriminator
+                schemaInfo.schema.discriminator
             )
-            modelInfo.schema.isPolymorphicSubType(api) -> polymorphicSubType(
+            schemaInfo.schema.isPolymorphicSubType(api) -> polymorphicSubType(
                 modelName,
                 properties,
-                modelInfo.schema.getSuperType(api)!!.let { ModelInfo(it.name, it, api) }
+                schemaInfo.schema.getSuperType(api)!!.let { SchemaInfo(it.name, it) }
             )
-            modelInfo.typeInfo is KotlinTypeInfo.Enum -> buildEnumClass(modelInfo.typeInfo)
+            schemaInfo.typeInfo is KotlinTypeInfo.Enum -> buildEnumClass(schemaInfo.typeInfo)
             else -> standardDataClass(modelName, properties)
         }
     }
@@ -163,7 +167,9 @@ class JacksonModelGenerator(
                 }
                 is PropertyInfo.ObjectRefField ->
                     when {
-                        it.schema.isReferenceObjectDefinition() -> it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
+                        it.schema.isReferenceObjectDefinition() -> it.schema.topLevelProperties(
+                            HTTP_SETTINGS, enclosingSchema
+                        )
                             .let { props ->
                                 buildInLinedModels(props, enclosingSchema) +
                                     standardDataClass(it.schema.safeName().toModelClassName(), props)
@@ -173,7 +179,10 @@ class JacksonModelGenerator(
                 is PropertyInfo.MapField -> buildMapModel(it)?.let { mapModel -> setOf(mapModel) } ?: emptySet()
                 is PropertyInfo.AdditionalProperties ->
                     if (it.schema.isComplexTypedAdditionalProperties("additionalProperties")) setOf(
-                        standardDataClass(it.schema.toMapValueClassName(), it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema))
+                        standardDataClass(
+                            it.schema.toMapValueClassName(),
+                            it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
+                        )
                     )
                     else emptySet()
                 is PropertyInfo.Field ->
@@ -182,18 +191,26 @@ class JacksonModelGenerator(
                 is PropertyInfo.ListField ->
                     it.schema.itemsSchema.let { items ->
                         when {
-                            items.isInlinedObjectDefinition() -> items.topLevelProperties(HTTP_SETTINGS, enclosingSchema).let { props ->
+                            items.isInlinedObjectDefinition() -> items.topLevelProperties(
+                                HTTP_SETTINGS, enclosingSchema
+                            ).let { props ->
                                 buildInLinedModels(props, enclosingSchema) + standardDataClass(
                                     it.name.toModelClassName(enclosingModelName), props
                                 )
                             }
-                            items.isReferenceObjectDefinition() -> items.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
+                            items.isReferenceObjectDefinition() -> items.topLevelProperties(
+                                HTTP_SETTINGS, enclosingSchema
+                            )
                                 .let { props ->
                                     buildInLinedModels(props, enclosingSchema) +
                                         standardDataClass(items.safeName().toModelClassName(), props)
                                 }
                             items.isEnumDefinition() ->
-                                setOf(buildEnumClass(KotlinTypeInfo.from(items, "items", enclosingModelName) as KotlinTypeInfo.Enum))
+                                setOf(
+                                    buildEnumClass(
+                                        KotlinTypeInfo.from(items, "items", enclosingModelName) as KotlinTypeInfo.Enum
+                                    )
+                                )
                             else -> emptySet()
                         }
                     }
@@ -268,7 +285,7 @@ class JacksonModelGenerator(
             .addModifiers(KModifier.SEALED)
         classBuilder.addAnnotation(basePolymorphicType(discriminator.propertyName))
 
-        val subTypes = sourceApi.modelInfos
+        val subTypes = sourceApi.allSchemas
             .filter { model ->
                 model.schema.allOfSchemas.any { allOfRef ->
                     allOfRef.name == modelName && allOfRef.discriminator == discriminator
@@ -292,7 +309,7 @@ class JacksonModelGenerator(
     private fun polymorphicSubType(
         modelName: String,
         properties: Collection<PropertyInfo>,
-        superType: ModelInfo
+        superType: SchemaInfo
     ): TypeSpec =
         properties.addToClass(
             TypeSpec

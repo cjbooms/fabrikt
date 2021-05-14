@@ -1,16 +1,20 @@
 package com.cjbooms.fabrikt.model
 
 import com.beust.jcommander.ParameterException
-import com.cjbooms.fabrikt.model.ModelInfo.Companion.modelInfosFromApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
 import com.cjbooms.fabrikt.util.YamlUtils
 import com.cjbooms.fabrikt.validation.ValidationError
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
+import com.reprezen.kaizen.oasparser.model3.Schema
 import java.nio.file.Path
 import java.nio.file.Paths
 
+data class SchemaInfo(val name: String, val schema: Schema) {
+    val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, name)
+}
+
 data class SourceApi(
-    val rawApiSpec: String,
+    private val rawApiSpec: String,
     val baseDir: Path = Paths.get("").toAbsolutePath()
 ) {
     companion object {
@@ -26,13 +30,15 @@ data class SourceApi(
     }
 
     val openApi3: OpenApi3 = YamlUtils.parseOpenApi(rawApiSpec, baseDir)
-    val modelInfos: List<ModelInfo>
+    val allSchemas: List<SchemaInfo>
 
     init {
         validateSchemaObjects(openApi3).let {
             if (it.isNotEmpty()) throw ParameterException("Invalid models or api file:\n${it.joinToString("\n\t")}")
         }
-        modelInfos = modelInfosFromApi(openApi3)
+        allSchemas = openApi3.schemas.entries.map { it.key to it.value }
+            .plus(openApi3.parameters.entries.map { it.key to it.value.schema })
+            .map { (key, schema) -> SchemaInfo(key, schema) }
     }
 
     private fun validateSchemaObjects(api: OpenApi3): List<ValidationError> =
