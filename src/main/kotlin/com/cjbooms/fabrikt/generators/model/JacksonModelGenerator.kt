@@ -119,9 +119,10 @@ class JacksonModelGenerator(
             sourceApi.modelInfos
                 .filterNot { (it.schema.isSimpleType() && !it.schema.isEnumDefinition()) || it.schema.isInlineableMapDefinition() }
                 .flatMap {
-                    if (it.properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
-                        val primaryModel = buildPrimaryModel(sourceApi.openApi3, it, it.properties)
-                        val inlinedModels = buildInLinedModels(it.properties, it.schema)
+                    val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
+                    if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
+                        val primaryModel = buildPrimaryModel(sourceApi.openApi3, it, properties)
+                        val inlinedModels = buildInLinedModels(properties, it.schema)
                         listOf(primaryModel) + inlinedModels
                     } else emptyList()
                 }.toMutableSet()

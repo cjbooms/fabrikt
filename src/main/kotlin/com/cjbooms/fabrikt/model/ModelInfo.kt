@@ -1,6 +1,5 @@
 package com.cjbooms.fabrikt.model
 
-import com.cjbooms.fabrikt.model.PropertyInfo.Companion.topLevelProperties
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
 
@@ -10,7 +9,6 @@ data class ModelInfo(
     val api: OpenApi3,
 ) {
     val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, name)
-    val properties: Collection<PropertyInfo> = schema.topLevelProperties(PropertyInfo.HTTP_SETTINGS, schema)
 
     @Suppress("UNCHECKED_CAST")
     companion object {
