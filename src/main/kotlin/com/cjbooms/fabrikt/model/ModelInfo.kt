@@ -5,12 +5,10 @@ import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
 
 data class ModelInfo(
-    private val key: String,
+    val name: String,
     val schema: Schema,
     val api: OpenApi3,
-    val children: List<ModelInfo> = emptyList()
 ) {
-    val name = key
     val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, name)
     val properties: Collection<PropertyInfo> = schema.topLevelProperties(PropertyInfo.HTTP_SETTINGS, schema)
 
