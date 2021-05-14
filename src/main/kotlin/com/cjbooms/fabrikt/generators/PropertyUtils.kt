@@ -1,7 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.generators.ValidationAnnotations.fieldValid
-import com.cjbooms.fabrikt.generators.model.JacksonAnnotations
+import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PropertyInfo
 import com.squareup.kotlinpoet.ClassName
@@ -65,7 +65,7 @@ object PropertyUtils {
                     .addParameter("name", String::class)
                     .addParameter("value", parameterizedType)
                     .addStatement("$name[name] = value")
-                    .addAnnotation(JacksonAnnotations.anySetter)
+                    .addAnnotation(JacksonMetadata.anySetter)
                     .build()
             )
         } else {
@@ -88,14 +88,14 @@ object PropertyUtils {
                             property.addModifiers(KModifier.OVERRIDE)
                             classBuilder.addSuperclassConstructorParameter(name)
                         }
-                        property.addAnnotation(JacksonAnnotations.jacksonParameterAnnotation(oasKey))
+                        property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
                     }
-                    property.addAnnotation(JacksonAnnotations.jacksonPropertyAnnotation(oasKey))
+                    property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
                     property.addValidationAnnotations(this)
                 }
                 ClassType.VANILLA_MODEL -> {
-                    property.addAnnotation(JacksonAnnotations.jacksonParameterAnnotation(oasKey))
-                    property.addAnnotation(JacksonAnnotations.jacksonPropertyAnnotation(oasKey))
+                    property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
+                    property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
                     property.addValidationAnnotations(this)
                 }
             }

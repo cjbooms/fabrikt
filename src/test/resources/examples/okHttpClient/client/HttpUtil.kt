@@ -1,5 +1,6 @@
 package examples.okHttpClient.client
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.FormBody
 import okhttp3.Headers
@@ -34,11 +35,11 @@ fun Headers.Builder.header(key: String, value: String?): Headers.Builder {
 }
 
 @Throws(ApiException::class)
-fun <T> Request.execute(client: OkHttpClient, objectMapper: ObjectMapper, classOfT: Class<T>): ApiResponse<T?> =
+fun <T> Request.execute(client: OkHttpClient, objectMapper: ObjectMapper, typeRef: TypeReference<T>): ApiResponse<T?> =
     client.newCall(this).execute().use { response ->
         when {
             response.isSuccessful ->
-                ApiResponse(response.code, response.headers, response.body?.deserialize(objectMapper, classOfT))
+                ApiResponse(response.code, response.headers, response.body?.deserialize(objectMapper, typeRef))
             response.isBadRequest() ->
                 throw ApiClientException(response.code, response.headers, response.errorMessage())
             response.isServerError() ->
@@ -53,8 +54,8 @@ fun String.pathParam(vararg params: Pair<String, Any>): String = params.asSequen
         this.replace(param.first, param.second.toString())
     }
 
-fun <T> ResponseBody.deserialize(objectMapper: ObjectMapper, classOfT: Class<T>) =
-    this.string().isNotBlankOrNull()?.let { objectMapper.readValue(it, classOfT) }
+fun <T> ResponseBody.deserialize(objectMapper: ObjectMapper, typeRef: TypeReference<T>): T? =
+    this.string().isNotBlankOrNull()?.let { objectMapper.readValue(it, typeRef) }
 
 fun String?.isNotBlankOrNull() = if (this.isNullOrBlank()) null else this
 

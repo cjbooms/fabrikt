@@ -5,7 +5,8 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeName
 
-object JacksonAnnotations {
+object JacksonMetadata {
+    val TYPE_REFERENCE_IMPORT = Pair("com.fasterxml.jackson.module.kotlin", "jacksonTypeRef")
     private val JSON_PROPERTY_CLASS = ClassName("com.fasterxml.jackson.annotation", "JsonProperty")
     private val JSON_VALUE_CLASS = ClassName("com.fasterxml.jackson.annotation", "JsonValue")
     private val JSON_TYPE_INFO_CLASS = ClassName("com.fasterxml.jackson.annotation", "JsonTypeInfo")

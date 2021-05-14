@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
+import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.Destinations.clientPackage
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.Destinations.modelsPackage
@@ -46,7 +47,11 @@ data class Models(val models: Collection<ModelType>) : KotlinTypes(models) {
 }
 
 data class Clients(val clients: Collection<ClientType>) : KotlinTypes(clients) {
-    override val files: Collection<FileSpec> = clients.toFileSpec()
+    override val files: Collection<FileSpec> = super.files.map {
+        it.toBuilder()
+            .addImport(JacksonMetadata.TYPE_REFERENCE_IMPORT.first, JacksonMetadata.TYPE_REFERENCE_IMPORT.second)
+            .build()
+    }
 }
 
 data class Controllers(val controllers: Collection<ControllerType>) : KotlinTypes(controllers) {
@@ -61,8 +66,6 @@ data class Controllers(val controllers: Collection<ControllerType>) : KotlinType
     }
 }
 
-data class MethodSignature(val name: String, val returnType: TypeName, val parameters: List<IncomingParameter>)
-
 fun <T : GeneratedType> Collection<T>.toFileSpec(): Collection<FileSpec> = groupClasses(this)
     .map {
         val builder = FileSpec.builder(it.key.destinationPackage, it.key.className.simpleName)
@@ -76,14 +79,13 @@ fun <T : GeneratedType> Collection<T>.toFileSpec(): Collection<FileSpec> = group
 private fun <T : GeneratedType> groupClasses(allModels: Collection<T>): Map<T, List<T>> {
     val sealedClasses = allModels
         .filter { it.spec.modifiers.contains(KModifier.SEALED) }
-        .map { sealedClass ->
-            sealedClass to allModels.filter { maybeImpl -> maybeImpl.spec.superclass == sealedClass.className }
-        }.toMap()
+        .associateWith { sealedClass ->
+            allModels.filter { maybeImpl -> maybeImpl.spec.superclass == sealedClass.className }
+        }
     val otherClasses = allModels
         .filterNot { modelType -> sealedClasses.keys.contains(modelType) }
         .filterNot { modelType -> sealedClasses.values.flatten().contains(modelType) }
-        .map { it to emptyList<T>() }
-        .toMap()
+        .associateWith { emptyList<T>() }
     return sealedClasses.plus(otherClasses)
 }
 
@@ -119,13 +121,4 @@ class RequestParameter(
         isRequired = parameter.isRequired,
         defaultValue = parameter.schema.default
     )
-}
-
-object MethodNames {
-    const val READ = "read"
-    const val QUERY = "query"
-    const val CREATE = "create"
-    const val UPDATE = "update"
-    const val REMOVE_SUBRESOURCE = "removeSubresource"
-    const val ADD_SUBRESOURCE = "addSubresource"
 }
