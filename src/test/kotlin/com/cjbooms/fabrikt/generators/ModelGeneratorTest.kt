@@ -6,20 +6,22 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.cjbooms.fabrikt.validation.Linter
 import com.squareup.kotlinpoet.FileSpec
-import java.nio.file.Paths
-import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import java.nio.file.Paths
+import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ModelGeneratorTest {
 
+    @Suppress("unused")
     private fun testCases(): Stream<String> = Stream.of(
         "arrays",
         "anyOfOneOfAllOf",
@@ -52,9 +54,9 @@ class ModelGeneratorTest {
         print("Testcase: $testCaseName")
         MutableSettings.addOption(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS)
         val basePackage = "examples.$testCaseName"
-        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")
+        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
-        val expectedModels = javaClass.getResource("/examples/$testCaseName/models/Models.kt").readText()
+        val expectedModels = readTextResource("/examples/$testCaseName/models/Models.kt")
 
         val models = JacksonModelGenerator(
             Packages(basePackage),
@@ -67,8 +69,8 @@ class ModelGeneratorTest {
     @Test
     fun `sealed classes are correctly grouped into a single file`() {
         val basePackage = "examples.polymorphicModels.sealed"
-        val spec = javaClass.getResource("/examples/polymorphicModels/api.yaml").readText()
-        val expectedModels = javaClass.getResource("/examples/polymorphicModels/sealed/models/Models.kt").readText()
+        val spec = readTextResource("/examples/polymorphicModels/api.yaml")
+        val expectedModels = readTextResource("/examples/polymorphicModels/sealed/models/Models.kt")
 
         val models = JacksonModelGenerator(
             Packages(basePackage),
@@ -81,10 +83,14 @@ class ModelGeneratorTest {
     @Test
     fun `serializable models are generated from a full API definition when the java-serialized option is set`() {
         val basePackage = "examples.javaSerializableModels"
-        val spec = javaClass.getResource("/examples/javaSerializableModels/api.yaml").readText()
-        val expectedModels = javaClass.getResource("/examples/javaSerializableModels/models/Models.kt").readText()
+        val spec = readTextResource("/examples/javaSerializableModels/api.yaml")
+        val expectedModels = readTextResource("/examples/javaSerializableModels/models/Models.kt")
 
-        val models = JacksonModelGenerator(Packages(basePackage), SourceApi(spec), setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION))
+        val models = JacksonModelGenerator(
+            Packages(basePackage),
+            SourceApi(spec),
+            setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION)
+        )
             .generate()
             .toSingleFile()
 
@@ -94,12 +100,16 @@ class ModelGeneratorTest {
     @Test
     fun `quarkus reflection models are generated from a full API definition when the quarkus-reflection option is set`() {
         val basePackage = "examples.quarkusReflectionModels"
-        val spec = javaClass.getResource("/examples/quarkusReflectionModels/api.yaml").readText()
-        val expectedModels = javaClass.getResource("/examples/quarkusReflectionModels/models/Models.kt").readText()
+        val spec = readTextResource("/examples/quarkusReflectionModels/api.yaml")
+        val expectedModels = readTextResource("/examples/quarkusReflectionModels/models/Models.kt")
 
-        val models = JacksonModelGenerator(Packages(basePackage), SourceApi(spec), setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION))
-                .generate()
-                .toSingleFile()
+        val models = JacksonModelGenerator(
+            Packages(basePackage),
+            SourceApi(spec),
+            setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION)
+        )
+            .generate()
+            .toSingleFile()
 
         assertThat(models).isEqualTo(expectedModels)
     }

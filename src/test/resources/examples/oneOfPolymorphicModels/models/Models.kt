@@ -30,12 +30,12 @@ data class ContainsOneOfPolymorphicTypes(
     JsonSubTypes.Type(
         value = PolymorphicTypeOneA::class,
         name =
-            "PolymorphicTypeOneA"
+        "PolymorphicTypeOneA"
     ),
     JsonSubTypes.Type(
         value = PolymorphicTypeOneB::class,
         name =
-            "PolymorphicTypeOneB"
+        "PolymorphicTypeOneB"
     )
 )
 sealed class PolymorphicSuperTypeOne() {
@@ -72,12 +72,12 @@ data class PolymorphicTypeOneB(
     JsonSubTypes.Type(
         value = PolymorphicTypeTwoA::class,
         name =
-            "PolymorphicTypeTwoA"
+        "PolymorphicTypeTwoA"
     ),
     JsonSubTypes.Type(
         value = PolymorphicTypeTwoB::class,
         name =
-            "PolymorphicTypeTwoB"
+        "PolymorphicTypeTwoB"
     )
 )
 sealed class PolymorphicSuperTypeTwo() {

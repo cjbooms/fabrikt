@@ -17,7 +17,7 @@ import kotlin.String
     JsonSubTypes.Type(
         value = ConcreteImplOne::class,
         name =
-            "obj_one"
+        "obj_one"
     ),
     JsonSubTypes.Type(value = ConcreteImplTwo::class, name = "obj_two")
 )

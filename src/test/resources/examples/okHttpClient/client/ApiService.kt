@@ -5,6 +5,7 @@ import examples.okHttpClient.models.Content
 import examples.okHttpClient.models.FirstModel
 import examples.okHttpClient.models.QueryResult
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
+import okhttp3.OkHttpClient
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
@@ -12,7 +13,6 @@ import kotlin.Suppress
 import kotlin.Unit
 import kotlin.collections.List
 import kotlin.jvm.Throws
-import okhttp3.OkHttpClient
 
 /**
  * The circuit breaker registry should have the proper configuration to correctly action on circuit
@@ -95,7 +95,8 @@ class ExamplePathSubresourceService(
 
     private val apiClient: ExamplePathSubresourceClient = ExamplePathSubresourceClient(
         objectMapper,
-        baseUrl, client
+        baseUrl,
+        client
     )
 
     @Throws(ApiException::class)
