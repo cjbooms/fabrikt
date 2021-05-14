@@ -5,7 +5,6 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getBodyResponses
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getHeaderParams
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPathParams
-import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryAcceptMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getQueryParams
 import com.cjbooms.fabrikt.generators.GeneratorUtils.primaryPropertiesConstructor
@@ -18,7 +17,6 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toParameterSpec
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toVarName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.model.GeneratedFile
@@ -50,8 +48,9 @@ class OkHttpSimpleClientGenerator(
                         .builder(functionName(resource, verb))
                         .addModifiers(KModifier.PUBLIC)
                         .addKdoc(operation.toKdoc())
-                        .addAnnotation(AnnotationSpec.builder(Throws::class)
-                            .addMember("%T::class", "ApiException".toClassName(packages.client)).build()
+                        .addAnnotation(
+                            AnnotationSpec.builder(Throws::class)
+                                .addMember("%T::class", "ApiException".toClassName(packages.client)).build()
                         )
                         .addParameters(operation.requestBody.toBodyParameterSpec(packages.base))
                         .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
@@ -61,7 +60,8 @@ class OkHttpSimpleClientGenerator(
                                 resource,
                                 verb,
                                 operation
-                            ).toStatement())
+                            ).toStatement()
+                        )
                         .returns(operation.toClientReturnType(packages))
                         .build()
                 }
@@ -147,8 +147,19 @@ data class SimpleClientOperationStatement(
     private fun CodeBlock.Builder.addQueryParamStatement(): CodeBlock.Builder {
         operation.getQueryParams().map {
             when (KotlinTypeInfo.from(it.schema)) {
-                is KotlinTypeInfo.Array -> this.add("\n.%T(%S, %N, %S)", "queryParam".toClassName(packages.client), it.name, it.name.toKCodeName(), ",")
-                else -> this.add("\n.%T(%S, %N)", "queryParam".toClassName(packages.client), it.name, it.name.toKCodeName())
+                is KotlinTypeInfo.Array -> this.add(
+                    "\n.%T(%S, %N, %S)",
+                    "queryParam".toClassName(packages.client),
+                    it.name,
+                    it.name.toKCodeName(),
+                    ","
+                )
+                else -> this.add(
+                    "\n.%T(%S, %N)",
+                    "queryParam".toClassName(packages.client),
+                    it.name,
+                    it.name.toKCodeName()
+                )
             }
         }
         return this.add("\n.build()\n")
@@ -180,12 +191,8 @@ data class SimpleClientOperationStatement(
         return this.add("\n.build()\n")
     }
 
-    private fun CodeBlock.Builder.addRequestExecutionStatement(): CodeBlock.Builder {
-        val returnType = operation.getPrimaryAcceptMediaType()?.value?.schema?.let {
-            toModelType(packages.base, KotlinTypeInfo.from(it))
-        }
-        return this.add("\nreturn request.execute(client, objectMapper, %T::class.java)", returnType ?: Unit::class.asTypeName())
-    }
+    private fun CodeBlock.Builder.addRequestExecutionStatement() =
+        this.add("\nreturn request.execute(client, objectMapper, jacksonTypeRef())")
 
     private fun CodeBlock.Builder.addRequestSerializerStatement(verb: String) {
         val requestBody = operation.requestBody

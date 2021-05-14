@@ -58,6 +58,7 @@ dependencies {
     // Below dependencies are solely present so code examples in the test resources dir compile
     testImplementation("javax.validation:validation-api:2.0.1.Final")
     testImplementation("org.springframework:spring-webmvc:5.1.9.RELEASE")
+    testImplementation("com.squareup.okhttp3:okhttp:4.9.1")
 }
 
 tasks {

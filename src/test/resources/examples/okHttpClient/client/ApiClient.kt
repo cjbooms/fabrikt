@@ -1,6 +1,7 @@
 package examples.okHttpClient.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import examples.okHttpClient.models.Content
 import examples.okHttpClient.models.FirstModel
 import examples.okHttpClient.models.QueryResult
@@ -50,7 +51,7 @@ class ExamplePathClient(
             .get()
             .build()
 
-        return request.execute(client, objectMapper, QueryResult::class.java)
+        return request.execute(client, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -75,7 +76,7 @@ class ExamplePathClient(
             .post(objectMapper.writeValueAsString(generatedType).toRequestBody("application/json".toMediaType()))
             .build()
 
-        return request.execute(client, objectMapper, Unit::class.java)
+        return request.execute(client, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -109,7 +110,7 @@ class ExamplePathClient(
             .get()
             .build()
 
-        return request.execute(client, objectMapper, Content::class.java)
+        return request.execute(client, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -142,7 +143,7 @@ class ExamplePathClient(
             .head()
             .build()
 
-        return request.execute(client, objectMapper, Unit::class.java)
+        return request.execute(client, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -173,7 +174,7 @@ class ExamplePathClient(
             .put(objectMapper.writeValueAsString(firstModel).toRequestBody("application/json".toMediaType()))
             .build()
 
-        return request.execute(client, objectMapper, Unit::class.java)
+        return request.execute(client, objectMapper, jacksonTypeRef())
     }
 }
 
@@ -214,6 +215,6 @@ class ExamplePathSubresourceClient(
             .put(objectMapper.writeValueAsString(firstModel).toRequestBody("application/json".toMediaType()))
             .build()
 
-        return request.execute(client, objectMapper, Unit::class.java)
+        return request.execute(client, objectMapper, jacksonTypeRef())
     }
 }

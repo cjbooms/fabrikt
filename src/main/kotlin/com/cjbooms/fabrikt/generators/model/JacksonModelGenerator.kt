@@ -10,9 +10,9 @@ import com.cjbooms.fabrikt.generators.TypeFactory.createList
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfMapsStringToStringAny
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfStringToType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfStringToType
-import com.cjbooms.fabrikt.generators.model.JacksonAnnotations.JSON_VALUE
-import com.cjbooms.fabrikt.generators.model.JacksonAnnotations.basePolymorphicType
-import com.cjbooms.fabrikt.generators.model.JacksonAnnotations.polymorphicSubTypes
+import com.cjbooms.fabrikt.generators.model.JacksonMetadata.JSON_VALUE
+import com.cjbooms.fabrikt.generators.model.JacksonMetadata.basePolymorphicType
+import com.cjbooms.fabrikt.generators.model.JacksonMetadata.polymorphicSubTypes
 import com.cjbooms.fabrikt.model.Destinations.modelsPackage
 import com.cjbooms.fabrikt.model.GeneratedType
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
