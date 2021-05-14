@@ -23,10 +23,13 @@ import com.cjbooms.fabrikt.model.PropertyInfo
 import com.cjbooms.fabrikt.model.PropertyInfo.Companion.HTTP_SETTINGS
 import com.cjbooms.fabrikt.model.PropertyInfo.Companion.topLevelProperties
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSubType
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isReferenceObjectDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKey
@@ -35,6 +38,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.kaizen.oasparser.model3.Discriminator
+import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
@@ -116,7 +120,7 @@ class JacksonModelGenerator(
                 .filterNot { (it.schema.isSimpleType() && !it.schema.isEnumDefinition()) || it.schema.isInlineableMapDefinition() }
                 .flatMap {
                     if (it.properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
-                        val primaryModel = buildPrimaryModel(it, it.properties)
+                        val primaryModel = buildPrimaryModel(sourceApi.openApi3, it, it.properties)
                         val inlinedModels = buildInLinedModels(it.properties, it.schema)
                         listOf(primaryModel) + inlinedModels
                     } else emptyList()
@@ -125,18 +129,18 @@ class JacksonModelGenerator(
         return Models(models.map { ModelType(it, packages.base) })
     }
 
-    private fun buildPrimaryModel(modelInfo: ModelInfo, properties: Collection<PropertyInfo>): TypeSpec {
+    private fun buildPrimaryModel(api: OpenApi3, modelInfo: ModelInfo, properties: Collection<PropertyInfo>): TypeSpec {
         val modelName = modelInfo.name.toModelClassName()
         return when {
-            modelInfo.isPolymorphicSuperType -> polymorphicSuperType(
+            modelInfo.schema.isPolymorphicSuperType() -> polymorphicSuperType(
                 modelName,
                 properties,
                 modelInfo.schema.discriminator
             )
-            modelInfo.isPolymorphicSubType -> polymorphicSubType(
+            modelInfo.schema.isPolymorphicSubType(api) -> polymorphicSubType(
                 modelName,
                 properties,
-                modelInfo.maybeSuperType!!
+                modelInfo.schema.getSuperType(api)!!.let { ModelInfo(it.name, it, api) }
             )
             modelInfo.typeInfo is KotlinTypeInfo.Enum -> buildEnumClass(modelInfo.typeInfo)
             else -> standardDataClass(modelName, properties)
