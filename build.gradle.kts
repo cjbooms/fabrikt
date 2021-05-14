@@ -50,7 +50,7 @@ dependencies {
     implementation("com.google.flogger:flogger:0.4")
     implementation("com.pinterest.ktlint:ktlint-core:0.41.0")
     implementation("com.pinterest:ktlint:0.41.0")
-    
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.1.0")
@@ -79,12 +79,12 @@ tasks {
         outputDirectory = "$buildDir/dokka"
     }
 
-    val sourcesJar by creating(Jar::class) {
+    create("sourcesJar", Jar::class) {
         archiveClassifier.set("sources")
         from(sourceSets.getByName("main").allSource)
     }
 
-    val kotlinDocJar by creating(Jar::class) {
+    create("kotlinDocJar", Jar::class) {
         group = JavaBasePlugin.DOCUMENTATION_GROUP
         description = "Assembles Kotlin docs with Dokka"
         archiveClassifier.set("javadoc")
@@ -92,7 +92,7 @@ tasks {
         dependsOn(dokka)
     }
 
-    val printCodeGenUsage by creating(JavaExec::class) {
+    create("printCodeGenUsage", JavaExec::class) {
         dependsOn(shadowJar)
         classpath = project.files("./build/libs/$executableName-$version.jar")
         main = "com.cjbooms.fabrikt.cli.CodeGen"

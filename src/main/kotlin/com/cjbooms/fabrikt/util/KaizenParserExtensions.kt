@@ -36,9 +36,6 @@ object KaizenParserExtensions {
 
     private const val EXTENSIBLE_ENUM_KEY = "x-extensible-enum"
 
-    fun Schema.isInternalEventsModel(): Boolean =
-        listOf("EventResults", "BulkEntityDetails").any { name?.startsWith(it) ?: false }
-
     fun Schema.isPolymorphicSuperType(): Boolean = discriminator?.propertyName != null
 
     fun Schema.isInlinedObjectDefinition() =
@@ -58,10 +55,12 @@ object KaizenParserExtensions {
 
     fun Schema.isInlineableMapDefinition() = hasAdditionalProperties() && properties?.isEmpty() == true
 
-    fun Schema.isEnumDefinition(): Boolean =
-        this.type == OasType.Text.type && (this.hasEnums() ||
-            (MutableSettings.modelOptions().contains(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS) &&
-                extensions.containsKey(EXTENSIBLE_ENUM_KEY)))
+    fun Schema.isEnumDefinition(): Boolean = this.type == OasType.Text.type && (
+        this.hasEnums() || (
+            MutableSettings.modelOptions().contains(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS) &&
+                extensions.containsKey(EXTENSIBLE_ENUM_KEY)
+            )
+        )
 
     @Suppress("UNCHECKED_CAST")
     fun Schema.getEnumValues(): List<String> = when {
@@ -84,26 +83,25 @@ object KaizenParserExtensions {
     fun Schema.isComplexTypedAdditionalProperties(oasKey: String) =
         getSchemaNameInParent() ?: oasKey == "additionalProperties" && properties?.isEmpty() != true && !isSimpleType()
 
-    fun Schema.isSimpleType(): Boolean = simpleTypes.contains(type)
+    fun Schema.isSimpleType(): Boolean =
+        (simpleTypes.contains(type) && !isEnumDefinition()) || isInlineableMapDefinition()
 
-    fun Schema.isObjectType() = OasType.Object.type == type
+    private fun Schema.isObjectType() = OasType.Object.type == type
 
-    fun Schema.isArrayType() = OasType.Array.type == type
+    private fun Schema.isArrayType() = OasType.Array.type == type
 
     fun Schema.isNotDefined() = type == null && !(hasAllOfSchemas() || hasOneOfSchemas() || hasAnyOfSchemas())
 
-    fun Schema.getSchemaNameInParent(): String? = Overlay.of(this).pathInParent
+    private fun Schema.getSchemaNameInParent(): String? = Overlay.of(this).pathInParent
 
     fun Schema.isPolymorphicSubType(api: OpenApi3): Boolean =
         getEnclosingSchema(api)?.let { it.allOfSchemas.any { it.discriminator.propertyName != null } } ?: false
 
-    fun Schema.getPolymorphicSubTypes(api: OpenApi3): Collection<Schema> =
-        api.schemas.values.filter { it.isPolymorphicSubType(api) && it.getSuperType(api) == this }
-
     fun Schema.getSuperType(api: OpenApi3): Schema? =
         getEnclosingSchema(api)?.let { it.allOfSchemas.firstOrNull { it.discriminator.propertyName != null } }
 
-    fun Schema.getEnclosingSchema(api: OpenApi3): Schema? = api.schemas.values.firstOrNull { it.name == safeName() }
+    private fun Schema.getEnclosingSchema(api: OpenApi3): Schema? =
+        api.schemas.values.firstOrNull { it.name == safeName() }
 
     fun Schema.isRequired(
         prop: Map.Entry<String, Schema>,
@@ -183,9 +181,9 @@ object KaizenParserExtensions {
         .groupBy { it.first.uriToClassName() }
         .mapValues { it.value.toMap() }
 
-    fun String.uriToClassName(): String = toResourceNames().joinToString("-").toModelClassName()
+    private fun String.uriToClassName(): String = toResourceNames().joinToString("-").toModelClassName()
 
-    fun String.toResourceNames(): Collection<String> = split("/")
+    private fun String.toResourceNames(): Collection<String> = split("/")
         .filterNot { it.isBlank() || it.matches("\\{.*}".toRegex()) }
 
     fun String.isSingleResource(): Boolean =
