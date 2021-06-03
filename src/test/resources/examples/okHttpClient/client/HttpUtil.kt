@@ -11,27 +11,26 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 
 @Suppress("unused")
-fun <T : Any> HttpUrl.Builder.queryParam(key: String, value: T?): HttpUrl.Builder {
-    value?.let { this.addQueryParameter(key, it.toString()) }
-    return this
+fun <T : Any> HttpUrl.Builder.queryParam(key: String, value: T?): HttpUrl.Builder = this.apply {
+    if (value != null) this.addQueryParameter(key, value.toString())
 }
 
 @Suppress("unused")
-fun <T : Any> FormBody.Builder.formParam(key: String, value: T?): FormBody.Builder {
-    value?.let { this.add(key, it.toString()) }
-    return this
+fun <T : Any> FormBody.Builder.formParam(key: String, value: T?): FormBody.Builder = this.apply {
+    if (value != null) this.add(key, value.toString())
 }
 
 @Suppress("unused")
-fun HttpUrl.Builder.queryParam(key: String, values: List<String>?, delimiter: String): HttpUrl.Builder {
-    values?.let { this.addQueryParameter(key, it.joinToString(delimiter)) }
-    return this
+fun HttpUrl.Builder.queryParam(key: String, values: List<String>?, explode: Boolean = true) = this.apply {
+    if (values != null) {
+        if (explode) values.forEach { addQueryParameter(key, it) }
+        else addQueryParameter(key, values.joinToString())
+    }
 }
 
 @Suppress("unused")
-fun Headers.Builder.header(key: String, value: String?): Headers.Builder {
-    value?.let { this.add(key, it) }
-    return this
+fun Headers.Builder.header(key: String, value: String?): Headers.Builder = this.apply {
+    if (value != null) this.add(key, value)
 }
 
 @Throws(ApiException::class)

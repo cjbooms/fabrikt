@@ -141,18 +141,18 @@ data class SimpleClientOperationStatement(
     }
 
     /**
-     * By now it's only supported `form` style query params with a comma-separated delimiter. See [Open API 3.0
+     * Only supports `form` style query params with either explode true or false. See [Open API 3.0
      * serialization](https://swagger.io/docs/specification/serialization) query parameters style values
      */
     private fun CodeBlock.Builder.addQueryParamStatement(): CodeBlock.Builder {
         operation.getQueryParams().map {
             when (KotlinTypeInfo.from(it.schema)) {
                 is KotlinTypeInfo.Array -> this.add(
-                    "\n.%T(%S, %N, %S)",
+                    "\n.%T(%S, %N, %L)",
                     "queryParam".toClassName(packages.client),
                     it.name,
                     it.name.toKCodeName(),
-                    ","
+                    if (it.explode != true) "false" else "true"
                 )
                 else -> this.add(
                     "\n.%T(%S, %N)",

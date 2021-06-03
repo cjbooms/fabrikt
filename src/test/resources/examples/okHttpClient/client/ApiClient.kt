@@ -37,7 +37,7 @@ class ExamplePathClient(
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
-            .queryParam("query_param1", queryParam1, ",")
+            .queryParam("query_param1", queryParam1, false)
             .queryParam("query_param2", queryParam2)
             .build()
 
@@ -64,7 +64,7 @@ class ExamplePathClient(
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
-            .queryParam("query_param1", queryParam1, ",")
+            .queryParam("query_param1", queryParam1, false)
             .build()
 
         val httpHeaders: Headers = Headers.Builder()
@@ -202,7 +202,7 @@ class ExamplePathSubresourceClient(
             .pathParam("{path_param}" to pathParam)
             .toHttpUrl()
             .newBuilder()
-            .queryParam("query_param1", queryParam1, ",")
+            .queryParam("query_param1", queryParam1, false)
             .build()
 
         val httpHeaders: Headers = Headers.Builder()
