@@ -1,17 +1,22 @@
 package examples.okHttpClient.client
 
 import okhttp3.Authenticator
+import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
-import okio.IOException
 
-class OAuth2 : Authenticator {
-    var accessToken: String? = null
+class OAuth2(val accessToken: () -> String) : Authenticator, Interceptor {
 
-    @Throws(IOException::class)
-    override fun authenticate(route: Route?, response: Response): Request? =
+    override fun authenticate(route: Route?, response: Response): Request =
         response.request.newBuilder()
-                .header("Authorization", "Bearer $accessToken")
-                .build()
+            .header("Authorization", "Bearer ${accessToken().trim()}")
+            .build()
+
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val request = chain.request().newBuilder()
+            .header("Authorization", "Bearer ${accessToken().trim()}")
+            .build()
+        return chain.proceed(request)
+    }
 }

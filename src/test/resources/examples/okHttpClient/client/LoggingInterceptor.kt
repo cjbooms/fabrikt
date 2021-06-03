@@ -13,12 +13,12 @@ class LoggingInterceptor : Interceptor {
         val request = chain.request()
 
         val t1 = System.nanoTime()
-        logger.info("Client Request: ${request}")
+        logger.info("Client Request: $request")
 
         val response = chain.proceed(request)
 
         val t2 = System.nanoTime()
-        logger.info("Client Response after ${(t2 - t1) / 100_000}ms: ${response}")
+        logger.info("Client Response after ${(t2 - t1) / 100_000}ms: $response")
 
         return response
     }
