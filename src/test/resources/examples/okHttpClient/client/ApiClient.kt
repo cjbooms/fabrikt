@@ -29,15 +29,16 @@ class ExamplePathClient(
     /**
      * GET example path 1
      *
-     * @param queryParam1
+     * @param explodeListQueryParam
      * @param queryParam2
      */
     @Throws(ApiException::class)
-    fun getExamplePath1(queryParam1: List<String>?, queryParam2: Int?): ApiResponse<QueryResult?> {
+    fun getExamplePath1(explodeListQueryParam: List<String>?, queryParam2: Int?):
+        ApiResponse<QueryResult?> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
-            .queryParam("query_param1", queryParam1, false)
+            .queryParam("explode_list_query_param", explodeListQueryParam, true)
             .queryParam("query_param2", queryParam2)
             .build()
 
@@ -57,14 +58,15 @@ class ExamplePathClient(
     /**
      * POST example path 1
      *
-     * @param queryParam1
+     * @param explodeListQueryParam
      */
     @Throws(ApiException::class)
-    fun postExamplePath1(generatedType: Content, queryParam1: List<String>?): ApiResponse<Unit?> {
+    fun postExamplePath1(generatedType: Content, explodeListQueryParam: List<String>?):
+        ApiResponse<Unit?> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
-            .queryParam("query_param1", queryParam1, false)
+            .queryParam("explode_list_query_param", explodeListQueryParam, true)
             .build()
 
         val httpHeaders: Headers = Headers.Builder()
@@ -187,14 +189,14 @@ class ExamplePathSubresourceClient(
     /**
      * PUT example path 3
      *
-     * @param queryParam1
+     * @param csvListQueryParam
      * @param pathParam The resource id
      * @param ifMatch The RFC7232 If-Match header field
      */
     @Throws(ApiException::class)
     fun putExamplePath3PathParamSubresource(
         firstModel: FirstModel,
-        queryParam1: List<String>?,
+        csvListQueryParam: List<String>?,
         pathParam: String,
         ifMatch: String
     ): ApiResponse<Unit?> {
@@ -202,7 +204,7 @@ class ExamplePathSubresourceClient(
             .pathParam("{path_param}" to pathParam)
             .toHttpUrl()
             .newBuilder()
-            .queryParam("query_param1", queryParam1, false)
+            .queryParam("csv_list_query_param", csvListQueryParam, false)
             .build()
 
         val httpHeaders: Headers = Headers.Builder()

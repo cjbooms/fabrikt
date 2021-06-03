@@ -152,7 +152,7 @@ data class SimpleClientOperationStatement(
                     "queryParam".toClassName(packages.client),
                     it.name,
                     it.name.toKCodeName(),
-                    if (it.explode != true) "false" else "true"
+                    if (it.explode == null || it.explode == true) "true" else "false"
                 )
                 else -> this.add(
                     "\n.%T(%S, %N)",
