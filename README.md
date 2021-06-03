@@ -18,7 +18,7 @@ It was built at [Zalando Tech](https://opensource.zalando.com/) and is battle-te
 <dependency>
   <groupId>com.cjbooms</groupId>
   <artifactId>fabrikt</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.2</version>
 </dependency>
 ```
 
