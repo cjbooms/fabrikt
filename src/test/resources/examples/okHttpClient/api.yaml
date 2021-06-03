@@ -7,7 +7,7 @@ paths:
     get:
       summary: "GET example path 1"
       parameters:
-        - $ref: "#/components/parameters/QueryParam1"
+        - $ref: "#/components/parameters/ListQueryParamExploded"
         - $ref: "#/components/parameters/QueryParam2"
       responses:
         200:
@@ -23,7 +23,7 @@ paths:
     post:
       summary: "POST example path 1"
       parameters:
-        - $ref: "#/components/parameters/QueryParam1"
+        - $ref: "#/components/parameters/ListQueryParamExploded"
       requestBody:
         $ref: "#/components/requestBodies/PostBody"
       responses:
@@ -88,7 +88,7 @@ paths:
     put:
       summary: "PUT example path 3"
       parameters:
-        - $ref: "#/components/parameters/QueryParam1"
+        - $ref: "#/components/parameters/ListQueryParamCsv"
         - $ref: "#/components/parameters/PathParam"
         - $ref: "#/components/parameters/IfMatch"
       requestBody:
@@ -123,9 +123,20 @@ components:
         type: "string"
       required: false
 
-    QueryParam1:
-      name: "query_param1"
+    ListQueryParamExploded:
+      name: "explode_list_query_param"
       in: "query"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+      required: false
+      allowEmptyValue: false
+      
+    ListQueryParamCsv:
+      name: "csv_list_query_param"
+      in: "query"
+      explode: false
       schema:
         type: "array"
         items:

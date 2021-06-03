@@ -34,15 +34,17 @@ class ExamplePathService(
     private val apiClient: ExamplePathClient = ExamplePathClient(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun getExamplePath1(queryParam1: List<String>?, queryParam2: Int?): ApiResponse<QueryResult?> =
+    fun getExamplePath1(explodeListQueryParam: List<String>?, queryParam2: Int?):
+        ApiResponse<QueryResult?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExamplePath1(queryParam1, queryParam2)
+            apiClient.getExamplePath1(explodeListQueryParam, queryParam2)
         }
 
     @Throws(ApiException::class)
-    fun postExamplePath1(generatedType: Content, queryParam1: List<String>?): ApiResponse<Unit?> =
+    fun postExamplePath1(generatedType: Content, explodeListQueryParam: List<String>?):
+        ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.postExamplePath1(generatedType, queryParam1)
+            apiClient.postExamplePath1(generatedType, explodeListQueryParam)
         }
 
     @Throws(ApiException::class)
@@ -102,11 +104,11 @@ class ExamplePathSubresourceService(
     @Throws(ApiException::class)
     fun putExamplePath3PathParamSubresource(
         firstModel: FirstModel,
-        queryParam1: List<String>?,
+        csvListQueryParam: List<String>?,
         pathParam: String,
         ifMatch: String
     ): ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.putExamplePath3PathParamSubresource(firstModel, queryParam1, pathParam, ifMatch)
+            apiClient.putExamplePath3PathParamSubresource(firstModel, csvListQueryParam, pathParam, ifMatch)
         }
 }
