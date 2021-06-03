@@ -1,6 +1,12 @@
 # Fabrikt `/ˈfa-brikt/` - Kotlin code from OpenApi3 specifications
 
-This library was built to take advantage of the complex modeling features available in OpenApi3. It generates null-safe Kotlin models with advanced support for features suchs as: enumerations, sealed classes, polymorphic models (`@JsonSubTypes`), maps of maps, GraalVM native support. 
+This library was built to take advantage of the complex modeling features available in OpenApi3. It generates Kotlin models with advanced support for features suchs as: 
+ - Null Safety
+ - Enumerations 
+ - Sealed Classes
+ - Polymorphism (`@JsonSubTypes`)
+ - Maps of Maps of Maps
+ - GraalVM Native Reflection Registration
 
 More than just bootstrapping, this library can be permantenly integrated into a gradle or maven build and will ensure contract and code always match, even as APIs evolve in complexity. 
 
