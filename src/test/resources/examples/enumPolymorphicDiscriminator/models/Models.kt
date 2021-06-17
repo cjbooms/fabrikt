@@ -17,9 +17,14 @@ import kotlin.String
     JsonSubTypes.Type(
         value = ConcreteImplOne::class,
         name =
-        "obj_one"
+        "obj_one_only"
     ),
-    JsonSubTypes.Type(value = ConcreteImplTwo::class, name = "obj_two")
+    JsonSubTypes.Type(
+        value = ConcreteImplTwo::class,
+        name =
+        "obj_two_first"
+    ),
+    JsonSubTypes.Type(value = ConcreteImplTwo::class, name = "obj_two_second")
 )
 sealed class PolymorphicEnumDiscriminator() {
     abstract val someEnum: EnumDiscriminator
@@ -29,9 +34,11 @@ enum class EnumDiscriminator(
     @JsonValue
     val value: String
 ) {
-    OBJ_ONE("obj_one"),
+    OBJ_ONE_ONLY("obj_one_only"),
 
-    OBJ_TWO("obj_two");
+    OBJ_TWO_FIRST("obj_two_first"),
+
+    OBJ_TWO_SECOND("obj_two_second");
 }
 
 data class ConcreteImplOne(
@@ -41,15 +48,15 @@ data class ConcreteImplOne(
 ) : PolymorphicEnumDiscriminator() {
     @get:JsonProperty("some_enum")
     @get:NotNull
-    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE
+    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE_ONLY
 }
 
 data class ConcreteImplTwo(
+    @param:JsonProperty("some_enum")
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator,
     @param:JsonProperty("some_prop")
     @get:JsonProperty("some_prop")
     val someProp: String? = null
-) : PolymorphicEnumDiscriminator() {
-    @get:JsonProperty("some_enum")
-    @get:NotNull
-    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_TWO
-}
+) : PolymorphicEnumDiscriminator()
