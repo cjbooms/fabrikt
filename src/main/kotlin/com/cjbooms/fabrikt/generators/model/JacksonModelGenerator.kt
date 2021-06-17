@@ -27,11 +27,12 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfPolymorphicTypes
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSubType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isReferenceObjectDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleType
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKey
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeys
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
@@ -117,6 +118,7 @@ class JacksonModelGenerator(
         val models: MutableSet<TypeSpec> =
             sourceApi.allSchemas
                 .filterNot { it.schema.isSimpleType() }
+                .filterNot { it.schema.isOneOfPolymorphicTypes() }
                 .flatMap {
                     val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
                     if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
@@ -289,13 +291,13 @@ class JacksonModelGenerator(
                 model.schema.allOfSchemas.any { allOfRef ->
                     allOfRef.name == modelName && allOfRef.discriminator == discriminator
                 }
-            }.associate {
-                discriminator.mappingKey(it.schema) to toModelType(
-                    packages.base,
-                    KotlinTypeInfo.from(it.schema, it.name)
-                )
             }
-        classBuilder.addAnnotation(polymorphicSubTypes(subTypes)).addQuarkusReflectionAnnotation()
+        val mappings = subTypes.flatMap { schemaInfo ->
+            discriminator.mappingKeys(schemaInfo.schema).map {
+                it to toModelType(packages.base, KotlinTypeInfo.from(schemaInfo.schema, schemaInfo.name))
+            }
+        }.toMap()
+        classBuilder.addAnnotation(polymorphicSubTypes(mappings)).addQuarkusReflectionAnnotation()
 
         return properties.addToClass(
             classBuilder,

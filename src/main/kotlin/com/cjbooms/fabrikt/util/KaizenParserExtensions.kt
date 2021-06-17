@@ -4,6 +4,7 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType
 import com.cjbooms.fabrikt.model.PropertyInfo
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeys
 import com.cjbooms.fabrikt.util.NormalisedString.toMapValueClassName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.jsonoverlay.Overlay
@@ -115,21 +116,23 @@ object KaizenParserExtensions {
     fun Schema.isDiscriminatorProperty(prop: Map.Entry<String, Schema>): Boolean =
         discriminator?.propertyName == prop.key
 
-    fun Schema.getKeyIfDiscriminator(
+    fun Schema.getKeyIfSingleDiscriminatorValue(
         prop: Map.Entry<String, Schema>,
         enclosingSchema: Schema
     ): PropertyInfo.DiscriminatorKey? =
-        if (isDiscriminatorProperty(prop))
-            discriminator.mappingKey(enclosingSchema).let {
+        if (isDiscriminatorProperty(prop) && discriminator.mappingKeys(enclosingSchema).size == 1) {
+            discriminator.mappingKeys(enclosingSchema).first().let {
                 if (prop.value.isEnumDefinition()) PropertyInfo.DiscriminatorKey.EnumKey(it)
                 else PropertyInfo.DiscriminatorKey.StringKey(it)
             }
-        else null
+        } else null
 
-    fun Discriminator.mappingKey(enclosingSchema: Schema): String =
-        mappings?.entries?.firstOrNull {
+    fun Discriminator.mappingKeys(enclosingSchema: Schema): List<String> {
+        val keys = mappings?.entries?.filter {
             it.value.toString().contains(enclosingSchema.name)
-        }?.key ?: enclosingSchema.name.toModelClassName()
+        }?.map { it.key }
+        return if (keys.isNullOrEmpty()) listOf(enclosingSchema.name.toModelClassName()) else keys
+    }
 
     fun Schema.isInLinedObjectUnderAllOf(): Boolean =
         Overlay.of(this).pathFromRoot
@@ -161,7 +164,7 @@ object KaizenParserExtensions {
             else -> "object"
         }
 
-    private fun Schema.isOneOfPolymorphicTypes() =
+    fun Schema.isOneOfPolymorphicTypes() =
         this.oneOfSchemas?.firstOrNull()?.allOfSchemas?.firstOrNull() != null
 
     fun OpenApi3.basePath(): String =

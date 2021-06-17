@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.beust.jcommander.ParameterException
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
@@ -13,6 +14,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.nio.file.Paths
@@ -95,6 +97,44 @@ class ModelGeneratorTest {
             .toSingleFile()
 
         assertThat(models).isEqualTo(expectedModels)
+    }
+
+    @Test
+    fun `missing array reference throws constructive message`() = assertExceptionWithMessage(
+        "/badInput/ErrorMissingRefArray.yaml",
+        "Array type 'hooks' cannot be parsed to a Schema. Check your input"
+    )
+
+    @Test
+    fun `missing object reference throws constructive message`() = assertExceptionWithMessage(
+        "/badInput/ErrorMissingRefObject.yaml",
+        "Property 'propB' cannot be parsed to a Schema. Check your input"
+    )
+
+    @Test
+    fun `mixing oneOf with object type throws constructive error`() = assertExceptionWithMessage(
+        "/badInput/ErrorMixingOneOfWithObject.yaml",
+        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`"
+    )
+    @Test
+    fun `mixing anyOf with object type throws constructive error`() = assertExceptionWithMessage(
+        "/badInput/ErrorMixingAnyOfWithObject.yaml",
+        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`"
+    )
+    @Test
+    fun `mixing allOf with object type throws constructive error`() = assertExceptionWithMessage(
+        "/badInput/ErrorMixingAllOfWithObject.yaml",
+        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`"
+    )
+
+    private fun assertExceptionWithMessage(path: String, expectedMessage: String) {
+        val spec = readTextResource(path)
+        val exception = assertThrows<ParameterException> {
+            JacksonModelGenerator(Packages("blah"), SourceApi(spec))
+                .generate()
+                .toSingleFile()
+        }
+        assertThat(exception.message).contains(expectedMessage)
     }
 
     @Test
