@@ -41,16 +41,40 @@ data class SourceApi(
             .map { (key, schema) -> SchemaInfo(key, schema) }
     }
 
-    private fun validateSchemaObjects(api: OpenApi3): List<ValidationError> =
-        api.schemas.map { it.value.properties }.flatMap { it.entries }.fold(emptyList()) { lst, entry ->
+    private fun validateSchemaObjects(api: OpenApi3): List<ValidationError> {
+        val schemaErrors = api.schemas.entries.fold(emptyList<ValidationError>()) { errors, entry ->
             val name = entry.key
             val schema = entry.value
-            if (schema.type == OasType.Array.type && schema.itemsSchema.isNotDefined()) {
-                lst + listOf(ValidationError("Array type '$name' cannot be parsed to a Schema. Check your input"))
-            } else if (schema.isNotDefined()) {
-                lst + listOf(ValidationError("Property '$name' cannot be parsed to a Schema. Check your input"))
-            } else {
-                lst
-            }
+            if (schema.type == OasType.Object.type && (
+                schema.oneOfSchemas?.isNotEmpty() == true ||
+                    schema.allOfSchemas?.isNotEmpty() == true ||
+                    schema.anyOfSchemas?.isNotEmpty() == true
+                )
+            )
+                errors + listOf(
+                    ValidationError(
+                        "'$name' schema contains an invalid combination of properties and `oneOf | anyOf | allOf`. " +
+                            "Do not use properties and a combiner at the same level."
+                    )
+                )
+            else if (schema.type == OasType.Object.type && schema.oneOfSchemas?.isNotEmpty() == true)
+                errors + listOf(ValidationError("The $name object contains invalid use of both properties and `oneOf`."))
+            else if (schema.type == OasType.Object.type && schema.oneOfSchemas?.isNotEmpty() == true)
+                errors + listOf(ValidationError("The $name object contains invalid use of both properties and `oneOf`."))
+            else errors
         }
+
+        return api.schemas.map { it.value.properties }.flatMap { it.entries }
+            .fold(schemaErrors) { lst, entry ->
+                val name = entry.key
+                val schema = entry.value
+                if (schema.type == OasType.Array.type && schema.itemsSchema.isNotDefined()) {
+                    lst + listOf(ValidationError("Array type '$name' cannot be parsed to a Schema. Check your input"))
+                } else if (schema.isNotDefined()) {
+                    lst + listOf(ValidationError("Property '$name' cannot be parsed to a Schema. Check your input"))
+                } else {
+                    lst
+                }
+            }
+    }
 }

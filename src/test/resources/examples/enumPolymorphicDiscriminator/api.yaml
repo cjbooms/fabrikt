@@ -10,8 +10,9 @@ components:
       discriminator:
         propertyName: some_enum
         mapping:
-          obj_one: '#/components/schemas/ConcreteImplOne'
-          obj_two: '#/components/schemas/ConcreteImplTwo'
+          obj_one_only: '#/components/schemas/ConcreteImplOne'
+          obj_two_first: '#/components/schemas/ConcreteImplTwo'
+          obj_two_second: '#/components/schemas/ConcreteImplTwo'
       properties:
         some_enum:
           $ref: '#/components/schemas/EnumDiscriminator'
@@ -35,8 +36,9 @@ components:
     EnumDiscriminator:
       type: string
       enum:
-        - obj_one
-        - obj_two
+        - obj_one_only
+        - obj_two_first
+        - obj_two_second
 
 
 

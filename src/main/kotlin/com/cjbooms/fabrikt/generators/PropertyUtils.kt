@@ -82,6 +82,9 @@ object PropertyUtils {
                                 property.initializer("%T.%L", type, maybeDiscriminator.enumKey)
                             is PropertyInfo.DiscriminatorKey.StringKey ->
                                 property.initializer("%S", maybeDiscriminator.stringValue)
+                            else -> {
+                                property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
+                            }
                         }
                     } else {
                         if (isInherited) {
@@ -100,7 +103,7 @@ object PropertyUtils {
                 }
             }
 
-            if (this !is PropertyInfo.Field || !isPolymorphicDiscriminator) {
+            if (this !is PropertyInfo.Field || !isPolymorphicDiscriminator || isSubTypeDiscriminatorWithNoValue(classType)) {
                 property.initializer(name)
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, type)
                 val default = getDefaultValue(this, parameterizedType)
@@ -111,6 +114,9 @@ object PropertyUtils {
 
         classBuilder.addProperty(property.build())
     }
+
+    private fun PropertyInfo.Field.isSubTypeDiscriminatorWithNoValue(classType: ClassType) =
+        classType == ClassType.SUB_MODEL && isPolymorphicDiscriminator && maybeDiscriminator == null
 
     private fun getDefaultValue(propTypeInfo: PropertyInfo, parameterizedType: TypeName): OasDefault? {
         return when (propTypeInfo) {

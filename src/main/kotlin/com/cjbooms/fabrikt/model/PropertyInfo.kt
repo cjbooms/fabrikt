@@ -1,6 +1,6 @@
 package com.cjbooms.fabrikt.model
 
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.getKeyIfDiscriminator
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.getKeyIfSingleDiscriminatorValue
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasNoDiscriminator
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isDiscriminatorProperty
@@ -110,7 +110,7 @@ sealed class PropertyInfo {
                                 schema = property.value,
                                 isInherited = settings.markAsInherited,
                                 isPolymorphicDiscriminator = isDiscriminatorProperty(property),
-                                maybeDiscriminator = enclosingSchema?.let { this.getKeyIfDiscriminator(property, it) }
+                                maybeDiscriminator = enclosingSchema?.let { this.getKeyIfSingleDiscriminatorValue(property, it) }
                             )
                         }
                 }
