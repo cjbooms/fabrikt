@@ -1,6 +1,6 @@
 # Fabrikt `/ˈfa-brikt/` - Kotlin code from OpenApi3 specifications
 
-This library was built to take advantage of the complex modeling features available in OpenApi3. It generates Kotlin models with advanced support for features such as: 
+This library was built to take advantage of the complex modeling features available in OpenApi3. It generates Kotlin data classes with advanced support for features such as: 
  - Null Safety
  - Enumerations 
  - Sealed Classes
