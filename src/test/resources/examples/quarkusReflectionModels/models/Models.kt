@@ -48,14 +48,14 @@ sealed class Content(
     open val id: String? = null,
     open val firstAttr: OffsetDateTime? = null,
     open val secondAttr: String? = null,
-    open val thirdAttr: ThirdAttr? = null,
+    open val thirdAttr: ContentThirdAttr? = null,
     open val etag: String? = null
 ) {
-    abstract val modelType: ModelType
+    abstract val modelType: ContentModelType
 }
 
 @RegisterForReflection
-enum class ThirdAttr(
+enum class ContentThirdAttr(
     @JsonValue
     val value: String
 ) {
@@ -65,7 +65,7 @@ enum class ThirdAttr(
 }
 
 @RegisterForReflection
-enum class ModelType(
+enum class ContentModelType(
     @JsonValue
     val value: String
 ) {
@@ -89,7 +89,7 @@ data class FirstModel(
     override val secondAttr: String? = null,
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
-    override val thirdAttr: ThirdAttr? = null,
+    override val thirdAttr: ContentThirdAttr? = null,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
     override val etag: String? = null,
@@ -99,7 +99,7 @@ data class FirstModel(
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag) {
     @get:JsonProperty("model_type")
     @get:NotNull
-    override val modelType: ModelType = ModelType.FIRST_MODEL
+    override val modelType: ContentModelType = ContentModelType.FIRST_MODEL
 }
 
 @RegisterForReflection
@@ -115,7 +115,7 @@ data class SecondModel(
     override val secondAttr: String? = null,
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
-    override val thirdAttr: ThirdAttr? = null,
+    override val thirdAttr: ContentThirdAttr? = null,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
     override val etag: String? = null,
@@ -128,7 +128,7 @@ data class SecondModel(
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag) {
     @get:JsonProperty("model_type")
     @get:NotNull
-    override val modelType: ModelType = ModelType.SECOND_MODEL
+    override val modelType: ContentModelType = ContentModelType.SECOND_MODEL
 }
 
 @RegisterForReflection
@@ -144,7 +144,7 @@ data class ThirdModel(
     override val secondAttr: String? = null,
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
-    override val thirdAttr: ThirdAttr? = null,
+    override val thirdAttr: ContentThirdAttr? = null,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
     override val etag: String? = null,
@@ -157,5 +157,5 @@ data class ThirdModel(
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag) {
     @get:JsonProperty("model_type")
     @get:NotNull
-    override val modelType: ModelType = ModelType.THIRD_MODEL
+    override val modelType: ContentModelType = ContentModelType.THIRD_MODEL
 }
