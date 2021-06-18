@@ -39,7 +39,7 @@
   "allDeclaredFields" : true,
   "allPublicFields" : true
 }, {
-  "name" : "examples.githubApi.models.Status",
+  "name" : "examples.githubApi.models.ContributorStatus",
   "allDeclaredConstructors" : true,
   "allPublicConstructors" : true,
   "allDeclaredMethods" : true,
@@ -56,6 +56,14 @@
   "allPublicFields" : true
 }, {
   "name" : "examples.githubApi.models.OrganisationQueryResult",
+  "allDeclaredConstructors" : true,
+  "allPublicConstructors" : true,
+  "allDeclaredMethods" : true,
+  "allPublicMethods" : true,
+  "allDeclaredFields" : true,
+  "allPublicFields" : true
+}, {
+  "name" : "examples.githubApi.models.OrganisationStatus",
   "allDeclaredConstructors" : true,
   "allPublicConstructors" : true,
   "allDeclaredMethods" : true,
@@ -87,7 +95,15 @@
   "allDeclaredFields" : true,
   "allPublicFields" : true
 }, {
-  "name" : "examples.githubApi.models.Visibility",
+  "name" : "examples.githubApi.models.RepositoryStatus",
+  "allDeclaredConstructors" : true,
+  "allPublicConstructors" : true,
+  "allDeclaredMethods" : true,
+  "allPublicMethods" : true,
+  "allDeclaredFields" : true,
+  "allPublicFields" : true
+}, {
+  "name" : "examples.githubApi.models.RepositoryVisibility",
   "allDeclaredConstructors" : true,
   "allPublicConstructors" : true,
   "allDeclaredMethods" : true,
@@ -104,6 +120,14 @@
   "allPublicFields" : true
 }, {
   "name" : "examples.githubApi.models.PullRequestQueryResult",
+  "allDeclaredConstructors" : true,
+  "allPublicConstructors" : true,
+  "allDeclaredMethods" : true,
+  "allPublicMethods" : true,
+  "allDeclaredFields" : true,
+  "allPublicFields" : true
+}, {
+  "name" : "examples.githubApi.models.PullRequestStatus",
   "allDeclaredConstructors" : true,
   "allPublicConstructors" : true,
   "allDeclaredMethods" : true,
