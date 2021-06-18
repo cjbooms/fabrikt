@@ -19,7 +19,7 @@ data class PersonWithDefaults(
     @param:JsonProperty("enum_default")
     @get:JsonProperty("enum_default")
     @get:NotNull
-    val enumDefault: EnumDefault = EnumDefault.TALL,
+    val enumDefault: PersonWithDefaultsEnumDefault = PersonWithDefaultsEnumDefault.TALL,
     @param:JsonProperty("boolean_default")
     @get:JsonProperty("boolean_default")
     @get:NotNull
@@ -30,7 +30,7 @@ data class PersonWithDefaults(
     val stringPhrase: String = "Cowabunga Dude"
 )
 
-enum class EnumDefault(
+enum class PersonWithDefaultsEnumDefault(
     @JsonValue
     val value: String
 ) {

@@ -91,7 +91,7 @@ data class ContributorQueryResult(
     val items: List<Contributor>
 )
 
-enum class Status(
+enum class ContributorStatus(
     @JsonValue
     val value: String
 ) {
@@ -128,7 +128,7 @@ data class Contributor(
     @param:JsonProperty("status")
     @get:JsonProperty("status")
     @get:NotNull
-    val status: Status,
+    val status: ContributorStatus,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
     val etag: String? = null,
@@ -155,6 +155,15 @@ data class OrganisationQueryResult(
     @get:Valid
     val items: List<Organisation>
 )
+
+enum class OrganisationStatus(
+    @JsonValue
+    val value: String
+) {
+    ACTIVE("active"),
+
+    INACTIVE("inactive");
+}
 
 data class Webhook(
     @param:JsonProperty("url")
@@ -194,7 +203,7 @@ data class Organisation(
     @param:JsonProperty("status")
     @get:JsonProperty("status")
     @get:NotNull
-    val status: Status,
+    val status: OrganisationStatus,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
     val etag: String? = null,
@@ -226,7 +235,16 @@ data class RepositoryQueryResult(
     val items: List<Repository>
 )
 
-enum class Visibility(
+enum class RepositoryStatus(
+    @JsonValue
+    val value: String
+) {
+    ACTIVE("active"),
+
+    INACTIVE("inactive");
+}
+
+enum class RepositoryVisibility(
     @JsonValue
     val value: String
 ) {
@@ -263,7 +281,7 @@ data class Repository(
     @param:JsonProperty("status")
     @get:JsonProperty("status")
     @get:NotNull
-    val status: Status,
+    val status: RepositoryStatus,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
     val etag: String? = null,
@@ -277,7 +295,7 @@ data class Repository(
     val name: String,
     @param:JsonProperty("visibility")
     @get:JsonProperty("visibility")
-    val visibility: Visibility? = null,
+    val visibility: RepositoryVisibility? = null,
     @param:JsonProperty("tags")
     @get:JsonProperty("tags")
     val tags: List<String>? = null
@@ -297,6 +315,15 @@ data class PullRequestQueryResult(
     @get:Valid
     val items: List<PullRequest>
 )
+
+enum class PullRequestStatus(
+    @JsonValue
+    val value: String
+) {
+    ACTIVE("active"),
+
+    INACTIVE("inactive");
+}
 
 data class Author(
     @param:JsonProperty("name")
@@ -335,7 +362,7 @@ data class PullRequest(
     @param:JsonProperty("status")
     @get:JsonProperty("status")
     @get:NotNull
-    val status: Status,
+    val status: PullRequestStatus,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
     val etag: String? = null,

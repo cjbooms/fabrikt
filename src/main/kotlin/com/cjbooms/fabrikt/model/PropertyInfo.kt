@@ -4,9 +4,11 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.getKeyIfSingleDiscriminat
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasNoDiscriminator
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isDiscriminatorProperty
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInLinedObjectUnderAllOf
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedArrayDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isRequired
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
@@ -68,7 +70,7 @@ sealed class PropertyInfo {
                             property.value,
                             settings.markAsInherited,
                             this,
-                            if (property.value.isInlinedArrayDefinition()) enclosingSchema else null
+                            if (property.value.isInlinedArrayDefinition() || property.value.itemsSchema.isEnumDefinition()) enclosingSchema else null
                         )
                     OasType.Object.type ->
                         if (property.value.isInlineableMapDefinition() || property.value.isSchemaLess())
@@ -85,7 +87,11 @@ sealed class PropertyInfo {
                             )
                         else if (property.value.isInlinedObjectDefinition())
                             ObjectInlinedField(
-                                isRequired = isRequired(property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
+                                isRequired = isRequired(
+                                    property,
+                                    settings.markReadWriteOnlyOptional,
+                                    settings.markAllOptional
+                                ),
                                 oasKey = property.key,
                                 schema = property.value,
                                 isInherited = settings.markAsInherited,
@@ -110,7 +116,10 @@ sealed class PropertyInfo {
                                 schema = property.value,
                                 isInherited = settings.markAsInherited,
                                 isPolymorphicDiscriminator = isDiscriminatorProperty(property),
-                                maybeDiscriminator = enclosingSchema?.let { this.getKeyIfSingleDiscriminatorValue(property, it) }
+                                maybeDiscriminator = enclosingSchema?.let {
+                                    this.getKeyIfSingleDiscriminatorValue(property, it)
+                                },
+                                enclosingSchema = if (property.value.isInlinedEnumDefinition()) this else null
                             )
                         }
                 }
@@ -138,9 +147,10 @@ sealed class PropertyInfo {
         val schema: Schema,
         override val isInherited: Boolean,
         val isPolymorphicDiscriminator: Boolean,
-        val maybeDiscriminator: DiscriminatorKey?
+        val maybeDiscriminator: DiscriminatorKey?,
+        val enclosingSchema: Schema? = null
     ) : PropertyInfo() {
-        override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, oasKey)
+        override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
         val pattern: String? = schema.safeField(Schema::getPattern)
         val maxLength: Int? = schema.safeField(Schema::getMaxLength)
         val minLength: Int? = schema.safeField(Schema::getMinLength)
@@ -152,9 +162,12 @@ sealed class PropertyInfo {
         private fun <T> Schema.safeField(getField: Schema.() -> T?): T? =
             when {
                 this.getField() != null -> this.getField()
-                allOfSchemas?.firstOrNull { it.getField() != null } != null -> allOfSchemas.first { it.getField() != null }.getField()
-                oneOfSchemas?.firstOrNull { it.getField() != null } != null -> oneOfSchemas.first { it.getField() != null }.getField()
-                anyOfSchemas?.firstOrNull { it.getField() != null } != null -> anyOfSchemas.first { it.getField() != null }.getField()
+                allOfSchemas?.firstOrNull { it.getField() != null } != null -> allOfSchemas.first { it.getField() != null }
+                    .getField()
+                oneOfSchemas?.firstOrNull { it.getField() != null } != null -> oneOfSchemas.first { it.getField() != null }
+                    .getField()
+                anyOfSchemas?.firstOrNull { it.getField() != null } != null -> anyOfSchemas.first { it.getField() != null }
+                    .getField()
                 else -> null
             }
     }
@@ -172,7 +185,8 @@ sealed class PropertyInfo {
         val parentSchema: Schema,
         val enclosingSchema: Schema?
     ) : PropertyInfo(), CollectionValidation {
-        override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
+        override val typeInfo: KotlinTypeInfo =
+            KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
         override val minItems: Int? = schema.minItems
         override val maxItems: Int? = schema.maxItems
     }
@@ -205,7 +219,8 @@ sealed class PropertyInfo {
         val parentSchema: Schema,
         val enclosingSchema: Schema?
     ) : PropertyInfo() {
-        override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
+        override val typeInfo: KotlinTypeInfo =
+            KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
     }
 
     data class AdditionalProperties(

@@ -45,7 +45,8 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Date -> Date
                 OasType.DateTime -> DateTime
                 OasType.Text -> Text
-                OasType.Enum -> Enum(schema.getEnumValues(), schema.toModelClassName())
+                OasType.Enum ->
+                    Enum(schema.getEnumValues(), schema.toModelClassName(enclosingName.toModelClassName()))
                 OasType.Double -> Double
                 OasType.Float -> Float
                 OasType.Number -> Numeric

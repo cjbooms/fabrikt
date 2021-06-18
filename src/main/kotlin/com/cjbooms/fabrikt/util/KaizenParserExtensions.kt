@@ -42,6 +42,9 @@ object KaizenParserExtensions {
     fun Schema.isInlinedObjectDefinition() =
         isObjectType() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("properties")
 
+    fun Schema.isInlinedEnumDefinition() =
+        isEnumDefinition() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("properties")
+
     fun Schema.isInlinedArrayDefinition() =
         isArrayType() && !isSchemaLess() && this.itemsSchema.isInlinedObjectDefinition()
 

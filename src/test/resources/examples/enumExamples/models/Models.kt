@@ -8,13 +8,13 @@ import kotlin.collections.List
 data class EnumHolder(
     @param:JsonProperty("array_of_enums")
     @get:JsonProperty("array_of_enums")
-    val arrayOfEnums: List<ArrayOfEnums>? = null,
+    val arrayOfEnums: List<EnumHolderArrayOfEnums>? = null,
     @param:JsonProperty("inlined_enum")
     @get:JsonProperty("inlined_enum")
-    val inlinedEnum: InlinedEnum? = null,
+    val inlinedEnum: EnumHolderInlinedEnum? = null,
     @param:JsonProperty("inlined_extensible_enum")
     @get:JsonProperty("inlined_extensible_enum")
-    val inlinedExtensibleEnum: InlinedExtensibleEnum? = null,
+    val inlinedExtensibleEnum: EnumHolderInlinedExtensibleEnum? = null,
     @param:JsonProperty("enum_ref")
     @get:JsonProperty("enum_ref")
     val enumRef: EnumObject? = null,
@@ -23,7 +23,7 @@ data class EnumHolder(
     val extensibleEnumRef: ExtensibleEnumObject? = null
 )
 
-enum class ArrayOfEnums(
+enum class EnumHolderArrayOfEnums(
     @JsonValue
     val value: String
 ) {
@@ -32,7 +32,7 @@ enum class ArrayOfEnums(
     ARRAY_ENUM_TWO("array_enum_two");
 }
 
-enum class InlinedEnum(
+enum class EnumHolderInlinedEnum(
     @JsonValue
     val value: String
 ) {
@@ -43,7 +43,7 @@ enum class InlinedEnum(
     INLINED_THREE("inlined_three");
 }
 
-enum class InlinedExtensibleEnum(
+enum class EnumHolderInlinedExtensibleEnum(
     @JsonValue
     val value: String
 ) {

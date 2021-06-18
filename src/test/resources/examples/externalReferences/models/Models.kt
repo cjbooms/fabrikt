@@ -14,7 +14,7 @@ data class ContainingExternalReference(
     val someExternalReference: ExternalObject? = null
 )
 
-enum class Enum(
+enum class ExternalObjectThreeEnum(
     @JsonValue
     val value: String
 ) {
@@ -29,7 +29,7 @@ data class ExternalObjectThree(
     @param:JsonProperty("enum")
     @get:JsonProperty("enum")
     @get:NotNull
-    val enum: Enum,
+    val enum: ExternalObjectThreeEnum,
     @param:JsonProperty("description")
     @get:JsonProperty("description")
     @get:NotNull
