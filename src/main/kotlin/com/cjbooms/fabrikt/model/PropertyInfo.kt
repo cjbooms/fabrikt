@@ -70,7 +70,9 @@ sealed class PropertyInfo {
                             property.value,
                             settings.markAsInherited,
                             this,
-                            if (property.value.isInlinedArrayDefinition() || property.value.itemsSchema.isEnumDefinition()) enclosingSchema else null
+                            if (property.value.isInlinedArrayDefinition() || property.value.itemsSchema.isEnumDefinition())
+                                enclosingSchema
+                            else null
                         )
                     OasType.Object.type ->
                         if (property.value.isInlineableMapDefinition() || property.value.isSchemaLess())
@@ -88,9 +90,7 @@ sealed class PropertyInfo {
                         else if (property.value.isInlinedObjectDefinition())
                             ObjectInlinedField(
                                 isRequired = isRequired(
-                                    property,
-                                    settings.markReadWriteOnlyOptional,
-                                    settings.markAllOptional
+                                    property, settings.markReadWriteOnlyOptional, settings.markAllOptional
                                 ),
                                 oasKey = property.key,
                                 schema = property.value,
@@ -150,7 +150,8 @@ sealed class PropertyInfo {
         val maybeDiscriminator: DiscriminatorKey?,
         val enclosingSchema: Schema? = null
     ) : PropertyInfo() {
-        override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
+        override val typeInfo: KotlinTypeInfo =
+            KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
         val pattern: String? = schema.safeField(Schema::getPattern)
         val maxLength: Int? = schema.safeField(Schema::getMaxLength)
         val minLength: Int? = schema.safeField(Schema::getMinLength)
@@ -162,12 +163,12 @@ sealed class PropertyInfo {
         private fun <T> Schema.safeField(getField: Schema.() -> T?): T? =
             when {
                 this.getField() != null -> this.getField()
-                allOfSchemas?.firstOrNull { it.getField() != null } != null -> allOfSchemas.first { it.getField() != null }
-                    .getField()
-                oneOfSchemas?.firstOrNull { it.getField() != null } != null -> oneOfSchemas.first { it.getField() != null }
-                    .getField()
-                anyOfSchemas?.firstOrNull { it.getField() != null } != null -> anyOfSchemas.first { it.getField() != null }
-                    .getField()
+                allOfSchemas?.firstOrNull { it.getField() != null } != null ->
+                    allOfSchemas.first { it.getField() != null }.getField()
+                oneOfSchemas?.firstOrNull { it.getField() != null } != null ->
+                    oneOfSchemas.first { it.getField() != null }.getField()
+                anyOfSchemas?.firstOrNull { it.getField() != null } != null ->
+                    anyOfSchemas.first { it.getField() != null }.getField()
                 else -> null
             }
     }
