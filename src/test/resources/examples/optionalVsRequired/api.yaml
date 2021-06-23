@@ -10,3 +10,4 @@ components:
           type: string
         gender:
           type: string
+          format: uuid

@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUnknownAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUntypedAdditionalProperties
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUuidDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeType
 import com.reprezen.kaizen.oasparser.model3.Schema
 import kotlin.reflect.KClass
@@ -30,6 +31,7 @@ sealed class OasType(
     object Array : OasType("array")
     object UntypedObject : OasType("object", specialization = Specialization.UNTYPED_OBJECT)
     object Enum : OasType("string", specialization = Specialization.ENUM)
+    object Uuid : OasType("string", specialization = Specialization.UUID)
     object Map : OasType("object", specialization = Specialization.MAP)
     object UnknownProperties : OasType("object", specialization = Specialization.UNKNOWN_ADDITIONAL_PROPERTIES)
     object UntypedProperties : OasType("object", specialization = Specialization.UNTYPED_OBJECT_ADDITIONAL_PROPERTIES)
@@ -51,6 +53,7 @@ sealed class OasType(
 
         private fun Schema.getSpecialization(oasKey: String): Specialization =
             when {
+                isUuidDefinition() -> Specialization.UUID
                 isEnumDefinition() -> Specialization.ENUM
                 isInlineableMapDefinition() -> Specialization.MAP
                 isTypedAdditionalProperties(oasKey) -> Specialization.TYPED_OBJECT_ADDITIONAL_PROPERTIES
@@ -68,6 +71,7 @@ sealed class OasType(
         TYPED_OBJECT_ADDITIONAL_PROPERTIES,
         UNTYPED_OBJECT_ADDITIONAL_PROPERTIES,
         UNTYPED_OBJECT,
+        UUID,
         NONE
     }
 }

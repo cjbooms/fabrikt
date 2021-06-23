@@ -66,6 +66,9 @@ object KaizenParserExtensions {
             )
         )
 
+    fun Schema.isUuidDefinition(): Boolean =
+        this.type == OasType.Text.type && (this.format?.equals("uuid", ignoreCase = true) == true)
+
     @Suppress("UNCHECKED_CAST")
     fun Schema.getEnumValues(): List<String> = when {
         this.hasEnums() -> this.enums.map { it.toString() }

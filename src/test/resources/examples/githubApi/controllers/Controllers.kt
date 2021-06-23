@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
+import java.util.UUID
 import javax.validation.Valid
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
@@ -105,7 +106,7 @@ interface ContributorsController {
         @RequestBody @Valid
         contributor: Contributor,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
     ): ResponseEntity<Unit>
 
     /**
@@ -169,7 +170,7 @@ interface ContributorsController {
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "If-Match", required = true) ifMatch: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
     ): ResponseEntity<Unit>
 }
 
@@ -230,7 +231,7 @@ interface OrganisationsController {
         @RequestBody @Valid
         organisation: Organisation,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
     ): ResponseEntity<Unit>
 
     /**
@@ -294,7 +295,7 @@ interface OrganisationsController {
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "If-Match", required = true) ifMatch: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
     ): ResponseEntity<Unit>
 }
 
@@ -390,7 +391,7 @@ interface OrganisationsContributorsController {
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "If-Match", required = true) ifMatch: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
     ): ResponseEntity<Unit>
 
     /**
@@ -479,7 +480,7 @@ interface RepositoriesController {
         @RequestBody @Valid
         repository: Repository,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
     ): ResponseEntity<Unit>
 
     /**
@@ -543,7 +544,7 @@ interface RepositoriesController {
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "If-Match", required = true) ifMatch: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
     ): ResponseEntity<Unit>
 }
 
@@ -609,7 +610,7 @@ interface RepositoriesPullRequestsController {
         pullRequest: PullRequest,
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
     ): ResponseEntity<Unit>
 
     /**
@@ -672,6 +673,6 @@ interface RepositoriesPullRequestsController {
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "If-Match", required = true) ifMatch: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: String?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
     ): ResponseEntity<Unit>
 }
