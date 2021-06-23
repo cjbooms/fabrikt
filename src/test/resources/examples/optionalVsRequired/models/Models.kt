@@ -1,6 +1,7 @@
 package examples.optionalVsRequired.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.util.UUID
 import javax.validation.constraints.NotNull
 import kotlin.String
 
@@ -11,5 +12,5 @@ data class OptionalVsRequired(
     val name: String,
     @param:JsonProperty("gender")
     @get:JsonProperty("gender")
-    val gender: String? = null
+    val gender: UUID? = null
 )

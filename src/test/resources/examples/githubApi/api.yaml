@@ -716,6 +716,7 @@ components:
       required: false
       schema:
         type: string
+        format: uuid
       example: 84035561-4e44-4a06-98d2-1744eeefca6d
     FlowId:
       name: X-Flow-Id

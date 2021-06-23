@@ -10,6 +10,7 @@ import com.reprezen.kaizen.oasparser.model3.Schema
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.util.UUID
 import kotlin.reflect.KClass
 
 sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassName: String? = null) {
@@ -22,6 +23,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     object Numeric : KotlinTypeInfo(BigDecimal::class)
     object Integer : KotlinTypeInfo(Int::class)
     object BigInt : KotlinTypeInfo(Long::class)
+    object Uuid : KotlinTypeInfo(UUID::class)
     object Boolean : KotlinTypeInfo(kotlin.Boolean::class)
     object UntypedObject : KotlinTypeInfo(Any::class)
     data class Object(val simpleClassName: String) : KotlinTypeInfo(GeneratedType::class, simpleClassName)
@@ -47,6 +49,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Text -> Text
                 OasType.Enum ->
                     Enum(schema.getEnumValues(), schema.toModelClassName(enclosingName.toModelClassName()))
+                OasType.Uuid -> Uuid
                 OasType.Double -> Double
                 OasType.Float -> Float
                 OasType.Number -> Numeric
