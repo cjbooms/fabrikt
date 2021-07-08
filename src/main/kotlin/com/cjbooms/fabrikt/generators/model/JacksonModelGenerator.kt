@@ -140,7 +140,7 @@ class JacksonModelGenerator(
         .flatMap {
             val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
             if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
-                val primaryModel = buildPrimaryModel(api, it, properties)
+                val primaryModel = buildPrimaryModel(api, it, properties, schemas)
                 val inlinedModels = buildInLinedModels(properties, it.schema)
                 listOf(primaryModel) + inlinedModels
             } else emptyList()
@@ -149,14 +149,16 @@ class JacksonModelGenerator(
     private fun buildPrimaryModel(
         api: OpenApi3,
         schemaInfo: SchemaInfo,
-        properties: Collection<PropertyInfo>
+        properties: Collection<PropertyInfo>,
+        allSchemas: List<SchemaInfo>
     ): TypeSpec {
         val modelName = schemaInfo.name.toModelClassName()
         return when {
             schemaInfo.schema.isPolymorphicSuperType() -> polymorphicSuperType(
                 modelName,
                 properties,
-                schemaInfo.schema.discriminator
+                schemaInfo.schema.discriminator,
+                allSchemas
             )
             schemaInfo.schema.isPolymorphicSubType(api) -> polymorphicSubType(
                 modelName,
@@ -295,7 +297,8 @@ class JacksonModelGenerator(
     private fun polymorphicSuperType(
         modelName: String,
         properties: Collection<PropertyInfo>,
-        discriminator: Discriminator
+        discriminator: Discriminator,
+        allSchemas: List<SchemaInfo>
     ): TypeSpec {
         val classBuilder = TypeSpec.classBuilder(
             generatedType(
@@ -306,7 +309,7 @@ class JacksonModelGenerator(
             .addModifiers(KModifier.SEALED)
         classBuilder.addAnnotation(basePolymorphicType(discriminator.propertyName))
 
-        val subTypes = sourceApi.allSchemas
+        val subTypes = allSchemas
             .filter { model ->
                 model.schema.allOfSchemas.any { allOfRef ->
                     allOfRef.name == modelName && allOfRef.discriminator == discriminator
