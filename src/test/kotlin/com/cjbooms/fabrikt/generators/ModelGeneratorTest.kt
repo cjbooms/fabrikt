@@ -7,8 +7,8 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
-import com.cjbooms.fabrikt.validation.Linter
 import com.squareup.kotlinpoet.FileSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -116,11 +116,13 @@ class ModelGeneratorTest {
         "/badInput/ErrorMixingOneOfWithObject.yaml",
         "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`"
     )
+
     @Test
     fun `mixing anyOf with object type throws constructive error`() = assertExceptionWithMessage(
         "/badInput/ErrorMixingAnyOfWithObject.yaml",
         "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`"
     )
+
     @Test
     fun `mixing allOf with object type throws constructive error`() = assertExceptionWithMessage(
         "/badInput/ErrorMixingAllOfWithObject.yaml",
