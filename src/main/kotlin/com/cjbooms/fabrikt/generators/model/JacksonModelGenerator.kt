@@ -132,7 +132,7 @@ class JacksonModelGenerator(
                 api.schemas.entries.map { it.key to it.value }.map { (key, schema) -> SchemaInfo(key, schema) }
             models.addAll(createModels(api, schemas))
         }
-        return Models(models.distinctBy { it.toString() }.map { ModelType(it, packages.base) })
+        return Models(models.distinctBy { it.name }.map { ModelType(it, packages.base) })
     }
 
     private fun createModels(api: OpenApi3, schemas: List<SchemaInfo>) = schemas
