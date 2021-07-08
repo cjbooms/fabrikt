@@ -130,9 +130,12 @@ class JacksonModelGenerator(
             val api = OpenApi3Parser().parse(URL(docUrl))
             val schemas =
                 api.schemas.entries.map { it.key to it.value }.map { (key, schema) -> SchemaInfo(key, schema) }
-            models.addAll(createModels(api, schemas))
+            val externalModels = createModels(api, schemas)
+            externalModels.forEach { additionalModel ->
+                if (models.none { it.name == additionalModel.name }) models.add(additionalModel)
+            }
         }
-        return Models(models.distinctBy { it.name }.map { ModelType(it, packages.base) })
+        return Models(models.map { ModelType(it, packages.base) })
     }
 
     private fun createModels(api: OpenApi3, schemas: List<SchemaInfo>) = schemas
