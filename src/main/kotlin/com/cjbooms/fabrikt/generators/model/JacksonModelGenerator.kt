@@ -37,6 +37,9 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
+import com.reprezen.jsonoverlay.IJsonOverlay
+import com.reprezen.jsonoverlay.Overlay
+import com.reprezen.kaizen.oasparser.OpenApi3Parser
 import com.reprezen.kaizen.oasparser.model3.Discriminator
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
@@ -50,6 +53,7 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import java.io.Serializable
+import java.net.URL
 
 class JacksonModelGenerator(
     private val packages: Packages,
@@ -114,22 +118,33 @@ class JacksonModelGenerator(
         fun generatedType(basePackage: String, modelName: String) = ClassName(modelsPackage(basePackage), modelName)
     }
 
-    fun generate(): Models {
-        val models: MutableSet<TypeSpec> =
-            sourceApi.allSchemas
-                .filterNot { it.schema.isSimpleType() }
-                .filterNot { it.schema.isOneOfPolymorphicTypes() }
-                .flatMap {
-                    val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
-                    if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
-                        val primaryModel = buildPrimaryModel(sourceApi.openApi3, it, properties)
-                        val inlinedModels = buildInLinedModels(properties, it.schema)
-                        listOf(primaryModel) + inlinedModels
-                    } else emptyList()
-                }.toMutableSet()
+    private val primaryDocUrl = sourceApi.openApi3.getDocumentUrl()
+    private val externallyReferencedApis = mutableSetOf<String>()
 
+    private fun <V> IJsonOverlay<V>.getDocumentUrl() = Overlay.of(this).positionInfo.get().documentUrl
+
+    fun generate(): Models {
+        val models: MutableSet<TypeSpec> = createModels(sourceApi.openApi3, sourceApi.allSchemas)
+        externallyReferencedApis.forEach { docUrl ->
+            val api = OpenApi3Parser().parse(URL(docUrl))
+            val schemas =
+                api.schemas.entries.map { it.key to it.value }.map { (key, schema) -> SchemaInfo(key, schema) }
+            models.addAll(createModels(api, schemas))
+        }
         return Models(models.map { ModelType(it, packages.base) })
     }
+
+    private fun createModels(api: OpenApi3, schemas: List<SchemaInfo>) = schemas
+        .filterNot { it.schema.isSimpleType() }
+        .filterNot { it.schema.isOneOfPolymorphicTypes() }
+        .flatMap {
+            val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
+            if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
+                val primaryModel = buildPrimaryModel(api, it, properties)
+                val inlinedModels = buildInLinedModels(properties, it.schema)
+                listOf(primaryModel) + inlinedModels
+            } else emptyList()
+        }.toMutableSet()
 
     private fun buildPrimaryModel(
         api: OpenApi3,
@@ -175,7 +190,10 @@ class JacksonModelGenerator(
                                 buildInLinedModels(props, enclosingSchema) +
                                     standardDataClass(it.schema.safeName().toModelClassName(), props)
                             }
-                        else -> emptySet()
+                        else -> {
+                            it.schema.captureExternallyReferencedApis()
+                            emptySet()
+                        }
                     }
                 is PropertyInfo.MapField -> buildMapModel(it)?.let { mapModel -> setOf(mapModel) } ?: emptySet()
                 is PropertyInfo.AdditionalProperties ->
@@ -216,6 +234,12 @@ class JacksonModelGenerator(
                         }
                     }
             }
+        }
+
+    private fun Schema.captureExternallyReferencedApis() =
+        (oneOfSchemas + anyOfSchemas + allOfSchemas).forEach {
+            val docUrl = it.getDocumentUrl()
+            if (docUrl != primaryDocUrl) externallyReferencedApis.add(docUrl)
         }
 
     private fun buildEnumClass(enum: KotlinTypeInfo.Enum): TypeSpec {

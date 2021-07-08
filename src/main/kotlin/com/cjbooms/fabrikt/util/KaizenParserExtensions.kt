@@ -137,7 +137,7 @@ object KaizenParserExtensions {
         val keys = mappings?.entries?.filter {
             it.value.toString().contains(enclosingSchema.name)
         }?.map { it.key }
-        return if (keys.isNullOrEmpty()) listOf(enclosingSchema.name.toModelClassName()) else keys
+        return if (keys.isNullOrEmpty()) listOf(enclosingSchema.safeName().toModelClassName()) else keys
     }
 
     fun Schema.isInLinedObjectUnderAllOf(): Boolean =
