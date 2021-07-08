@@ -7,8 +7,8 @@ import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
-import com.cjbooms.fabrikt.validation.Linter
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import org.assertj.core.api.Assertions.assertThat

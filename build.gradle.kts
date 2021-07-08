@@ -48,8 +48,6 @@ dependencies {
     implementation("com.reprezen.jsonoverlay:jsonoverlay:4.0.3")
     implementation("com.squareup:kotlinpoet:1.3.0") { exclude(module = "kotlin-stdlib-jre7") }
     implementation("com.google.flogger:flogger:0.4")
-    implementation("com.pinterest.ktlint:ktlint-core:0.41.0")
-    implementation("com.pinterest:ktlint:0.41.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.1.0")
@@ -59,6 +57,8 @@ dependencies {
     testImplementation("javax.validation:validation-api:2.0.1.Final")
     testImplementation("org.springframework:spring-webmvc:5.1.9.RELEASE")
     testImplementation("com.squareup.okhttp3:okhttp:4.9.1")
+    testImplementation("com.pinterest.ktlint:ktlint-core:0.41.0")
+    testImplementation("com.pinterest:ktlint:0.41.0")
 }
 
 tasks {

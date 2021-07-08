@@ -4,7 +4,6 @@ import com.beust.jcommander.ParameterException
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.SourceApi
-import com.cjbooms.fabrikt.validation.Linter
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.logging.Logger
@@ -51,6 +50,5 @@ object CodeGen {
         val sourceApi = SourceApi.create(suppliedApi, apiFragments, baseDir)
         val generator = CodeGenerator(packages, sourceApi)
         generator.generate().forEach { it.writeFileTo(outputDir.toFile()) }
-        Linter.lint(outputDir)
     }
 }

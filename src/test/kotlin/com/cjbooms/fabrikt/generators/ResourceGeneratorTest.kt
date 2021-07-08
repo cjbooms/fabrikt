@@ -6,13 +6,13 @@ import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
 import com.cjbooms.fabrikt.model.ResourceFile
 import com.cjbooms.fabrikt.model.SourceApi
-import java.nio.file.Paths
-import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import java.nio.file.Paths
+import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ResourceGeneratorTest {
@@ -32,8 +32,9 @@ class ResourceGeneratorTest {
         print("Testcase: $testCaseName")
         val basePackage = "examples.$testCaseName"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")
-        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
-        val expectedResource = javaClass.getResource("/examples/$testCaseName/resources/reflection-config.json").readText()
+        val sourceApi = SourceApi(apiLocation!!.readText(), baseDir = Paths.get(apiLocation.toURI()))
+        val expectedResource =
+            javaClass.getResource("/examples/$testCaseName/resources/reflection-config.json")!!.readText()
         val generationTypes = setOf(CodeGenerationType.QUARKUS_REFLECTION_CONFIG)
 
         val models = JacksonModelGenerator(Packages(basePackage), sourceApi, emptySet()).generate()
