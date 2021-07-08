@@ -119,17 +119,18 @@ class JacksonModelGenerator(
     }
 
     private val primaryDocUrl = sourceApi.openApi3.getDocumentUrl()
-    private val externallyReferencedApis = mutableSetOf<String>()
+    private val externalApiSchemas = mutableMapOf<String, MutableSet<String>>()
 
     private fun <V> IJsonOverlay<V>.getDocumentUrl(): String? =
         Overlay.of(this).positionInfo.orElse(null)?.documentUrl
 
     fun generate(): Models {
         val models: MutableSet<TypeSpec> = createModels(sourceApi.openApi3, sourceApi.allSchemas)
-        externallyReferencedApis.forEach { docUrl ->
-            val api = OpenApi3Parser().parse(URL(docUrl))
-            val schemas =
-                api.schemas.entries.map { it.key to it.value }.map { (key, schema) -> SchemaInfo(key, schema) }
+        externalApiSchemas.forEach { externalReferences ->
+            val api = OpenApi3Parser().parse(URL(externalReferences.key))
+            val schemas = api.schemas.entries.map { it.key to it.value }
+                .map { (key, schema) -> SchemaInfo(key, schema) }
+                .filter { apiSchema -> externalReferences.value.contains(apiSchema.name) }
             val externalModels = createModels(api, schemas)
             externalModels.forEach { additionalModel ->
                 if (models.none { it.name == additionalModel.name }) models.add(additionalModel)
@@ -179,8 +180,8 @@ class JacksonModelGenerator(
         enclosingSchema: Schema
     ): List<TypeSpec> =
         topLevelProperties.flatMap {
-            it.captureExternallyReferencedApis()
             val enclosingModelName = enclosingSchema.toModelClassName()
+            captureMissingExternalSchemas(it.schema.oneOfSchemas + it.schema.anyOfSchemas + it.schema.allOfSchemas)
             when (it) {
                 is PropertyInfo.ObjectInlinedField -> {
                     val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
@@ -240,8 +241,17 @@ class JacksonModelGenerator(
             }
         }
 
-    private fun PropertyInfo.captureExternallyReferencedApis() = this.schema.getDocumentUrl().let { docUrl ->
-        if (docUrl != null && docUrl != primaryDocUrl) externallyReferencedApis.add(docUrl)
+    private fun captureMissingExternalSchemas(schemas: List<Schema>, depth: Int = 0) {
+        schemas.forEach { schema ->
+            val docUrl = schema.getDocumentUrl()
+            if (docUrl != null && docUrl != primaryDocUrl) {
+                externalApiSchemas.getOrPut(docUrl) { mutableSetOf() }.add(schema.safeName())
+                if (depth < 10) captureMissingExternalSchemas(
+                    schema.allOfSchemas + schema.anyOfSchemas + schema.oneOfSchemas,
+                    depth + 1
+                )
+            }
+        }
     }
 
     private fun buildEnumClass(enum: KotlinTypeInfo.Enum): TypeSpec {
