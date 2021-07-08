@@ -251,7 +251,8 @@ class JacksonModelGenerator(
         }
     }
 
-    private fun Schema.nestedSchemas() = (allOfSchemas + anyOfSchemas + oneOfSchemas + itemsSchema).filterNotNull()
+    private fun Schema.nestedSchemas() =
+        (allOfSchemas + anyOfSchemas + oneOfSchemas + itemsSchema + additionalPropertiesSchema).filterNotNull()
 
     private fun buildEnumClass(enum: KotlinTypeInfo.Enum): TypeSpec {
         val classBuilder = TypeSpec
