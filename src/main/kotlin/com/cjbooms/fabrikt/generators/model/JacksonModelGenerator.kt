@@ -173,6 +173,7 @@ class JacksonModelGenerator(
         enclosingSchema: Schema
     ): List<TypeSpec> =
         topLevelProperties.flatMap {
+            it.captureExternallyReferencedApis()
             val enclosingModelName = enclosingSchema.toModelClassName()
             when (it) {
                 is PropertyInfo.ObjectInlinedField -> {
@@ -190,10 +191,7 @@ class JacksonModelGenerator(
                                 buildInLinedModels(props, enclosingSchema) +
                                     standardDataClass(it.schema.safeName().toModelClassName(), props)
                             }
-                        else -> {
-                            it.schema.captureExternallyReferencedApis()
-                            emptySet()
-                        }
+                        else -> emptySet()
                     }
                 is PropertyInfo.MapField -> buildMapModel(it)?.let { mapModel -> setOf(mapModel) } ?: emptySet()
                 is PropertyInfo.AdditionalProperties ->
@@ -236,11 +234,9 @@ class JacksonModelGenerator(
             }
         }
 
-    private fun Schema.captureExternallyReferencedApis() =
-        (oneOfSchemas + anyOfSchemas + allOfSchemas).forEach {
-            val docUrl = it.getDocumentUrl()
-            if (docUrl != primaryDocUrl) externallyReferencedApis.add(docUrl)
-        }
+    private fun PropertyInfo.captureExternallyReferencedApis() = this.schema.getDocumentUrl().let { docUrl ->
+        if (docUrl != primaryDocUrl) externallyReferencedApis.add(docUrl)
+    }
 
     private fun buildEnumClass(enum: KotlinTypeInfo.Enum): TypeSpec {
         val classBuilder = TypeSpec
