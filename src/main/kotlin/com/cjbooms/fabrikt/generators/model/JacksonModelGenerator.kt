@@ -181,7 +181,7 @@ class JacksonModelGenerator(
     ): List<TypeSpec> =
         topLevelProperties.flatMap {
             val enclosingModelName = enclosingSchema.toModelClassName()
-            captureMissingExternalSchemas(it.schema.oneOfSchemas + it.schema.anyOfSchemas + it.schema.allOfSchemas + it.schema)
+            it.schema.captureMissingExternalSchemas()
             when (it) {
                 is PropertyInfo.ObjectInlinedField -> {
                     val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
@@ -241,18 +241,17 @@ class JacksonModelGenerator(
             }
         }
 
-    private fun captureMissingExternalSchemas(schemas: List<Schema>, depth: Int = 0) {
-        schemas.forEach { schema ->
+    private fun Schema.captureMissingExternalSchemas(depth: Int = 0) {
+        nestedSchemas().forEach { schema ->
             val docUrl = schema.getDocumentUrl()
             if (docUrl != null && docUrl != primaryDocUrl) {
                 externalApiSchemas.getOrPut(docUrl) { mutableSetOf() }.add(schema.safeName())
-                if (depth < 10) captureMissingExternalSchemas(
-                    schema.allOfSchemas + schema.anyOfSchemas + schema.oneOfSchemas,
-                    depth + 1
-                )
+                if (depth < 10) schema.captureMissingExternalSchemas(depth + 1)
             }
         }
     }
+
+    private fun Schema.nestedSchemas() = (allOfSchemas + anyOfSchemas + oneOfSchemas + itemsSchema).filterNotNull()
 
     private fun buildEnumClass(enum: KotlinTypeInfo.Enum): TypeSpec {
         val classBuilder = TypeSpec
