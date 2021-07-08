@@ -181,7 +181,7 @@ class JacksonModelGenerator(
     ): List<TypeSpec> =
         topLevelProperties.flatMap {
             val enclosingModelName = enclosingSchema.toModelClassName()
-            captureMissingExternalSchemas(it.schema.oneOfSchemas + it.schema.anyOfSchemas + it.schema.allOfSchemas)
+            captureMissingExternalSchemas(it.schema.oneOfSchemas + it.schema.anyOfSchemas + it.schema.allOfSchemas + it.schema)
             when (it) {
                 is PropertyInfo.ObjectInlinedField -> {
                     val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
