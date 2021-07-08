@@ -1,6 +1,8 @@
 package examples.externalReferences.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonValue
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
@@ -47,5 +49,40 @@ data class ExternalObject(
     @param:JsonProperty("another")
     @get:JsonProperty("another")
     @get:Valid
-    val another: ExternalObjectTwo? = null
+    val another: ExternalObjectTwo? = null,
+    @param:JsonProperty("one_of")
+    @get:JsonProperty("one_of")
+    @get:Valid
+    val oneOf: ParentOneOf? = null
 )
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "discriminator",
+    visible = true
+)
+@JsonSubTypes()
+sealed class ParentOneOf() {
+    abstract val discriminator: String
+}
+
+data class OneOfOne(
+    @param:JsonProperty("oneOfOne")
+    @get:JsonProperty("oneOfOne")
+    val oneOfOne: String? = null
+) : ParentOneOf() {
+    @get:JsonProperty("discriminator")
+    @get:NotNull
+    override val discriminator: String = "OneOfOne"
+}
+
+data class OneOfTwo(
+    @param:JsonProperty("oneOfTwo")
+    @get:JsonProperty("oneOfTwo")
+    val oneOfTwo: String? = null
+) : ParentOneOf() {
+    @get:JsonProperty("discriminator")
+    @get:NotNull
+    override val discriminator: String = "OneOfTwo"
+}
