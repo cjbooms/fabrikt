@@ -62,7 +62,14 @@ data class ExternalObject(
     property = "discriminator",
     visible = true
 )
-@JsonSubTypes()
+@JsonSubTypes(
+    JsonSubTypes.Type(value = OneOfOne::class, name = "OneOfOne"),
+    JsonSubTypes.Type(
+        value =
+        OneOfTwo::class,
+        name = "OneOfTwo"
+    )
+)
 sealed class ParentOneOf() {
     abstract val discriminator: String
 }
