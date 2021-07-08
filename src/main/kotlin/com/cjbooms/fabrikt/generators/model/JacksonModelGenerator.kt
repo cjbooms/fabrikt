@@ -121,7 +121,8 @@ class JacksonModelGenerator(
     private val primaryDocUrl = sourceApi.openApi3.getDocumentUrl()
     private val externallyReferencedApis = mutableSetOf<String>()
 
-    private fun <V> IJsonOverlay<V>.getDocumentUrl() = Overlay.of(this).positionInfo.get().documentUrl
+    private fun <V> IJsonOverlay<V>.getDocumentUrl(): String? =
+        Overlay.of(this).positionInfo.orElse(null)?.documentUrl
 
     fun generate(): Models {
         val models: MutableSet<TypeSpec> = createModels(sourceApi.openApi3, sourceApi.allSchemas)
@@ -131,7 +132,7 @@ class JacksonModelGenerator(
                 api.schemas.entries.map { it.key to it.value }.map { (key, schema) -> SchemaInfo(key, schema) }
             models.addAll(createModels(api, schemas))
         }
-        return Models(models.map { ModelType(it, packages.base) })
+        return Models(models.distinctBy { it.toString() }.map { ModelType(it, packages.base) })
     }
 
     private fun createModels(api: OpenApi3, schemas: List<SchemaInfo>) = schemas
@@ -237,7 +238,7 @@ class JacksonModelGenerator(
         }
 
     private fun PropertyInfo.captureExternallyReferencedApis() = this.schema.getDocumentUrl().let { docUrl ->
-        if (docUrl != primaryDocUrl) externallyReferencedApis.add(docUrl)
+        if (docUrl != null && docUrl != primaryDocUrl) externallyReferencedApis.add(docUrl)
     }
 
     private fun buildEnumClass(enum: KotlinTypeInfo.Enum): TypeSpec {
