@@ -20,6 +20,7 @@ import com.reprezen.kaizen.oasparser.model3.Schema
 sealed class PropertyInfo {
     abstract val oasKey: String
     abstract val typeInfo: KotlinTypeInfo
+    abstract val schema: Schema
     open val isRequired: Boolean = false
     open val isInherited: Boolean = false
 
@@ -144,7 +145,7 @@ sealed class PropertyInfo {
     data class Field(
         override val isRequired: Boolean,
         override val oasKey: String,
-        val schema: Schema,
+        override val schema: Schema,
         override val isInherited: Boolean,
         val isPolymorphicDiscriminator: Boolean,
         val maybeDiscriminator: DiscriminatorKey?,
@@ -181,7 +182,7 @@ sealed class PropertyInfo {
     data class ListField(
         override val isRequired: Boolean,
         override val oasKey: String,
-        val schema: Schema,
+        override val schema: Schema,
         override val isInherited: Boolean,
         val parentSchema: Schema,
         val enclosingSchema: Schema?
@@ -195,7 +196,7 @@ sealed class PropertyInfo {
     data class MapField(
         override val isRequired: Boolean,
         override val oasKey: String,
-        val schema: Schema,
+        override val schema: Schema,
         override val isInherited: Boolean,
         val parentSchema: Schema
     ) : PropertyInfo() {
@@ -205,7 +206,7 @@ sealed class PropertyInfo {
     data class ObjectRefField(
         override val isRequired: Boolean,
         override val oasKey: String,
-        val schema: Schema,
+        override val schema: Schema,
         override val isInherited: Boolean,
         val parentSchema: Schema
     ) : PropertyInfo() {
@@ -215,7 +216,7 @@ sealed class PropertyInfo {
     data class ObjectInlinedField(
         override val isRequired: Boolean,
         override val oasKey: String,
-        val schema: Schema,
+        override val schema: Schema,
         override val isInherited: Boolean,
         val parentSchema: Schema,
         val enclosingSchema: Schema?
@@ -225,7 +226,7 @@ sealed class PropertyInfo {
     }
 
     data class AdditionalProperties(
-        val schema: Schema,
+        override val schema: Schema,
         override val isInherited: Boolean,
         val parentSchema: Schema
     ) : PropertyInfo() {
