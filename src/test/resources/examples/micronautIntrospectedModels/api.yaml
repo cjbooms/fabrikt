@@ -1,0 +1,110 @@
+openapi: "3.0.0"
+info:
+paths:
+components:
+  schemas:
+    QueryResult:
+      type: "object"
+      required:
+        - "items"
+      properties:
+        items:
+          type: "array"
+          minItems: 0
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/FirstModel"
+              - $ref: "#/components/schemas/SecondModel"
+              - $ref: "#/components/schemas/ThirdModel"
+    Content:
+      type: "object"
+      required:
+        - "id"
+        - "attr_1"
+        - "attr_2"
+        - "attr_3"
+        - "etag"
+        - "model_type"
+      properties:
+        id:
+          description: "The unique resource id"
+          type: "string"
+          readOnly: true
+        first_attr:
+          description: "The attribute 1"
+          type: "string"
+          format: "date-time"
+          example: "2016-01-27T10:52:46.406Z"
+          readOnly: true
+        second_attr:
+          description: "The attribute 2"
+          type: "string"
+          readOnly: true
+        third_attr:
+          type: "string"
+          enum:
+            - "enum_type_1"
+            - "enum_type_2"
+          description: "Enum types for attribute 3"
+          example: "enum_type_2"
+        etag:
+          type: "string"
+          description: "Etag value to be used in conjunction with If-Match headers for optimistic locking purposes"
+          readOnly: true
+        model_type:
+          type: "string"
+          description: "The model discrimination type"
+          enum:
+            - "first_model"
+            - "second_model"
+            - "third_model"
+          example: "third_model"
+      discriminator:
+        propertyName: "model_type"
+        mapping:
+          first_model: "#/components/schemas/FirstModel"
+          second_model: "#/components/schemas/SecondModel"
+          third_model: "#/components/schemas/ThirdModel"
+
+    FirstModel:
+      allOf:
+        - $ref: "#/components/schemas/Content"
+        - type: "object"
+          properties:
+            extra_first_attr:
+              description: "The attribute 1 for model 1"
+              type: array
+              items:
+                type: "string"
+                minItems: 1
+                maxItems: 10
+              readOnly: true
+    SecondModel:
+      allOf:
+        - $ref: "#/components/schemas/Content"
+        - type: "object"
+          properties:
+            extra_first_attr:
+              description: "The attribute 1 for model 2"
+              type: "string"
+              readOnly: true
+            extra_second_attr:
+              description: "The attribute 2 for model 2"
+              type: boolean
+              readOnly: true
+
+    ThirdModel:
+      allOf:
+        - $ref: "#/components/schemas/Content"
+        - type: "object"
+          properties:
+            extra_first_attr:
+              description: "The attribute 1 for model 3"
+              type: "string"
+              format: "date-time"
+              example: "2016-01-27T10:52:46.406Z"
+              readOnly: true
+            extra_second_attr:
+              description: "The attribute 2 for model 3"
+              type: integer
+              readOnly: true

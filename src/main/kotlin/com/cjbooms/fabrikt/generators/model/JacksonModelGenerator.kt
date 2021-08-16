@@ -268,6 +268,7 @@ class JacksonModelGenerator(
                     .build()
             )
             .addQuarkusReflectionAnnotation()
+            .addMicronautIntrospectedAnnotation()
         enum.entries.forEach {
             classBuilder.addEnumConstant(
                 it.toUpperCase(),
@@ -304,7 +305,8 @@ class JacksonModelGenerator(
                 )
                 .addModifiers(KModifier.DATA)
                 .addSerializableInterface()
-                .addQuarkusReflectionAnnotation(),
+                .addQuarkusReflectionAnnotation()
+                .addMicronautIntrospectedAnnotation(),
             ClassType.VANILLA_MODEL
         )
 
@@ -334,7 +336,9 @@ class JacksonModelGenerator(
                 it to toModelType(packages.base, KotlinTypeInfo.from(schemaInfo.schema, schemaInfo.name))
             }
         }.toMap()
-        classBuilder.addAnnotation(polymorphicSubTypes(mappings)).addQuarkusReflectionAnnotation()
+        classBuilder.addAnnotation(polymorphicSubTypes(mappings))
+            .addQuarkusReflectionAnnotation()
+            .addMicronautIntrospectedAnnotation()
 
         return properties.addToClass(
             classBuilder,
@@ -358,6 +362,7 @@ class JacksonModelGenerator(
                 .addModifiers(KModifier.DATA)
                 .addSerializableInterface()
                 .addQuarkusReflectionAnnotation()
+                .addMicronautIntrospectedAnnotation()
                 .superclass(
                     toModelType(
                         packages.base,
@@ -398,6 +403,14 @@ class JacksonModelGenerator(
         if (options.any { it == ModelCodeGenOptionType.QUARKUS_REFLECTION })
             this.addAnnotation(
                 AnnotationSpec.builder("RegisterForReflection".toClassName("io.quarkus.runtime.annotations")).build()
+            )
+        return this
+    }
+
+    private fun TypeSpec.Builder.addMicronautIntrospectedAnnotation(): TypeSpec.Builder {
+        if (options.any { it == ModelCodeGenOptionType.MICRONAUT_INTROSPECTION })
+            this.addAnnotation(
+                AnnotationSpec.builder("Introspected".toClassName("io.micronaut.core.annotation")).build()
             )
         return this
     }

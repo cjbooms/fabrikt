@@ -137,6 +137,7 @@ This section documents the available CLI parameters for controlling what gets ge
  |                        |   `X_EXTENSIBLE_ENUMS` - This option treats x-extensible-enums as enums
  |                        |   `JAVA_SERIALIZATION` - This option adds Java Serializable interface to the generated models
  |                        |   `QUARKUS_REFLECTION` - This option adds @RegisterForReflection to the generated models. Requires dependency "'io.quarkus:quarkus-core:+"
+ |                        |   `MICRONAUT_INTROSPECTION` - This option adds @Introspected to the generated models. Requires dependency "'io.micronaut:micronaut-core:+"
  |   `--output-directory` | Allows the generation dir to be overridden. Defaults to current dir
  |   `--targets`          | Targets are the parts of the application that you want to be generated.
  |                        | CHOOSE ANY OF:
