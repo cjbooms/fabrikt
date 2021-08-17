@@ -22,6 +22,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ExternalObjectThree'
+      additionalProperties:
+        type: object
+        minProperties: 1
+        additionalProperties:
+          $ref: '#/components/schemas/ExternalObjectFour'
    
     ExternalObjectThree:
       type: object
@@ -36,6 +41,18 @@ components:
             - two
             - three
         description:
+          type: string   
+          
+    ExternalObjectFour:
+      type: object
+      properties:
+        blah:
+          type: string     
+          
+    IgnoredExternalObjectFive:
+      type: object
+      properties:
+        blah:
           type: string
     
     ExternalOneOf:

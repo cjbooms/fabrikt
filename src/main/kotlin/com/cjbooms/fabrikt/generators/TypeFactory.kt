@@ -17,6 +17,15 @@ object TypeFactory {
             )
         )
 
+    fun createMutableMapOfMapsStringToStringType(type: TypeName) =
+        ClassName("kotlin.collections", "MutableMap").parameterizedBy(
+            String::class.asTypeName(),
+            Map::class.asTypeName().parameterizedBy(
+                String::class.asTypeName(),
+                type
+            )
+        )
+
     fun createMutableMapOfStringToType(type: TypeName) =
         ClassName("kotlin.collections", "MutableMap").parameterizedBy(
             String::class.asTypeName(),

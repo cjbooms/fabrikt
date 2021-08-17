@@ -30,15 +30,20 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     data class Object(val simpleClassName: String) : KotlinTypeInfo(GeneratedType::class, simpleClassName)
     data class Array(val parameterizedType: KotlinTypeInfo) : KotlinTypeInfo(List::class)
     data class Map(val parameterizedType: KotlinTypeInfo) : KotlinTypeInfo(Map::class)
-    object UnknownProperties : KotlinTypeInfo(Any::class)
-    object UntypedProperties : KotlinTypeInfo(Any::class)
-    data class TypedProperties(val simpleClassName: String) : KotlinTypeInfo(GeneratedType::class, simpleClassName)
+    object UnknownAdditionalProperties : KotlinTypeInfo(Any::class)
+    object UntypedObjectAdditionalProperties : KotlinTypeInfo(Any::class)
+    data class GeneratedTypedAdditionalProperties(val simpleClassName: String) :
+        KotlinTypeInfo(GeneratedType::class, simpleClassName)
+
+    data class MapTypeAdditionalProperties(val parameterizedType: KotlinTypeInfo) :
+        KotlinTypeInfo(Map::class)
+
     data class Enum(val entries: List<String>, val enumClassName: String) :
         KotlinTypeInfo(GeneratedType::class, enumClassName)
 
     val isComplexType: kotlin.Boolean
         get() = when (this) {
-            is Array, is Object, is Map, is TypedProperties -> true
+            is Array, is Object, is Map, is GeneratedTypedAdditionalProperties -> true
             else -> false
         }
 
@@ -63,13 +68,19 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                         throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")
                     else Array(from(schema.itemsSchema, oasKey, enclosingName))
                 OasType.Object -> Object(schema.toModelClassName(enclosingName.toModelClassName()))
-                OasType.Map -> Map(from(schema.additionalPropertiesSchema, "additionalProperties", enclosingName))
-                OasType.TypedProperties -> TypedProperties(
-                    if (schema.isInlinedTypedAdditionalProperties()) schema.toMapValueClassName() else schema.toModelClassName()
+                OasType.Map ->
+                    Map(from(schema.additionalPropertiesSchema, "", enclosingName))
+                OasType.TypedObjectAdditionalProperties -> GeneratedTypedAdditionalProperties(
+                    if (schema.isInlinedTypedAdditionalProperties()) schema.toMapValueClassName()
+                    else schema.toModelClassName()
                 )
-                OasType.UntypedProperties -> UntypedProperties
+                OasType.UntypedObjectAdditionalProperties -> UntypedObjectAdditionalProperties
                 OasType.UntypedObject -> UntypedObject
-                OasType.UnknownProperties -> UnknownProperties
+                OasType.UnknownAdditionalProperties -> UnknownAdditionalProperties
+                OasType.TypedMapAdditionalProperties ->
+                    MapTypeAdditionalProperties(
+                        from(schema.additionalPropertiesSchema, "", enclosingName)
+                    )
             }
     }
 }

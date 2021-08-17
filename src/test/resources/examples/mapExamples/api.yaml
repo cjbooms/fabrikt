@@ -62,6 +62,17 @@ components:
                 type: string
               other_number:
                 type: integer
+      additionalProperties:
+        type: object
+        minProperties: 1
+        additionalProperties:
+          $ref: '#/components/schemas/ExternalObjectFour'
+
+    ExternalObjectFour:
+      type: object
+      properties:
+        blah:
+          type: string
 
     ComplexObjectWithUntypedMap:
       type: object
