@@ -1,6 +1,8 @@
 package examples.mapExamples.models
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import javax.validation.Valid
 import kotlin.Any
@@ -54,7 +56,11 @@ data class MapHolder(
     @get:Valid
     val inlinedComplexObjectWithTypedMap: MapHolderInlinedComplexObjectWithTypedMap? = null
 ) {
+    @get:JsonIgnore
     val properties: MutableMap<String, Map<String, ExternalObjectFour>> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Map<String, ExternalObjectFour>> = properties
 
     @JsonAnySetter
     fun set(name: String, value: Map<String, ExternalObjectFour>) {
@@ -88,7 +94,11 @@ data class ComplexObjectWithUntypedMap(
     @get:JsonProperty("code")
     val code: Int? = null
 ) {
+    @get:JsonIgnore
     val properties: MutableMap<String, Any> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
 
     @JsonAnySetter
     fun set(name: String, value: Any) {
@@ -113,7 +123,11 @@ data class ComplexObjectWithTypedMap(
     @get:JsonProperty("code")
     val code: Int? = null
 ) {
+    @get:JsonIgnore
     val properties: MutableMap<String, ComplexObjectWithTypedMapValue> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, ComplexObjectWithTypedMapValue> = properties
 
     @JsonAnySetter
     fun set(name: String, value: ComplexObjectWithTypedMapValue) {
@@ -129,7 +143,11 @@ data class MapHolderInlinedComplexObjectWithUntypedMap(
     @get:JsonProperty("code")
     val code: Int? = null
 ) {
+    @get:JsonIgnore
     val properties: MutableMap<String, Any> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
 
     @JsonAnySetter
     fun set(name: String, value: Any) {
@@ -154,7 +172,11 @@ data class MapHolderInlinedComplexObjectWithTypedMap(
     @get:JsonProperty("code")
     val code: Int? = null
 ) {
+    @get:JsonIgnore
     val properties: MutableMap<String, InlinedComplexObjectWithTypedMapValue> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, InlinedComplexObjectWithTypedMapValue> = properties
 
     @JsonAnySetter
     fun set(name: String, value: InlinedComplexObjectWithTypedMapValue) {
@@ -176,7 +198,11 @@ data class ComplexObjectWithRefTypedMap(
     @get:JsonProperty("code")
     val code: Int? = null
 ) {
+    @get:JsonIgnore
     val properties: MutableMap<String, SomeRef> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, SomeRef> = properties
 
     @JsonAnySetter
     fun set(name: String, value: SomeRef) {

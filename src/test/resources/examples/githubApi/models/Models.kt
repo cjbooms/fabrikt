@@ -1,6 +1,8 @@
 package examples.githubApi.models
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import java.time.OffsetDateTime
@@ -20,7 +22,11 @@ data class BulkEntityDetails(
     @get:Valid
     val entities: List<EntityDetails>
 ) {
+    @get:JsonIgnore
     val properties: MutableMap<String, Any> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
 
     @JsonAnySetter
     fun set(name: String, value: Any) {
@@ -34,7 +40,11 @@ data class EntityDetails(
     @get:NotNull
     val id: String
 ) {
+    @get:JsonIgnore
     val properties: MutableMap<String, Any> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
 
     @JsonAnySetter
     fun set(name: String, value: Any) {
@@ -50,7 +60,11 @@ data class EventResults(
     @get:Valid
     val changeEvents: List<Event>
 ) {
+    @get:JsonIgnore
     val properties: MutableMap<String, Any> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
 
     @JsonAnySetter
     fun set(name: String, value: Any) {
@@ -68,7 +82,11 @@ data class Event(
     @get:NotNull
     val data: Map<String, Any>
 ) {
+    @get:JsonIgnore
     val properties: MutableMap<String, Any> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
 
     @JsonAnySetter
     fun set(name: String, value: Any) {
