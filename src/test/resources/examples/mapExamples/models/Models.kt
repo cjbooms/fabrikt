@@ -53,7 +53,14 @@ data class MapHolder(
     @get:JsonProperty("inlined_complex_object_with_typed_map")
     @get:Valid
     val inlinedComplexObjectWithTypedMap: MapHolderInlinedComplexObjectWithTypedMap? = null
-)
+) {
+    val properties: MutableMap<String, Map<String, ExternalObjectFour>> = mutableMapOf()
+
+    @JsonAnySetter
+    fun set(name: String, value: Map<String, ExternalObjectFour>) {
+        properties[name] = value
+    }
+}
 
 data class TypedObjectMapValue(
     @param:JsonProperty("code")
@@ -154,6 +161,12 @@ data class MapHolderInlinedComplexObjectWithTypedMap(
         properties[name] = value
     }
 }
+
+data class ExternalObjectFour(
+    @param:JsonProperty("blah")
+    @get:JsonProperty("blah")
+    val blah: String? = null
+)
 
 data class ComplexObjectWithRefTypedMap(
     @param:JsonProperty("text")

@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isMapTypeAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUnknownAdditionalProperties
@@ -33,9 +34,10 @@ sealed class OasType(
     object Enum : OasType("string", specialization = Specialization.ENUM)
     object Uuid : OasType("string", specialization = Specialization.UUID)
     object Map : OasType("object", specialization = Specialization.MAP)
-    object UnknownProperties : OasType("object", specialization = Specialization.UNKNOWN_ADDITIONAL_PROPERTIES)
-    object UntypedProperties : OasType("object", specialization = Specialization.UNTYPED_OBJECT_ADDITIONAL_PROPERTIES)
-    object TypedProperties : OasType("object", specialization = Specialization.TYPED_OBJECT_ADDITIONAL_PROPERTIES)
+    object UnknownAdditionalProperties : OasType("object", specialization = Specialization.UNKNOWN_ADDITIONAL_PROPERTIES)
+    object UntypedObjectAdditionalProperties : OasType("object", specialization = Specialization.UNTYPED_OBJECT_ADDITIONAL_PROPERTIES)
+    object TypedObjectAdditionalProperties : OasType("object", specialization = Specialization.TYPED_OBJECT_ADDITIONAL_PROPERTIES)
+    object TypedMapAdditionalProperties : OasType("object", specialization = Specialization.TYPED_MAP_ADDITIONAL_PROPERTIES)
     companion object {
         fun Schema.toOasType(oasKey: String): OasType =
             values(OasType::class)
@@ -55,6 +57,7 @@ sealed class OasType(
             when {
                 isUuidDefinition() -> Specialization.UUID
                 isEnumDefinition() -> Specialization.ENUM
+                isMapTypeAdditionalProperties(oasKey) -> Specialization.TYPED_MAP_ADDITIONAL_PROPERTIES
                 isInlineableMapDefinition() -> Specialization.MAP
                 isTypedAdditionalProperties(oasKey) -> Specialization.TYPED_OBJECT_ADDITIONAL_PROPERTIES
                 isUntypedAdditionalProperties(oasKey) -> Specialization.UNTYPED_OBJECT_ADDITIONAL_PROPERTIES
@@ -69,6 +72,7 @@ sealed class OasType(
         MAP,
         UNKNOWN_ADDITIONAL_PROPERTIES,
         TYPED_OBJECT_ADDITIONAL_PROPERTIES,
+        TYPED_MAP_ADDITIONAL_PROPERTIES,
         UNTYPED_OBJECT_ADDITIONAL_PROPERTIES,
         UNTYPED_OBJECT,
         UUID,

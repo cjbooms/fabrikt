@@ -1,5 +1,6 @@
 package examples.externalReferences.models
 
+import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -8,6 +9,8 @@ import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import kotlin.String
 import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.MutableMap
 
 data class ContainingExternalReference(
     @param:JsonProperty("some-external-reference")
@@ -43,7 +46,14 @@ data class ExternalObjectTwo(
     @get:JsonProperty("list-others")
     @get:Valid
     val listOthers: List<ExternalObjectThree>? = null
-)
+) {
+    val properties: MutableMap<String, Map<String, ExternalObjectFour>> = mutableMapOf()
+
+    @JsonAnySetter
+    fun set(name: String, value: Map<String, ExternalObjectFour>) {
+        properties[name] = value
+    }
+}
 
 data class ExternalObject(
     @param:JsonProperty("another")
@@ -54,6 +64,12 @@ data class ExternalObject(
     @get:JsonProperty("one_of")
     @get:Valid
     val oneOf: ParentOneOf? = null
+)
+
+data class ExternalObjectFour(
+    @param:JsonProperty("blah")
+    @get:JsonProperty("blah")
+    val blah: String? = null
 )
 
 @JsonTypeInfo(

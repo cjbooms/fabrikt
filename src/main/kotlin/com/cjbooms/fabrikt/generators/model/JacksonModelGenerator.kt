@@ -9,6 +9,7 @@ import com.cjbooms.fabrikt.generators.PropertyUtils.isNullable
 import com.cjbooms.fabrikt.generators.TypeFactory.createList
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfMapsStringToStringAny
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfStringToType
+import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfMapsStringToStringType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfStringToType
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.JSON_VALUE
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.basePolymorphicType
@@ -77,15 +78,15 @@ class JacksonModelGenerator(
                 )
                 is KotlinTypeInfo.Map ->
                     when (val paramType = typeInfo.parameterizedType) {
-                        is KotlinTypeInfo.UntypedProperties -> createMapOfMapsStringToStringAny()
-                        is KotlinTypeInfo.UnknownProperties ->
+                        is KotlinTypeInfo.UntypedObjectAdditionalProperties -> createMapOfMapsStringToStringAny()
+                        is KotlinTypeInfo.UnknownAdditionalProperties ->
                             createMapOfStringToType(
                                 toClassName(
                                     basePackage,
                                     paramType
                                 )
                             )
-                        is KotlinTypeInfo.TypedProperties ->
+                        is KotlinTypeInfo.GeneratedTypedAdditionalProperties ->
                             createMapOfStringToType(
                                 toClassName(
                                     basePackage,
@@ -100,9 +101,15 @@ class JacksonModelGenerator(
                         )
                     }
                 is KotlinTypeInfo.UntypedObject -> createMapOfStringToType(className)
-                is KotlinTypeInfo.UnknownProperties -> createMutableMapOfStringToType(className)
-                is KotlinTypeInfo.UntypedProperties -> createMutableMapOfStringToType(className)
-                is KotlinTypeInfo.TypedProperties -> createMutableMapOfStringToType(className)
+                is KotlinTypeInfo.UnknownAdditionalProperties -> createMutableMapOfStringToType(className)
+                is KotlinTypeInfo.UntypedObjectAdditionalProperties -> createMutableMapOfStringToType(className)
+                is KotlinTypeInfo.GeneratedTypedAdditionalProperties -> createMutableMapOfStringToType(className)
+                is KotlinTypeInfo.MapTypeAdditionalProperties -> createMutableMapOfMapsStringToStringType(
+                    toModelType(
+                        basePackage,
+                        typeInfo.parameterizedType
+                    )
+                )
                 else -> className
             }
             return if (isNullable) typeName.copy(nullable = true) else typeName
@@ -113,6 +120,11 @@ class JacksonModelGenerator(
                 generatedType(
                     basePackage,
                     typeInfo.generatedModelClassName!!
+                )
+            else if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties)
+                generatedType(
+                    basePackage,
+                    typeInfo.parameterizedType.generatedModelClassName!!
                 )
             else typeInfo.modelKClass.asTypeName()
 

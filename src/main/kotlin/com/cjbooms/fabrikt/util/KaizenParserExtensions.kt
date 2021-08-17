@@ -4,6 +4,7 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType
 import com.cjbooms.fabrikt.model.PropertyInfo
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSchemaNameInParent
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeys
 import com.cjbooms.fabrikt.util.NormalisedString.toMapValueClassName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
@@ -89,6 +90,10 @@ object KaizenParserExtensions {
 
     fun Schema.isTypedAdditionalProperties(oasKey: String) = type == OasType.Object.type &&
         (getSchemaNameInParent() == "additionalProperties" || oasKey == "additionalProperties") && properties?.isEmpty() != true
+
+    fun Schema.isMapTypeAdditionalProperties(oasKey: String) = type == OasType.Object.type &&
+        (oasKey == "additionalProperties") && properties?.isEmpty() == true &&
+        hasAdditionalProperties()
 
     fun Schema.isComplexTypedAdditionalProperties(oasKey: String) =
         getSchemaNameInParent() ?: oasKey == "additionalProperties" && properties?.isEmpty() != true && !isSimpleType()

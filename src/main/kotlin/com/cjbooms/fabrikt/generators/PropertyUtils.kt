@@ -8,9 +8,11 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asTypeName
 
 enum class ClassType {
     VANILLA_MODEL,
@@ -60,10 +62,14 @@ object PropertyUtils {
 
         if (this is PropertyInfo.AdditionalProperties) {
             property.initializer("mutableMapOf()")
+            val value =
+                if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties)
+                    Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), parameterizedType)
+                else parameterizedType
             classBuilder.addFunction(
                 FunSpec.builder("set")
                     .addParameter("name", String::class)
-                    .addParameter("value", parameterizedType)
+                    .addParameter("value", value)
                     .addStatement("$name[name] = value")
                     .addAnnotation(JacksonMetadata.anySetter)
                     .build()
@@ -103,7 +109,10 @@ object PropertyUtils {
                 }
             }
 
-            if (this !is PropertyInfo.Field || !isPolymorphicDiscriminator || isSubTypeDiscriminatorWithNoValue(classType)) {
+            if (this !is PropertyInfo.Field || !isPolymorphicDiscriminator || isSubTypeDiscriminatorWithNoValue(
+                    classType
+                )
+            ) {
                 property.initializer(name)
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, type)
                 val default = getDefaultValue(this, parameterizedType)
