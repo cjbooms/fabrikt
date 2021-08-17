@@ -42,6 +42,9 @@ object KaizenParserExtensions {
     fun Schema.isInlinedObjectDefinition() =
         isObjectType() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("properties")
 
+    fun Schema.isInlinedTypedAdditionalProperties() =
+        isObjectType() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("additionalProperties")
+
     fun Schema.isInlinedEnumDefinition() =
         isEnumDefinition() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("properties")
 
@@ -85,7 +88,7 @@ object KaizenParserExtensions {
         getSchemaNameInParent() ?: oasKey == "additionalProperties" && properties?.isEmpty() == true
 
     fun Schema.isTypedAdditionalProperties(oasKey: String) = type == OasType.Object.type &&
-        getSchemaNameInParent() ?: oasKey == "additionalProperties" && properties?.isEmpty() != true
+        (getSchemaNameInParent() == "additionalProperties" || oasKey == "additionalProperties") && properties?.isEmpty() != true
 
     fun Schema.isComplexTypedAdditionalProperties(oasKey: String) =
         getSchemaNameInParent() ?: oasKey == "additionalProperties" && properties?.isEmpty() != true && !isSimpleType()

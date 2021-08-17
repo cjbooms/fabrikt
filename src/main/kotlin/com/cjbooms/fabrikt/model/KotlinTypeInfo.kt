@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.model.OasType.Companion.toOasType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getEnumValues
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
@@ -63,7 +64,9 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     else Array(from(schema.itemsSchema, oasKey, enclosingName))
                 OasType.Object -> Object(schema.toModelClassName(enclosingName.toModelClassName()))
                 OasType.Map -> Map(from(schema.additionalPropertiesSchema, "additionalProperties", enclosingName))
-                OasType.TypedProperties -> TypedProperties(schema.toMapValueClassName())
+                OasType.TypedProperties -> TypedProperties(
+                    if (schema.isInlinedTypedAdditionalProperties()) schema.toMapValueClassName() else schema.toModelClassName()
+                )
                 OasType.UntypedProperties -> UntypedProperties
                 OasType.UntypedObject -> UntypedObject
                 OasType.UnknownProperties -> UnknownProperties
