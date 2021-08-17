@@ -27,6 +27,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfPolymorphicTypes
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSubType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSuperType
@@ -204,7 +205,7 @@ class JacksonModelGenerator(
                 is PropertyInfo.AdditionalProperties ->
                     if (it.schema.isComplexTypedAdditionalProperties("additionalProperties")) setOf(
                         standardDataClass(
-                            it.schema.toMapValueClassName(),
+                            if (it.schema.isInlinedTypedAdditionalProperties()) it.schema.toMapValueClassName() else it.schema.toModelClassName(),
                             it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
                         )
                     )
@@ -287,12 +288,13 @@ class JacksonModelGenerator(
     }
 
     private fun buildMapModel(mapField: PropertyInfo.MapField): TypeSpec? =
-        if (mapField.schema.additionalPropertiesSchema.isComplexTypedAdditionalProperties("additionalProperties"))
+        if (mapField.schema.additionalPropertiesSchema.isComplexTypedAdditionalProperties("additionalProperties")) {
+            val schema = mapField.schema.additionalPropertiesSchema
             standardDataClass(
-                mapField.schema.additionalPropertiesSchema.toMapValueClassName(),
+                if (schema.isInlinedTypedAdditionalProperties()) schema.toMapValueClassName() else schema.toModelClassName(),
                 mapField.schema.additionalPropertiesSchema.topLevelProperties(HTTP_SETTINGS)
             )
-        else null
+        } else null
 
     private fun standardDataClass(modelName: String, properties: Collection<PropertyInfo>): TypeSpec =
         properties.addToClass(

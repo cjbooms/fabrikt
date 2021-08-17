@@ -6,6 +6,7 @@ import javax.validation.Valid
 import kotlin.Any
 import kotlin.Int
 import kotlin.String
+import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableMap
 
@@ -153,3 +154,45 @@ data class MapHolderInlinedComplexObjectWithTypedMap(
         properties[name] = value
     }
 }
+
+data class ComplexObjectWithRefTypedMap(
+    @param:JsonProperty("text")
+    @get:JsonProperty("text")
+    val text: String? = null,
+    @param:JsonProperty("code")
+    @get:JsonProperty("code")
+    val code: Int? = null
+) {
+    val properties: MutableMap<String, SomeRef> = mutableMapOf()
+
+    @JsonAnySetter
+    fun set(name: String, value: SomeRef) {
+        properties[name] = value
+    }
+}
+
+data class SomeRef(
+    @param:JsonProperty("other_text")
+    @get:JsonProperty("other_text")
+    val otherText: String? = null,
+    @param:JsonProperty("other_number")
+    @get:JsonProperty("other_number")
+    val otherNumber: Int? = null
+)
+
+data class ComplexObjectWithMapsOfMaps(
+    @param:JsonProperty("list-others")
+    @get:JsonProperty("list-others")
+    @get:Valid
+    val listOthers: List<BasicObject>? = null,
+    @param:JsonProperty("map-of-maps")
+    @get:JsonProperty("map-of-maps")
+    @get:Valid
+    val mapOfMaps: Map<String, Map<String, BasicObject>>? = null
+)
+
+data class BasicObject(
+    @param:JsonProperty("one")
+    @get:JsonProperty("one")
+    val one: String? = null
+)
