@@ -12,6 +12,8 @@ object JacksonMetadata {
     private val JSON_TYPE_INFO_CLASS = ClassName("com.fasterxml.jackson.annotation", "JsonTypeInfo")
     private val JSON_SUB_TYPES_CLASS = ClassName("com.fasterxml.jackson.annotation", "JsonSubTypes")
     private val JSON_ANY_SETTER = ClassName("com.fasterxml.jackson.annotation", "JsonAnySetter")
+    private val JSON_ANY_GETTER = ClassName("com.fasterxml.jackson.annotation", "JsonAnyGetter")
+    private val JSON_IGNORE = ClassName("com.fasterxml.jackson.annotation", "JsonIgnore")
 
     val JSON_VALUE = AnnotationSpec.builder(JSON_VALUE_CLASS).build()
 
@@ -26,6 +28,10 @@ object JacksonMetadata {
         .addMember("%S", name).build()
 
     val anySetter = AnnotationSpec.builder(JSON_ANY_SETTER).build()
+    val anyGetter = AnnotationSpec.builder(JSON_ANY_GETTER).build()
+    val ignore = AnnotationSpec.builder(JSON_IGNORE)
+        .useSiteTarget(AnnotationSpec.UseSiteTarget.GET)
+        .build()
 
     fun basePolymorphicType(discriminatorFieldName: String) = AnnotationSpec
         .builder(JSON_TYPE_INFO_CLASS)

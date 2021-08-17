@@ -1,6 +1,8 @@
 package examples.externalReferences.models
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -47,7 +49,11 @@ data class ExternalObjectTwo(
     @get:Valid
     val listOthers: List<ExternalObjectThree>? = null
 ) {
+    @get:JsonIgnore
     val properties: MutableMap<String, Map<String, ExternalObjectFour>> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Map<String, ExternalObjectFour>> = properties
 
     @JsonAnySetter
     fun set(name: String, value: Map<String, ExternalObjectFour>) {

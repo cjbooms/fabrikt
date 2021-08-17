@@ -62,10 +62,18 @@ object PropertyUtils {
 
         if (this is PropertyInfo.AdditionalProperties) {
             property.initializer("mutableMapOf()")
+            property.addAnnotation(JacksonMetadata.ignore)
             val value =
                 if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties)
                     Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), parameterizedType)
                 else parameterizedType
+            classBuilder.addFunction(
+                FunSpec.builder("get")
+                    .returns(Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), value))
+                    .addStatement("return $name")
+                    .addAnnotation(JacksonMetadata.anyGetter)
+                    .build()
+            )
             classBuilder.addFunction(
                 FunSpec.builder("set")
                     .addParameter("name", String::class)
