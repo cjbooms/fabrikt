@@ -88,6 +88,46 @@ components:
           other_number:
             type: integer
 
+    ComplexObjectWithRefTypedMap:
+      type: object
+      properties:
+        text:
+          type: string
+        code:
+          type: integer
+      additionalProperties:
+        $ref: '#/components/schemas/SomeRef'
+        
+    SomeRef:
+      type: object
+      properties:
+        other_text:
+          type: string
+        other_number:
+          type: integer
+          
+    ComplexObjectWithMapsOfMaps:
+      type: object
+      required:
+        - errors
+      properties:
+        list-others:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasicObject'
+        map-of-maps:
+          type: object
+          additionalProperties:
+            type: object
+            minProperties: 1
+            additionalProperties:
+              $ref: '#/components/schemas/BasicObject'
+          
+    BasicObject:
+      type: object
+      properties: 
+        one:
+          type: string
     StringMap:
       type: object
       additionalProperties:
