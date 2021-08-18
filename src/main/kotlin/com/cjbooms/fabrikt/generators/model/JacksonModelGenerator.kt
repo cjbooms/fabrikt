@@ -55,7 +55,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import java.io.Serializable
 import java.net.URL
-import java.util.logging.Logger
 
 class JacksonModelGenerator(
     private val packages: Packages,
@@ -116,23 +115,18 @@ class JacksonModelGenerator(
         }
 
         private fun toClassName(basePackage: String, typeInfo: KotlinTypeInfo): ClassName =
-            if (typeInfo.modelKClass == GeneratedType::class)
-                generatedType(
-                    basePackage,
-                    typeInfo.generatedModelClassName!!
-                )
-            else if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties)
-                generatedType(
-                    basePackage,
-                    typeInfo.parameterizedType.generatedModelClassName!!
-                )
-            else typeInfo.modelKClass.asTypeName()
+            when {
+                typeInfo.modelKClass == GeneratedType::class ->
+                    generatedType(basePackage, typeInfo.generatedModelClassName!!)
+                typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties ->
+                    generatedType(basePackage, typeInfo.parameterizedType.generatedModelClassName!!)
+                else -> typeInfo.modelKClass.asTypeName()
+            }
 
         fun generatedType(basePackage: String, modelName: String) = ClassName(modelsPackage(basePackage), modelName)
     }
 
     private val externalApiSchemas = mutableMapOf<String, MutableSet<String>>()
-    private val logger = Logger.getGlobal()
 
     fun generate(): Models {
         val models: MutableSet<TypeSpec> = createModels(sourceApi.openApi3, sourceApi.allSchemas)
@@ -267,10 +261,7 @@ class JacksonModelGenerator(
 
     private fun Schema.getDocumentUrl(): String {
         val positionInfo = Overlay.of(this).positionInfo?.orElse(null)
-        return positionInfo?.documentUrl ?: run {
-            logger.warning("Could not find document URL in PositionInfo: $positionInfo")
-            "UNKNOWN"
-        }
+        return positionInfo?.documentUrl ?: "Not Found"
     }
 
     private fun Schema.nestedSchemas() =
