@@ -268,8 +268,7 @@ class JacksonModelGenerator(
     private fun Schema.getDocumentUrl(): String {
         val positionInfo = Overlay.of(this).positionInfo?.orElse(null)
         return positionInfo?.documentUrl ?: run {
-            logger.warning("Could not find document URL in PositionInfo: $positionInfo")
-            "UNKNOWN"
+            "Not Found"
         }
     }
 
