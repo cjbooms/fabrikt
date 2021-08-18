@@ -39,7 +39,6 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
-import com.reprezen.jsonoverlay.IJsonOverlay
 import com.reprezen.jsonoverlay.Overlay
 import com.reprezen.kaizen.oasparser.OpenApi3Parser
 import com.reprezen.kaizen.oasparser.model3.Discriminator
@@ -157,7 +156,7 @@ class JacksonModelGenerator(
             val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
             if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
                 val primaryModel = buildPrimaryModel(api, it, properties, schemas)
-                val inlinedModels = buildInLinedModels(properties, it.schema, api.getDocumentUrl())
+                val inlinedModels = buildInLinedModels(properties, it.schema, it.schema.getDocumentUrl())
                 listOf(primaryModel) + inlinedModels
             } else emptyList()
         }.toMutableSet()
@@ -266,9 +265,9 @@ class JacksonModelGenerator(
         return docUrl != apiDocUrl
     }
 
-    private fun <V> IJsonOverlay<V>.getDocumentUrl(): String {
-        val positionInfo = Overlay.of(this).positionInfo.orElse(null)
-        return positionInfo.documentUrl ?: run {
+    private fun Schema.getDocumentUrl(): String {
+        val positionInfo = Overlay.of(this).positionInfo?.orElse(null)
+        return positionInfo?.documentUrl ?: run {
             logger.warning("Could not find document URL in PositionInfo: $positionInfo")
             "UNKNOWN"
         }
