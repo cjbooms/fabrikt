@@ -191,71 +191,70 @@ class JacksonModelGenerator(
         topLevelProperties: Collection<PropertyInfo>,
         enclosingSchema: Schema,
         apiDocUrl: String
-    ): List<TypeSpec> =
-        topLevelProperties.flatMap {
-            val enclosingModelName = enclosingSchema.toModelClassName()
-            if (it.schema.isInExternalDocument(apiDocUrl)) {
-                it.schema.captureMissingExternalSchemas(apiDocUrl)
-                emptySet()
-            } else
-                when (it) {
-                    is PropertyInfo.ObjectInlinedField -> {
-                        val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
-                        val currentModel = standardDataClass(it.name.toModelClassName(enclosingModelName), props)
-                        val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
-                        inlinedModels + currentModel
+    ): List<TypeSpec> = topLevelProperties.flatMap {
+        val enclosingModelName = enclosingSchema.toModelClassName()
+        if (it.schema.isInExternalDocument(apiDocUrl)) {
+            it.schema.captureMissingExternalSchemas(apiDocUrl)
+            emptySet()
+        } else
+            when (it) {
+                is PropertyInfo.ObjectInlinedField -> {
+                    val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
+                    val currentModel = standardDataClass(it.name.toModelClassName(enclosingModelName), props)
+                    val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
+                    inlinedModels + currentModel
+                }
+                is PropertyInfo.ObjectRefField ->
+                    when {
+                        it.schema.isReferenceObjectDefinition() -> it.schema.topLevelProperties(
+                            HTTP_SETTINGS, enclosingSchema
+                        )
+                            .let { props ->
+                                buildInLinedModels(props, enclosingSchema, apiDocUrl) +
+                                    standardDataClass(it.schema.safeName().toModelClassName(), props)
+                            }
+                        else -> emptySet()
                     }
-                    is PropertyInfo.ObjectRefField ->
+                is PropertyInfo.MapField -> buildMapModel(it)?.let { mapModel -> setOf(mapModel) } ?: emptySet()
+                is PropertyInfo.AdditionalProperties ->
+                    if (it.schema.isComplexTypedAdditionalProperties("additionalProperties")) setOf(
+                        standardDataClass(
+                            if (it.schema.isInlinedTypedAdditionalProperties()) it.schema.toMapValueClassName() else it.schema.toModelClassName(),
+                            it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
+                        )
+                    )
+                    else emptySet()
+                is PropertyInfo.Field ->
+                    if (it.typeInfo is KotlinTypeInfo.Enum) setOf(buildEnumClass(it.typeInfo as KotlinTypeInfo.Enum))
+                    else emptySet()
+                is PropertyInfo.ListField ->
+                    it.schema.itemsSchema.let { items ->
                         when {
-                            it.schema.isReferenceObjectDefinition() -> it.schema.topLevelProperties(
+                            items.isInlinedObjectDefinition() -> items.topLevelProperties(
+                                HTTP_SETTINGS, enclosingSchema
+                            ).let { props ->
+                                buildInLinedModels(props, enclosingSchema, apiDocUrl) + standardDataClass(
+                                    it.name.toModelClassName(enclosingModelName), props
+                                )
+                            }
+                            items.isReferenceObjectDefinition() -> items.topLevelProperties(
                                 HTTP_SETTINGS, enclosingSchema
                             )
                                 .let { props ->
                                     buildInLinedModels(props, enclosingSchema, apiDocUrl) +
-                                        standardDataClass(it.schema.safeName().toModelClassName(), props)
+                                        standardDataClass(items.safeName().toModelClassName(), props)
                                 }
+                            items.isEnumDefinition() ->
+                                setOf(
+                                    buildEnumClass(
+                                        KotlinTypeInfo.from(items, "items", enclosingModelName) as KotlinTypeInfo.Enum
+                                    )
+                                )
                             else -> emptySet()
                         }
-                    is PropertyInfo.MapField -> buildMapModel(it)?.let { mapModel -> setOf(mapModel) } ?: emptySet()
-                    is PropertyInfo.AdditionalProperties ->
-                        if (it.schema.isComplexTypedAdditionalProperties("additionalProperties")) setOf(
-                            standardDataClass(
-                                it.schema.toMapValueClassName(),
-                                it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
-                            )
-                        )
-                        else emptySet()
-                    is PropertyInfo.Field ->
-                        if (it.typeInfo is KotlinTypeInfo.Enum) setOf(buildEnumClass(it.typeInfo as KotlinTypeInfo.Enum))
-                        else emptySet()
-                    is PropertyInfo.ListField ->
-                        it.schema.itemsSchema.let { items ->
-                            when {
-                                items.isInlinedObjectDefinition() -> items.topLevelProperties(
-                                    HTTP_SETTINGS, enclosingSchema
-                                ).let { props ->
-                                    buildInLinedModels(props, enclosingSchema, apiDocUrl) + standardDataClass(
-                                        it.name.toModelClassName(enclosingModelName), props
-                                    )
-                                }
-                                items.isReferenceObjectDefinition() -> items.topLevelProperties(
-                                    HTTP_SETTINGS, enclosingSchema
-                                )
-                                    .let { props ->
-                                        buildInLinedModels(props, enclosingSchema, apiDocUrl) +
-                                            standardDataClass(items.safeName().toModelClassName(), props)
-                                    }
-                                items.isEnumDefinition() ->
-                                    setOf(
-                                        buildEnumClass(
-                                            KotlinTypeInfo.from(items, "items", enclosingModelName) as KotlinTypeInfo.Enum
-                                        )
-                                    )
-                                else -> emptySet()
-                            }
-                        }
-                }
-        }
+                    }
+            }
+    }
 
     private fun Schema.captureMissingExternalSchemas(apiDocUrl: String, depth: Int = 0) {
         nestedSchemas().forEach { schema ->
