@@ -205,16 +205,15 @@ class JacksonModelGenerator(
                 }
                 is PropertyInfo.ObjectRefField ->
                     when {
-                        it.schema.isReferenceObjectDefinition() -> it.schema.topLevelProperties(
-                            HTTP_SETTINGS, enclosingSchema
-                        )
-                            .let { props ->
+                        it.schema.isReferenceObjectDefinition() ->
+                            it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema).let { props ->
                                 buildInLinedModels(props, enclosingSchema, apiDocUrl) +
                                     standardDataClass(it.schema.safeName().toModelClassName(), props)
                             }
                         else -> emptySet()
                     }
-                is PropertyInfo.MapField -> buildMapModel(it)?.let { mapModel -> setOf(mapModel) } ?: emptySet()
+                is PropertyInfo.MapField ->
+                    buildMapModel(it)?.let { mapModel -> setOf(mapModel) } ?: emptySet()
                 is PropertyInfo.AdditionalProperties ->
                     if (it.schema.isComplexTypedAdditionalProperties("additionalProperties")) setOf(
                         standardDataClass(
@@ -229,17 +228,14 @@ class JacksonModelGenerator(
                 is PropertyInfo.ListField ->
                     it.schema.itemsSchema.let { items ->
                         when {
-                            items.isInlinedObjectDefinition() -> items.topLevelProperties(
-                                HTTP_SETTINGS, enclosingSchema
-                            ).let { props ->
-                                buildInLinedModels(props, enclosingSchema, apiDocUrl) + standardDataClass(
-                                    it.name.toModelClassName(enclosingModelName), props
-                                )
-                            }
-                            items.isReferenceObjectDefinition() -> items.topLevelProperties(
-                                HTTP_SETTINGS, enclosingSchema
-                            )
-                                .let { props ->
+                            items.isInlinedObjectDefinition() ->
+                                items.topLevelProperties(HTTP_SETTINGS, enclosingSchema).let { props ->
+                                    buildInLinedModels(props, enclosingSchema, apiDocUrl) + standardDataClass(
+                                        it.name.toModelClassName(enclosingModelName), props
+                                    )
+                                }
+                            items.isReferenceObjectDefinition() ->
+                                items.topLevelProperties(HTTP_SETTINGS, enclosingSchema).let { props ->
                                     buildInLinedModels(props, enclosingSchema, apiDocUrl) +
                                         standardDataClass(items.safeName().toModelClassName(), props)
                                 }
