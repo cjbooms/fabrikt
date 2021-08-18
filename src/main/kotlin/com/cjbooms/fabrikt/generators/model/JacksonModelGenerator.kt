@@ -56,6 +56,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import java.io.Serializable
 import java.net.URL
+import java.util.logging.Logger
 
 class JacksonModelGenerator(
     private val packages: Packages,
@@ -132,9 +133,7 @@ class JacksonModelGenerator(
     }
 
     private val externalApiSchemas = mutableMapOf<String, MutableSet<String>>()
-
-    private fun <V> IJsonOverlay<V>.getDocumentUrl(): String? =
-        Overlay.of(this).positionInfo.orElse(null)?.documentUrl
+    private val logger = Logger.getGlobal()
 
     fun generate(): Models {
         val models: MutableSet<TypeSpec> = createModels(sourceApi.openApi3, sourceApi.allSchemas)
@@ -158,7 +157,7 @@ class JacksonModelGenerator(
             val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
             if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
                 val primaryModel = buildPrimaryModel(api, it, properties, schemas)
-                val inlinedModels = buildInLinedModels(properties, it.schema, api.getDocumentUrl()!!)
+                val inlinedModels = buildInLinedModels(properties, it.schema, api.getDocumentUrl())
                 listOf(primaryModel) + inlinedModels
             } else emptyList()
         }.toMutableSet()
@@ -259,7 +258,7 @@ class JacksonModelGenerator(
     private fun Schema.captureMissingExternalSchemas(apiDocUrl: String, depth: Int = 0) {
         nestedSchemas().forEach { schema ->
             val docUrl = schema.getDocumentUrl()
-            if (docUrl != null && docUrl != apiDocUrl) {
+            if (docUrl != apiDocUrl) {
                 externalApiSchemas.getOrPut(docUrl) { mutableSetOf() }.add(schema.safeName())
             }
             if (depth < 10) schema.captureMissingExternalSchemas(apiDocUrl, depth + 1)
@@ -268,7 +267,15 @@ class JacksonModelGenerator(
 
     private fun Schema.isInExternalDocument(apiDocUrl: String): Boolean {
         val docUrl = getDocumentUrl()
-        return docUrl != null && docUrl != apiDocUrl
+        return docUrl != apiDocUrl
+    }
+
+    private fun <V> IJsonOverlay<V>.getDocumentUrl(): String {
+        val positionInfo = Overlay.of(this).positionInfo.orElse(null)
+        return positionInfo.documentUrl ?: run {
+            logger.warning("Could not find document URL in PositionInfo: $positionInfo")
+            "UNKNOWN"
+        }
     }
 
     private fun Schema.nestedSchemas() =
