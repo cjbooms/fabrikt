@@ -131,7 +131,6 @@ class JacksonModelGenerator(
         fun generatedType(basePackage: String, modelName: String) = ClassName(modelsPackage(basePackage), modelName)
     }
 
-    private val primaryDocUrl = sourceApi.openApi3.getDocumentUrl()
     private val externalApiSchemas = mutableMapOf<String, MutableSet<String>>()
 
     private fun <V> IJsonOverlay<V>.getDocumentUrl(): String? =
@@ -159,7 +158,7 @@ class JacksonModelGenerator(
             val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
             if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
                 val primaryModel = buildPrimaryModel(api, it, properties, schemas)
-                val inlinedModels = buildInLinedModels(properties, it.schema)
+                val inlinedModels = buildInLinedModels(properties, it.schema, api.getDocumentUrl()!!)
                 listOf(primaryModel) + inlinedModels
             } else emptyList()
         }.toMutableSet()
@@ -190,16 +189,19 @@ class JacksonModelGenerator(
 
     private fun buildInLinedModels(
         topLevelProperties: Collection<PropertyInfo>,
-        enclosingSchema: Schema
-    ): List<TypeSpec> =
-        topLevelProperties.flatMap {
-            val enclosingModelName = enclosingSchema.toModelClassName()
-            it.schema.captureMissingExternalSchemas()
+        enclosingSchema: Schema,
+        apiDocUrl: String
+    ): List<TypeSpec> = topLevelProperties.flatMap {
+        val enclosingModelName = enclosingSchema.toModelClassName()
+        if (it.schema.isInExternalDocument(apiDocUrl)) {
+            it.schema.captureMissingExternalSchemas(apiDocUrl)
+            emptySet()
+        } else
             when (it) {
                 is PropertyInfo.ObjectInlinedField -> {
                     val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
                     val currentModel = standardDataClass(it.name.toModelClassName(enclosingModelName), props)
-                    val inlinedModels = buildInLinedModels(props, enclosingSchema)
+                    val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
                     inlinedModels + currentModel
                 }
                 is PropertyInfo.ObjectRefField ->
@@ -208,7 +210,7 @@ class JacksonModelGenerator(
                             HTTP_SETTINGS, enclosingSchema
                         )
                             .let { props ->
-                                buildInLinedModels(props, enclosingSchema) +
+                                buildInLinedModels(props, enclosingSchema, apiDocUrl) +
                                     standardDataClass(it.schema.safeName().toModelClassName(), props)
                             }
                         else -> emptySet()
@@ -231,7 +233,7 @@ class JacksonModelGenerator(
                             items.isInlinedObjectDefinition() -> items.topLevelProperties(
                                 HTTP_SETTINGS, enclosingSchema
                             ).let { props ->
-                                buildInLinedModels(props, enclosingSchema) + standardDataClass(
+                                buildInLinedModels(props, enclosingSchema, apiDocUrl) + standardDataClass(
                                     it.name.toModelClassName(enclosingModelName), props
                                 )
                             }
@@ -239,7 +241,7 @@ class JacksonModelGenerator(
                                 HTTP_SETTINGS, enclosingSchema
                             )
                                 .let { props ->
-                                    buildInLinedModels(props, enclosingSchema) +
+                                    buildInLinedModels(props, enclosingSchema, apiDocUrl) +
                                         standardDataClass(items.safeName().toModelClassName(), props)
                                 }
                             items.isEnumDefinition() ->
@@ -252,20 +254,30 @@ class JacksonModelGenerator(
                         }
                     }
             }
-        }
+    }
 
-    private fun Schema.captureMissingExternalSchemas(depth: Int = 0) {
+    private fun Schema.captureMissingExternalSchemas(apiDocUrl: String, depth: Int = 0) {
         nestedSchemas().forEach { schema ->
             val docUrl = schema.getDocumentUrl()
-            if (docUrl != null && docUrl != primaryDocUrl) {
+            if (docUrl != null && docUrl != apiDocUrl) {
                 externalApiSchemas.getOrPut(docUrl) { mutableSetOf() }.add(schema.safeName())
-                if (depth < 10) schema.captureMissingExternalSchemas(depth + 1)
             }
+            if (depth < 10) schema.captureMissingExternalSchemas(apiDocUrl, depth + 1)
         }
     }
 
+    private fun Schema.isInExternalDocument(apiDocUrl: String): Boolean {
+        val docUrl = getDocumentUrl()
+        return docUrl != null && docUrl != apiDocUrl
+    }
+
     private fun Schema.nestedSchemas() =
-        (allOfSchemas + anyOfSchemas + oneOfSchemas + itemsSchema + additionalPropertiesSchema).filterNotNull()
+        (
+            allOfSchemas + anyOfSchemas + oneOfSchemas + itemsSchema + additionalPropertiesSchema +
+                this + this.properties.map { it.value }
+            )
+            .filterNotNull()
+            .filter { Overlay.of(it).isPresent }
 
     private fun buildEnumClass(enum: KotlinTypeInfo.Enum): TypeSpec {
         val classBuilder = TypeSpec
