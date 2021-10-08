@@ -1,5 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.generators.GeneratorUtils.defaultContentMediaType
+import com.cjbooms.fabrikt.generators.GeneratorUtils.firstResponse
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.reprezen.kaizen.oasparser.model3.MediaType
@@ -15,6 +17,7 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
+import java.util.function.Predicate
 
 object GeneratorUtils {
     /**
@@ -85,6 +88,15 @@ object GeneratorUtils {
         return this.primaryConstructor(constructor).addProperties(propertySpecs)
     }
 
+    fun <T> FunSpec.Builder.addOptionalParameter(
+        parameterSpec: ParameterSpec,
+        input: T,
+        predicate: Predicate<T>
+    ) = apply {
+        if (predicate.test(input))
+            this.addParameter(parameterSpec)
+    }
+
     fun functionName(resource: String, verb: String) = "$verb $resource".toKCodeName()
 
     fun Schema.toVarName() = this.name?.toKCodeName() ?: this.toClassName().simpleName.toKCodeName()
@@ -96,20 +108,28 @@ object GeneratorUtils {
     fun RequestBody.getPrimaryContentMediaType(): Map.Entry<String, MediaType>? =
         this.contentMediaTypes.entries.firstOrNull()
 
-    fun Response.getPrimaryAcceptMediaType(): Map.Entry<String, MediaType>? =
+    fun Response.getPrimaryContentMediaType(): Map.Entry<String, MediaType>? =
         this.contentMediaTypes.entries.firstOrNull()
 
-    fun Operation.getBodyResponses(): List<Response> =
-        this.responses.filter { it.key != "default" }.values.filter(Response::hasContentMediaTypes)
+    fun Response.isMultiContentMediaType() = this.contentMediaTypes.entries.size > 1
 
-    fun Operation.getPrimaryAcceptMediaType(): Map.Entry<String, MediaType>? =
-        this.getBodyResponses().map { response -> response.getPrimaryAcceptMediaType() }.firstOrNull()
+    fun Operation.firstResponse() = this.getBodyResponses().firstOrNull()
+
+    fun Operation.getPrimaryContentMediaType(): Map.Entry<String, MediaType>? =
+        this.getBodyResponses().map { response -> response.getPrimaryContentMediaType() }.firstOrNull()
+
+    fun Operation.defaultContentMediaType() = this.firstResponse()?.getPrimaryContentMediaType()?.key ?: "application/json"
+
+    fun Operation.isMultiContentMediaType() = this.firstResponse()?.isMultiContentMediaType()
 
     fun Operation.getPathParams(): List<Parameter> = this.filterParams("path")
 
     fun Operation.getQueryParams(): List<Parameter> = this.filterParams("query")
 
     fun Operation.getHeaderParams(): List<Parameter> = this.filterParams("header")
+
+    private fun Operation.getBodyResponses(): List<Response> =
+        this.responses.filter { it.key != "default" }.values.filter(Response::hasContentMediaTypes)
 
     private fun Operation.filterParams(paramType: String): List<Parameter> = this.parameters.filter { it.`in` == paramType }
 }

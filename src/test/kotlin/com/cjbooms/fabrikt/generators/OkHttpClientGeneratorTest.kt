@@ -26,7 +26,8 @@ class OkHttpClientGeneratorTest {
 
     @Suppress("unused")
     private fun fullApiTestCases(): Stream<String> = Stream.of(
-        "okHttpClient"
+        "okHttpClient",
+        "okHttpClientMultiMediaType"
     )
 
     @BeforeEach
