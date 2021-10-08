@@ -16,7 +16,7 @@ paths:
             Cache-Control:
               $ref: "#/components/headers/CacheControl"
           content:
-            application/json:
+            application/vnd.custom.media+json:
               schema:
                 $ref: "#/components/schemas/QueryResult"
 

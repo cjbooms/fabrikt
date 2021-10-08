@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getBodyResponses
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getHeaderParams
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPathParams
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryAcceptMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getQueryParams
 import com.cjbooms.fabrikt.generators.GeneratorUtils.primaryPropertiesConstructor
@@ -171,7 +172,7 @@ data class SimpleClientOperationStatement(
             this.add("\n.%T(%S, %N)", "header".toClassName(packages.client), it.name, it.name.toKCodeName())
         }
         operation.getBodyResponses().firstOrNull()?.let {
-            this.add("\n.%T(%S, %S)", "header".toClassName(packages.client), "Accept", "application/json")
+            this.add("\n.%T(%S, %S)", "header".toClassName(packages.client), "Accept", it.getPrimaryAcceptMediaType()?.key)
         }
         return this.add("\n.build()\n")
     }
