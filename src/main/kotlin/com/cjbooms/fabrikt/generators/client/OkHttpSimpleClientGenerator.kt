@@ -18,7 +18,9 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toParameterSpec
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toVarName
+import com.cjbooms.fabrikt.generators.TypeFactory
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ACCEPT_HEADER_VARIABLE_NAME
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_HEADERS_PARAMETER_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
 import com.cjbooms.fabrikt.model.ClientType
@@ -64,6 +66,14 @@ class OkHttpSimpleClientGenerator(
                                 .build(),
                             operation,
                         ) { it.hasMultipleContentMediaTypes() == true }
+                        .addParameter(
+                            ParameterSpec.builder(
+                                ADDITIONAL_HEADERS_PARAMETER_NAME,
+                                TypeFactory.createMapOfStringToType(String::class.asTypeName())
+                            )
+                                .defaultValue("emptyMap()")
+                                .build()
+                        )
                         .addCode(
                             SimpleClientOperationStatement(
                                 packages,
@@ -176,7 +186,7 @@ data class SimpleClientOperationStatement(
     }
 
     private fun CodeBlock.Builder.addHeaderParamStatement(): CodeBlock.Builder {
-        this.add("\nval httpHeaders: %T = Headers.Builder()", "Headers".toClassName("okhttp3"))
+        this.add("\nval headerBuilder = Headers.Builder()")
         operation.getHeaderParams().map {
             this.add("\n.%T(%S, %N)", "header".toClassName(packages.client), it.name, it.name.toKCodeName())
         }
@@ -188,8 +198,9 @@ data class SimpleClientOperationStatement(
                 this.add("\n.%T(%S, %S)", "header".toClassName(packages.client), "Accept", operation.getPrimaryContentMediaTypeKey())
             }
         }
+        this.add("\nadditionalHeaders.forEach { headerBuilder.header(it.key, it.value) }")
 
-        return this.add("\n.build()\n")
+        return this.add("\nval httpHeaders: %T = headerBuilder.build()\n", "Headers".toClassName("okhttp3"))
     }
 
     private fun CodeBlock.Builder.addRequestStatement(): CodeBlock.Builder {

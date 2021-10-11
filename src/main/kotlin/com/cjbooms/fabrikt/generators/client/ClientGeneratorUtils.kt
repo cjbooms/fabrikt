@@ -13,6 +13,7 @@ import com.squareup.kotlinpoet.asTypeName
 
 object ClientGeneratorUtils {
     const val ACCEPT_HEADER_VARIABLE_NAME = "acceptHeader"
+    const val ADDITIONAL_HEADERS_PARAMETER_NAME = "additionalHeaders"
 
     /**
      * It resolves the API operation response to its body type. It iterates over all non-default responses

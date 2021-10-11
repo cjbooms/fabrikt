@@ -8,6 +8,7 @@ import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.List
+import kotlin.collections.Map
 import kotlin.jvm.Throws
 
 /**
@@ -33,9 +34,10 @@ class ExamplePathService(
     fun getExamplePath1(
         explodeListQueryParam: List<String>?,
         queryParam2: Int?,
-        acceptHeader: String = "application/vnd.custom.media+xml"
+        acceptHeader: String = "application/vnd.custom.media+xml",
+        additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<QueryResult?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExamplePath1(explodeListQueryParam, queryParam2, acceptHeader)
+            apiClient.getExamplePath1(explodeListQueryParam, queryParam2, acceptHeader, additionalHeaders)
         }
 }
