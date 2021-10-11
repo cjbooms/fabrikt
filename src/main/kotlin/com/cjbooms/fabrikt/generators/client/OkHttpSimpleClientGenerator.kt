@@ -2,14 +2,14 @@ package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.addOptionalParameter
-import com.cjbooms.fabrikt.generators.GeneratorUtils.defaultContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.firstResponse
 import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getHeaderParams
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPathParams
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaTypeKey
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getQueryParams
-import com.cjbooms.fabrikt.generators.GeneratorUtils.isMultiContentMediaType
+import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
 import com.cjbooms.fabrikt.generators.GeneratorUtils.primaryPropertiesConstructor
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyParameterSpec
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyRequestSchema
@@ -60,10 +60,10 @@ class OkHttpSimpleClientGenerator(
                         .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
                         .addOptionalParameter(
                             ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class)
-                                .defaultValue("%S", operation.defaultContentMediaType())
+                                .defaultValue("%S", operation.getPrimaryContentMediaTypeKey())
                                 .build(),
                             operation,
-                        ) { it.isMultiContentMediaType() == true }
+                        ) { it.hasMultipleContentMediaTypes() == true }
                         .addCode(
                             SimpleClientOperationStatement(
                                 packages,
@@ -182,10 +182,10 @@ data class SimpleClientOperationStatement(
         }
 
         operation.firstResponse()?.let {
-            if (it.isMultiContentMediaType()) {
+            if (it.hasMultipleContentMediaTypes()) {
                 this.add("\n.%T(%S, %L)", "header".toClassName(packages.client), "Accept", ACCEPT_HEADER_VARIABLE_NAME)
             } else {
-                this.add("\n.%T(%S, %S)", "header".toClassName(packages.client), "Accept", operation.defaultContentMediaType())
+                this.add("\n.%T(%S, %S)", "header".toClassName(packages.client), "Accept", operation.getPrimaryContentMediaTypeKey())
             }
         }
 

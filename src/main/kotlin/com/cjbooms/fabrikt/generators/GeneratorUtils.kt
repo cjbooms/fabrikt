@@ -1,7 +1,5 @@
 package com.cjbooms.fabrikt.generators
 
-import com.cjbooms.fabrikt.generators.GeneratorUtils.defaultContentMediaType
-import com.cjbooms.fabrikt.generators.GeneratorUtils.firstResponse
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.reprezen.kaizen.oasparser.model3.MediaType
@@ -111,16 +109,16 @@ object GeneratorUtils {
     fun Response.getPrimaryContentMediaType(): Map.Entry<String, MediaType>? =
         this.contentMediaTypes.entries.firstOrNull()
 
-    fun Response.isMultiContentMediaType() = this.contentMediaTypes.entries.size > 1
+    fun Response.hasMultipleContentMediaTypes(): Boolean = this.contentMediaTypes.entries.size > 1
 
-    fun Operation.firstResponse() = this.getBodyResponses().firstOrNull()
+    fun Operation.firstResponse(): Response? = this.getBodyResponses().firstOrNull()
 
     fun Operation.getPrimaryContentMediaType(): Map.Entry<String, MediaType>? =
         this.getBodyResponses().map { response -> response.getPrimaryContentMediaType() }.firstOrNull()
 
-    fun Operation.defaultContentMediaType() = this.firstResponse()?.getPrimaryContentMediaType()?.key ?: "application/json"
+    fun Operation.getPrimaryContentMediaTypeKey(): String? = this.firstResponse()?.getPrimaryContentMediaType()?.key
 
-    fun Operation.isMultiContentMediaType() = this.firstResponse()?.isMultiContentMediaType()
+    fun Operation.hasMultipleContentMediaTypes(): Boolean? = this.firstResponse()?.hasMultipleContentMediaTypes()
 
     fun Operation.getPathParams(): List<Parameter> = this.filterParams("path")
 

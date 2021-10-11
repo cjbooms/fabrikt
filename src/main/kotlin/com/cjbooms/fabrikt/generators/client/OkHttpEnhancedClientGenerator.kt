@@ -3,10 +3,10 @@ package com.cjbooms.fabrikt.generators.client
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.addOptionalParameter
-import com.cjbooms.fabrikt.generators.GeneratorUtils.defaultContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.firstResponse
 import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
-import com.cjbooms.fabrikt.generators.GeneratorUtils.isMultiContentMediaType
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaTypeKey
+import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyParameterSpec
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
@@ -59,10 +59,10 @@ class OkHttpEnhancedClientGenerator(
                         .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
                         .addOptionalParameter(
                             ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class)
-                                .defaultValue("%S", operation.defaultContentMediaType())
+                                .defaultValue("%S", operation.getPrimaryContentMediaTypeKey())
                                 .build(),
                             operation,
-                        ) { it.isMultiContentMediaType() == true }
+                        ) { it.hasMultipleContentMediaTypes() == true }
                         .addCode(
                             Resilience4jClientOperationStatement(
                                 packages,
@@ -184,7 +184,7 @@ class Resilience4jClientOperationStatement(
             operation.parameters.map { it.toParameterSpec(packages.base) }
         )
         operation.firstResponse()?.let {
-            if (it.isMultiContentMediaType()) {
+            if (it.hasMultipleContentMediaTypes()) {
                 params.add(listOf(ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class).build()))
             }
         }
