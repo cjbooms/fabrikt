@@ -1,12 +1,15 @@
 package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.GeneratorUtils.addOptionalParameter
+import com.cjbooms.fabrikt.generators.GeneratorUtils.firstResponse
 import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
-import com.cjbooms.fabrikt.generators.GeneratorUtils.getBodyResponses
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getHeaderParams
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPathParams
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaTypeKey
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getQueryParams
+import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
 import com.cjbooms.fabrikt.generators.GeneratorUtils.primaryPropertiesConstructor
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyParameterSpec
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyRequestSchema
@@ -15,6 +18,7 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toParameterSpec
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toVarName
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ACCEPT_HEADER_VARIABLE_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
 import com.cjbooms.fabrikt.model.ClientType
@@ -31,6 +35,7 @@ import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
@@ -39,7 +44,6 @@ class OkHttpSimpleClientGenerator(
     private val packages: Packages,
     private val api: SourceApi
 ) {
-
     fun generateDynamicClientCode(): Collection<ClientType> {
         return api.openApi3.routeToPaths().map { (resourceName, paths) ->
             val funcSpecs: List<FunSpec> = paths.flatMap { (resource, path) ->
@@ -54,6 +58,12 @@ class OkHttpSimpleClientGenerator(
                         )
                         .addParameters(operation.requestBody.toBodyParameterSpec(packages.base))
                         .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
+                        .addOptionalParameter(
+                            ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class)
+                                .defaultValue("%S", operation.getPrimaryContentMediaTypeKey())
+                                .build(),
+                            operation,
+                        ) { it.hasMultipleContentMediaTypes() == true }
                         .addCode(
                             SimpleClientOperationStatement(
                                 packages,
@@ -170,9 +180,15 @@ data class SimpleClientOperationStatement(
         operation.getHeaderParams().map {
             this.add("\n.%T(%S, %N)", "header".toClassName(packages.client), it.name, it.name.toKCodeName())
         }
-        operation.getBodyResponses().firstOrNull()?.let {
-            this.add("\n.%T(%S, %S)", "header".toClassName(packages.client), "Accept", "application/json")
+
+        operation.firstResponse()?.let {
+            if (it.hasMultipleContentMediaTypes()) {
+                this.add("\n.%T(%S, %L)", "header".toClassName(packages.client), "Accept", ACCEPT_HEADER_VARIABLE_NAME)
+            } else {
+                this.add("\n.%T(%S, %S)", "header".toClassName(packages.client), "Accept", operation.getPrimaryContentMediaTypeKey())
+            }
         }
+
         return this.add("\n.build()\n")
     }
 

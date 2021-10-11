@@ -43,7 +43,7 @@ class ExamplePathClient(
             .build()
 
         val httpHeaders: Headers = Headers.Builder()
-            .header("Accept", "application/json")
+            .header("Accept", "application/vnd.custom.media+json")
             .build()
 
         val request: Request = Request.Builder()

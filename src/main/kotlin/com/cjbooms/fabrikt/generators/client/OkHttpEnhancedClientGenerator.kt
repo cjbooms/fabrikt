@@ -2,11 +2,16 @@ package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.GeneratorUtils.addOptionalParameter
+import com.cjbooms.fabrikt.generators.GeneratorUtils.firstResponse
 import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaTypeKey
+import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyParameterSpec
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toParameterSpec
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ACCEPT_HEADER_VARIABLE_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.enhancedClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
@@ -52,6 +57,12 @@ class OkHttpEnhancedClientGenerator(
                         )
                         .addParameters(operation.requestBody.toBodyParameterSpec(packages.base))
                         .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
+                        .addOptionalParameter(
+                            ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class)
+                                .defaultValue("%S", operation.getPrimaryContentMediaTypeKey())
+                                .build(),
+                            operation,
+                        ) { it.hasMultipleContentMediaTypes() == true }
                         .addCode(
                             Resilience4jClientOperationStatement(
                                 packages,
@@ -168,10 +179,17 @@ class Resilience4jClientOperationStatement(
     }
 
     private fun CodeBlock.Builder.addClientCallStatement(): CodeBlock.Builder {
-        val params = operation.requestBody.toBodyParameterSpec(packages.base).plus(
+        val params = mutableListOf(
+            operation.requestBody.toBodyParameterSpec(packages.base),
             operation.parameters.map { it.toParameterSpec(packages.base) }
         )
-        this.add("apiClient.%N(%L)", functionName(resource, verb), params.joinToString(",") { it.name })
+        operation.firstResponse()?.let {
+            if (it.hasMultipleContentMediaTypes()) {
+                params.add(listOf(ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class).build()))
+            }
+        }
+
+        this.add("apiClient.%N(%L)", functionName(resource, verb), params.flatten().joinToString(",") { it.name })
         return this
     }
 }

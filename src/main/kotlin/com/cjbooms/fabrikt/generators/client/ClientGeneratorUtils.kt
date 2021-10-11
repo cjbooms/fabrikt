@@ -1,7 +1,7 @@
 package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryAcceptMediaType
+import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.ClientType
@@ -12,6 +12,8 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 
 object ClientGeneratorUtils {
+    const val ACCEPT_HEADER_VARIABLE_NAME = "acceptHeader"
+
     /**
      * It resolves the API operation response to its body type. It iterates over all non-default responses
      * by filtering those ones with content media. If multiple medias are found, then it will resolve to the schema
@@ -19,7 +21,7 @@ object ClientGeneratorUtils {
      * for the given operation.
      */
     fun Operation.toClientReturnType(packages: Packages): TypeName {
-        val returnType = this.getPrimaryAcceptMediaType()?.let {
+        val returnType = this.getPrimaryContentMediaType()?.let {
             toModelType(
                 packages.base,
                 KotlinTypeInfo.from(it.value.schema)
