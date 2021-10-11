@@ -18,6 +18,7 @@ import kotlin.String
 import kotlin.Suppress
 import kotlin.Unit
 import kotlin.collections.List
+import kotlin.collections.Map
 import kotlin.jvm.Throws
 
 @Suppress("unused")
@@ -33,8 +34,11 @@ class ExamplePathClient(
      * @param queryParam2
      */
     @Throws(ApiException::class)
-    fun getExamplePath1(explodeListQueryParam: List<String>?, queryParam2: Int?):
-        ApiResponse<QueryResult?> {
+    fun getExamplePath1(
+        explodeListQueryParam: List<String>?,
+        queryParam2: Int?,
+        additionalHeaders: Map<String, String> = emptyMap()
+    ): ApiResponse<QueryResult?> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
@@ -42,9 +46,10 @@ class ExamplePathClient(
             .queryParam("query_param2", queryParam2)
             .build()
 
-        val httpHeaders: Headers = Headers.Builder()
+        val headerBuilder = Headers.Builder()
             .header("Accept", "application/vnd.custom.media+json")
-            .build()
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
 
         val request: Request = Request.Builder()
             .url(httpUrl)
@@ -61,16 +66,20 @@ class ExamplePathClient(
      * @param explodeListQueryParam
      */
     @Throws(ApiException::class)
-    fun postExamplePath1(generatedType: Content, explodeListQueryParam: List<String>?):
-        ApiResponse<Unit?> {
+    fun postExamplePath1(
+        generatedType: Content,
+        explodeListQueryParam: List<String>?,
+        additionalHeaders: Map<String, String> = emptyMap()
+    ): ApiResponse<Unit?> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
             .queryParam("explode_list_query_param", explodeListQueryParam, true)
             .build()
 
-        val httpHeaders: Headers = Headers.Builder()
-            .build()
+        val headerBuilder = Headers.Builder()
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
 
         val request: Request = Request.Builder()
             .url(httpUrl)
@@ -92,7 +101,8 @@ class ExamplePathClient(
     fun getExamplePath2PathParam(
         pathParam: String,
         queryParam2: Int?,
-        ifNoneMatch: String?
+        ifNoneMatch: String?,
+        additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Content?> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
@@ -101,10 +111,11 @@ class ExamplePathClient(
             .queryParam("query_param2", queryParam2)
             .build()
 
-        val httpHeaders: Headers = Headers.Builder()
+        val headerBuilder = Headers.Builder()
             .header("If-None-Match", ifNoneMatch)
             .header("Accept", "application/json")
-            .build()
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
 
         val request: Request = Request.Builder()
             .url(httpUrl)
@@ -126,7 +137,8 @@ class ExamplePathClient(
     fun headExamplePath2PathParam(
         pathParam: String,
         queryParam3: Boolean?,
-        ifNoneMatch: String?
+        ifNoneMatch: String?,
+        additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
@@ -135,9 +147,10 @@ class ExamplePathClient(
             .queryParam("query_param3", queryParam3)
             .build()
 
-        val httpHeaders: Headers = Headers.Builder()
+        val headerBuilder = Headers.Builder()
             .header("If-None-Match", ifNoneMatch)
-            .build()
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
 
         val request: Request = Request.Builder()
             .url(httpUrl)
@@ -158,7 +171,8 @@ class ExamplePathClient(
     fun putExamplePath2PathParam(
         firstModel: FirstModel,
         pathParam: String,
-        ifMatch: String
+        ifMatch: String,
+        additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
@@ -166,9 +180,10 @@ class ExamplePathClient(
             .newBuilder()
             .build()
 
-        val httpHeaders: Headers = Headers.Builder()
+        val headerBuilder = Headers.Builder()
             .header("If-Match", ifMatch)
-            .build()
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
 
         val request: Request = Request.Builder()
             .url(httpUrl)
@@ -198,7 +213,8 @@ class ExamplePathSubresourceClient(
         firstModel: FirstModel,
         csvListQueryParam: List<String>?,
         pathParam: String,
-        ifMatch: String
+        ifMatch: String,
+        additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-3/{path_param}/subresource"
             .pathParam("{path_param}" to pathParam)
@@ -207,9 +223,10 @@ class ExamplePathSubresourceClient(
             .queryParam("csv_list_query_param", csvListQueryParam, false)
             .build()
 
-        val httpHeaders: Headers = Headers.Builder()
+        val headerBuilder = Headers.Builder()
             .header("If-Match", ifMatch)
-            .build()
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
 
         val request: Request = Request.Builder()
             .url(httpUrl)

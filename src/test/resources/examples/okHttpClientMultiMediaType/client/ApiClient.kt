@@ -12,6 +12,7 @@ import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.List
+import kotlin.collections.Map
 import kotlin.jvm.Throws
 
 @Suppress("unused")
@@ -30,7 +31,8 @@ class ExamplePathClient(
     fun getExamplePath1(
         explodeListQueryParam: List<String>?,
         queryParam2: Int?,
-        acceptHeader: String = "application/vnd.custom.media+xml"
+        acceptHeader: String = "application/vnd.custom.media+xml",
+        additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<QueryResult?> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
@@ -39,9 +41,10 @@ class ExamplePathClient(
             .queryParam("query_param2", queryParam2)
             .build()
 
-        val httpHeaders: Headers = Headers.Builder()
+        val headerBuilder = Headers.Builder()
             .header("Accept", acceptHeader)
-            .build()
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
 
         val request: Request = Request.Builder()
             .url(httpUrl)

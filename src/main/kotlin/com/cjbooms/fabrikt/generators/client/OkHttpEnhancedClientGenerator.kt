@@ -11,7 +11,9 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyParameterSpec
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toParameterSpec
+import com.cjbooms.fabrikt.generators.TypeFactory
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ACCEPT_HEADER_VARIABLE_NAME
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_HEADERS_PARAMETER_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.enhancedClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
@@ -63,13 +65,22 @@ class OkHttpEnhancedClientGenerator(
                                 .build(),
                             operation,
                         ) { it.hasMultipleContentMediaTypes() == true }
+                        .addParameter(
+                            ParameterSpec.builder(
+                                ADDITIONAL_HEADERS_PARAMETER_NAME,
+                                TypeFactory.createMapOfStringToType(String::class.asTypeName())
+                            )
+                                .defaultValue("emptyMap()")
+                                .build()
+                        )
                         .addCode(
                             Resilience4jClientOperationStatement(
                                 packages,
                                 resource,
                                 verb,
                                 operation
-                            ).toStatement())
+                            ).toStatement()
+                        )
                         .returns(operation.toClientReturnType(packages))
                         .build()
                 }
@@ -84,10 +95,11 @@ class OkHttpEnhancedClientGenerator(
         val circuitBreakerRegistryClassName =
             "CircuitBreakerRegistry".toClassName("io.github.resilience4j.circuitbreaker")
 
-        val configurableCircuitBreakerNameProperty = PropertySpec.builder("circuitBreakerName", String::class.asTypeName())
-            .mutable()
-            .initializer("%S", apiClientClassName.simpleName.toKCodeName())
-            .build()
+        val configurableCircuitBreakerNameProperty =
+            PropertySpec.builder("circuitBreakerName", String::class.asTypeName())
+                .mutable()
+                .initializer("%S", apiClientClassName.simpleName.toKCodeName())
+                .build()
 
         val clientProperty = PropertySpec.builder("apiClient", apiClientClassName, KModifier.PRIVATE)
             .initializer("%T(objectMapper, baseUrl, client)", apiClientClassName)
@@ -188,6 +200,14 @@ class Resilience4jClientOperationStatement(
                 params.add(listOf(ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class).build()))
             }
         }
+        params.add(
+            listOf(
+                ParameterSpec.builder(
+                    ADDITIONAL_HEADERS_PARAMETER_NAME,
+                    TypeFactory.createMapOfStringToType(String::class.asTypeName())
+                ).build()
+            )
+        )
 
         this.add("apiClient.%N(%L)", functionName(resource, verb), params.flatten().joinToString(",") { it.name })
         return this

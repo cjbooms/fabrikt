@@ -12,6 +12,7 @@ import kotlin.String
 import kotlin.Suppress
 import kotlin.Unit
 import kotlin.collections.List
+import kotlin.collections.Map
 import kotlin.jvm.Throws
 
 /**
@@ -34,47 +35,56 @@ class ExamplePathService(
     private val apiClient: ExamplePathClient = ExamplePathClient(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun getExamplePath1(explodeListQueryParam: List<String>?, queryParam2: Int?):
-        ApiResponse<QueryResult?> =
+    fun getExamplePath1(
+        explodeListQueryParam: List<String>?,
+        queryParam2: Int?,
+        additionalHeaders: Map<String, String> = emptyMap()
+    ): ApiResponse<QueryResult?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExamplePath1(explodeListQueryParam, queryParam2)
+            apiClient.getExamplePath1(explodeListQueryParam, queryParam2, additionalHeaders)
         }
 
     @Throws(ApiException::class)
-    fun postExamplePath1(generatedType: Content, explodeListQueryParam: List<String>?):
-        ApiResponse<Unit?> =
+    fun postExamplePath1(
+        generatedType: Content,
+        explodeListQueryParam: List<String>?,
+        additionalHeaders: Map<String, String> = emptyMap()
+    ): ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.postExamplePath1(generatedType, explodeListQueryParam)
+            apiClient.postExamplePath1(generatedType, explodeListQueryParam, additionalHeaders)
         }
 
     @Throws(ApiException::class)
     fun getExamplePath2PathParam(
         pathParam: String,
         queryParam2: Int?,
-        ifNoneMatch: String?
+        ifNoneMatch: String?,
+        additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Content?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExamplePath2PathParam(pathParam, queryParam2, ifNoneMatch)
+            apiClient.getExamplePath2PathParam(pathParam, queryParam2, ifNoneMatch, additionalHeaders)
         }
 
     @Throws(ApiException::class)
     fun headExamplePath2PathParam(
         pathParam: String,
         queryParam3: Boolean?,
-        ifNoneMatch: String?
+        ifNoneMatch: String?,
+        additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.headExamplePath2PathParam(pathParam, queryParam3, ifNoneMatch)
+            apiClient.headExamplePath2PathParam(pathParam, queryParam3, ifNoneMatch, additionalHeaders)
         }
 
     @Throws(ApiException::class)
     fun putExamplePath2PathParam(
         firstModel: FirstModel,
         pathParam: String,
-        ifMatch: String
+        ifMatch: String,
+        additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.putExamplePath2PathParam(firstModel, pathParam, ifMatch)
+            apiClient.putExamplePath2PathParam(firstModel, pathParam, ifMatch, additionalHeaders)
         }
 }
 
@@ -106,9 +116,10 @@ class ExamplePathSubresourceService(
         firstModel: FirstModel,
         csvListQueryParam: List<String>?,
         pathParam: String,
-        ifMatch: String
+        ifMatch: String,
+        additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.putExamplePath3PathParamSubresource(firstModel, csvListQueryParam, pathParam, ifMatch)
+            apiClient.putExamplePath3PathParamSubresource(firstModel, csvListQueryParam, pathParam, ifMatch, additionalHeaders)
         }
 }
