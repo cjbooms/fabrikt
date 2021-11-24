@@ -38,6 +38,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeys
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
+import com.cjbooms.fabrikt.util.NormalisedString.toEnumName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.jsonoverlay.Overlay
 import com.reprezen.kaizen.oasparser.OpenApi3Parser
@@ -289,7 +290,7 @@ class JacksonModelGenerator(
             .addMicronautIntrospectedAnnotation()
         enum.entries.forEach {
             classBuilder.addEnumConstant(
-                it.toUpperCase(),
+                it.toEnumName(),
                 TypeSpec.anonymousClassBuilder()
                     .addSuperclassConstructorParameter(CodeBlock.of("\"$it\""))
                     .build()

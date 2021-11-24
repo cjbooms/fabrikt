@@ -73,3 +73,14 @@ enum class ExtensibleEnumObject(
 
     INACTIVE("inactive");
 }
+
+enum class ContentType(
+    @JsonValue
+    val value: String
+) {
+    APPLICATION_JSON("application/json"),
+
+    APPLICATION_X_SOME_TYPE_JSON("application/x.some-type+json"),
+
+    APPLICATION_X_SOME_OTHER_TYPE_JSON_VERSION_2("application/x.some-other-type+json;version=2");
+}

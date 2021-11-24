@@ -22,7 +22,7 @@ import kotlin.collections.Map
 import kotlin.jvm.Throws
 
 @Suppress("unused")
-class ExamplePathClient(
+class ExamplePath1Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
     private val client: OkHttpClient
@@ -89,7 +89,14 @@ class ExamplePathClient(
 
         return request.execute(client, objectMapper, jacksonTypeRef())
     }
+}
 
+@Suppress("unused")
+class ExamplePath2Client(
+    private val objectMapper: ObjectMapper,
+    private val baseUrl: String,
+    private val client: OkHttpClient
+) {
     /**
      * GET example path 2
      *
@@ -196,7 +203,7 @@ class ExamplePathClient(
 }
 
 @Suppress("unused")
-class ExamplePathSubresourceClient(
+class ExamplePath3SubresourceClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
     private val client: OkHttpClient

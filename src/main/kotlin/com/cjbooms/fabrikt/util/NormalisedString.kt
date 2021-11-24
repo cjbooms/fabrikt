@@ -5,10 +5,19 @@ import javax.lang.model.SourceVersion
 object NormalisedString {
 
     fun String.pascalCase(): String =
-        Regex("[^A-Za-z]")
-            .replace(this, "_")
+        replaceSpecialCharacters()
             .split("_")
             .joinToString("") { it.capitalize() }
+
+    private fun String.replaceSpecialCharacters() =
+        Regex("[^A-Za-z0-9]").replace(this, "_")
+
+    private fun String.camelToSnake() =
+        Regex("[a-z][A-Z]")
+            .replace(this) { pair ->
+                val characters = pair.value.toCharArray()
+                "${characters[0]}_${characters[1]}"
+            }
 
     fun String.camelCase(): String = this.pascalCase().decapitalize()
 
@@ -16,15 +25,12 @@ object NormalisedString {
 
     fun String.toMapValueClassName(): String = "${this.pascalCase()}Value"
 
+    fun String.toEnumName(): String =
+        replaceSpecialCharacters()
+            .camelToSnake()
+            .toUpperCase()
+
     fun String.toKotlinParameterName(): String = this.camelCase()
-
-    fun String.camelToSnakeCase(): String =
-        Regex("[A-Z]").replace(this.camelCase()) {
-            "_${it.value.toLowerCase()}"
-        }
-
-    fun String.abbreviate() =
-        this.camelToSnakeCase().split("_").joinToString("_") { it.take(2) }.pascalCase()
 
     fun String.isValidJavaPackage(): Boolean {
         val pieces = split(".")

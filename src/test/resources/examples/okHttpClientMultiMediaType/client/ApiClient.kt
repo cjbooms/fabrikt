@@ -16,7 +16,7 @@ import kotlin.collections.Map
 import kotlin.jvm.Throws
 
 @Suppress("unused")
-class ExamplePathClient(
+class ExamplePath1Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
     private val client: OkHttpClient
