@@ -55,6 +55,7 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import java.io.Serializable
+import java.net.MalformedURLException
 import java.net.URL
 
 class JacksonModelGenerator(
@@ -127,12 +128,12 @@ class JacksonModelGenerator(
         fun generatedType(basePackage: String, modelName: String) = ClassName(modelsPackage(basePackage), modelName)
     }
 
-    private val externalApiSchemas = mutableMapOf<String, MutableSet<String>>()
+    private val externalApiSchemas = mutableMapOf<URL, MutableSet<String>>()
 
     fun generate(): Models {
         val models: MutableSet<TypeSpec> = createModels(sourceApi.openApi3, sourceApi.allSchemas)
         externalApiSchemas.forEach { externalReferences ->
-            val api = OpenApi3Parser().parse(URL(externalReferences.key))
+            val api = OpenApi3Parser().parse(externalReferences.key)
             val schemas = api.schemas.entries.map { it.key to it.value }
                 .map { (key, schema) -> SchemaInfo(key, schema) }
                 .filter { apiSchema -> externalReferences.value.contains(apiSchema.name) }
@@ -249,7 +250,11 @@ class JacksonModelGenerator(
         nestedSchemas().forEach { schema ->
             val docUrl = schema.getDocumentUrl()
             if (docUrl != apiDocUrl) {
-                externalApiSchemas.getOrPut(docUrl) { mutableSetOf() }.add(schema.safeName())
+                try {
+                    externalApiSchemas.getOrPut(URL(docUrl)) { mutableSetOf() }.add(schema.safeName())
+                } catch (ex: MalformedURLException) {
+                    // skip 
+                }
             }
             if (depth < 10) schema.captureMissingExternalSchemas(apiDocUrl, depth + 1)
         }
