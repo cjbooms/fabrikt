@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OkHttpEnhancedClientGenerator
 import com.cjbooms.fabrikt.generators.client.OkHttpSimpleClientGenerator
@@ -32,7 +33,7 @@ class OkHttpClientGeneratorTest {
 
     @BeforeEach
     fun init() {
-        MutableSettings.updateSettings(setOf(CodeGenerationType.CLIENT), emptySet(), emptySet())
+        MutableSettings.updateSettings(setOf(CodeGenerationType.CLIENT), setOf(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS), emptySet())
     }
 
     @ParameterizedTest

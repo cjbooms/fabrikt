@@ -64,7 +64,10 @@ class OkHttpEnhancedClientGenerator(
                                 .defaultValue("%S", operation.getPrimaryContentMediaTypeKey())
                                 .build(),
                             operation,
-                        ) { it.hasMultipleContentMediaTypes() == true }
+                        ) {
+                            it.hasMultipleContentMediaTypes() == true &&
+                                !operation.parameters.any { header -> header.name == "Accept" }
+                        }
                         .addParameter(
                             ParameterSpec.builder(
                                 ADDITIONAL_HEADERS_PARAMETER_NAME,
@@ -191,11 +194,15 @@ class Resilience4jClientOperationStatement(
     }
 
     private fun CodeBlock.Builder.addClientCallStatement(): CodeBlock.Builder {
+        var isAcceptSet = false
         val params = mutableListOf(
             operation.requestBody.toBodyParameterSpec(packages.base),
-            operation.parameters.map { it.toParameterSpec(packages.base) }
+            operation.parameters.map { parameter ->
+                if (parameter.name == "Accept") isAcceptSet = true
+                parameter.toParameterSpec(packages.base)
+            }
         )
-        operation.firstResponse()?.let {
+        if (!isAcceptSet) operation.firstResponse()?.let {
             if (it.hasMultipleContentMediaTypes()) {
                 params.add(listOf(ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class).build()))
             }
