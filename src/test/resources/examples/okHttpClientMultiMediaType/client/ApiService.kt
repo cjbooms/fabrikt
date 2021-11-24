@@ -20,15 +20,15 @@ import kotlin.jvm.Throws
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExamplePathService(
+class ExamplePath1Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
     client: OkHttpClient
 ) {
-    var circuitBreakerName: String = "examplePathClient"
+    var circuitBreakerName: String = "examplePath1Client"
 
-    private val apiClient: ExamplePathClient = ExamplePathClient(objectMapper, baseUrl, client)
+    private val apiClient: ExamplePath1Client = ExamplePath1Client(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
     fun getExamplePath1(

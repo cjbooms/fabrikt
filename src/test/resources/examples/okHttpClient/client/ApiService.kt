@@ -24,15 +24,15 @@ import kotlin.jvm.Throws
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExamplePathService(
+class ExamplePath1Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
     client: OkHttpClient
 ) {
-    var circuitBreakerName: String = "examplePathClient"
+    var circuitBreakerName: String = "examplePath1Client"
 
-    private val apiClient: ExamplePathClient = ExamplePathClient(objectMapper, baseUrl, client)
+    private val apiClient: ExamplePath1Client = ExamplePath1Client(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
     fun getExamplePath1(
@@ -53,6 +53,26 @@ class ExamplePathService(
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.postExamplePath1(generatedType, explodeListQueryParam, additionalHeaders)
         }
+}
+
+/**
+ * The circuit breaker registry should have the proper configuration to correctly action on circuit
+ * breaker transitions based on the client exceptions [ApiClientException], [ApiServerException] and
+ * [IOException].
+ *
+ * @see ApiClientException
+ * @see ApiServerException
+ */
+@Suppress("unused")
+class ExamplePath2Service(
+    private val circuitBreakerRegistry: CircuitBreakerRegistry,
+    objectMapper: ObjectMapper,
+    baseUrl: String,
+    client: OkHttpClient
+) {
+    var circuitBreakerName: String = "examplePath2Client"
+
+    private val apiClient: ExamplePath2Client = ExamplePath2Client(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
     fun getExamplePath2PathParam(
@@ -97,15 +117,15 @@ class ExamplePathService(
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExamplePathSubresourceService(
+class ExamplePath3SubresourceService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
     client: OkHttpClient
 ) {
-    var circuitBreakerName: String = "examplePathSubresourceClient"
+    var circuitBreakerName: String = "examplePath3SubresourceClient"
 
-    private val apiClient: ExamplePathSubresourceClient = ExamplePathSubresourceClient(
+    private val apiClient: ExamplePath3SubresourceClient = ExamplePath3SubresourceClient(
         objectMapper,
         baseUrl,
         client

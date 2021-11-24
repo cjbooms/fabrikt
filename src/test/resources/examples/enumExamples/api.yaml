@@ -44,5 +44,12 @@ components:
       x-extensible-enum:
         - active
         - inactive
+        - 
+    ContentType:
+      type: string
+      x-extensible-enum:
+        - application/json
+        - application/x.some-type+json    
+        - application/x.some-other-type+json;version=2    
 
 
