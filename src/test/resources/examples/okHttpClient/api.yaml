@@ -18,7 +18,7 @@ paths:
           content:
             application/vnd.custom.media+json:
               schema:
-                $ref: "#/components/schemas/QueryResult"
+                $ref: "#/components/schemas/QueryResult"            
 
     post:
       summary: "POST example path 1"

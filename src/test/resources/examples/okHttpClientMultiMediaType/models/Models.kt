@@ -13,6 +13,15 @@ import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
 
+enum class ContentType(
+    @JsonValue
+    val value: String
+) {
+    APPLICATION_JSON("application/json"),
+
+    APPLICATION_VND_CUSTOM_MEDIA_JSON("application/vnd.custom.media+json");
+}
+
 data class QueryResult(
     @param:JsonProperty("items")
     @get:JsonProperty("items")

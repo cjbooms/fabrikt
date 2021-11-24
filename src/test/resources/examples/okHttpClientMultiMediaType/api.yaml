@@ -21,6 +21,26 @@ paths:
                 $ref: "#/components/schemas/QueryResult"
             application/vnd.custom.media+json:
               schema:
+                $ref: "#/components/schemas/QueryResult"  
+  /example-path-2:
+    get:
+      summary: "GET example path 1"
+      parameters:
+        - $ref: "#/components/parameters/ListQueryParamExploded"
+        - $ref: "#/components/parameters/QueryParam2"
+        - $ref: "#/components/parameters/Accept"
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
+          content:
+            application/vnd.custom.media+xml:
+              schema:
+                $ref: "#/components/schemas/QueryResult"
+            application/vnd.custom.media+json:
+              schema:
                 $ref: "#/components/schemas/QueryResult"
 
 components:
@@ -41,6 +61,14 @@ components:
       schema:
         type: integer
       required: false
+      
+    Accept:
+      name: Accept
+      in: header
+      required: false
+      description: the content type accepted by the client
+      schema:
+        $ref: '#/components/schemas/ContentType'
 
   headers:
     CacheControl:
@@ -50,6 +78,11 @@ components:
       example: "must-revalidate, max-age=5"
 
   schemas:
+    ContentType:
+      type: string
+      x-extensible-enum:
+        - application/json
+        - application/vnd.custom.media+json
     QueryResult:
       type: "object"
       required:

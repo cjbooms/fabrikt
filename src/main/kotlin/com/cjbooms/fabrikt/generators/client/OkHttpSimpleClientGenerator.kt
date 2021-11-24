@@ -65,7 +65,10 @@ class OkHttpSimpleClientGenerator(
                                 .defaultValue("%S", operation.getPrimaryContentMediaTypeKey())
                                 .build(),
                             operation,
-                        ) { it.hasMultipleContentMediaTypes() == true }
+                        ) {
+                            it.hasMultipleContentMediaTypes() == true &&
+                                !operation.parameters.any { header -> header.name == "Accept" }
+                        }
                         .addParameter(
                             ParameterSpec.builder(
                                 ADDITIONAL_HEADERS_PARAMETER_NAME,
@@ -187,15 +190,27 @@ data class SimpleClientOperationStatement(
 
     private fun CodeBlock.Builder.addHeaderParamStatement(): CodeBlock.Builder {
         this.add("\nval headerBuilder = Headers.Builder()")
+        var isAcceptSet = false
         operation.getHeaderParams().map {
-            this.add("\n.%T(%S, %N)", "header".toClassName(packages.client), it.name, it.name.toKCodeName())
+            if (it.name == "Accept") isAcceptSet = true
+            val typeInfo = KotlinTypeInfo.from(it.schema)
+            this.add(
+                "\n.%T(%S, %L)", "header".toClassName(packages.client),
+                it.name,
+                it.name.toKCodeName() + if (typeInfo is KotlinTypeInfo.Enum) "?.value" else ""
+            )
         }
 
-        operation.firstResponse()?.let {
+        if (!isAcceptSet) operation.firstResponse()?.let {
             if (it.hasMultipleContentMediaTypes()) {
                 this.add("\n.%T(%S, %L)", "header".toClassName(packages.client), "Accept", ACCEPT_HEADER_VARIABLE_NAME)
             } else {
-                this.add("\n.%T(%S, %S)", "header".toClassName(packages.client), "Accept", operation.getPrimaryContentMediaTypeKey())
+                this.add(
+                    "\n.%T(%S, %S)",
+                    "header".toClassName(packages.client),
+                    "Accept",
+                    operation.getPrimaryContentMediaTypeKey()
+                )
             }
         }
         this.add("\nadditionalHeaders.forEach { headerBuilder.header(it.key, it.value) }")
