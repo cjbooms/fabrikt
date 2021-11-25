@@ -116,6 +116,13 @@ enum class ContributorStatus(
     ACTIVE("active"),
 
     INACTIVE("inactive");
+
+    companion object {
+        private val mapping: Map<String, ContributorStatus> =
+            values().associateBy(ContributorStatus::value)
+
+        fun fromValue(value: String): ContributorStatus? = mapping[value]
+    }
 }
 
 data class Contributor(
@@ -181,6 +188,13 @@ enum class OrganisationStatus(
     ACTIVE("active"),
 
     INACTIVE("inactive");
+
+    companion object {
+        private val mapping: Map<String, OrganisationStatus> =
+            values().associateBy(OrganisationStatus::value)
+
+        fun fromValue(value: String): OrganisationStatus? = mapping[value]
+    }
 }
 
 data class Webhook(
@@ -260,6 +274,13 @@ enum class RepositoryStatus(
     ACTIVE("active"),
 
     INACTIVE("inactive");
+
+    companion object {
+        private val mapping: Map<String, RepositoryStatus> =
+            values().associateBy(RepositoryStatus::value)
+
+        fun fromValue(value: String): RepositoryStatus? = mapping[value]
+    }
 }
 
 enum class RepositoryVisibility(
@@ -269,6 +290,13 @@ enum class RepositoryVisibility(
     PRIVATE("Private"),
 
     PUBLIC("Public");
+
+    companion object {
+        private val mapping: Map<String, RepositoryVisibility> =
+            values().associateBy(RepositoryVisibility::value)
+
+        fun fromValue(value: String): RepositoryVisibility? = mapping[value]
+    }
 }
 
 data class Repository(
@@ -341,6 +369,13 @@ enum class PullRequestStatus(
     ACTIVE("active"),
 
     INACTIVE("inactive");
+
+    companion object {
+        private val mapping: Map<String, PullRequestStatus> =
+            values().associateBy(PullRequestStatus::value)
+
+        fun fromValue(value: String): PullRequestStatus? = mapping[value]
+    }
 }
 
 data class Author(
@@ -406,4 +441,11 @@ enum class StatusQueryParam(
     INACTIVE("inactive"),
 
     ALL("all");
+
+    companion object {
+        private val mapping: Map<String, StatusQueryParam> =
+            values().associateBy(StatusQueryParam::value)
+
+        fun fromValue(value: String): StatusQueryParam? = mapping[value]
+    }
 }

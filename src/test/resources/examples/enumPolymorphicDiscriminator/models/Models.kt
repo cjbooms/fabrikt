@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonValue
 import javax.validation.constraints.NotNull
 import kotlin.String
+import kotlin.collections.Map
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -39,6 +40,13 @@ enum class EnumDiscriminator(
     OBJ_TWO_FIRST("obj_two_first"),
 
     OBJ_TWO_SECOND("obj_two_second");
+
+    companion object {
+        private val mapping: Map<String, EnumDiscriminator> =
+            values().associateBy(EnumDiscriminator::value)
+
+        fun fromValue(value: String): EnumDiscriminator? = mapping[value]
+    }
 }
 
 data class ConcreteImplOne(

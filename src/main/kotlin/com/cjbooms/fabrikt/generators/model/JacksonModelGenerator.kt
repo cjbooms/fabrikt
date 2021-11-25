@@ -50,6 +50,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
@@ -279,13 +280,9 @@ class JacksonModelGenerator(
             .filter { Overlay.of(it).isPresent }
 
     private fun buildEnumClass(enum: KotlinTypeInfo.Enum): TypeSpec {
+        val enumType = generatedType(packages.base, enum.enumClassName)
         val classBuilder = TypeSpec
-            .enumBuilder(
-                generatedType(
-                    packages.base,
-                    enum.enumClassName
-                )
-            )
+            .enumBuilder(enumType)
             .primaryConstructor(
                 FunSpec.constructorBuilder()
                     .addParameter("value", String::class)
@@ -307,7 +304,22 @@ class JacksonModelGenerator(
                 .initializer("value")
                 .build()
         )
-        return classBuilder.build()
+        val companion = TypeSpec.companionObjectBuilder()
+            .addProperty(
+                PropertySpec.builder("mapping", createMapOfStringToType(enumType))
+                    .initializer("values().associateBy(%T::value)", enumType)
+                    .addModifiers(KModifier.PRIVATE)
+                    .build()
+            )
+            .addFunction(
+                FunSpec.builder("fromValue")
+                    .addParameter(ParameterSpec.builder("value", String::class).build())
+                    .returns(enumType.copy(nullable = true))
+                    .addStatement("return mapping[value]")
+                    .build()
+            )
+            .build()
+        return classBuilder.addType(companion).build()
     }
 
     private fun buildMapModel(mapField: PropertyInfo.MapField): TypeSpec? =

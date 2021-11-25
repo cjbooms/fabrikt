@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import kotlin.String
 import kotlin.collections.List
+import kotlin.collections.Map
 
 data class EnumHolder(
     @param:JsonProperty("array_of_enums")
@@ -30,6 +31,13 @@ enum class EnumHolderArrayOfEnums(
     ARRAY_ENUM_ONE("array_enum_one"),
 
     ARRAY_ENUM_TWO("array_enum_two");
+
+    companion object {
+        private val mapping: Map<String, EnumHolderArrayOfEnums> =
+            values().associateBy(EnumHolderArrayOfEnums::value)
+
+        fun fromValue(value: String): EnumHolderArrayOfEnums? = mapping[value]
+    }
 }
 
 enum class EnumHolderInlinedEnum(
@@ -41,6 +49,13 @@ enum class EnumHolderInlinedEnum(
     INLINED_TWO("inlined_two"),
 
     INLINED_THREE("inlined_three");
+
+    companion object {
+        private val mapping: Map<String, EnumHolderInlinedEnum> =
+            values().associateBy(EnumHolderInlinedEnum::value)
+
+        fun fromValue(value: String): EnumHolderInlinedEnum? = mapping[value]
+    }
 }
 
 enum class EnumHolderInlinedExtensibleEnum(
@@ -52,6 +67,13 @@ enum class EnumHolderInlinedExtensibleEnum(
     INLINED_TWO("inlined_two"),
 
     INLINED_THREE("inlined_three");
+
+    companion object {
+        private val mapping: Map<String, EnumHolderInlinedExtensibleEnum> =
+            values().associateBy(EnumHolderInlinedExtensibleEnum::value)
+
+        fun fromValue(value: String): EnumHolderInlinedExtensibleEnum? = mapping[value]
+    }
 }
 
 enum class EnumObject(
@@ -63,6 +85,12 @@ enum class EnumObject(
     TWO("two"),
 
     THREE("three");
+
+    companion object {
+        private val mapping: Map<String, EnumObject> = values().associateBy(EnumObject::value)
+
+        fun fromValue(value: String): EnumObject? = mapping[value]
+    }
 }
 
 enum class ExtensibleEnumObject(
@@ -72,6 +100,13 @@ enum class ExtensibleEnumObject(
     ACTIVE("active"),
 
     INACTIVE("inactive");
+
+    companion object {
+        private val mapping: Map<String, ExtensibleEnumObject> =
+            values().associateBy(ExtensibleEnumObject::value)
+
+        fun fromValue(value: String): ExtensibleEnumObject? = mapping[value]
+    }
 }
 
 enum class ContentType(
@@ -83,4 +118,10 @@ enum class ContentType(
     APPLICATION_X_SOME_TYPE_JSON("application/x.some-type+json"),
 
     APPLICATION_X_SOME_OTHER_TYPE_JSON_VERSION_2("application/x.some-other-type+json;version=2");
+
+    companion object {
+        private val mapping: Map<String, ContentType> = values().associateBy(ContentType::value)
+
+        fun fromValue(value: String): ContentType? = mapping[value]
+    }
 }
