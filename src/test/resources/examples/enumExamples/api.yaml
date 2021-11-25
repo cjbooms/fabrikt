@@ -44,7 +44,7 @@ components:
       x-extensible-enum:
         - active
         - inactive
-        - 
+ 
     ContentType:
       type: string
       x-extensible-enum:

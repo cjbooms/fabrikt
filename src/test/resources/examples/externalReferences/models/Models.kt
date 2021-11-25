@@ -41,6 +41,13 @@ enum class ExternalObjectThreeEnum(
     TWO("two"),
 
     THREE("three");
+
+    companion object {
+        private val mapping: Map<String, ExternalObjectThreeEnum> =
+            values().associateBy(ExternalObjectThreeEnum::value)
+
+        fun fromValue(value: String): ExternalObjectThreeEnum? = mapping[value]
+    }
 }
 
 data class ExternalObjectThree(

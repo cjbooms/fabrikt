@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
+import kotlin.collections.Map
 
 data class PersonWithDefaults(
     @param:JsonProperty("required_so_default_ignored")
@@ -37,4 +38,11 @@ enum class PersonWithDefaultsEnumDefault(
     TALL("tall"),
 
     SHORT("short");
+
+    companion object {
+        private val mapping: Map<String, PersonWithDefaultsEnumDefault> =
+            values().associateBy(PersonWithDefaultsEnumDefault::value)
+
+        fun fromValue(value: String): PersonWithDefaultsEnumDefault? = mapping[value]
+    }
 }

@@ -12,6 +12,7 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
+import kotlin.collections.Map
 
 data class QueryResult(
     @param:JsonProperty("items")
@@ -58,6 +59,13 @@ enum class ContentThirdAttr(
     ENUM_TYPE_1("enum_type_1"),
 
     ENUM_TYPE_2("enum_type_2");
+
+    companion object {
+        private val mapping: Map<String, ContentThirdAttr> =
+            values().associateBy(ContentThirdAttr::value)
+
+        fun fromValue(value: String): ContentThirdAttr? = mapping[value]
+    }
 }
 
 enum class ContentModelType(
@@ -69,6 +77,13 @@ enum class ContentModelType(
     SECOND_MODEL("second_model"),
 
     THIRD_MODEL("third_model");
+
+    companion object {
+        private val mapping: Map<String, ContentModelType> =
+            values().associateBy(ContentModelType::value)
+
+        fun fromValue(value: String): ContentModelType? = mapping[value]
+    }
 }
 
 data class FirstModel(
