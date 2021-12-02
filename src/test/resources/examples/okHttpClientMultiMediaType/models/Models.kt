@@ -38,6 +38,24 @@ data class QueryResult(
     val items: List<Content>
 )
 
+data class OtherQueryResult(
+    @param:JsonProperty("items")
+    @get:JsonProperty("items")
+    @get:NotNull
+    @get:Size(min = 0)
+    @get:Valid
+    val items: List<AlternateResponseModel>
+)
+
+data class AlternateResponseModel(
+    @param:JsonProperty("extra_first_attr")
+    @get:JsonProperty("extra_first_attr")
+    val extraFirstAttr: OffsetDateTime? = null,
+    @param:JsonProperty("extra_second_attr")
+    @get:JsonProperty("extra_second_attr")
+    val extraSecondAttr: Int? = null
+)
+
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,

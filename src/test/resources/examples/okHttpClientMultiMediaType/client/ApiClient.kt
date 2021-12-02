@@ -98,3 +98,40 @@ class ExamplePath2Client(
         return request.execute(client, objectMapper, jacksonTypeRef())
     }
 }
+
+@Suppress("unused")
+class MultipleResponseSchemasClient(
+    private val objectMapper: ObjectMapper,
+    private val baseUrl: String,
+    private val client: OkHttpClient
+) {
+    /**
+     * GET with multiple response content schemas
+     *
+     * @param accept the content type accepted by the client
+     */
+    @Throws(ApiException::class)
+    fun getMultipleResponseSchemas(
+        accept: ContentType?,
+        additionalHeaders: Map<String, String> =
+            emptyMap()
+    ): ApiResponse<QueryResult?> {
+        val httpUrl: HttpUrl = "$baseUrl/multiple-response-schemas"
+            .toHttpUrl()
+            .newBuilder()
+            .build()
+
+        val headerBuilder = Headers.Builder()
+            .header("Accept", accept?.value)
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
+
+        val request: Request = Request.Builder()
+            .url(httpUrl)
+            .headers(httpHeaders)
+            .get()
+            .build()
+
+        return request.execute(client, objectMapper, jacksonTypeRef())
+    }
+}
