@@ -199,6 +199,10 @@ dependencies {
 }
 ```
 
+## Maven
+
+The [exec-maven-plugin](http://www.mojohaus.org/exec-maven-plugin/examples/example-exec-using-plugin-dependencies.html) is capable of downloading the Fabrikt library from Maven Central and executing its main method with defined arguments.
+
 ## Publishing
 This library is published to [Sonatype's OSS](https://oss.sonatype.org/#welcome) staging repository using Github actions when a release is drafted. It can be manually promoted from there to the release repository which is indexed by Maven Central.
 
