@@ -21,7 +21,15 @@ paths:
                 $ref: "#/components/schemas/QueryResult"
             application/vnd.custom.media+json:
               schema:
-                $ref: "#/components/schemas/QueryResult"  
+                $ref: "#/components/schemas/QueryResult"
+        default:
+          description: >-
+            error occurred - see status code and problem object for more information.
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
+
   /example-path-2:
     get:
       summary: "GET example path 1"
@@ -42,6 +50,25 @@ paths:
             application/vnd.custom.media+json:
               schema:
                 $ref: "#/components/schemas/QueryResult"
+
+  /multiple-response-schemas:
+    get:
+      summary: "GET with multiple response content schemas"
+      parameters:
+        - $ref: "#/components/parameters/Accept"
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResult'
+            application/vnd.custom.media+json:
+              schema:
+                $ref: '#/components/schemas/OtherQueryResult'
 
 components:
   parameters:
@@ -83,6 +110,7 @@ components:
       x-extensible-enum:
         - application/json
         - application/vnd.custom.media+json
+
     QueryResult:
       type: "object"
       required:
@@ -96,6 +124,16 @@ components:
               - $ref: "#/components/schemas/FirstModel"
               - $ref: "#/components/schemas/SecondModel"
               - $ref: "#/components/schemas/ThirdModel"
+    OtherQueryResult:
+      type: "object"
+      required:
+        - "items"
+      properties:
+        items:
+          type: "array"
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/AlternateResponseModel"
     Content:
       type: "object"
       required:
@@ -188,3 +226,17 @@ components:
               description: "The attribute 2 for model 3"
               type: integer
               readOnly: true
+
+    AlternateResponseModel:
+      type: "object"
+      properties:
+        extra_first_attr:
+          description: "The attribute 1 for model 3"
+          type: "string"
+          format: "date-time"
+          example: "2016-01-27T10:52:46.406Z"
+          readOnly: true
+        extra_second_attr:
+          description: "The attribute 2 for model 3"
+          type: integer
+          readOnly: true

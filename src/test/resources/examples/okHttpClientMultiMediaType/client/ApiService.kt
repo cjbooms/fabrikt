@@ -1,5 +1,6 @@
 package examples.okHttpClientMultiMediaType.client
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import examples.okHttpClientMultiMediaType.models.ContentType
 import examples.okHttpClientMultiMediaType.models.QueryResult
@@ -71,5 +72,39 @@ class ExamplePath2Service(
     ): ApiResponse<QueryResult?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath2(explodeListQueryParam, queryParam2, accept, additionalHeaders)
+        }
+}
+
+/**
+ * The circuit breaker registry should have the proper configuration to correctly action on circuit
+ * breaker transitions based on the client exceptions [ApiClientException], [ApiServerException] and
+ * [IOException].
+ *
+ * @see ApiClientException
+ * @see ApiServerException
+ */
+@Suppress("unused")
+class MultipleResponseSchemasService(
+    private val circuitBreakerRegistry: CircuitBreakerRegistry,
+    objectMapper: ObjectMapper,
+    baseUrl: String,
+    client: OkHttpClient
+) {
+    var circuitBreakerName: String = "multipleResponseSchemasClient"
+
+    private val apiClient: MultipleResponseSchemasClient = MultipleResponseSchemasClient(
+        objectMapper,
+        baseUrl,
+        client
+    )
+
+    @Throws(ApiException::class)
+    fun getMultipleResponseSchemas(
+        accept: ContentType?,
+        additionalHeaders: Map<String, String> =
+            emptyMap()
+    ): ApiResponse<JsonNode?> =
+        withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
+            apiClient.getMultipleResponseSchemas(accept, additionalHeaders)
         }
 }
