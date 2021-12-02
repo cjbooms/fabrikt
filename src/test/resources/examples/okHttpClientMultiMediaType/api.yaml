@@ -21,7 +21,15 @@ paths:
                 $ref: "#/components/schemas/QueryResult"
             application/vnd.custom.media+json:
               schema:
-                $ref: "#/components/schemas/QueryResult"  
+                $ref: "#/components/schemas/QueryResult"
+        default:
+          description: >-
+            error occurred - see status code and problem object for more information.
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
+
   /example-path-2:
     get:
       summary: "GET example path 1"
