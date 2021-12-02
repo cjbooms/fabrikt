@@ -7,6 +7,7 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.fasterxml.jackson.databind.JsonNode
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
@@ -19,16 +20,13 @@ object ClientGeneratorUtils {
     /**
      * Gives the Kotlin return type for an API call based on the Content-Types specified in the Operation.
      * If multiple media types are found, but their response schema is the same, then the first media type is used and kotlin model for the schema is returned.
-     * If there are several possible response schemas, then the return type is Map<String, Any> so they are all covered.
+     * If there are several possible response schemas, then the return type is JsonNode, so they are all covered.
      * If no response body is found, Unit is returned.
      */
     fun Operation.toClientReturnType(packages: Packages): TypeName {
         val returnType =
                 if (hasMultipleResponseSchemas()) {
-                    Map::class.asTypeName().parameterizedBy(
-                            String::class.asTypeName(),
-                            Any::class.asTypeName()
-                    )
+                    JsonNode::class.asTypeName()
                 } else {
                     this.getPrimaryContentMediaType()?.let {
                         toModelType(
