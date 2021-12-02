@@ -37,8 +37,13 @@ object YamlUtils {
     fun parseOpenApi(input: String, inputDir: Path = Paths.get("").toAbsolutePath()): OpenApi3 =
         try {
             OpenApi3Parser().parse(input, inputDir.toUri().toURL())
-        } catch (e: NullPointerException) {
-            throw IllegalArgumentException("Failed to resolve references when parsing API. External Schema references require internet connection")
+        } catch (ex: NullPointerException) {
+            throw IllegalArgumentException(
+                "The Kaizen openapi-parser library threw a NPE exception when parsing this API. " +
+                    "This is commonly due to an external schema reference that is unresolvable, " +
+                    "possibly due to a lack of internet connection",
+                ex
+            )
         }
 
     /**
