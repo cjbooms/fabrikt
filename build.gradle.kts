@@ -44,7 +44,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("com.beust:jcommander:1.74")
-    implementation("com.reprezen.kaizen:openapi-parser:4.0.1-201809050415") { exclude(group = "junit") }
+    implementation("com.reprezen.kaizen:openapi-parser:4.0.4") { exclude(group = "junit") }
     implementation("com.reprezen.jsonoverlay:jsonoverlay:4.0.3")
     implementation("com.squareup:kotlinpoet:1.3.0") { exclude(module = "kotlin-stdlib-jre7") }
     implementation("com.google.flogger:flogger:0.4")
