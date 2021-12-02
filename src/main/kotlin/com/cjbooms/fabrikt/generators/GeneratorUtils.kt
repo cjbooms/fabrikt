@@ -120,6 +120,9 @@ object GeneratorUtils {
 
     fun Operation.hasMultipleContentMediaTypes(): Boolean? = this.firstResponse()?.hasMultipleContentMediaTypes()
 
+    fun Operation.hasMultipleResponseSchemas(): Boolean =
+            responses.values.flatMap { it.contentMediaTypes.values }.map { it.schema.name }.distinct().size > 1
+
     fun Operation.getPathParams(): List<Parameter> = this.filterParams("path")
 
     fun Operation.getQueryParams(): List<Parameter> = this.filterParams("query")

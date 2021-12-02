@@ -9,6 +9,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import kotlin.Any
 import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
@@ -115,7 +116,7 @@ class MultipleResponseSchemasClient(
         accept: ContentType?,
         additionalHeaders: Map<String, String> =
             emptyMap()
-    ): ApiResponse<QueryResult?> {
+    ): ApiResponse<Map<String, Any>?> {
         val httpUrl: HttpUrl = "$baseUrl/multiple-response-schemas"
             .toHttpUrl()
             .newBuilder()
