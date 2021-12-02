@@ -199,9 +199,18 @@ dependencies {
 }
 ```
 
-## Maven
+### Maven
 
 The [exec-maven-plugin](http://www.mojohaus.org/exec-maven-plugin/examples/example-exec-using-plugin-dependencies.html) is capable of downloading the Fabrikt library from Maven Central and executing its main method with defined arguments.
+
+## Building Locally
+
+Fabrikt is built with Gradle and requires an initialised git repository. The easiest way to build it is to clone the repo locally before executing the build command:
+```
+git clone git@github.com:cjbooms/fabrikt.git
+cd fabrikt/
+./gradlew clean build
+```
 
 ## Publishing
 This library is published to [Sonatype's OSS](https://oss.sonatype.org/#welcome) staging repository using Github actions when a release is drafted. It can be manually promoted from there to the release repository which is indexed by Maven Central.
