@@ -1,5 +1,7 @@
 package com.cjbooms.fabrikt.generators.model
 
+import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.util.NormalisedString.pascalCase
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -47,13 +49,17 @@ object JacksonMetadata {
         .addMember("visible = true")
         .build()
 
-    fun polymorphicSubTypes(typePairs: Map<String, TypeName>): AnnotationSpec {
+    fun polymorphicSubTypes(typePairs: Map<String, TypeName>, enumDiscriminator: KotlinTypeInfo.Enum?): AnnotationSpec {
         val codeBuilder = CodeBlock.builder()
         typePairs.forEach { (name, type) ->
             if (codeBuilder.isNotEmpty()) codeBuilder.add(",")
+            val maybeSchemaEnumValue = enumDiscriminator?.entries?.firstOrNull {
+                // lowercase to cover UPPER_SNAKE_CASE
+                it.pascalCase() == name || it.toLowerCase().pascalCase() == name
+            }
             codeBuilder.add(
                 "%T.Type(value = %T::class, name = %S)",
-                JSON_SUB_TYPES_CLASS, type, name
+                JSON_SUB_TYPES_CLASS, type, maybeSchemaEnumValue ?: name
             )
         }
 
