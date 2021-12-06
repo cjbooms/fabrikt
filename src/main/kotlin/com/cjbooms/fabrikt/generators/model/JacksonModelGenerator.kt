@@ -373,7 +373,10 @@ class JacksonModelGenerator(
                 it to toModelType(packages.base, KotlinTypeInfo.from(schemaInfo.schema, schemaInfo.name))
             }
         }.toMap()
-        classBuilder.addAnnotation(polymorphicSubTypes(mappings))
+        val maybeEnumDiscriminator = properties
+            .firstOrNull { it.name == discriminator.propertyName }?.typeInfo as? KotlinTypeInfo.Enum
+
+        classBuilder.addAnnotation(polymorphicSubTypes(mappings, maybeEnumDiscriminator))
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
 

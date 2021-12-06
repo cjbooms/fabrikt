@@ -116,9 +116,9 @@ data class PolymorphicTypeTwoB(
     JsonSubTypes.Type(
         value = ChildTypeA::class,
         name =
-        "ChildTypeA"
+        "CHILD_TYPE_A"
     ),
-    JsonSubTypes.Type(value = ChildTypeB::class, name = "ChildTypeB")
+    JsonSubTypes.Type(value = ChildTypeB::class, name = "CHILD_TYPE_B")
 )
 sealed class ParentSpec() {
     abstract val type: ParentType
