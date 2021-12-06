@@ -3,11 +3,13 @@ package examples.oneOfPolymorphicModels.models
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.JsonValue
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
+import kotlin.collections.Map
 
 data class ContainsOneOfPolymorphicTypes(
     @param:JsonProperty("one_one_of")
@@ -102,4 +104,59 @@ data class PolymorphicTypeTwoB(
     @get:JsonProperty("shared")
     @get:NotNull
     override val shared: String = "PolymorphicTypeTwoB"
+}
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type",
+    visible = true
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(
+        value = ChildTypeA::class,
+        name =
+        "ChildTypeA"
+    ),
+    JsonSubTypes.Type(value = ChildTypeB::class, name = "ChildTypeB")
+)
+sealed class ParentSpec() {
+    abstract val type: ParentType
+}
+
+enum class ParentType(
+    @JsonValue
+    val value: String
+) {
+    CHILD_TYPE_A("CHILD_TYPE_A"),
+
+    CHILD_TYPE_B("CHILD_TYPE_B");
+
+    companion object {
+        private val mapping: Map<String, ParentType> = values().associateBy(ParentType::value)
+
+        fun fromValue(value: String): ParentType? = mapping[value]
+    }
+}
+
+data class ChildTypeA(
+    @param:JsonProperty("some_string")
+    @get:JsonProperty("some_string")
+    @get:NotNull
+    val someString: String
+) : ParentSpec() {
+    @get:JsonProperty("type")
+    @get:NotNull
+    override val type: ParentType = ParentType.CHILD_TYPE_A
+}
+
+data class ChildTypeB(
+    @param:JsonProperty("some_int")
+    @get:JsonProperty("some_int")
+    @get:NotNull
+    val someInt: Int
+) : ParentSpec() {
+    @get:JsonProperty("type")
+    @get:NotNull
+    override val type: ParentType = ParentType.CHILD_TYPE_B
 }

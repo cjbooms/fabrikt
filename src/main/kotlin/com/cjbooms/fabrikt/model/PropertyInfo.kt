@@ -15,6 +15,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
+import com.cjbooms.fabrikt.util.NormalisedString.toEnumName
 import com.reprezen.kaizen.oasparser.model3.Schema
 
 sealed class PropertyInfo {
@@ -138,7 +139,7 @@ sealed class PropertyInfo {
     sealed class DiscriminatorKey(val stringValue: String) {
         class StringKey(value: String) : DiscriminatorKey(value)
         class EnumKey(value: String) : DiscriminatorKey(value) {
-            val enumKey = value.toUpperCase()
+            val enumKey = value.toEnumName()
         }
     }
 
