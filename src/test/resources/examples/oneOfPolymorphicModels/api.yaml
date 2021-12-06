@@ -69,3 +69,40 @@ components:
             whateverD:
               type: integer
               format: int32
+
+    ParentSpec:
+      type: object
+      discriminator:
+        propertyName: type
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/ParentType'
+
+    ParentType:
+      type: string
+      description: Shows which child type is being returned
+      x-extensible-enum:
+        - "CHILD_TYPE_A"
+        - "CHILD_TYPE_B"
+
+    ChildTypeA:
+      allOf:
+        - $ref: '#/components/schemas/ParentSpec'
+        - type: object
+          required:
+            - some_string
+          properties:
+            some_string:
+              type: string
+
+    ChildTypeB:
+      allOf:
+        - $ref: '#/components/schemas/ParentSpec'
+        - type: object
+          required:
+            - some_int
+          properties:
+            some_int:
+              type: integer
