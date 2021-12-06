@@ -166,6 +166,7 @@ Here is an example of a Gradle task with code generated to the `build/generated`
 val fabrikt: Configuration by configurations.creating
 
 val generationDir = "$buildDir/generated"
+val apiFile = "$buildDir/path-to-api/open-api.yaml"
 
 sourceSets {
     main { java.srcDirs("$generationDir/src/main/kotlin") }
@@ -176,12 +177,15 @@ sourceSets {
 tasks {   
     ...
     val generateCode by creating(JavaExec::class) {
+        inputs.files(apiFile)
+        outputs.dir(generationDir)
+        outputs.cacheIf { true }
         classpath(fabrikt)
         main = "com.cjbooms.fabrikt.cli.CodeGen"
         args = listOf(
             "--output-directory", generationDir,
             "--base-package", "com.example",
-            "--api-file", "/path-to-api/open-api.yaml",
+            "--api-file", apiFile,
             "--targets", "http_models",
             "--targets", "client",
             "--http-client-opts", "resilience4j"
