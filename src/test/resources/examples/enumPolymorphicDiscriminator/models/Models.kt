@@ -25,7 +25,12 @@ import kotlin.collections.Map
         name =
         "obj_two_first"
     ),
-    JsonSubTypes.Type(value = ConcreteImplTwo::class, name = "obj_two_second")
+    JsonSubTypes.Type(
+        value = ConcreteImplTwo::class,
+        name =
+        "obj_two_second"
+    ),
+    JsonSubTypes.Type(value = ConcreteImplThree::class, name = "obj_three")
 )
 sealed class PolymorphicEnumDiscriminator() {
     abstract val someEnum: EnumDiscriminator
@@ -39,7 +44,9 @@ enum class EnumDiscriminator(
 
     OBJ_TWO_FIRST("obj_two_first"),
 
-    OBJ_TWO_SECOND("obj_two_second");
+    OBJ_TWO_SECOND("obj_two_second"),
+
+    OBJ_THREE("obj_three");
 
     companion object {
         private val mapping: Map<String, EnumDiscriminator> =
@@ -68,3 +75,9 @@ data class ConcreteImplTwo(
     @get:JsonProperty("some_prop")
     val someProp: String? = null
 ) : PolymorphicEnumDiscriminator()
+
+class ConcreteImplThree() : PolymorphicEnumDiscriminator() {
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_THREE
+}

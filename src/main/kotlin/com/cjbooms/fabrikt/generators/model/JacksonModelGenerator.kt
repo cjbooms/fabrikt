@@ -331,21 +331,14 @@ class JacksonModelGenerator(
             )
         } else null
 
-    private fun standardDataClass(modelName: String, properties: Collection<PropertyInfo>): TypeSpec =
-        properties.addToClass(
-            TypeSpec
-                .classBuilder(
-                    generatedType(
-                        packages.base,
-                        modelName
-                    )
-                )
-                .addModifiers(KModifier.DATA)
-                .addSerializableInterface()
-                .addQuarkusReflectionAnnotation()
-                .addMicronautIntrospectedAnnotation(),
-            ClassType.VANILLA_MODEL
-        )
+    private fun standardDataClass(modelName: String, properties: Collection<PropertyInfo>): TypeSpec {
+        val classBuilder = TypeSpec.classBuilder(generatedType(packages.base, modelName))
+            .addSerializableInterface()
+            .addQuarkusReflectionAnnotation()
+            .addMicronautIntrospectedAnnotation()
+        properties.addToClass(classBuilder, ClassType.VANILLA_MODEL)
+        return classBuilder.build()
+    }
 
     private fun polymorphicSuperType(
         modelName: String,
@@ -353,14 +346,9 @@ class JacksonModelGenerator(
         discriminator: Discriminator,
         allSchemas: List<SchemaInfo>
     ): TypeSpec {
-        val classBuilder = TypeSpec.classBuilder(
-            generatedType(
-                packages.base,
-                modelName
-            )
-        )
+        val classBuilder = TypeSpec.classBuilder(generatedType(packages.base, modelName))
             .addModifiers(KModifier.SEALED)
-        classBuilder.addAnnotation(basePolymorphicType(discriminator.propertyName))
+            .addAnnotation(basePolymorphicType(discriminator.propertyName))
 
         val subTypes = allSchemas
             .filter { model ->
@@ -380,39 +368,34 @@ class JacksonModelGenerator(
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
 
-        return properties.addToClass(
-            classBuilder,
-            ClassType.SUPER_MODEL
-        )
+        properties.addToClass(classBuilder, ClassType.SUPER_MODEL)
+
+        return classBuilder.build()
     }
 
     private fun polymorphicSubType(
         modelName: String,
         properties: Collection<PropertyInfo>,
         superType: SchemaInfo
-    ): TypeSpec =
+    ): TypeSpec {
+        val classBuilder = TypeSpec.classBuilder(generatedType(packages.base, modelName))
+            .addSerializableInterface()
+            .addQuarkusReflectionAnnotation()
+            .addMicronautIntrospectedAnnotation()
+            .superclass(
+                toModelType(packages.base, KotlinTypeInfo.from(superType.schema, superType.name))
+            )
         properties.addToClass(
-            TypeSpec
-                .classBuilder(
-                    generatedType(
-                        packages.base,
-                        modelName
-                    )
-                )
-                .addModifiers(KModifier.DATA)
-                .addSerializableInterface()
-                .addQuarkusReflectionAnnotation()
-                .addMicronautIntrospectedAnnotation()
-                .superclass(
-                    toModelType(
-                        packages.base,
-                        KotlinTypeInfo.from(superType.schema, superType.name)
-                    )
-                ),
+            classBuilder,
             ClassType.SUB_MODEL
         )
+        return classBuilder.build()
+    }
 
-    private fun Collection<PropertyInfo>.addToClass(classBuilder: TypeSpec.Builder, classType: ClassType): TypeSpec {
+    private fun Collection<PropertyInfo>.addToClass(
+        classBuilder: TypeSpec.Builder,
+        classType: ClassType
+    ): TypeSpec.Builder {
         val constructorBuilder = FunSpec.constructorBuilder()
         this.forEach {
             it.addToClass(
@@ -430,7 +413,8 @@ class JacksonModelGenerator(
                 classType
             )
         }
-        return classBuilder.primaryConstructor(constructorBuilder.build()).build()
+        if (constructorBuilder.parameters.isNotEmpty() && classBuilder.modifiers.isEmpty()) classBuilder.addModifiers(KModifier.DATA)
+        return classBuilder.primaryConstructor(constructorBuilder.build())
     }
 
     private fun TypeSpec.Builder.addSerializableInterface(): TypeSpec.Builder {
