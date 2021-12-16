@@ -13,6 +13,7 @@ components:
           obj_one_only: '#/components/schemas/ConcreteImplOne'
           obj_two_first: '#/components/schemas/ConcreteImplTwo'
           obj_two_second: '#/components/schemas/ConcreteImplTwo'
+          obj_three: '#/components/schemas/ConcreteImplThree'
       properties:
         some_enum:
           $ref: '#/components/schemas/EnumDiscriminator'
@@ -32,6 +33,10 @@ components:
           properties:
             some_prop:
               type: string
+              
+    ConcreteImplThree:
+      allOf:
+        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
 
     EnumDiscriminator:
       type: string
@@ -39,6 +44,7 @@ components:
         - obj_one_only
         - obj_two_first
         - obj_two_second
+        - obj_three
 
 
 
