@@ -217,5 +217,5 @@ cd fabrikt/
 ```
 
 ## Publishing
-This library is published to [Sonatype's OSS](https://oss.sonatype.org/#welcome) staging repository using Github actions when a release is drafted. It can be manually promoted from there to the release repository which is indexed by Maven Central.
+This library is published to [Sonatype's OSS](https://s01.oss.sonatype.org/#welcome) staging repository using Github actions when a release is drafted. It can be manually promoted from there to the release repository which is indexed by Maven Central.
 
