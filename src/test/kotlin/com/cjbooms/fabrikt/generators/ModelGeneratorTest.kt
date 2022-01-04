@@ -158,7 +158,7 @@ class ModelGeneratorTest {
 
     @Test
     fun `micronaut introspected models are generated from a full API definition when the micronaut-introspection option is set`() {
-        val basePackage = "examples.quarkusReflectionModels"
+        val basePackage = "examples.micronautIntrospectedModels"
         val spec = readTextResource("/examples/micronautIntrospectedModels/api.yaml")
         val expectedModels = readTextResource("/examples/micronautIntrospectedModels/models/Models.kt")
 
@@ -166,6 +166,23 @@ class ModelGeneratorTest {
             Packages(basePackage),
             SourceApi(spec),
             setOf(ModelCodeGenOptionType.MICRONAUT_INTROSPECTION)
+        )
+            .generate()
+            .toSingleFile()
+
+        assertThat(models).isEqualTo(expectedModels)
+    }
+
+    @Test
+    fun `micronaut reflection models are generated from a full API definition when the micronaut-reflection option is set`() {
+        val basePackage = "examples.micronautReflectionModels"
+        val spec = readTextResource("/examples/micronautReflectionModels/api.yaml")
+        val expectedModels = readTextResource("/examples/micronautReflectionModels/models/Models.kt")
+
+        val models = JacksonModelGenerator(
+            Packages(basePackage),
+            SourceApi(spec),
+            setOf(ModelCodeGenOptionType.MICRONAUT_REFLECTION)
         )
             .generate()
             .toSingleFile()

@@ -290,6 +290,7 @@ class JacksonModelGenerator(
             )
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
+            .addMicronautReflectionAnnotation()
         enum.entries.forEach {
             classBuilder.addEnumConstant(
                 it.toEnumName(),
@@ -336,6 +337,7 @@ class JacksonModelGenerator(
             .addSerializableInterface()
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
+            .addMicronautReflectionAnnotation()
         properties.addToClass(classBuilder, ClassType.VANILLA_MODEL)
         return classBuilder.build()
     }
@@ -367,6 +369,7 @@ class JacksonModelGenerator(
         classBuilder.addAnnotation(polymorphicSubTypes(mappings, maybeEnumDiscriminator))
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
+            .addMicronautReflectionAnnotation()
 
         properties.addToClass(classBuilder, ClassType.SUPER_MODEL)
 
@@ -382,6 +385,7 @@ class JacksonModelGenerator(
             .addSerializableInterface()
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
+            .addMicronautReflectionAnnotation()
             .superclass(
                 toModelType(packages.base, KotlinTypeInfo.from(superType.schema, superType.name))
             )
@@ -423,18 +427,28 @@ class JacksonModelGenerator(
         return this
     }
 
-    private fun TypeSpec.Builder.addQuarkusReflectionAnnotation(): TypeSpec.Builder {
-        if (options.any { it == ModelCodeGenOptionType.QUARKUS_REFLECTION })
-            this.addAnnotation(
-                AnnotationSpec.builder("RegisterForReflection".toClassName("io.quarkus.runtime.annotations")).build()
-            )
-        return this
-    }
+    private fun TypeSpec.Builder.addQuarkusReflectionAnnotation(): TypeSpec.Builder =
+        this.addOptionalAnnotation(
+            ModelCodeGenOptionType.QUARKUS_REFLECTION,
+            "RegisterForReflection".toClassName("io.quarkus.runtime.annotations")
+        )
 
-    private fun TypeSpec.Builder.addMicronautIntrospectedAnnotation(): TypeSpec.Builder {
-        if (options.any { it == ModelCodeGenOptionType.MICRONAUT_INTROSPECTION })
+    private fun TypeSpec.Builder.addMicronautIntrospectedAnnotation(): TypeSpec.Builder =
+        this.addOptionalAnnotation(
+            ModelCodeGenOptionType.MICRONAUT_INTROSPECTION,
+            "Introspected".toClassName("io.micronaut.core.annotation")
+        )
+
+    private fun TypeSpec.Builder.addMicronautReflectionAnnotation(): TypeSpec.Builder =
+        this.addOptionalAnnotation(
+            ModelCodeGenOptionType.MICRONAUT_REFLECTION,
+            "ReflectiveAccess".toClassName("io.micronaut.core.annotation")
+        )
+
+    private fun TypeSpec.Builder.addOptionalAnnotation(optionType: ModelCodeGenOptionType, type: ClassName): TypeSpec.Builder {
+        if (options.any { it == optionType })
             this.addAnnotation(
-                AnnotationSpec.builder("Introspected".toClassName("io.micronaut.core.annotation")).build()
+                AnnotationSpec.builder(type).build()
             )
         return this
     }
