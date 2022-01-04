@@ -1,10 +1,10 @@
-package examples.micronautIntrospectedModels.models
+package examples.micronautReflectionModels.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonValue
-import io.micronaut.core.annotation.Introspected
+import io.micronaut.core.annotation.ReflectiveAccess
 import java.time.OffsetDateTime
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
@@ -15,7 +15,7 @@ import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
 
-@Introspected
+@ReflectiveAccess
 data class QueryResult(
     @param:JsonProperty("items")
     @get:JsonProperty("items")
@@ -44,7 +44,7 @@ data class QueryResult(
     ),
     JsonSubTypes.Type(value = ThirdModel::class, name = "third_model")
 )
-@Introspected
+@ReflectiveAccess
 sealed class Content(
     open val id: String? = null,
     open val firstAttr: OffsetDateTime? = null,
@@ -55,7 +55,7 @@ sealed class Content(
     abstract val modelType: ContentModelType
 }
 
-@Introspected
+@ReflectiveAccess
 enum class ContentThirdAttr(
     @JsonValue
     val value: String
@@ -72,7 +72,7 @@ enum class ContentThirdAttr(
     }
 }
 
-@Introspected
+@ReflectiveAccess
 enum class ContentModelType(
     @JsonValue
     val value: String
@@ -91,7 +91,7 @@ enum class ContentModelType(
     }
 }
 
-@Introspected
+@ReflectiveAccess
 data class FirstModel(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
@@ -117,7 +117,7 @@ data class FirstModel(
     override val modelType: ContentModelType = ContentModelType.FIRST_MODEL
 }
 
-@Introspected
+@ReflectiveAccess
 data class SecondModel(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
@@ -146,7 +146,7 @@ data class SecondModel(
     override val modelType: ContentModelType = ContentModelType.SECOND_MODEL
 }
 
-@Introspected
+@ReflectiveAccess
 data class ThirdModel(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
