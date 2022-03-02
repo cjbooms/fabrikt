@@ -199,15 +199,7 @@ class JacksonModelGenerator(
                     val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
                     inlinedModels + currentModel
                 }
-                is PropertyInfo.ObjectRefField ->
-                    when {
-                        it.schema.isReferenceObjectDefinition() ->
-                            it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema).let { props ->
-                                buildInLinedModels(props, enclosingSchema, apiDocUrl) +
-                                    standardDataClass(it.schema.safeName().toModelClassName(), props)
-                            }
-                        else -> emptySet()
-                    }
+                is PropertyInfo.ObjectRefField -> emptySet() // Not an inlined definition, so do nothing
                 is PropertyInfo.MapField ->
                     buildMapModel(it)?.let { mapModel -> setOf(mapModel) } ?: emptySet()
                 is PropertyInfo.AdditionalProperties ->

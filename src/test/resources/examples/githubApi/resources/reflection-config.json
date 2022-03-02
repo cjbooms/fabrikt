@@ -135,7 +135,7 @@
   "allDeclaredFields" : true,
   "allPublicFields" : true
 }, {
-  "name" : "examples.githubApi.models.Author",
+  "name" : "examples.githubApi.models.PullRequest",
   "allDeclaredConstructors" : true,
   "allPublicConstructors" : true,
   "allDeclaredMethods" : true,
@@ -143,7 +143,7 @@
   "allDeclaredFields" : true,
   "allPublicFields" : true
 }, {
-  "name" : "examples.githubApi.models.PullRequest",
+  "name" : "examples.githubApi.models.Author",
   "allDeclaredConstructors" : true,
   "allPublicConstructors" : true,
   "allDeclaredMethods" : true,
