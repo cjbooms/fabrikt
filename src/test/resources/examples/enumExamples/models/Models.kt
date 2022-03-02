@@ -6,6 +6,23 @@ import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
 
+enum class ContentType(
+    @JsonValue
+    val value: String
+) {
+    APPLICATION_JSON("application/json"),
+
+    APPLICATION_X_SOME_TYPE_JSON("application/x.some-type+json"),
+
+    APPLICATION_X_SOME_OTHER_TYPE_JSON_VERSION_2("application/x.some-other-type+json;version=2");
+
+    companion object {
+        private val mapping: Map<String, ContentType> = values().associateBy(ContentType::value)
+
+        fun fromValue(value: String): ContentType? = mapping[value]
+    }
+}
+
 data class EnumHolder(
     @param:JsonProperty("array_of_enums")
     @get:JsonProperty("array_of_enums")
@@ -106,22 +123,5 @@ enum class ExtensibleEnumObject(
             values().associateBy(ExtensibleEnumObject::value)
 
         fun fromValue(value: String): ExtensibleEnumObject? = mapping[value]
-    }
-}
-
-enum class ContentType(
-    @JsonValue
-    val value: String
-) {
-    APPLICATION_JSON("application/json"),
-
-    APPLICATION_X_SOME_TYPE_JSON("application/x.some-type+json"),
-
-    APPLICATION_X_SOME_OTHER_TYPE_JSON_VERSION_2("application/x.some-other-type+json;version=2");
-
-    companion object {
-        private val mapping: Map<String, ContentType> = values().associateBy(ContentType::value)
-
-        fun fromValue(value: String): ContentType? = mapping[value]
     }
 }

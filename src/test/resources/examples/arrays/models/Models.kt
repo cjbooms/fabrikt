@@ -7,17 +7,10 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.collections.List
 
-data class ContainsArrayOfArrays(
-    @param:JsonProperty("array_of_arrays")
-    @get:JsonProperty("array_of_arrays")
-    @get:Valid
-    val arrayOfArrays: List<List<Something>>? = null
-)
-
-data class Something(
-    @param:JsonProperty("some_value")
-    @get:JsonProperty("some_value")
-    val someValue: Int? = null
+data class ArrayRef(
+    @param:JsonProperty("grams")
+    @get:JsonProperty("grams")
+    val grams: Int? = null
 )
 
 data class ArraySimpleInLined(
@@ -25,6 +18,13 @@ data class ArraySimpleInLined(
     @get:JsonProperty("quantities")
     @get:NotNull
     val quantities: List<Long>
+)
+
+data class ContainsArrayOfArrays(
+    @param:JsonProperty("array_of_arrays")
+    @get:JsonProperty("array_of_arrays")
+    @get:Valid
+    val arrayOfArrays: List<List<Something>>? = null
 )
 
 data class ContainsArrayRef(
@@ -35,8 +35,8 @@ data class ContainsArrayRef(
     val weightOnMars: List<ArrayRef>
 )
 
-data class ArrayRef(
-    @param:JsonProperty("grams")
-    @get:JsonProperty("grams")
-    val grams: Int? = null
+data class Something(
+    @param:JsonProperty("some_value")
+    @get:JsonProperty("some_value")
+    val someValue: Int? = null
 )

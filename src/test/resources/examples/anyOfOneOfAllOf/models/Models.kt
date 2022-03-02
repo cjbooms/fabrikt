@@ -22,10 +22,7 @@ data class ComplexParent(
     val topLevelProp: BigDecimal? = null
 )
 
-data class ContainsNestedOneOf(
-    @param:JsonProperty("first_nested_one_of_prop")
-    @get:JsonProperty("first_nested_one_of_prop")
-    val firstNestedOneOfProp: String? = null,
+data class ComplexSecondOneA(
     @param:JsonProperty("more_nested_prop_one")
     @get:JsonProperty("more_nested_prop_one")
     val moreNestedPropOne: String? = null
@@ -40,19 +37,10 @@ data class ContainsNestedAnyOf(
     val secondNestedAnyOfProp: String? = null
 )
 
-data class FirstOneA(
+data class ContainsNestedOneOf(
     @param:JsonProperty("first_nested_one_of_prop")
     @get:JsonProperty("first_nested_one_of_prop")
-    val firstNestedOneOfProp: String? = null
-)
-
-data class ComplexSecondOneA(
-    @param:JsonProperty("more_nested_prop_one")
-    @get:JsonProperty("more_nested_prop_one")
-    val moreNestedPropOne: String? = null
-)
-
-data class MoreNesting(
+    val firstNestedOneOfProp: String? = null,
     @param:JsonProperty("more_nested_prop_one")
     @get:JsonProperty("more_nested_prop_one")
     val moreNestedPropOne: String? = null
@@ -64,16 +52,28 @@ data class FirstAnyA(
     val firstNestedAnyOfProp: String? = null
 )
 
-data class SecondAnyA(
-    @param:JsonProperty("second_nested_any_of_prop")
-    @get:JsonProperty("second_nested_any_of_prop")
-    val secondNestedAnyOfProp: String? = null
+data class FirstOneA(
+    @param:JsonProperty("first_nested_one_of_prop")
+    @get:JsonProperty("first_nested_one_of_prop")
+    val firstNestedOneOfProp: String? = null
 )
 
 data class FirstOneB(
     @param:JsonProperty("first_property")
     @get:JsonProperty("first_property")
     val firstProperty: String? = null
+)
+
+data class MoreNesting(
+    @param:JsonProperty("more_nested_prop_one")
+    @get:JsonProperty("more_nested_prop_one")
+    val moreNestedPropOne: String? = null
+)
+
+data class SecondAnyA(
+    @param:JsonProperty("second_nested_any_of_prop")
+    @get:JsonProperty("second_nested_any_of_prop")
+    val secondNestedAnyOfProp: String? = null
 )
 
 data class SecondOneB(

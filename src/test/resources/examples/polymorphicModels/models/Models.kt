@@ -7,6 +7,12 @@ import javax.validation.constraints.NotNull
 import kotlin.Int
 import kotlin.String
 
+data class AnotherObject(
+    @param:JsonProperty("some_integer_propery")
+    @get:JsonProperty("some_integer_propery")
+    val someIntegerPropery: Int? = null
+)
+
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
@@ -70,9 +76,3 @@ data class PolymorphicTypeTwo(
     @get:NotNull
     override val generation: String = "PolymorphicTypeTwo"
 }
-
-data class AnotherObject(
-    @param:JsonProperty("some_integer_propery")
-    @get:JsonProperty("some_integer_propery")
-    val someIntegerPropery: Int? = null
-)

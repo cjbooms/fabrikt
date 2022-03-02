@@ -12,6 +12,116 @@ import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableMap
 
+data class BasicObject(
+    @param:JsonProperty("one")
+    @get:JsonProperty("one")
+    val one: String? = null
+)
+
+data class ComplexObjectWithMapsOfMaps(
+    @param:JsonProperty("list-others")
+    @get:JsonProperty("list-others")
+    @get:Valid
+    val listOthers: List<BasicObject>? = null,
+    @param:JsonProperty("map-of-maps")
+    @get:JsonProperty("map-of-maps")
+    @get:Valid
+    val mapOfMaps: Map<String, Map<String, BasicObject>>? = null
+)
+
+data class ComplexObjectWithRefTypedMap(
+    @param:JsonProperty("text")
+    @get:JsonProperty("text")
+    val text: String? = null,
+    @param:JsonProperty("code")
+    @get:JsonProperty("code")
+    val code: Int? = null
+) {
+    @get:JsonIgnore
+    val properties: MutableMap<String, SomeRef> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, SomeRef> = properties
+
+    @JsonAnySetter
+    fun set(name: String, value: SomeRef) {
+        properties[name] = value
+    }
+}
+
+data class ComplexObjectWithTypedMap(
+    @param:JsonProperty("text")
+    @get:JsonProperty("text")
+    val text: String? = null,
+    @param:JsonProperty("code")
+    @get:JsonProperty("code")
+    val code: Int? = null
+) {
+    @get:JsonIgnore
+    val properties: MutableMap<String, ComplexObjectWithTypedMapValue> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, ComplexObjectWithTypedMapValue> = properties
+
+    @JsonAnySetter
+    fun set(name: String, value: ComplexObjectWithTypedMapValue) {
+        properties[name] = value
+    }
+}
+
+data class ComplexObjectWithTypedMapValue(
+    @param:JsonProperty("other_text")
+    @get:JsonProperty("other_text")
+    val otherText: String? = null,
+    @param:JsonProperty("other_number")
+    @get:JsonProperty("other_number")
+    val otherNumber: Int? = null
+)
+
+data class ComplexObjectWithUntypedMap(
+    @param:JsonProperty("text")
+    @get:JsonProperty("text")
+    val text: String? = null,
+    @param:JsonProperty("code")
+    @get:JsonProperty("code")
+    val code: Int? = null
+) {
+    @get:JsonIgnore
+    val properties: MutableMap<String, Any> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
+
+    @JsonAnySetter
+    fun set(name: String, value: Any) {
+        properties[name] = value
+    }
+}
+
+data class ExternalObjectFour(
+    @param:JsonProperty("blah")
+    @get:JsonProperty("blah")
+    val blah: String? = null
+)
+
+data class InlinedComplexObjectWithTypedMapValue(
+    @param:JsonProperty("other_text")
+    @get:JsonProperty("other_text")
+    val otherText: String? = null,
+    @param:JsonProperty("other_number")
+    @get:JsonProperty("other_number")
+    val otherNumber: Int? = null
+)
+
+data class InlinedTypedObjectMapValue(
+    @param:JsonProperty("code")
+    @get:JsonProperty("code")
+    val code: Int? = null,
+    @param:JsonProperty("text")
+    @get:JsonProperty("text")
+    val text: String? = null
+)
+
 data class MapHolder(
     @param:JsonProperty("wild_card")
     @get:JsonProperty("wild_card")
@@ -68,25 +178,7 @@ data class MapHolder(
     }
 }
 
-data class TypedObjectMapValue(
-    @param:JsonProperty("code")
-    @get:JsonProperty("code")
-    val code: Int? = null,
-    @param:JsonProperty("text")
-    @get:JsonProperty("text")
-    val text: String? = null
-)
-
-data class InlinedTypedObjectMapValue(
-    @param:JsonProperty("code")
-    @get:JsonProperty("code")
-    val code: Int? = null,
-    @param:JsonProperty("text")
-    @get:JsonProperty("text")
-    val text: String? = null
-)
-
-data class ComplexObjectWithUntypedMap(
+data class MapHolderInlinedComplexObjectWithTypedMap(
     @param:JsonProperty("text")
     @get:JsonProperty("text")
     val text: String? = null,
@@ -95,42 +187,13 @@ data class ComplexObjectWithUntypedMap(
     val code: Int? = null
 ) {
     @get:JsonIgnore
-    val properties: MutableMap<String, Any> = mutableMapOf()
+    val properties: MutableMap<String, InlinedComplexObjectWithTypedMapValue> = mutableMapOf()
 
     @JsonAnyGetter
-    fun get(): Map<String, Any> = properties
+    fun get(): Map<String, InlinedComplexObjectWithTypedMapValue> = properties
 
     @JsonAnySetter
-    fun set(name: String, value: Any) {
-        properties[name] = value
-    }
-}
-
-data class ComplexObjectWithTypedMapValue(
-    @param:JsonProperty("other_text")
-    @get:JsonProperty("other_text")
-    val otherText: String? = null,
-    @param:JsonProperty("other_number")
-    @get:JsonProperty("other_number")
-    val otherNumber: Int? = null
-)
-
-data class ComplexObjectWithTypedMap(
-    @param:JsonProperty("text")
-    @get:JsonProperty("text")
-    val text: String? = null,
-    @param:JsonProperty("code")
-    @get:JsonProperty("code")
-    val code: Int? = null
-) {
-    @get:JsonIgnore
-    val properties: MutableMap<String, ComplexObjectWithTypedMapValue> = mutableMapOf()
-
-    @JsonAnyGetter
-    fun get(): Map<String, ComplexObjectWithTypedMapValue> = properties
-
-    @JsonAnySetter
-    fun set(name: String, value: ComplexObjectWithTypedMapValue) {
+    fun set(name: String, value: InlinedComplexObjectWithTypedMapValue) {
         properties[name] = value
     }
 }
@@ -155,61 +218,6 @@ data class MapHolderInlinedComplexObjectWithUntypedMap(
     }
 }
 
-data class InlinedComplexObjectWithTypedMapValue(
-    @param:JsonProperty("other_text")
-    @get:JsonProperty("other_text")
-    val otherText: String? = null,
-    @param:JsonProperty("other_number")
-    @get:JsonProperty("other_number")
-    val otherNumber: Int? = null
-)
-
-data class MapHolderInlinedComplexObjectWithTypedMap(
-    @param:JsonProperty("text")
-    @get:JsonProperty("text")
-    val text: String? = null,
-    @param:JsonProperty("code")
-    @get:JsonProperty("code")
-    val code: Int? = null
-) {
-    @get:JsonIgnore
-    val properties: MutableMap<String, InlinedComplexObjectWithTypedMapValue> = mutableMapOf()
-
-    @JsonAnyGetter
-    fun get(): Map<String, InlinedComplexObjectWithTypedMapValue> = properties
-
-    @JsonAnySetter
-    fun set(name: String, value: InlinedComplexObjectWithTypedMapValue) {
-        properties[name] = value
-    }
-}
-
-data class ExternalObjectFour(
-    @param:JsonProperty("blah")
-    @get:JsonProperty("blah")
-    val blah: String? = null
-)
-
-data class ComplexObjectWithRefTypedMap(
-    @param:JsonProperty("text")
-    @get:JsonProperty("text")
-    val text: String? = null,
-    @param:JsonProperty("code")
-    @get:JsonProperty("code")
-    val code: Int? = null
-) {
-    @get:JsonIgnore
-    val properties: MutableMap<String, SomeRef> = mutableMapOf()
-
-    @JsonAnyGetter
-    fun get(): Map<String, SomeRef> = properties
-
-    @JsonAnySetter
-    fun set(name: String, value: SomeRef) {
-        properties[name] = value
-    }
-}
-
 data class SomeRef(
     @param:JsonProperty("other_text")
     @get:JsonProperty("other_text")
@@ -219,19 +227,11 @@ data class SomeRef(
     val otherNumber: Int? = null
 )
 
-data class ComplexObjectWithMapsOfMaps(
-    @param:JsonProperty("list-others")
-    @get:JsonProperty("list-others")
-    @get:Valid
-    val listOthers: List<BasicObject>? = null,
-    @param:JsonProperty("map-of-maps")
-    @get:JsonProperty("map-of-maps")
-    @get:Valid
-    val mapOfMaps: Map<String, Map<String, BasicObject>>? = null
-)
-
-data class BasicObject(
-    @param:JsonProperty("one")
-    @get:JsonProperty("one")
-    val one: String? = null
+data class TypedObjectMapValue(
+    @param:JsonProperty("code")
+    @get:JsonProperty("code")
+    val code: Int? = null,
+    @param:JsonProperty("text")
+    @get:JsonProperty("text")
+    val text: String? = null
 )

@@ -193,11 +193,13 @@ class ModelGeneratorTest {
     private fun Models.toSingleFile(): String {
         val destPackage = if (models.isNotEmpty()) models.first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
-        models.forEach {
-            val builder = singleFileBuilder
-                .addType(it.spec)
-            builder.build()
-        }
+        models
+            .sortedBy { it.spec.name }
+            .forEach {
+                val builder = singleFileBuilder
+                    .addType(it.spec)
+                builder.build()
+            }
         return Linter.lintString(singleFileBuilder.build().toString())
     }
 }

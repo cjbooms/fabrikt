@@ -83,12 +83,6 @@ data class ThirdInlineObject(
     val generation: ThirdInlineObjectGeneration? = null
 )
 
-data class ThirdInlineObjectUrls(
-    @param:JsonProperty("version")
-    @get:JsonProperty("version")
-    val version: String? = null
-)
-
 data class ThirdInlineObjectGeneration(
     @param:JsonProperty("urls")
     @get:JsonProperty("urls")
@@ -97,4 +91,10 @@ data class ThirdInlineObjectGeneration(
     @param:JsonProperty("view_name")
     @get:JsonProperty("view_name")
     val viewName: String? = null
+)
+
+data class ThirdInlineObjectUrls(
+    @param:JsonProperty("version")
+    @get:JsonProperty("version")
+    val version: String? = null
 )
