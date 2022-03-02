@@ -4,28 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import javax.validation.Valid
 import kotlin.String
 
-data class Department(
-    @param:JsonProperty("supervisor")
-    @get:JsonProperty("supervisor")
-    @get:Valid
-    val supervisor: Person? = null,
-    @param:JsonProperty("manager")
-    @get:JsonProperty("manager")
-    @get:Valid
-    val manager: Person? = null
-)
-
 data class Address(
     @param:JsonProperty("eircode")
     @get:JsonProperty("eircode")
     val eircode: String? = null
-)
-
-data class Person(
-    @param:JsonProperty("home_address")
-    @get:JsonProperty("home_address")
-    @get:Valid
-    val homeAddress: Address? = null
 )
 
 data class Company(
@@ -37,4 +19,22 @@ data class Company(
     @get:JsonProperty("employee")
     @get:Valid
     val employee: Person? = null
+)
+
+data class Department(
+    @param:JsonProperty("supervisor")
+    @get:JsonProperty("supervisor")
+    @get:Valid
+    val supervisor: Person? = null,
+    @param:JsonProperty("manager")
+    @get:JsonProperty("manager")
+    @get:Valid
+    val manager: Person? = null
+)
+
+data class Person(
+    @param:JsonProperty("home_address")
+    @get:JsonProperty("home_address")
+    @get:Valid
+    val homeAddress: Address? = null
 )

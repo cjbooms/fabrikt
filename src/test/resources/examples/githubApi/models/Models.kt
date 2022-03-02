@@ -15,6 +15,15 @@ import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableMap
 
+data class Author(
+    @param:JsonProperty("name")
+    @get:JsonProperty("name")
+    val name: String? = null,
+    @param:JsonProperty("email")
+    @get:JsonProperty("email")
+    val email: String? = null
+)
+
 data class BulkEntityDetails(
     @param:JsonProperty("entities")
     @get:JsonProperty("entities")
@@ -31,97 +40,6 @@ data class BulkEntityDetails(
     @JsonAnySetter
     fun set(name: String, value: Any) {
         properties[name] = value
-    }
-}
-
-data class EntityDetails(
-    @param:JsonProperty("id")
-    @get:JsonProperty("id")
-    @get:NotNull
-    val id: String
-) {
-    @get:JsonIgnore
-    val properties: MutableMap<String, Any> = mutableMapOf()
-
-    @JsonAnyGetter
-    fun get(): Map<String, Any> = properties
-
-    @JsonAnySetter
-    fun set(name: String, value: Any) {
-        properties[name] = value
-    }
-}
-
-data class EventResults(
-    @param:JsonProperty("change_events")
-    @get:JsonProperty("change_events")
-    @get:NotNull
-    @get:Size(min = 0)
-    @get:Valid
-    val changeEvents: List<Event>
-) {
-    @get:JsonIgnore
-    val properties: MutableMap<String, Any> = mutableMapOf()
-
-    @JsonAnyGetter
-    fun get(): Map<String, Any> = properties
-
-    @JsonAnySetter
-    fun set(name: String, value: Any) {
-        properties[name] = value
-    }
-}
-
-data class Event(
-    @param:JsonProperty("entity_id")
-    @get:JsonProperty("entity_id")
-    @get:NotNull
-    val entityId: String,
-    @param:JsonProperty("data")
-    @get:JsonProperty("data")
-    @get:NotNull
-    val data: Map<String, Any>
-) {
-    @get:JsonIgnore
-    val properties: MutableMap<String, Any> = mutableMapOf()
-
-    @JsonAnyGetter
-    fun get(): Map<String, Any> = properties
-
-    @JsonAnySetter
-    fun set(name: String, value: Any) {
-        properties[name] = value
-    }
-}
-
-data class ContributorQueryResult(
-    @param:JsonProperty("prev")
-    @get:JsonProperty("prev")
-    val prev: String? = null,
-    @param:JsonProperty("next")
-    @get:JsonProperty("next")
-    val next: String? = null,
-    @param:JsonProperty("items")
-    @get:JsonProperty("items")
-    @get:NotNull
-    @get:Size(min = 0)
-    @get:Valid
-    val items: List<Contributor>
-)
-
-enum class ContributorStatus(
-    @JsonValue
-    val value: String
-) {
-    ACTIVE("active"),
-
-    INACTIVE("inactive");
-
-    companion object {
-        private val mapping: Map<String, ContributorStatus> =
-            values().associateBy(ContributorStatus::value)
-
-        fun fromValue(value: String): ContributorStatus? = mapping[value]
     }
 }
 
@@ -166,7 +84,7 @@ data class Contributor(
     val name: String? = null
 )
 
-data class OrganisationQueryResult(
+data class ContributorQueryResult(
     @param:JsonProperty("prev")
     @get:JsonProperty("prev")
     val prev: String? = null,
@@ -178,10 +96,10 @@ data class OrganisationQueryResult(
     @get:NotNull
     @get:Size(min = 0)
     @get:Valid
-    val items: List<Organisation>
+    val items: List<Contributor>
 )
 
-enum class OrganisationStatus(
+enum class ContributorStatus(
     @JsonValue
     val value: String
 ) {
@@ -190,22 +108,72 @@ enum class OrganisationStatus(
     INACTIVE("inactive");
 
     companion object {
-        private val mapping: Map<String, OrganisationStatus> =
-            values().associateBy(OrganisationStatus::value)
+        private val mapping: Map<String, ContributorStatus> =
+            values().associateBy(ContributorStatus::value)
 
-        fun fromValue(value: String): OrganisationStatus? = mapping[value]
+        fun fromValue(value: String): ContributorStatus? = mapping[value]
     }
 }
 
-data class Webhook(
-    @param:JsonProperty("url")
-    @get:JsonProperty("url")
+data class EntityDetails(
+    @param:JsonProperty("id")
+    @get:JsonProperty("id")
     @get:NotNull
-    val url: String,
-    @param:JsonProperty("name")
-    @get:JsonProperty("name")
-    val name: String? = null
-)
+    val id: String
+) {
+    @get:JsonIgnore
+    val properties: MutableMap<String, Any> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
+
+    @JsonAnySetter
+    fun set(name: String, value: Any) {
+        properties[name] = value
+    }
+}
+
+data class Event(
+    @param:JsonProperty("entity_id")
+    @get:JsonProperty("entity_id")
+    @get:NotNull
+    val entityId: String,
+    @param:JsonProperty("data")
+    @get:JsonProperty("data")
+    @get:NotNull
+    val data: Map<String, Any>
+) {
+    @get:JsonIgnore
+    val properties: MutableMap<String, Any> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
+
+    @JsonAnySetter
+    fun set(name: String, value: Any) {
+        properties[name] = value
+    }
+}
+
+data class EventResults(
+    @param:JsonProperty("change_events")
+    @get:JsonProperty("change_events")
+    @get:NotNull
+    @get:Size(min = 0)
+    @get:Valid
+    val changeEvents: List<Event>
+) {
+    @get:JsonIgnore
+    val properties: MutableMap<String, Any> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
+
+    @JsonAnySetter
+    fun set(name: String, value: Any) {
+        properties[name] = value
+    }
+}
 
 data class Organisation(
     @param:JsonProperty("id")
@@ -252,7 +220,7 @@ data class Organisation(
     val hooks: List<Webhook>? = null
 )
 
-data class RepositoryQueryResult(
+data class OrganisationQueryResult(
     @param:JsonProperty("prev")
     @get:JsonProperty("prev")
     val prev: String? = null,
@@ -264,10 +232,10 @@ data class RepositoryQueryResult(
     @get:NotNull
     @get:Size(min = 0)
     @get:Valid
-    val items: List<Repository>
+    val items: List<Organisation>
 )
 
-enum class RepositoryStatus(
+enum class OrganisationStatus(
     @JsonValue
     val value: String
 ) {
@@ -276,26 +244,86 @@ enum class RepositoryStatus(
     INACTIVE("inactive");
 
     companion object {
-        private val mapping: Map<String, RepositoryStatus> =
-            values().associateBy(RepositoryStatus::value)
+        private val mapping: Map<String, OrganisationStatus> =
+            values().associateBy(OrganisationStatus::value)
 
-        fun fromValue(value: String): RepositoryStatus? = mapping[value]
+        fun fromValue(value: String): OrganisationStatus? = mapping[value]
     }
 }
 
-enum class RepositoryVisibility(
+data class PullRequest(
+    @param:JsonProperty("id")
+    @get:JsonProperty("id")
+    val id: String? = null,
+    @param:JsonProperty("audit_actor")
+    @get:JsonProperty("audit_actor")
+    val auditActor: String? = null,
+    @param:JsonProperty("created")
+    @get:JsonProperty("created")
+    val created: OffsetDateTime? = null,
+    @param:JsonProperty("created_by")
+    @get:JsonProperty("created_by")
+    val createdBy: String? = null,
+    @param:JsonProperty("created_by_uid")
+    @get:JsonProperty("created_by_uid")
+    val createdByUid: String? = null,
+    @param:JsonProperty("modified")
+    @get:JsonProperty("modified")
+    val modified: OffsetDateTime? = null,
+    @param:JsonProperty("modified_by")
+    @get:JsonProperty("modified_by")
+    val modifiedBy: String? = null,
+    @param:JsonProperty("modified_by_uid")
+    @get:JsonProperty("modified_by_uid")
+    val modifiedByUid: String? = null,
+    @param:JsonProperty("status")
+    @get:JsonProperty("status")
+    @get:NotNull
+    val status: PullRequestStatus,
+    @param:JsonProperty("etag")
+    @get:JsonProperty("etag")
+    val etag: String? = null,
+    @param:JsonProperty("title")
+    @get:JsonProperty("title")
+    @get:NotNull
+    val title: String,
+    @param:JsonProperty("description")
+    @get:JsonProperty("description")
+    val description: String? = null,
+    @param:JsonProperty("author")
+    @get:JsonProperty("author")
+    @get:Valid
+    val author: Author? = null
+)
+
+data class PullRequestQueryResult(
+    @param:JsonProperty("prev")
+    @get:JsonProperty("prev")
+    val prev: String? = null,
+    @param:JsonProperty("next")
+    @get:JsonProperty("next")
+    val next: String? = null,
+    @param:JsonProperty("items")
+    @get:JsonProperty("items")
+    @get:NotNull
+    @get:Size(min = 0)
+    @get:Valid
+    val items: List<PullRequest>
+)
+
+enum class PullRequestStatus(
     @JsonValue
     val value: String
 ) {
-    PRIVATE("Private"),
+    ACTIVE("active"),
 
-    PUBLIC("Public");
+    INACTIVE("inactive");
 
     companion object {
-        private val mapping: Map<String, RepositoryVisibility> =
-            values().associateBy(RepositoryVisibility::value)
+        private val mapping: Map<String, PullRequestStatus> =
+            values().associateBy(PullRequestStatus::value)
 
-        fun fromValue(value: String): RepositoryVisibility? = mapping[value]
+        fun fromValue(value: String): PullRequestStatus? = mapping[value]
     }
 }
 
@@ -347,7 +375,7 @@ data class Repository(
     val tags: List<String>? = null
 )
 
-data class PullRequestQueryResult(
+data class RepositoryQueryResult(
     @param:JsonProperty("prev")
     @get:JsonProperty("prev")
     val prev: String? = null,
@@ -359,10 +387,10 @@ data class PullRequestQueryResult(
     @get:NotNull
     @get:Size(min = 0)
     @get:Valid
-    val items: List<PullRequest>
+    val items: List<Repository>
 )
 
-enum class PullRequestStatus(
+enum class RepositoryStatus(
     @JsonValue
     val value: String
 ) {
@@ -371,66 +399,28 @@ enum class PullRequestStatus(
     INACTIVE("inactive");
 
     companion object {
-        private val mapping: Map<String, PullRequestStatus> =
-            values().associateBy(PullRequestStatus::value)
+        private val mapping: Map<String, RepositoryStatus> =
+            values().associateBy(RepositoryStatus::value)
 
-        fun fromValue(value: String): PullRequestStatus? = mapping[value]
+        fun fromValue(value: String): RepositoryStatus? = mapping[value]
     }
 }
 
-data class Author(
-    @param:JsonProperty("name")
-    @get:JsonProperty("name")
-    val name: String? = null,
-    @param:JsonProperty("email")
-    @get:JsonProperty("email")
-    val email: String? = null
-)
+enum class RepositoryVisibility(
+    @JsonValue
+    val value: String
+) {
+    PRIVATE("Private"),
 
-data class PullRequest(
-    @param:JsonProperty("id")
-    @get:JsonProperty("id")
-    val id: String? = null,
-    @param:JsonProperty("audit_actor")
-    @get:JsonProperty("audit_actor")
-    val auditActor: String? = null,
-    @param:JsonProperty("created")
-    @get:JsonProperty("created")
-    val created: OffsetDateTime? = null,
-    @param:JsonProperty("created_by")
-    @get:JsonProperty("created_by")
-    val createdBy: String? = null,
-    @param:JsonProperty("created_by_uid")
-    @get:JsonProperty("created_by_uid")
-    val createdByUid: String? = null,
-    @param:JsonProperty("modified")
-    @get:JsonProperty("modified")
-    val modified: OffsetDateTime? = null,
-    @param:JsonProperty("modified_by")
-    @get:JsonProperty("modified_by")
-    val modifiedBy: String? = null,
-    @param:JsonProperty("modified_by_uid")
-    @get:JsonProperty("modified_by_uid")
-    val modifiedByUid: String? = null,
-    @param:JsonProperty("status")
-    @get:JsonProperty("status")
-    @get:NotNull
-    val status: PullRequestStatus,
-    @param:JsonProperty("etag")
-    @get:JsonProperty("etag")
-    val etag: String? = null,
-    @param:JsonProperty("title")
-    @get:JsonProperty("title")
-    @get:NotNull
-    val title: String,
-    @param:JsonProperty("description")
-    @get:JsonProperty("description")
-    val description: String? = null,
-    @param:JsonProperty("author")
-    @get:JsonProperty("author")
-    @get:Valid
-    val author: Author? = null
-)
+    PUBLIC("Public");
+
+    companion object {
+        private val mapping: Map<String, RepositoryVisibility> =
+            values().associateBy(RepositoryVisibility::value)
+
+        fun fromValue(value: String): RepositoryVisibility? = mapping[value]
+    }
+}
 
 enum class StatusQueryParam(
     @JsonValue
@@ -449,3 +439,13 @@ enum class StatusQueryParam(
         fun fromValue(value: String): StatusQueryParam? = mapping[value]
     }
 }
+
+data class Webhook(
+    @param:JsonProperty("url")
+    @get:JsonProperty("url")
+    @get:NotNull
+    val url: String,
+    @param:JsonProperty("name")
+    @get:JsonProperty("name")
+    val name: String? = null
+)

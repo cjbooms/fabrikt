@@ -32,6 +32,23 @@ data class ExternalObject(
     val oneOf: ParentOneOf? = null
 )
 
+data class ExternalObjectFour(
+    @param:JsonProperty("blah")
+    @get:JsonProperty("blah")
+    val blah: String? = null
+)
+
+data class ExternalObjectThree(
+    @param:JsonProperty("enum")
+    @get:JsonProperty("enum")
+    @get:NotNull
+    val enum: ExternalObjectThreeEnum,
+    @param:JsonProperty("description")
+    @get:JsonProperty("description")
+    @get:NotNull
+    val description: String
+)
+
 enum class ExternalObjectThreeEnum(
     @JsonValue
     val value: String
@@ -50,17 +67,6 @@ enum class ExternalObjectThreeEnum(
     }
 }
 
-data class ExternalObjectThree(
-    @param:JsonProperty("enum")
-    @get:JsonProperty("enum")
-    @get:NotNull
-    val enum: ExternalObjectThreeEnum,
-    @param:JsonProperty("description")
-    @get:JsonProperty("description")
-    @get:NotNull
-    val description: String
-)
-
 data class ExternalObjectTwo(
     @param:JsonProperty("list-others")
     @get:JsonProperty("list-others")
@@ -77,30 +83,6 @@ data class ExternalObjectTwo(
     fun set(name: String, value: Map<String, ExternalObjectFour>) {
         properties[name] = value
     }
-}
-
-data class ExternalObjectFour(
-    @param:JsonProperty("blah")
-    @get:JsonProperty("blah")
-    val blah: String? = null
-)
-
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "discriminator",
-    visible = true
-)
-@JsonSubTypes(
-    JsonSubTypes.Type(value = OneOfOne::class, name = "OneOfOne"),
-    JsonSubTypes.Type(
-        value =
-        OneOfTwo::class,
-        name = "OneOfTwo"
-    )
-)
-sealed class ParentOneOf() {
-    abstract val discriminator: String
 }
 
 data class OneOfOne(
@@ -121,4 +103,22 @@ data class OneOfTwo(
     @get:JsonProperty("discriminator")
     @get:NotNull
     override val discriminator: String = "OneOfTwo"
+}
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "discriminator",
+    visible = true
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(value = OneOfOne::class, name = "OneOfOne"),
+    JsonSubTypes.Type(
+        value =
+        OneOfTwo::class,
+        name = "OneOfTwo"
+    )
+)
+sealed class ParentOneOf() {
+    abstract val discriminator: String
 }

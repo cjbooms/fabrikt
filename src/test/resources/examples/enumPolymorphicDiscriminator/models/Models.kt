@@ -8,6 +8,52 @@ import javax.validation.constraints.NotNull
 import kotlin.String
 import kotlin.collections.Map
 
+data class ConcreteImplOne(
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null
+) : PolymorphicEnumDiscriminator() {
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE_ONLY
+}
+
+class ConcreteImplThree() : PolymorphicEnumDiscriminator() {
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_THREE
+}
+
+data class ConcreteImplTwo(
+    @param:JsonProperty("some_enum")
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator,
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null
+) : PolymorphicEnumDiscriminator()
+
+enum class EnumDiscriminator(
+    @JsonValue
+    val value: String
+) {
+    OBJ_ONE_ONLY("obj_one_only"),
+
+    OBJ_TWO_FIRST("obj_two_first"),
+
+    OBJ_TWO_SECOND("obj_two_second"),
+
+    OBJ_THREE("obj_three");
+
+    companion object {
+        private val mapping: Map<String, EnumDiscriminator> =
+            values().associateBy(EnumDiscriminator::value)
+
+        fun fromValue(value: String): EnumDiscriminator? = mapping[value]
+    }
+}
+
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
@@ -34,50 +80,4 @@ import kotlin.collections.Map
 )
 sealed class PolymorphicEnumDiscriminator() {
     abstract val someEnum: EnumDiscriminator
-}
-
-enum class EnumDiscriminator(
-    @JsonValue
-    val value: String
-) {
-    OBJ_ONE_ONLY("obj_one_only"),
-
-    OBJ_TWO_FIRST("obj_two_first"),
-
-    OBJ_TWO_SECOND("obj_two_second"),
-
-    OBJ_THREE("obj_three");
-
-    companion object {
-        private val mapping: Map<String, EnumDiscriminator> =
-            values().associateBy(EnumDiscriminator::value)
-
-        fun fromValue(value: String): EnumDiscriminator? = mapping[value]
-    }
-}
-
-data class ConcreteImplOne(
-    @param:JsonProperty("some_prop")
-    @get:JsonProperty("some_prop")
-    val someProp: String? = null
-) : PolymorphicEnumDiscriminator() {
-    @get:JsonProperty("some_enum")
-    @get:NotNull
-    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE_ONLY
-}
-
-data class ConcreteImplTwo(
-    @param:JsonProperty("some_enum")
-    @get:JsonProperty("some_enum")
-    @get:NotNull
-    override val someEnum: EnumDiscriminator,
-    @param:JsonProperty("some_prop")
-    @get:JsonProperty("some_prop")
-    val someProp: String? = null
-) : PolymorphicEnumDiscriminator()
-
-class ConcreteImplThree() : PolymorphicEnumDiscriminator() {
-    @get:JsonProperty("some_enum")
-    @get:NotNull
-    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_THREE
 }

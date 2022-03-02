@@ -4,6 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import kotlin.String
 
+data class ContainsNestedOneOfWithDupes(
+    @param:JsonProperty("child_duplicate")
+    @get:JsonProperty("child_duplicate")
+    val childDuplicate: String? = null
+)
+
 data class DuplicatesParent(
     @param:JsonProperty("child_duplicate")
     @get:JsonProperty("child_duplicate")
@@ -11,12 +17,6 @@ data class DuplicatesParent(
     @param:JsonProperty("top_level_duplicate")
     @get:JsonProperty("top_level_duplicate")
     val topLevelDuplicate: BigDecimal? = null
-)
-
-data class ContainsNestedOneOfWithDupes(
-    @param:JsonProperty("child_duplicate")
-    @get:JsonProperty("child_duplicate")
-    val childDuplicate: String? = null
 )
 
 data class FirstOneD(
