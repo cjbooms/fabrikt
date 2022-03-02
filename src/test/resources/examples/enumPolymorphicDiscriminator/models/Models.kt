@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonValue
+import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import kotlin.String
 import kotlin.collections.Map
@@ -81,3 +82,10 @@ enum class EnumDiscriminator(
 sealed class PolymorphicEnumDiscriminator() {
     abstract val someEnum: EnumDiscriminator
 }
+
+data class Wrapper(
+    @param:JsonProperty("polymorph")
+    @get:JsonProperty("polymorph")
+    @get:Valid
+    val polymorph: PolymorphicEnumDiscriminator? = null
+)

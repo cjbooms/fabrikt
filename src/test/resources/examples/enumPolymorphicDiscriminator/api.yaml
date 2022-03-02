@@ -5,6 +5,11 @@ info:
   version: ""
 components:
   schemas:
+    Wrapper:
+      type: object
+      properties:
+        polymorph:
+          $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
     PolymorphicEnumDiscriminator:
       type: object
       discriminator:
