@@ -14,39 +14,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
 
-enum class ContentType(
-    @JsonValue
-    val value: String
-) {
-    APPLICATION_JSON("application/json"),
-
-    APPLICATION_VND_CUSTOM_MEDIA_JSON("application/vnd.custom.media+json");
-
-    companion object {
-        private val mapping: Map<String, ContentType> = values().associateBy(ContentType::value)
-
-        fun fromValue(value: String): ContentType? = mapping[value]
-    }
-}
-
-data class QueryResult(
-    @param:JsonProperty("items")
-    @get:JsonProperty("items")
-    @get:NotNull
-    @get:Size(min = 0)
-    @get:Valid
-    val items: List<Content>
-)
-
-data class OtherQueryResult(
-    @param:JsonProperty("items")
-    @get:JsonProperty("items")
-    @get:NotNull
-    @get:Size(min = 0)
-    @get:Valid
-    val items: List<AlternateResponseModel>
-)
-
 data class AlternateResponseModel(
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
@@ -85,6 +52,24 @@ sealed class Content(
     abstract val modelType: ContentModelType
 }
 
+enum class ContentModelType(
+    @JsonValue
+    val value: String
+) {
+    FIRST_MODEL("first_model"),
+
+    SECOND_MODEL("second_model"),
+
+    THIRD_MODEL("third_model");
+
+    companion object {
+        private val mapping: Map<String, ContentModelType> =
+            values().associateBy(ContentModelType::value)
+
+        fun fromValue(value: String): ContentModelType? = mapping[value]
+    }
+}
+
 enum class ContentThirdAttr(
     @JsonValue
     val value: String
@@ -101,21 +86,18 @@ enum class ContentThirdAttr(
     }
 }
 
-enum class ContentModelType(
+enum class ContentType(
     @JsonValue
     val value: String
 ) {
-    FIRST_MODEL("first_model"),
+    APPLICATION_JSON("application/json"),
 
-    SECOND_MODEL("second_model"),
-
-    THIRD_MODEL("third_model");
+    APPLICATION_VND_CUSTOM_MEDIA_JSON("application/vnd.custom.media+json");
 
     companion object {
-        private val mapping: Map<String, ContentModelType> =
-            values().associateBy(ContentModelType::value)
+        private val mapping: Map<String, ContentType> = values().associateBy(ContentType::value)
 
-        fun fromValue(value: String): ContentModelType? = mapping[value]
+        fun fromValue(value: String): ContentType? = mapping[value]
     }
 }
 
@@ -143,6 +125,24 @@ data class FirstModel(
     @get:NotNull
     override val modelType: ContentModelType = ContentModelType.FIRST_MODEL
 }
+
+data class OtherQueryResult(
+    @param:JsonProperty("items")
+    @get:JsonProperty("items")
+    @get:NotNull
+    @get:Size(min = 0)
+    @get:Valid
+    val items: List<AlternateResponseModel>
+)
+
+data class QueryResult(
+    @param:JsonProperty("items")
+    @get:JsonProperty("items")
+    @get:NotNull
+    @get:Size(min = 0)
+    @get:Valid
+    val items: List<Content>
+)
 
 data class SecondModel(
     @param:JsonProperty("id")

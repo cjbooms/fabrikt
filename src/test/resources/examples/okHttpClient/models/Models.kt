@@ -14,15 +14,6 @@ import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
 
-data class QueryResult(
-    @param:JsonProperty("items")
-    @get:JsonProperty("items")
-    @get:NotNull
-    @get:Size(min = 0)
-    @get:Valid
-    val items: List<Content>
-)
-
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
@@ -52,22 +43,6 @@ sealed class Content(
     abstract val modelType: ContentModelType
 }
 
-enum class ContentThirdAttr(
-    @JsonValue
-    val value: String
-) {
-    ENUM_TYPE_1("enum_type_1"),
-
-    ENUM_TYPE_2("enum_type_2");
-
-    companion object {
-        private val mapping: Map<String, ContentThirdAttr> =
-            values().associateBy(ContentThirdAttr::value)
-
-        fun fromValue(value: String): ContentThirdAttr? = mapping[value]
-    }
-}
-
 enum class ContentModelType(
     @JsonValue
     val value: String
@@ -83,6 +58,22 @@ enum class ContentModelType(
             values().associateBy(ContentModelType::value)
 
         fun fromValue(value: String): ContentModelType? = mapping[value]
+    }
+}
+
+enum class ContentThirdAttr(
+    @JsonValue
+    val value: String
+) {
+    ENUM_TYPE_1("enum_type_1"),
+
+    ENUM_TYPE_2("enum_type_2");
+
+    companion object {
+        private val mapping: Map<String, ContentThirdAttr> =
+            values().associateBy(ContentThirdAttr::value)
+
+        fun fromValue(value: String): ContentThirdAttr? = mapping[value]
     }
 }
 
@@ -110,6 +101,15 @@ data class FirstModel(
     @get:NotNull
     override val modelType: ContentModelType = ContentModelType.FIRST_MODEL
 }
+
+data class QueryResult(
+    @param:JsonProperty("items")
+    @get:JsonProperty("items")
+    @get:NotNull
+    @get:Size(min = 0)
+    @get:Valid
+    val items: List<Content>
+)
 
 data class SecondModel(
     @param:JsonProperty("id")
