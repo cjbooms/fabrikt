@@ -172,7 +172,9 @@ object KaizenParserExtensions {
             allOfSchemas?.firstOrNull { it.type != null } != null -> allOfSchemas.first { it.type != null }.type
             oneOfSchemas?.firstOrNull { it.type != null } != null -> oneOfSchemas.first { it.type != null }.type
             anyOfSchemas?.firstOrNull { it.type != null } != null -> anyOfSchemas.first { it.type != null }.type
-            else -> "object"
+            isOneOfPolymorphicTypes() -> "object"
+            isUnknownAdditionalProperties("") -> "object"
+            else -> null
         }
 
     fun Schema.isOneOfPolymorphicTypes() =

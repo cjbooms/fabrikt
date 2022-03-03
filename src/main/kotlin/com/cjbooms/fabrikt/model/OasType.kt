@@ -18,6 +18,7 @@ sealed class OasType(
     val format: String? = null,
     val specialization: Specialization = Specialization.NONE
 ) {
+    object Any : OasType(null)
     object Boolean : OasType("boolean")
     object Date : OasType("string", "date")
     object DateTime : OasType("string", "date-time")
@@ -34,10 +35,18 @@ sealed class OasType(
     object Enum : OasType("string", specialization = Specialization.ENUM)
     object Uuid : OasType("string", specialization = Specialization.UUID)
     object Map : OasType("object", specialization = Specialization.MAP)
-    object UnknownAdditionalProperties : OasType("object", specialization = Specialization.UNKNOWN_ADDITIONAL_PROPERTIES)
-    object UntypedObjectAdditionalProperties : OasType("object", specialization = Specialization.UNTYPED_OBJECT_ADDITIONAL_PROPERTIES)
-    object TypedObjectAdditionalProperties : OasType("object", specialization = Specialization.TYPED_OBJECT_ADDITIONAL_PROPERTIES)
-    object TypedMapAdditionalProperties : OasType("object", specialization = Specialization.TYPED_MAP_ADDITIONAL_PROPERTIES)
+    object UnknownAdditionalProperties :
+        OasType("object", specialization = Specialization.UNKNOWN_ADDITIONAL_PROPERTIES)
+
+    object UntypedObjectAdditionalProperties :
+        OasType("object", specialization = Specialization.UNTYPED_OBJECT_ADDITIONAL_PROPERTIES)
+
+    object TypedObjectAdditionalProperties :
+        OasType("object", specialization = Specialization.TYPED_OBJECT_ADDITIONAL_PROPERTIES)
+
+    object TypedMapAdditionalProperties :
+        OasType("object", specialization = Specialization.TYPED_MAP_ADDITIONAL_PROPERTIES)
+
     companion object {
         fun Schema.toOasType(oasKey: String): OasType =
             values(OasType::class)
@@ -47,7 +56,9 @@ sealed class OasType(
                 .let { candidates ->
                     if (candidates.size > 1) candidates.find { it.format == format }
                     else candidates.firstOrNull()
-                } ?: throw IllegalStateException("Unknown OAS type: ${safeType()} and format: $format")
+                } ?: throw IllegalStateException(
+                "Unknown OAS type: ${safeType()} and format: $format and specialization: ${getSpecialization(oasKey)}"
+            )
 
         private fun values(clazz: KClass<OasType>) =
             clazz.nestedClasses.filter { it.isFinal && it.isSubclassOf(clazz) }

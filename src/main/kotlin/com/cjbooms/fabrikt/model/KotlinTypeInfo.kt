@@ -27,6 +27,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     object Uuid : KotlinTypeInfo(UUID::class)
     object Boolean : KotlinTypeInfo(kotlin.Boolean::class)
     object UntypedObject : KotlinTypeInfo(Any::class)
+    object AnyType : KotlinTypeInfo(Any::class)
     data class Object(val simpleClassName: String) : KotlinTypeInfo(GeneratedType::class, simpleClassName)
     data class Array(val parameterizedType: KotlinTypeInfo) : KotlinTypeInfo(List::class)
     data class Map(val parameterizedType: KotlinTypeInfo) : KotlinTypeInfo(Map::class)
@@ -81,6 +82,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     MapTypeAdditionalProperties(
                         from(schema.additionalPropertiesSchema, "", enclosingName)
                     )
+                OasType.Any -> AnyType
             }
     }
 }
