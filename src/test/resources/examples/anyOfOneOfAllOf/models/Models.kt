@@ -2,6 +2,7 @@ package examples.anyOfOneOfAllOf.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
+import kotlin.Any
 import kotlin.String
 
 data class ComplexParent(
@@ -82,5 +83,8 @@ data class SecondOneB(
     val secondProperty: String? = null,
     @param:JsonProperty("third_property")
     @get:JsonProperty("third_property")
-    val thirdProperty: String? = null
+    val thirdProperty: String? = null,
+    @param:JsonProperty("forth_property")
+    @get:JsonProperty("forth_property")
+    val forthProperty: Any? = null
 )

@@ -60,4 +60,9 @@ components:
         second_property:
           type: string
         third_property:
-          type: string          
+          type: string   
+        forth_property:
+          $ref: '#/components/schemas/AnyValue'
+            
+    AnyValue:
+      description: Tests support for https://swagger.io/docs/specification/data-models/data-types/#any
