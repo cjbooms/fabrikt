@@ -32,7 +32,6 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalP
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfPolymorphicTypes
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSubType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSuperType
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isReferenceObjectDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeys
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
@@ -241,7 +240,7 @@ class JacksonModelGenerator(
                 try {
                     externalApiSchemas.getOrPut(URL(docUrl)) { mutableSetOf() }.add(schema.safeName())
                 } catch (ex: MalformedURLException) {
-                    // skip 
+                    // skip
                 }
             }
             if (depth < 10) schema.captureMissingExternalSchemas(apiDocUrl, depth + 1)
@@ -404,7 +403,9 @@ class JacksonModelGenerator(
                 classType
             )
         }
-        if (constructorBuilder.parameters.isNotEmpty() && classBuilder.modifiers.isEmpty()) classBuilder.addModifiers(KModifier.DATA)
+        if (constructorBuilder.parameters.isNotEmpty() && classBuilder.modifiers.isEmpty()) classBuilder.addModifiers(
+            KModifier.DATA
+        )
         return classBuilder.primaryConstructor(constructorBuilder.build())
     }
 
@@ -432,7 +433,10 @@ class JacksonModelGenerator(
             "ReflectiveAccess".toClassName("io.micronaut.core.annotation")
         )
 
-    private fun TypeSpec.Builder.addOptionalAnnotation(optionType: ModelCodeGenOptionType, type: ClassName): TypeSpec.Builder {
+    private fun TypeSpec.Builder.addOptionalAnnotation(
+        optionType: ModelCodeGenOptionType,
+        type: ClassName
+    ): TypeSpec.Builder {
         if (options.any { it == optionType })
             this.addAnnotation(
                 AnnotationSpec.builder(type).build()

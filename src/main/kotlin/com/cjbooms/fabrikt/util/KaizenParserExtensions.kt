@@ -4,8 +4,6 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType
 import com.cjbooms.fabrikt.model.PropertyInfo
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSchemaNameInParent
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeys
 import com.cjbooms.fabrikt.util.NormalisedString.toMapValueClassName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.jsonoverlay.Overlay
@@ -52,9 +50,6 @@ object KaizenParserExtensions {
     fun Schema.isInlinedArrayDefinition() =
         isArrayType() && !isSchemaLess() && this.itemsSchema.isInlinedObjectDefinition()
 
-    fun Schema.isReferenceObjectDefinition() =
-        isObjectType() && !isSchemaLess() && !Overlay.of(this).pathFromRoot.contains("properties")
-
     fun Schema.toModelClassName(enclosingClassName: String = "") = enclosingClassName + safeName().toModelClassName()
 
     fun Schema.toMapValueClassName() = safeName().toMapValueClassName()
@@ -77,16 +72,17 @@ object KaizenParserExtensions {
     fun Schema.getEnumValues(): List<String> = when {
         this.hasEnums() -> this.enums.map { it.toString() }.filterNot { it.isBlank() }
         !MutableSettings.modelOptions().contains(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS) -> emptyList()
-        else -> extensions[EXTENSIBLE_ENUM_KEY]?.let { it as List<String?> }?.filterNotNull()?.filterNot { it.isBlank() } ?: emptyList()
+        else -> extensions[EXTENSIBLE_ENUM_KEY]?.let { it as List<String?> }?.filterNotNull()
+            ?.filterNot { it.isBlank() } ?: emptyList()
     }
 
     fun Schema.hasAdditionalProperties(): Boolean = isObjectType() && Overlay.of(additionalPropertiesSchema).isPresent
 
     fun Schema.isUnknownAdditionalProperties(oasKey: String) = type == null &&
-        getSchemaNameInParent() ?: oasKey == "additionalProperties" && properties?.isEmpty() == true
+        (getSchemaNameInParent() ?: oasKey) == "additionalProperties" && properties?.isEmpty() == true
 
     fun Schema.isUntypedAdditionalProperties(oasKey: String) = type == OasType.Object.type &&
-        getSchemaNameInParent() ?: oasKey == "additionalProperties" && properties?.isEmpty() == true
+        (getSchemaNameInParent() ?: oasKey) == "additionalProperties" && properties?.isEmpty() == true
 
     fun Schema.isTypedAdditionalProperties(oasKey: String) = type == OasType.Object.type &&
         (getSchemaNameInParent() == "additionalProperties" || oasKey == "additionalProperties") && properties?.isEmpty() != true
@@ -95,8 +91,8 @@ object KaizenParserExtensions {
         (oasKey == "additionalProperties") && properties?.isEmpty() == true &&
         hasAdditionalProperties()
 
-    fun Schema.isComplexTypedAdditionalProperties(oasKey: String) =
-        getSchemaNameInParent() ?: oasKey == "additionalProperties" && properties?.isEmpty() != true && !isSimpleType()
+    fun Schema.isComplexTypedAdditionalProperties(oasKey: String) = (getSchemaNameInParent() ?: oasKey) ==
+        "additionalProperties" && properties?.isEmpty() != true && !isSimpleType()
 
     fun Schema.isSimpleType(): Boolean =
         (simpleTypes.contains(type) && !isEnumDefinition()) || isInlineableMapDefinition()
@@ -105,7 +101,10 @@ object KaizenParserExtensions {
 
     private fun Schema.isArrayType() = OasType.Array.type == type
 
-    fun Schema.isNotDefined() = type == null && !(hasAllOfSchemas() || hasOneOfSchemas() || hasAnyOfSchemas())
+    fun Schema.isNotDefined() =
+        type == null && !(hasAllOfSchemas() || hasOneOfSchemas() || hasAnyOfSchemas() || isAnyType())
+
+    private fun Schema.isAnyType() = type == null && name == "AnyValue"
 
     private fun Schema.getSchemaNameInParent(): String? = Overlay.of(this).pathInParent
 
@@ -175,6 +174,7 @@ object KaizenParserExtensions {
             allOfSchemas?.firstOrNull { it.type != null } != null -> allOfSchemas.first { it.type != null }.type
             oneOfSchemas?.firstOrNull { it.type != null } != null -> oneOfSchemas.first { it.type != null }.type
             anyOfSchemas?.firstOrNull { it.type != null } != null -> anyOfSchemas.first { it.type != null }.type
+            isAnyType() -> "any"
             else -> "object"
         }
 

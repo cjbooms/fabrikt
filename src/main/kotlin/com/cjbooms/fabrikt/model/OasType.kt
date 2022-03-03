@@ -18,6 +18,7 @@ sealed class OasType(
     val format: String? = null,
     val specialization: Specialization = Specialization.NONE
 ) {
+    object Any : OasType("any")
     object Boolean : OasType("boolean")
     object Date : OasType("string", "date")
     object DateTime : OasType("string", "date-time")
