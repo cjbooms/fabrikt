@@ -23,7 +23,7 @@ class ResourceGeneratorTest {
 
     @BeforeEach
     fun init() {
-        MutableSettings.updateSettings(setOf(CodeGenerationType.HTTP_MODELS), emptySet(), emptySet())
+        MutableSettings.updateSettings(setOf(CodeGenerationType.HTTP_MODELS), emptySet(), emptySet(), emptySet())
     }
 
     @ParameterizedTest
