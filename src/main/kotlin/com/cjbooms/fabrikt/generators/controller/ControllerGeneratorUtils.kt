@@ -7,6 +7,7 @@ import com.cjbooms.fabrikt.model.IncomingParameter
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
+import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Parameter
 import com.reprezen.kaizen.oasparser.model3.Response
@@ -78,6 +79,9 @@ object ControllerGeneratorUtils {
 
     fun controllerName(resourceName: String) = "$resourceName${ControllerType.SUFFIX}"
 
-    fun methodName(verb: String, isSingleResource: Boolean) =
+    fun methodName(op: Operation, verb: String, isSingleResource: Boolean) =
+        op.operationId?.camelCase() ?: httpVerbMethodName(verb, isSingleResource)
+
+    private fun httpVerbMethodName(verb: String, isSingleResource: Boolean) =
         if (isSingleResource) "${verb}ById" else verb
 }

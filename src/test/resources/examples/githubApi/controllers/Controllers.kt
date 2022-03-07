@@ -73,7 +73,7 @@ interface ContributorsController {
         produces = ["application/json"],
         method = [RequestMethod.GET]
     )
-    fun get(
+    fun searchContributors(
         @Min(1) @Max(100) @RequestParam(value = "limit", required = false, defaultValue = "10")
         limit: Int,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
@@ -102,7 +102,7 @@ interface ContributorsController {
         method = [RequestMethod.POST],
         consumes = ["application/json"]
     )
-    fun post(
+    fun createContributor(
         @RequestBody @Valid
         contributor: Contributor,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
@@ -129,7 +129,7 @@ interface ContributorsController {
         produces = ["application/json"],
         method = [RequestMethod.GET]
     )
-    fun getById(
+    fun getContributor(
         @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
         status: StatusQueryParam,

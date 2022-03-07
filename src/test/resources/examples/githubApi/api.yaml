@@ -38,6 +38,7 @@ paths:
             - fabric-event-scheduler.read  
   /contributors:
     get:
+      operationId: searchContributors
       summary: Page through all the Contributor resources matching the query filters
       tags:
       - contributor
@@ -65,6 +66,7 @@ paths:
               $ref: '#/components/headers/RateLimit'
 
     post:
+      operationId: createContributor
       summary: Create a new Contributor
       tags:
       - contributor
@@ -89,6 +91,7 @@ paths:
 
   /contributors/{id}:
     get:
+      operationId: getContributor
       summary: Get a Contributor by ID
       tags:
       - contributor
