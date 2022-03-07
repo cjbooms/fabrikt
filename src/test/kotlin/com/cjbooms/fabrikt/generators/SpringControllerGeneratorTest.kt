@@ -2,7 +2,6 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
-import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
@@ -138,6 +137,21 @@ class SpringControllerGeneratorTest {
                 .flatMap { (it as TypeSpec).funSpecs.map(FunSpec::modifiers) }
                 .all { it.contains(KModifier.SUSPEND) }
         ).isTrue()
+    }
+
+    @Test
+    fun `ensure controller methods has the correct method names`() {
+        val basePackage = "examples.operationNames"
+        val api = SourceApi(readTextResource("/examples/operationNames/api.yaml"))
+        val expectedControllers = readTextResource("/examples/operationNames/controllers/Controllers.kt")
+
+        val actualControllers = SpringControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            setOf(ControllerCodeGenOptionType.SUSPEND_MODIFIER)
+        ).generate().toSingleFile()
+
+        assertThat(actualControllers).isEqualTo(expectedControllers)
     }
 
     @ParameterizedTest

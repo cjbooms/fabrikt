@@ -81,7 +81,7 @@ class SpringControllerInterfaceGenerator(
         verb: String,
         pathString: String
     ): FunSpec {
-        val methodName = methodName(verb, pathString.isSingleResource())
+        val methodName = methodName(op, verb, pathString.isSingleResource())
         val returnType = op.happyPathResponse(packages.base)
         val parameters = op.toIncomingParameters(packages.base)
 

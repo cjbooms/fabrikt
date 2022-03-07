@@ -78,6 +78,9 @@ object ControllerGeneratorUtils {
 
     fun controllerName(resourceName: String) = "$resourceName${ControllerType.SUFFIX}"
 
-    fun methodName(verb: String, isSingleResource: Boolean) =
+    fun methodName(op: Operation, verb: String, isSingleResource: Boolean) =
+        op.operationId ?: httpVerbMethodName(verb, isSingleResource)
+
+    private fun httpVerbMethodName(verb: String, isSingleResource: Boolean) =
         if (isSingleResource) "${verb}ById" else verb
 }
