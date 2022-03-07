@@ -40,7 +40,7 @@ sealed class PropertyInfo {
         val HTTP_SETTINGS = Settings()
 
         fun Schema.topLevelProperties(settings: Settings, enclosingSchema: Schema? = null): Collection<PropertyInfo> {
-            val results = emptyList<PropertyInfo>() +
+            val results = mutableListOf<PropertyInfo>() +
                 allOfSchemas.flatMap {
                     it.topLevelProperties(
                         maybeMarkInherited(
@@ -50,7 +50,7 @@ sealed class PropertyInfo {
                         this
                     )
                 } +
-                (if (oneOfSchemas.isEmpty()) emptyList() else listOf(OneOfField(oneOfSchemas.first()))) +
+                (if (oneOfSchemas.isEmpty()) emptyList() else listOf(OneOfAny(oneOfSchemas.first()))) +
                 anyOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true), this) } +
                 getInLinedProperties(settings, enclosingSchema)
             return results.distinctBy { it.oasKey }
@@ -226,7 +226,7 @@ sealed class PropertyInfo {
         override val isRequired: Boolean = true
     }
 
-    data class OneOfField(
+    data class OneOfAny(
         override val schema: Schema,
     ) : PropertyInfo() {
         override val oasKey: String = "oneOf"
