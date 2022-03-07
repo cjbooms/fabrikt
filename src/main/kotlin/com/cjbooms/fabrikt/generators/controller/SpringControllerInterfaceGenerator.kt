@@ -1,5 +1,7 @@
 package com.cjbooms.fabrikt.generators.controller
 
+import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
+import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.controllerName
@@ -30,7 +32,8 @@ import com.squareup.kotlinpoet.TypeSpec
 
 class SpringControllerInterfaceGenerator(
     private val packages: Packages,
-    private val api: SourceApi
+    private val api: SourceApi,
+    private val options: Set<ControllerCodeGenOptionType> = emptySet()
 ) {
 
     fun generate(): Controllers =
@@ -88,6 +91,7 @@ class SpringControllerInterfaceGenerator(
             .addModifiers(KModifier.ABSTRACT)
             .addKdoc(op.toKdoc())
             .addSpringFunAnnotation(op, verb, pathString)
+            .addSuspendModifier()
             .returns(SpringImports.RESPONSE_ENTITY.parameterizedBy(returnType))
 
         parameters
@@ -163,4 +167,10 @@ class SpringControllerInterfaceGenerator(
 
             this.addAnnotation(it.build())
         }
+
+    private fun FunSpec.Builder.addSuspendModifier(): FunSpec.Builder {
+        if (options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER })
+            this.addModifiers(KModifier.SUSPEND)
+        return this
+    }
 }

@@ -1,6 +1,8 @@
 package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
+import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
@@ -10,6 +12,8 @@ import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -36,7 +40,7 @@ class SpringControllerGeneratorTest {
 
     @BeforeEach
     fun init() {
-        MutableSettings.updateSettings(setOf(CodeGenerationType.CONTROLLERS), emptySet(), emptySet())
+        MutableSettings.updateSettings(setOf(CodeGenerationType.CONTROLLERS), emptySet(), emptySet(), emptySet())
     }
 
     @Test
@@ -116,6 +120,24 @@ class SpringControllerGeneratorTest {
             "post",
             "putById"
         )
+    }
+
+    @Test
+    fun `ensure controller methods has the correct modifiers`() {
+        val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
+        val controllers = SpringControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            setOf(ControllerCodeGenOptionType.SUSPEND_MODIFIER)
+        ).generate()
+
+        assertThat(controllers.files).size().isEqualTo(6)
+        assertThat(
+            controllers.files
+                .flatMap { file -> file.members }
+                .flatMap { (it as TypeSpec).funSpecs.map(FunSpec::modifiers) }
+                .all { it.contains(KModifier.SUSPEND) }
+        ).isTrue()
     }
 
     @ParameterizedTest
