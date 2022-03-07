@@ -1,13 +1,15 @@
 package examples.duplicatePropertyHandling.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.math.BigDecimal
 import kotlin.String
 
-data class ContainsNestedOneOfWithDupes(
+data class ContainsNestedAnyOfWithDupes(
     @param:JsonProperty("child_duplicate")
     @get:JsonProperty("child_duplicate")
-    val childDuplicate: String? = null
+    val childDuplicate: String? = null,
+    @param:JsonProperty("top_level_duplicate")
+    @get:JsonProperty("top_level_duplicate")
+    val topLevelDuplicate: String? = null
 )
 
 data class DuplicatesParent(
@@ -16,7 +18,7 @@ data class DuplicatesParent(
     val childDuplicate: String? = null,
     @param:JsonProperty("top_level_duplicate")
     @get:JsonProperty("top_level_duplicate")
-    val topLevelDuplicate: BigDecimal? = null
+    val topLevelDuplicate: String? = null
 )
 
 data class FirstOneD(

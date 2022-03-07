@@ -3,17 +3,17 @@ components:
   schemas:
     DuplicatesParent:
       allOf:
-        - $ref: '#/components/schemas/ContainsNestedOneOfWithDupes'
+        - $ref: '#/components/schemas/ContainsNestedAnyOfWithDupes'
         - type: object
           properties:
             top_level_duplicate:
               type: number
 
-    ContainsNestedOneOfWithDupes:
-      oneOf:
+    ContainsNestedAnyOfWithDupes:
+      anyOf:
         - $ref: "#/components/schemas/FirstOneD"
         - $ref: "#/components/schemas/FirstOneD"
-        - $ref: "#/components/schemas/FirstOneBDuplicate"
+        - $ref: "#/components/schemas/TheDuplicator"
 
     FirstOneD:
       type: object

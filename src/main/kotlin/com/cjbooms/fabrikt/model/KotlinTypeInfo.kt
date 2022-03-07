@@ -83,6 +83,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                         from(schema.additionalPropertiesSchema, "", enclosingName)
                     )
                 OasType.Any -> AnyType
+                OasType.OneOfAny -> AnyType
             }
     }
 }

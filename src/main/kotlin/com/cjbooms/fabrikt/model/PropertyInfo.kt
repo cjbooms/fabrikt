@@ -50,10 +50,10 @@ sealed class PropertyInfo {
                         this
                     )
                 } +
-                oneOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true), this) } +
+                (if (oneOfSchemas.isEmpty()) emptyList() else listOf(OneOfField(oneOfSchemas.first()))) +
                 anyOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true), this) } +
                 getInLinedProperties(settings, enclosingSchema)
-            return results.toSet()
+            return results.distinctBy { it.oasKey }
         }
 
         private fun maybeMarkInherited(settings: Settings, it: Schema) =
@@ -162,17 +162,7 @@ sealed class PropertyInfo {
         val maximum: Number? = schema.safeField(Schema::getMaximum)
         val exclusiveMaximum: Boolean? = schema.safeField(Schema::getExclusiveMaximum)
 
-        private fun <T> Schema.safeField(getField: Schema.() -> T?): T? =
-            when {
-                this.getField() != null -> this.getField()
-                allOfSchemas?.firstOrNull { it.getField() != null } != null ->
-                    allOfSchemas.first { it.getField() != null }.getField()
-                oneOfSchemas?.firstOrNull { it.getField() != null } != null ->
-                    oneOfSchemas.first { it.getField() != null }.getField()
-                anyOfSchemas?.firstOrNull { it.getField() != null } != null ->
-                    anyOfSchemas.first { it.getField() != null }.getField()
-                else -> null
-            }
+        private fun <T> Schema.safeField(getField: Schema.() -> T?): T? = this.getField()
     }
 
     interface CollectionValidation {
@@ -234,5 +224,12 @@ sealed class PropertyInfo {
         override val oasKey: String = "properties"
         override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, "additionalProperties")
         override val isRequired: Boolean = true
+    }
+
+    data class OneOfField(
+        override val schema: Schema,
+    ) : PropertyInfo() {
+        override val oasKey: String = "oneOf"
+        override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.AnyType
     }
 }
