@@ -6,7 +6,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasNoDiscriminator
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isDiscriminatorProperty
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInLinedObjectUnderAllOf
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleMapDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedArrayDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
@@ -77,7 +77,7 @@ sealed class PropertyInfo {
                             else null
                         )
                     OasType.Object.type ->
-                        if (property.value.isInlineableMapDefinition() || property.value.isSchemaLess())
+                        if (property.value.isSimpleMapDefinition() || property.value.isSchemaLess())
                             MapField(
                                 isRequired = isRequired(
                                     property,

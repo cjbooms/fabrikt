@@ -1,8 +1,8 @@
 package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableOneOfDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleMapDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleOneOfAnyDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isMapTypeAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isTypedAdditionalProperties
@@ -71,8 +71,8 @@ sealed class OasType(
                 isUuidDefinition() -> Specialization.UUID
                 isEnumDefinition() -> Specialization.ENUM
                 isMapTypeAdditionalProperties(oasKey) -> Specialization.TYPED_MAP_ADDITIONAL_PROPERTIES
-                isInlineableMapDefinition() -> Specialization.MAP
-                isInlineableOneOfDefinition() -> Specialization.ONE_OF_ANY
+                isSimpleMapDefinition() -> Specialization.MAP
+                isSimpleOneOfAnyDefinition() -> Specialization.ONE_OF_ANY
                 isTypedAdditionalProperties(oasKey) -> Specialization.TYPED_OBJECT_ADDITIONAL_PROPERTIES
                 isUntypedAdditionalProperties(oasKey) -> Specialization.UNTYPED_OBJECT_ADDITIONAL_PROPERTIES
                 isUnknownAdditionalProperties(oasKey) -> Specialization.UNKNOWN_ADDITIONAL_PROPERTIES

@@ -56,9 +56,13 @@ object KaizenParserExtensions {
 
     fun Schema.isSchemaLess() = isObjectType() && properties?.isEmpty() == true
 
-    fun Schema.isInlineableMapDefinition() = hasAdditionalProperties() && properties?.isEmpty() == true
+    fun Schema.isSimpleMapDefinition() = hasAdditionalProperties() && properties?.isEmpty() == true
 
-    fun Schema.isInlineableOneOfDefinition() = oneOfSchemas.isNotEmpty() && !isOneOfPolymorphicTypes()
+    fun Schema.isSimpleOneOfAnyDefinition() = oneOfSchemas?.isNotEmpty() == true &&
+        !isOneOfPolymorphicTypes() &&
+        anyOfSchemas?.isEmpty() == true &&
+        allOfSchemas?.isEmpty() == true &&
+        properties?.isEmpty() == true
 
     fun Schema.isEnumDefinition(): Boolean = this.type == OasType.Text.type && (
         this.hasEnums() || (
@@ -97,7 +101,7 @@ object KaizenParserExtensions {
         "additionalProperties" && properties?.isEmpty() != true && !isSimpleType()
 
     fun Schema.isSimpleType(): Boolean =
-        (simpleTypes.contains(type) && !isEnumDefinition()) || isInlineableMapDefinition() || isInlineableOneOfDefinition()
+        (simpleTypes.contains(type) && !isEnumDefinition()) || isSimpleMapDefinition() || isSimpleOneOfAnyDefinition()
 
     private fun Schema.isObjectType() = OasType.Object.type == type
 
