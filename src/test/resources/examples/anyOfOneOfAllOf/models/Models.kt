@@ -6,12 +6,9 @@ import kotlin.Any
 import kotlin.String
 
 data class ComplexParent(
-    @param:JsonProperty("first_nested_one_of_prop")
-    @get:JsonProperty("first_nested_one_of_prop")
-    val firstNestedOneOfProp: String? = null,
-    @param:JsonProperty("more_nested_prop_one")
-    @get:JsonProperty("more_nested_prop_one")
-    val moreNestedPropOne: String? = null,
+    @param:JsonProperty("oneOf")
+    @get:JsonProperty("oneOf")
+    val oneOf: Any? = null,
     @param:JsonProperty("first_nested_any_of_prop")
     @get:JsonProperty("first_nested_any_of_prop")
     val firstNestedAnyOfProp: String? = null,
@@ -36,15 +33,6 @@ data class ContainsNestedAnyOf(
     @param:JsonProperty("second_nested_any_of_prop")
     @get:JsonProperty("second_nested_any_of_prop")
     val secondNestedAnyOfProp: String? = null
-)
-
-data class ContainsNestedOneOf(
-    @param:JsonProperty("first_nested_one_of_prop")
-    @get:JsonProperty("first_nested_one_of_prop")
-    val firstNestedOneOfProp: String? = null,
-    @param:JsonProperty("more_nested_prop_one")
-    @get:JsonProperty("more_nested_prop_one")
-    val moreNestedPropOne: String? = null
 )
 
 data class FirstAnyA(
@@ -87,4 +75,10 @@ data class SecondOneB(
     @param:JsonProperty("forth_property")
     @get:JsonProperty("forth_property")
     val forthProperty: Any? = null
+)
+
+data class SimpleOneOfs(
+    @param:JsonProperty("oneof_property")
+    @get:JsonProperty("oneof_property")
+    val oneofProperty: Any? = null
 )

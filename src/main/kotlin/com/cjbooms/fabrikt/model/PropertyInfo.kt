@@ -6,7 +6,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasNoDiscriminator
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isDiscriminatorProperty
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInLinedObjectUnderAllOf
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlineableMapDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleMapDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedArrayDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
@@ -40,7 +40,7 @@ sealed class PropertyInfo {
         val HTTP_SETTINGS = Settings()
 
         fun Schema.topLevelProperties(settings: Settings, enclosingSchema: Schema? = null): Collection<PropertyInfo> {
-            val results = emptyList<PropertyInfo>() +
+            val results = mutableListOf<PropertyInfo>() +
                 allOfSchemas.flatMap {
                     it.topLevelProperties(
                         maybeMarkInherited(
@@ -50,10 +50,10 @@ sealed class PropertyInfo {
                         this
                     )
                 } +
-                oneOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true), this) } +
+                (if (oneOfSchemas.isEmpty()) emptyList() else listOf(OneOfAny(oneOfSchemas.first()))) +
                 anyOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true), this) } +
                 getInLinedProperties(settings, enclosingSchema)
-            return results.toSet()
+            return results.distinctBy { it.oasKey }
         }
 
         private fun maybeMarkInherited(settings: Settings, it: Schema) =
@@ -77,7 +77,7 @@ sealed class PropertyInfo {
                             else null
                         )
                     OasType.Object.type ->
-                        if (property.value.isInlineableMapDefinition() || property.value.isSchemaLess())
+                        if (property.value.isSimpleMapDefinition() || property.value.isSchemaLess())
                             MapField(
                                 isRequired = isRequired(
                                     property,
@@ -162,17 +162,7 @@ sealed class PropertyInfo {
         val maximum: Number? = schema.safeField(Schema::getMaximum)
         val exclusiveMaximum: Boolean? = schema.safeField(Schema::getExclusiveMaximum)
 
-        private fun <T> Schema.safeField(getField: Schema.() -> T?): T? =
-            when {
-                this.getField() != null -> this.getField()
-                allOfSchemas?.firstOrNull { it.getField() != null } != null ->
-                    allOfSchemas.first { it.getField() != null }.getField()
-                oneOfSchemas?.firstOrNull { it.getField() != null } != null ->
-                    oneOfSchemas.first { it.getField() != null }.getField()
-                anyOfSchemas?.firstOrNull { it.getField() != null } != null ->
-                    anyOfSchemas.first { it.getField() != null }.getField()
-                else -> null
-            }
+        private fun <T> Schema.safeField(getField: Schema.() -> T?): T? = this.getField()
     }
 
     interface CollectionValidation {
@@ -234,5 +224,12 @@ sealed class PropertyInfo {
         override val oasKey: String = "properties"
         override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, "additionalProperties")
         override val isRequired: Boolean = true
+    }
+
+    data class OneOfAny(
+        override val schema: Schema,
+    ) : PropertyInfo() {
+        override val oasKey: String = "oneOf"
+        override val typeInfo: KotlinTypeInfo = KotlinTypeInfo.AnyType
     }
 }

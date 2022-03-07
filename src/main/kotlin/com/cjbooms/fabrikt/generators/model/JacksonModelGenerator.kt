@@ -230,6 +230,7 @@ class JacksonModelGenerator(
                             else -> emptySet()
                         }
                     }
+                is PropertyInfo.OneOfAny -> emptySet()
             }
     }
 

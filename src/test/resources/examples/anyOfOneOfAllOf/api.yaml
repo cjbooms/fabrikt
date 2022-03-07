@@ -1,6 +1,12 @@
 openapi: 3.0.0
 components:
   schemas:
+    SimpleOneOfs:
+      type: object
+      properties: 
+        oneof_property:
+          $ref: '#/components/schemas/ContainsNestedOneOf'
+
     ComplexParent:
       allOf:
         - $ref: '#/components/schemas/ContainsNestedOneOf'
