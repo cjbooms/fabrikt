@@ -72,3 +72,13 @@ components:
             
     AnyValue:
       description: Tests support for https://swagger.io/docs/specification/data-models/data-types/#any
+      
+    OneOfAdditionalProps:
+      type: object
+      properties:
+        second_nested_any_of_prop:
+          type: string
+      additionalProperties:
+        oneOf:
+          - $ref: '#/components/schemas/FirstOneB'
+          - $ref: '#/components/schemas/SecondOneB'

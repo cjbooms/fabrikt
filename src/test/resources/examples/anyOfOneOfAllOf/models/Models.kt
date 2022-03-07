@@ -1,9 +1,14 @@
 package examples.anyOfOneOfAllOf.models
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import kotlin.Any
 import kotlin.String
+import kotlin.collections.Map
+import kotlin.collections.MutableMap
 
 data class ComplexParent(
     @param:JsonProperty("oneOf")
@@ -58,6 +63,23 @@ data class MoreNesting(
     @get:JsonProperty("more_nested_prop_one")
     val moreNestedPropOne: String? = null
 )
+
+data class OneOfAdditionalProps(
+    @param:JsonProperty("second_nested_any_of_prop")
+    @get:JsonProperty("second_nested_any_of_prop")
+    val secondNestedAnyOfProp: String? = null
+) {
+    @get:JsonIgnore
+    val properties: MutableMap<String, Any> = mutableMapOf()
+
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
+
+    @JsonAnySetter
+    fun set(name: String, value: Any) {
+        properties[name] = value
+    }
+}
 
 data class SecondAnyA(
     @param:JsonProperty("second_nested_any_of_prop")

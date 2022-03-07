@@ -50,6 +50,9 @@ class ModelGeneratorTest {
         MutableSettings.updateSettings(setOf(CodeGenerationType.HTTP_MODELS), emptySet(), emptySet(), emptySet())
     }
 
+    // @Test
+    // fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("insert test case")
+
     @ParameterizedTest
     @MethodSource("testCases")
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
