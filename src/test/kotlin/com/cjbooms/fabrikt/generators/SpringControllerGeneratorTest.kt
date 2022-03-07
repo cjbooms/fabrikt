@@ -139,21 +139,6 @@ class SpringControllerGeneratorTest {
         ).isTrue()
     }
 
-    @Test
-    fun `ensure controller methods has the correct method names`() {
-        val basePackage = "examples.operationNames"
-        val api = SourceApi(readTextResource("/examples/operationNames/api.yaml"))
-        val expectedControllers = readTextResource("/examples/operationNames/controllers/Controllers.kt")
-
-        val actualControllers = SpringControllerInterfaceGenerator(
-            Packages(basePackage),
-            api,
-            setOf(ControllerCodeGenOptionType.SUSPEND_MODIFIER)
-        ).generate().toSingleFile()
-
-        assertThat(actualControllers).isEqualTo(expectedControllers)
-    }
-
     @ParameterizedTest
     @MethodSource("testCases")
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
