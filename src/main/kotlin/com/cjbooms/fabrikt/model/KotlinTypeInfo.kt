@@ -9,6 +9,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.kaizen.oasparser.model3.Schema
 import java.math.BigDecimal
+import java.net.URI
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -25,6 +26,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     object Integer : KotlinTypeInfo(Int::class)
     object BigInt : KotlinTypeInfo(Long::class)
     object Uuid : KotlinTypeInfo(UUID::class)
+    object Uri : KotlinTypeInfo(URI::class)
     object Boolean : KotlinTypeInfo(kotlin.Boolean::class)
     object UntypedObject : KotlinTypeInfo(Any::class)
     object AnyType : KotlinTypeInfo(Any::class)
@@ -57,6 +59,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Enum ->
                     Enum(schema.getEnumValues(), schema.toModelClassName(enclosingName.toModelClassName()))
                 OasType.Uuid -> Uuid
+                OasType.Uri -> Uri
                 OasType.Double -> Double
                 OasType.Float -> Float
                 OasType.Number -> Numeric

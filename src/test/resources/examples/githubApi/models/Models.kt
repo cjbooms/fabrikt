@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import java.net.URI
 import java.time.OffsetDateTime
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
@@ -87,10 +88,10 @@ data class Contributor(
 data class ContributorQueryResult(
     @param:JsonProperty("prev")
     @get:JsonProperty("prev")
-    val prev: String? = null,
+    val prev: URI? = null,
     @param:JsonProperty("next")
     @get:JsonProperty("next")
-    val next: String? = null,
+    val next: URI? = null,
     @param:JsonProperty("items")
     @get:JsonProperty("items")
     @get:NotNull
@@ -223,10 +224,10 @@ data class Organisation(
 data class OrganisationQueryResult(
     @param:JsonProperty("prev")
     @get:JsonProperty("prev")
-    val prev: String? = null,
+    val prev: URI? = null,
     @param:JsonProperty("next")
     @get:JsonProperty("next")
-    val next: String? = null,
+    val next: URI? = null,
     @param:JsonProperty("items")
     @get:JsonProperty("items")
     @get:NotNull
@@ -299,10 +300,10 @@ data class PullRequest(
 data class PullRequestQueryResult(
     @param:JsonProperty("prev")
     @get:JsonProperty("prev")
-    val prev: String? = null,
+    val prev: URI? = null,
     @param:JsonProperty("next")
     @get:JsonProperty("next")
-    val next: String? = null,
+    val next: URI? = null,
     @param:JsonProperty("items")
     @get:JsonProperty("items")
     @get:NotNull
@@ -378,10 +379,10 @@ data class Repository(
 data class RepositoryQueryResult(
     @param:JsonProperty("prev")
     @get:JsonProperty("prev")
-    val prev: String? = null,
+    val prev: URI? = null,
     @param:JsonProperty("next")
     @get:JsonProperty("next")
-    val next: String? = null,
+    val next: URI? = null,
     @param:JsonProperty("items")
     @get:JsonProperty("items")
     @get:NotNull
