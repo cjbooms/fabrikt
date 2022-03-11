@@ -15,7 +15,7 @@ The team that built this tool initially contributed to the Kotlin code generatio
 
 It was built at [Zalando Tech](https://opensource.zalando.com/) and is battle-tested in production there. It is particulary well suited to API's built according to Zalando's [REST API guidelines](https://opensource.zalando.com/restful-api-guidelines/). It is [available on Maven Central](https://search.maven.org/artifact/com.cjbooms/fabrikt) at the following coordinates:
 
-```
+```xml
 <dependency>
   <groupId>com.cjbooms</groupId>
   <artifactId>fabrikt</artifactId>
@@ -35,7 +35,7 @@ The library currently has support for generating:
 The test directory forms a living documentation full of [code examples](src/test/resources/examples) generated from different OpenApi3 permutations. 
 
 Below showcases one single example from this directory, which uses an enum discriminator to generate polymorphic sealed classes:
-```
+```yml
 openapi: 3.0.0
 components:
   schemas:
@@ -69,7 +69,7 @@ components:
         - obj_one
         - obj_two
 ```
-```
+```kotlin
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
