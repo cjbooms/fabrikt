@@ -1,0 +1,22 @@
+openapi: 3.0.0
+paths:
+  /test:
+    get:
+      operationId: test
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+components:
+  schemas:
+    Result:
+      allOf:
+        - $ref: '#/components/schemas/Base'
+
+    Base:
+      properties:
+        foo:
+          type: string
