@@ -8,6 +8,7 @@ import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.logging.Logger
 
 data class SchemaInfo(val name: String, val schema: Schema) {
     val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, name)
@@ -18,6 +19,8 @@ data class SourceApi(
     val baseDir: Path = Paths.get("").toAbsolutePath()
 ) {
     companion object {
+        private val logger = Logger.getGlobal()
+
         fun create(
             baseApi: String,
             apiFragments: Collection<String>,
@@ -61,7 +64,10 @@ data class SourceApi(
                 errors + listOf(ValidationError("The $name object contains invalid use of both properties and `oneOf`."))
             else if (schema.type == OasType.Object.type && schema.oneOfSchemas?.isNotEmpty() == true)
                 errors + listOf(ValidationError("The $name object contains invalid use of both properties and `oneOf`."))
-            else errors
+            else if (schema.type == null && schema.properties?.isNotEmpty() == true) {
+                logger.warning("Schema '$name' has 'type: null' but defines properties. Assuming: 'type: object'")
+                errors
+            } else errors
         }
 
         return api.schemas.map { it.value.properties }.flatMap { it.entries }
