@@ -175,13 +175,20 @@ object KaizenParserExtensions {
     fun Schema.safeType(): String? =
         when {
             type != null -> type
+            properties?.isNotEmpty() == true -> "object"
+            allOfSchemas.hasAnyDefinedProperties() -> "object"
             allOfSchemas?.firstOrNull { it.type != null } != null -> allOfSchemas.first { it.type != null }.type
+            oneOfSchemas.hasAnyDefinedProperties() -> "object"
             oneOfSchemas?.firstOrNull { it.type != null } != null -> oneOfSchemas.first { it.type != null }.type
+            anyOfSchemas.hasAnyDefinedProperties() -> "object"
             anyOfSchemas?.firstOrNull { it.type != null } != null -> anyOfSchemas.first { it.type != null }.type
             isOneOfPolymorphicTypes() -> "object"
             isUnknownAdditionalProperties("") -> "object"
             else -> null
         }
+
+    private fun List<Schema>?.hasAnyDefinedProperties(): Boolean =
+        this?.any { it.properties?.isNotEmpty() == true } == true
 
     fun Schema.isOneOfPolymorphicTypes() =
         this.oneOfSchemas?.firstOrNull()?.allOfSchemas?.firstOrNull() != null

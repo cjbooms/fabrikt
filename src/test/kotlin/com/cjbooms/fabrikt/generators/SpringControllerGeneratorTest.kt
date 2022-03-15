@@ -29,7 +29,8 @@ class SpringControllerGeneratorTest {
 
     @Suppress("unused")
     private fun testCases(): Stream<String> = Stream.of(
-        "githubApi"
+        "githubApi",
+        "singleAllOf"
     )
 
     private fun setupGithubApiTestEnv() {
@@ -40,6 +41,24 @@ class SpringControllerGeneratorTest {
     @BeforeEach
     fun init() {
         MutableSettings.updateSettings(setOf(CodeGenerationType.CONTROLLERS), emptySet(), emptySet(), emptySet())
+    }
+
+    // @Test
+    // fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("singleAllOf")
+
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
+        val basePackage = "examples.$testCaseName"
+        val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
+        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/Controllers.kt")
+
+        val controllers = SpringControllerInterfaceGenerator(
+            Packages(basePackage),
+            api
+        ).generate().toSingleFile()
+
+        assertThat(controllers).isEqualTo(expectedControllers)
     }
 
     @Test
@@ -137,21 +156,6 @@ class SpringControllerGeneratorTest {
                 .flatMap { (it as TypeSpec).funSpecs.map(FunSpec::modifiers) }
                 .all { it.contains(KModifier.SUSPEND) }
         ).isTrue()
-    }
-
-    @ParameterizedTest
-    @MethodSource("testCases")
-    fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
-        val basePackage = "examples.$testCaseName"
-        val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
-        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/Controllers.kt")
-
-        val controllers = SpringControllerInterfaceGenerator(
-            Packages(basePackage),
-            api
-        ).generate().toSingleFile()
-
-        assertThat(controllers).isEqualTo(expectedControllers)
     }
 
     private fun Controllers.toSingleFile(): String {

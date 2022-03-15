@@ -42,7 +42,8 @@ class ModelGeneratorTest {
         "polymorphicModels",
         "requiredReadOnly",
         "validationAnnotations",
-        "wildCardTypes"
+        "wildCardTypes",
+        "singleAllOf"
     )
 
     @BeforeEach
