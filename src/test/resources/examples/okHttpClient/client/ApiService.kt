@@ -39,7 +39,7 @@ class ExamplePath1Service(
         explodeListQueryParam: List<String>?,
         queryParam2: Int?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<QueryResult?> =
+    ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath1(explodeListQueryParam, queryParam2, additionalHeaders)
         }

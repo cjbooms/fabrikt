@@ -38,7 +38,7 @@ class ExamplePath1Client(
         explodeListQueryParam: List<String>?,
         queryParam2: Int?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<QueryResult?> {
+    ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
