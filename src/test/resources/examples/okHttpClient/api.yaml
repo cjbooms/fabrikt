@@ -60,6 +60,7 @@ paths:
             \ Indicates that the resource as described by the passed etag value has\
             \ not changed"
     head:
+      operationId: headOperationIdExample
       summary: "HEAD example path 2"
       parameters:
         - $ref: "#/components/parameters/PathParam"

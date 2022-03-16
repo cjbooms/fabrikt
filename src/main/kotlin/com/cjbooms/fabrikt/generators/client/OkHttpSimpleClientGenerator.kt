@@ -51,7 +51,7 @@ class OkHttpSimpleClientGenerator(
             val funcSpecs: List<FunSpec> = paths.flatMap { (resource, path) ->
                 path.operations.map { (verb, operation) ->
                     FunSpec
-                        .builder(functionName(resource, verb))
+                        .builder(functionName(operation, resource, verb))
                         .addModifiers(KModifier.PUBLIC)
                         .addKdoc(operation.toKdoc())
                         .addAnnotation(

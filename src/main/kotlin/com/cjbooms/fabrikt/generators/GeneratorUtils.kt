@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.reprezen.kaizen.oasparser.model3.MediaType
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Parameter
@@ -95,7 +96,7 @@ object GeneratorUtils {
             this.addParameter(parameterSpec)
     }
 
-    fun functionName(resource: String, verb: String) = "$verb $resource".toKCodeName()
+    fun functionName(op: Operation, resource: String, verb: String) = op.operationId?.camelCase() ?: "$verb $resource".toKCodeName()
 
     fun Schema.toVarName() = this.name?.toKCodeName() ?: this.toClassName().simpleName.toKCodeName()
 

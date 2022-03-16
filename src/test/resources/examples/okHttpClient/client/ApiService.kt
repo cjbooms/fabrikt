@@ -86,14 +86,14 @@ class ExamplePath2Service(
         }
 
     @Throws(ApiException::class)
-    fun headExamplePath2PathParam(
+    fun headOperationIdExample(
         pathParam: String,
         queryParam3: Boolean?,
         ifNoneMatch: String?,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.headExamplePath2PathParam(pathParam, queryParam3, ifNoneMatch, additionalHeaders)
+            apiClient.headOperationIdExample(pathParam, queryParam3, ifNoneMatch, additionalHeaders)
         }
 
     @Throws(ApiException::class)

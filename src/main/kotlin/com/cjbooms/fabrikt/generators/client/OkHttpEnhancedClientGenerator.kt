@@ -51,7 +51,7 @@ class OkHttpEnhancedClientGenerator(
             val funSpecs: List<FunSpec> = paths.flatMap { (resource, path) ->
                 path.operations.map { (verb, operation) ->
                     FunSpec
-                        .builder(functionName(resource, verb))
+                        .builder(functionName(operation, resource, verb))
                         .addModifiers(KModifier.PUBLIC)
                         .addAnnotation(
                             AnnotationSpec.builder(Throws::class)
@@ -216,7 +216,7 @@ class Resilience4jClientOperationStatement(
             )
         )
 
-        this.add("apiClient.%N(%L)", functionName(resource, verb), params.flatten().joinToString(",") { it.name })
+        this.add("apiClient.%N(%L)", functionName(operation, resource, verb), params.flatten().joinToString(",") { it.name })
         return this
     }
 }
