@@ -141,7 +141,7 @@ class ExamplePath2Client(
      * @param ifNoneMatch The RFC7232 If-None-Match header field
      */
     @Throws(ApiException::class)
-    fun headExamplePath2PathParam(
+    fun headOperationIdExample(
         pathParam: String,
         queryParam3: Boolean?,
         ifNoneMatch: String?,
