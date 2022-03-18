@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.generators.model
 
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.ClassSettings
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
@@ -33,6 +34,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfPolymorphicTypes
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterface
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSubType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleType
@@ -179,6 +181,13 @@ class JacksonModelGenerator(
         val modelName = schemaInfo.name.toModelClassName()
         val schemaName = schemaInfo.name
         return when {
+            schemaInfo.schema.isOneOfSuperInterface() && SEALED_INTERFACES_FOR_ONE_OF in options -> oneOfSuperInterface(
+                modelName,
+                schemaInfo.schema.discriminator,
+                allSchemas,
+                schemaInfo.schema.oneOfSchemas,
+                findOneOfSuperInterface(allSchemas, schemaInfo, options),
+            )
             schemaInfo.schema.isPolymorphicSuperType() && schemaInfo.schema.isPolymorphicSubType(api) ->
                 polymorphicSuperSubType(
                     modelName,
@@ -187,6 +196,7 @@ class JacksonModelGenerator(
                     checkNotNull(schemaInfo.schema.getDiscriminatorForInLinedObjectUnderAllOf()),
                     schemaInfo.schema.getSuperType(api)!!.let { SchemaInfo(it.name, it) },
                     schemaInfo.schema.extensions,
+                    findOneOfSuperInterface(allSchemas, schemaInfo, options),
                     allSchemas,
                 )
 
@@ -196,6 +206,7 @@ class JacksonModelGenerator(
                 properties,
                 schemaInfo.schema.discriminator,
                 schemaInfo.schema.extensions,
+                findOneOfSuperInterface(allSchemas, schemaInfo, options),
                 allSchemas,
             )
 
@@ -205,11 +216,42 @@ class JacksonModelGenerator(
                 properties,
                 schemaInfo.schema.getSuperType(api)!!.let { SchemaInfo(it.name, it) },
                 schemaInfo.schema.extensions,
+                findOneOfSuperInterface(allSchemas, schemaInfo, options),
             )
 
             schemaInfo.typeInfo is KotlinTypeInfo.Enum -> buildEnumClass(schemaInfo.typeInfo)
-            else -> standardDataClass(modelName, schemaName, properties, schemaInfo.schema.extensions)
+            else -> standardDataClass(modelName, schemaName, properties, schemaInfo.schema.extensions, findOneOfSuperInterface(allSchemas, schemaInfo, options))
         }
+    }
+
+    private fun findOneOfSuperInterface(
+        allSchemas: List<SchemaInfo>,
+        schema: SchemaInfo,
+        options: Set<ModelCodeGenOptionType>,
+    ): Set<SchemaInfo> {
+        if (SEALED_INTERFACES_FOR_ONE_OF !in options) {
+            return emptySet()
+        }
+        return allSchemas
+            .filter { it.schema.discriminator != null && it.schema.oneOfSchemas.isNotEmpty() }
+            .mapNotNull { info ->
+                info.schema.discriminator.mappings
+                    .toList()
+                    .find { (_, ref) ->
+                        ref.endsWith("/${schema.name}")
+                    }
+                    ?.let { (key, _) ->
+                        Pair(key!!, info)
+                    }
+            }
+            .map { (_, parent) ->
+                val field = parent.schema.discriminator.propertyName!!
+                if (!schema.schema.properties.containsKey(field)) {
+                    throw IllegalArgumentException("schema $schema did not have discriminator property")
+                }
+                parent
+            }
+            .toSet()
     }
 
     private fun buildInLinedModels(
@@ -230,6 +272,7 @@ class JacksonModelGenerator(
                         it.name,
                         props,
                         it.schema.extensions,
+                        oneOfInterfaces = emptySet(),
                     )
                     val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
                     inlinedModels + currentModel
@@ -247,6 +290,7 @@ class JacksonModelGenerator(
                                 schemaName = it.name,
                                 properties = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema),
                                 extensions = it.schema.extensions,
+                                oneOfInterfaces = emptySet(),
                             ),
                         )
                     } else {
@@ -274,6 +318,7 @@ class JacksonModelGenerator(
                                         schemaName = it.name,
                                         properties = props,
                                         extensions = it.schema.extensions,
+                                        oneOfInterfaces = emptySet(),
                                     )
                                 }
 
@@ -377,6 +422,7 @@ class JacksonModelGenerator(
                 schemaName = schema.safeName(),
                 properties = mapField.schema.additionalPropertiesSchema.topLevelProperties(HTTP_SETTINGS),
                 extensions = mapField.schema.extensions,
+                oneOfInterfaces = emptySet(),
             )
         } else {
             null
@@ -387,19 +433,41 @@ class JacksonModelGenerator(
         schemaName: String,
         properties: Collection<PropertyInfo>,
         extensions: Map<String, Any>,
+        oneOfInterfaces: Set<SchemaInfo>,
     ): TypeSpec {
-        val classBuilder = TypeSpec.classBuilder(generatedType(packages.base, modelName))
+        val filteredProperties = if (oneOfInterfaces.size == 1) {
+            val oneOfInterface = oneOfInterfaces.first()
+            val discriminatorProp = oneOfInterface.schema.discriminator?.propertyName
+            val mappingCount = oneOfInterface.schema.discriminator?.mappings?.values?.count { it.endsWith("/$modelName") }
+            if (discriminatorProp != null && mappingCount == 1) {
+                properties.filterNot { it.name == discriminatorProp }
+            } else properties
+        } else properties
+
+        val name = generatedType(packages.base, modelName)
+        val generateObject = properties.isNotEmpty() && filteredProperties.isEmpty()
+        val builder =
+            if (generateObject) TypeSpec.objectBuilder(name)
+            else TypeSpec.classBuilder(name)
+        val classBuilder = builder
             .addSerializableInterface()
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
             .addCompanionObject()
-        properties.addToClass(
+        for (oneOfInterface in oneOfInterfaces) {
+            classBuilder
+                .addSuperinterface(generatedType(packages.base, oneOfInterface.schema.toModelClassName()))
+        }
+
+        if (!generateObject) {
+            filteredProperties.addToClass(
             modelName = modelName,
             schemaName = schemaName,
             classBuilder = classBuilder,
             classType = ClassSettings(ClassSettings.PolymorphyType.NONE, extensions.hasJsonMergePatchExtension),
         )
+        }
         return classBuilder.build()
     }
 
@@ -410,6 +478,7 @@ class JacksonModelGenerator(
         discriminator: Discriminator,
         superType: SchemaInfo,
         extensions: Map<String, Any>,
+        oneOfSuperInterfaces: Set<SchemaInfo>,
         allSchemas: List<SchemaInfo>,
     ): TypeSpec = with(FunSpec.constructorBuilder()) {
         TypeSpec.classBuilder(generatedType(packages.base, modelName))
@@ -419,6 +488,7 @@ class JacksonModelGenerator(
                 properties.filter(PropertyInfo::isInherited),
                 superType,
                 extensions,
+                oneOfSuperInterfaces,
                 this,
             )
             .buildPolymorphicSuperType(
@@ -427,10 +497,50 @@ class JacksonModelGenerator(
                 properties.filterNot(PropertyInfo::isInherited),
                 discriminator,
                 extensions,
+                oneOfSuperInterfaces,
                 allSchemas,
                 this,
             )
             .build()
+    }
+
+    private fun oneOfSuperInterface(
+        modelName: String,
+        discriminator: Discriminator,
+        allSchemas: List<SchemaInfo>,
+        members: List<Schema>,
+        oneOfSuperInterfaces: Set<SchemaInfo>,
+    ): TypeSpec {
+        val interfaceBuilder = TypeSpec.interfaceBuilder(generatedType(packages.base, modelName))
+            .addModifiers(KModifier.SEALED)
+            .addAnnotation(basePolymorphicType(discriminator.propertyName))
+
+        for (oneOfSuperInterface in oneOfSuperInterfaces) {
+            interfaceBuilder.addSuperinterface(generatedType(packages.base, oneOfSuperInterface.name))
+        }
+
+        val membersAndMappingsConsistent = members.all { member ->
+            discriminator.mappings.any { (_, ref) -> ref.endsWith("/${member.name}") }
+        }
+
+        if (!membersAndMappingsConsistent) {
+            throw IllegalArgumentException("members and mappings are not consistent for oneOf super interface $modelName!")
+        }
+
+        val mappings = discriminator.mappings
+            .mapValues { (_, value) ->
+                allSchemas.find { value.endsWith("/${it.name}") }!!
+            }
+            .mapValues { (_, value) ->
+                toModelType(packages.base, KotlinTypeInfo.from(value.schema, value.name))
+            }
+
+        interfaceBuilder.addAnnotation(polymorphicSubTypes(mappings, enumDiscriminator = null))
+            .addQuarkusReflectionAnnotation()
+            .addMicronautIntrospectedAnnotation()
+            .addMicronautReflectionAnnotation()
+
+        return interfaceBuilder.build()
     }
 
     private fun polymorphicSuperType(
@@ -439,9 +549,10 @@ class JacksonModelGenerator(
         properties: Collection<PropertyInfo>,
         discriminator: Discriminator,
         extensions: Map<String, Any>,
+        oneOfSuperInterfaces: Set<SchemaInfo>,
         allSchemas: List<SchemaInfo>,
     ): TypeSpec = TypeSpec.classBuilder(generatedType(packages.base, modelName))
-        .buildPolymorphicSuperType(modelName, schemaName, properties, discriminator, extensions, allSchemas)
+        .buildPolymorphicSuperType(modelName, schemaName, properties, discriminator, extensions, oneOfSuperInterfaces, allSchemas)
         .build()
 
     private fun TypeSpec.Builder.buildPolymorphicSuperType(
@@ -450,12 +561,17 @@ class JacksonModelGenerator(
         properties: Collection<PropertyInfo>,
         discriminator: Discriminator,
         extensions: Map<String, Any>,
+        oneOfSuperInterfaces: Set<SchemaInfo>,
         allSchemas: List<SchemaInfo>,
         constructorBuilder: FunSpec.Builder = FunSpec.constructorBuilder(),
     ): TypeSpec.Builder {
         this.addModifiers(KModifier.SEALED)
             .addAnnotation(basePolymorphicType(discriminator.propertyName))
             .modifiers.remove(KModifier.DATA)
+
+        for (oneOfSuperInterface in oneOfSuperInterfaces) {
+            this.addSuperinterface(generatedType(packages.base, oneOfSuperInterface.name))
+        }
 
         val subTypes = allSchemas
             .filter { model ->
@@ -498,8 +614,9 @@ class JacksonModelGenerator(
         properties: Collection<PropertyInfo>,
         superType: SchemaInfo,
         extensions: Map<String, Any>,
+        oneOfSuperInterfaces: Set<SchemaInfo>,
     ): TypeSpec = TypeSpec.classBuilder(generatedType(packages.base, modelName))
-        .buildPolymorphicSubType(modelName, schemaName, properties, superType, extensions).build()
+        .buildPolymorphicSubType(modelName, schemaName, properties, superType, extensions, oneOfSuperInterfaces).build()
 
     private fun TypeSpec.Builder.buildPolymorphicSubType(
         modelName: String,
@@ -507,6 +624,7 @@ class JacksonModelGenerator(
         allProperties: Collection<PropertyInfo>,
         superType: SchemaInfo,
         extensions: Map<String, Any>,
+        oneOfSuperInterfaces: Set<SchemaInfo>,
         constructorBuilder: FunSpec.Builder = FunSpec.constructorBuilder(),
     ): TypeSpec.Builder {
         this.addSerializableInterface()
@@ -517,6 +635,10 @@ class JacksonModelGenerator(
             .superclass(
                 toModelType(packages.base, KotlinTypeInfo.from(superType.schema, superType.name)),
             )
+
+        for (oneOfSuperInterface in oneOfSuperInterfaces) {
+            this.addSuperinterface(generatedType(packages.base, oneOfSuperInterface.name))
+        }
 
         val properties = superType.schema.getDiscriminatorForInLinedObjectUnderAllOf()?.let { discriminator ->
             allProperties.filterNot {

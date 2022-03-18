@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.model.OasType.Companion.toOasType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getEnumValues
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterface
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
@@ -92,7 +93,9 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                         from(schema.additionalPropertiesSchema, "", enclosingName)
                     )
                 OasType.Any -> AnyType
-                OasType.OneOfAny -> AnyType
+                OasType.OneOfAny ->
+                    if (schema.isOneOfSuperInterface()) Object(schema.toModelClassName(enclosingName.toModelClassName()))
+                    else AnyType
             }
 
         private fun getOverridableDateTimeType(): KotlinTypeInfo {

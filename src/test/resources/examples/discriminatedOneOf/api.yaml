@@ -1,0 +1,40 @@
+openapi: 3.0.0
+info:
+paths:
+components:
+  schemas:
+    SomeObj:
+      type: object
+      required:
+        - state
+      properties:
+        state:
+          $ref: '#/components/schemas/State'
+    State:
+      oneOf:
+        - $ref: '#/components/schemas/StateA'
+        - $ref: '#/components/schemas/StateB'
+      discriminator:
+        propertyName: status
+        mapping:
+          a: '#/components/schemas/StateA'
+          b: '#/components/schemas/StateB'
+    Status:
+      type: string
+      enum:
+        - a
+        - b
+    StateA:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/Status'
+    StateB:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/Status'
