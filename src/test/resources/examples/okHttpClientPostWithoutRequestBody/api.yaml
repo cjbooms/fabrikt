@@ -1,0 +1,10 @@
+openapi: "3.0.0"
+info:
+  title: "API Example"
+  version: "1.0"
+paths:
+  /example:
+    post:
+      responses:
+        '204':
+          description: example

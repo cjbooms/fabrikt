@@ -247,6 +247,6 @@ data class SimpleClientOperationStatement(
                 requestBody.getPrimaryContentMediaType()?.key,
                 "toMediaType".toClassName("okhttp3.MediaType.Companion")
             )
-        } ?: this.add("\n%N()", verb)
+        } ?: this.add("\n.%N()", verb)
     }
 }
