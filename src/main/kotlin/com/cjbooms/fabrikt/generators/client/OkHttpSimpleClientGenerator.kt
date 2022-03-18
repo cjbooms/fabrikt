@@ -234,7 +234,7 @@ data class SimpleClientOperationStatement(
     }
 
     private fun CodeBlock.Builder.addRequestExecutionStatement() =
-        this.add("\nreturn request.execute(client, objectMapper, jacksonTypeRef())")
+        this.add("\nreturn request.execute(client, objectMapper, jacksonTypeRef())\n")
 
     private fun CodeBlock.Builder.addRequestSerializerStatement(verb: String) {
         val requestBody = operation.requestBody
