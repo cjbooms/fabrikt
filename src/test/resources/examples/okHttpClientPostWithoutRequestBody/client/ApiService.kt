@@ -29,8 +29,20 @@ class ExampleService(
     private val apiClient: ExampleClient = ExampleClient(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
+    fun putExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit?> =
+        withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
+            apiClient.putExample(additionalHeaders)
+        }
+
+    @Throws(ApiException::class)
     fun postExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.postExample(additionalHeaders)
+        }
+
+    @Throws(ApiException::class)
+    fun patchExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit?> =
+        withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
+            apiClient.patchExample(additionalHeaders)
         }
 }
