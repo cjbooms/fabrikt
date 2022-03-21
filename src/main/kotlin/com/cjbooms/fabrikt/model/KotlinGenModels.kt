@@ -95,7 +95,7 @@ private fun <T : GeneratedType> groupClasses(allModels: Collection<T>): Map<T, L
  */
 sealed class IncomingParameter(val oasName: String, val description: String?, val type: TypeName) {
     val name: String = oasName.toKotlinParameterName()
-    fun toParameterSpecBuilder(): ParameterSpec.Builder =
+    open fun toParameterSpecBuilder(): ParameterSpec.Builder =
         ParameterSpec.builder(name, type)
 }
 
@@ -106,6 +106,7 @@ class RequestParameter(
     oasName: String,
     description: String?,
     type: TypeName,
+    var originalName: String,
     val parameterLocation: RequestParameterLocation,
     val typeInfo: KotlinTypeInfo,
     val minimum: Number? = null,
@@ -117,6 +118,7 @@ class RequestParameter(
         oasName = oasName,
         description = description,
         type = type,
+        originalName = parameter.name,
         typeInfo = KotlinTypeInfo.from(parameter.schema, oasName),
         minimum = parameter.schema.minimum,
         maximum = parameter.schema.maximum,

@@ -1,7 +1,6 @@
 package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.GeneratorUtils.addOptionalParameter
 import com.cjbooms.fabrikt.generators.GeneratorUtils.firstResponse
 import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getHeaderParams
@@ -10,27 +9,33 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaTypeKey
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getQueryParams
 import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
+import com.cjbooms.fabrikt.generators.GeneratorUtils.mergeParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.primaryPropertiesConstructor
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.TypeFactory
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ACCEPT_HEADER_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ACCEPT_HEADER_VARIABLE_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_HEADERS_PARAMETER_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
+import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.HandlebarsTemplates
+import com.cjbooms.fabrikt.model.HeaderParam
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.javaparser.utils.CodeGenerationUtils
 import com.reprezen.kaizen.oasparser.model3.Operation
+import com.reprezen.kaizen.oasparser.model3.Path
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
@@ -48,7 +53,25 @@ class OkHttpSimpleClientGenerator(
         return api.openApi3.routeToPaths().map { (resourceName, paths) ->
             val funcSpecs: List<FunSpec> = paths.flatMap { (resource, path) ->
                 path.operations.map { (verb, operation) ->
-                    val parameters = operation.toIncomingParameters(packages.base, path.parameters)
+                    val extra = if (needsAcceptHeaderParameter(path, operation)) listOf(
+                        RequestParameter(
+                            oasName = ACCEPT_HEADER_VARIABLE_NAME,
+                            description = null,
+                            type = toModelType(packages.base, KotlinTypeInfo.Text, false),
+                            originalName = ACCEPT_HEADER_NAME,
+                            parameterLocation = HeaderParam,
+                            typeInfo = KotlinTypeInfo.Text,
+                            minimum = null,
+                            maximum = null,
+                            isRequired = true,
+                            defaultValue = operation.getPrimaryContentMediaTypeKey(),
+                        )
+                    ) else emptyList()
+                    val parameters = operation.toIncomingParameters(
+                        packages.base,
+                        path.parameters,
+                        extra,
+                    )
                     FunSpec
                         .builder(functionName(operation, resource, verb))
                         .addModifiers(KModifier.PUBLIC)
@@ -57,16 +80,13 @@ class OkHttpSimpleClientGenerator(
                             AnnotationSpec.builder(Throws::class)
                                 .addMember("%T::class", "ApiException".toClassName(packages.client)).build()
                         )
-                        .addParameters(parameters.map { it.toParameterSpecBuilder().build() })
-                        .addOptionalParameter(
-                            ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class)
-                                .defaultValue("%S", operation.getPrimaryContentMediaTypeKey())
-                                .build(),
-                            operation,
-                        ) {
-                            it.hasMultipleContentMediaTypes() == true &&
-                                !operation.parameters.any { header -> header.name == "Accept" }
-                        }
+                        .addParameters(parameters.map {
+                            val builder = it.toParameterSpecBuilder()
+                            if (it is RequestParameter && it.defaultValue != null) {
+                                builder.defaultValue("%S", it.defaultValue)
+                            }
+                            builder.build()
+                        })
                         .addParameter(
                             ParameterSpec.builder(
                                 ADDITIONAL_HEADERS_PARAMETER_NAME,
@@ -101,6 +121,12 @@ class OkHttpSimpleClientGenerator(
 
             ClientType(clientType, packages.base)
         }.toSet()
+    }
+
+    private fun needsAcceptHeaderParameter(path: Path, operation: Operation): Boolean {
+        val hasAcceptParameter = mergeParameters(path.parameters, operation.parameters)
+            .any { parameter -> parameter.`in` == "header" && parameter.name.equals(ACCEPT_HEADER_NAME, ignoreCase = true) }
+        return operation.hasMultipleContentMediaTypes() == true && !hasAcceptParameter
     }
 
     fun generateLibrary(): Collection<GeneratedFile> {

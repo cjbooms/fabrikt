@@ -148,12 +148,16 @@ object GeneratorUtils {
      * encapsulated here to ensure the order of parameters align between
      * services and controllers
      */
-    fun Operation.toIncomingParameters(basePackage: String, pathParameters: List<Parameter>): List<IncomingParameter> {
+    fun Operation.toIncomingParameters(
+        basePackage: String,
+        pathParameters: List<Parameter>,
+        extraParameters: List<IncomingParameter>,
+    ): List<IncomingParameter> {
 
         val bodies = requestBody.contentMediaTypes.values
             .map {
                 BodyParameter(
-                    it.schema.safeName(),
+                    it.schema.safeName().toKotlinParameterName().ifEmpty { it.schema.toVarName() },
                     requestBody.description,
                     toModelType(basePackage, KotlinTypeInfo.from(it.schema)),
                     it.schema
@@ -171,12 +175,11 @@ object GeneratorUtils {
             }
             .sortedBy { it.type.isNullable }
 
-
-        val all = bodies + parameters
+        val all = bodies + parameters + extraParameters
 
         return if (all.map { it.name }.toSet().size != all.size) {
             // at least one parameter name has been repeated,
-            // so do clash avoidance by renaming prefix all names with their scope
+            // so avoid clashes by prefixing all names with their location
 
             all.map { p ->
                 when (p) {
@@ -190,6 +193,7 @@ object GeneratorUtils {
                         "${p.parameterLocation}_${p.oasName}".toKotlinParameterName(),
                         p.description,
                         p.type,
+                        p.originalName,
                         p.parameterLocation,
                         p.typeInfo,
                         p.minimum,
