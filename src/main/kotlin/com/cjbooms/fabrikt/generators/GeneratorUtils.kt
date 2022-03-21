@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.reprezen.kaizen.oasparser.model3.MediaType
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Parameter
+import com.reprezen.kaizen.oasparser.model3.Path
 import com.reprezen.kaizen.oasparser.model3.RequestBody
 import com.reprezen.kaizen.oasparser.model3.Response
 import com.reprezen.kaizen.oasparser.model3.Schema
@@ -70,10 +71,13 @@ object GeneratorUtils {
     fun RequestBody.toBodyRequestSchema(): List<Schema> =
         listOfNotNull(this.getPrimaryContentMediaType()?.value?.schema)
 
-    fun Operation.toKdoc(): CodeBlock {
+    fun mergeParameters(path: List<Parameter>, operation: List<Parameter>): List<Parameter> =
+        path.filter { pp -> !operation.any { op -> pp.name == op.name && pp.`in` == op.`in` } } + operation
+
+    fun Operation.toKdoc(path: Path): CodeBlock {
         val kdoc = CodeBlock.builder().add("${this.summary.orEmpty()}\n${this.description.orEmpty()}\n")
 
-        this.parameters.forEach {
+        mergeParameters(path.parameters, this.parameters).forEach {
             kdoc.add("@param %L %L\n", it.name.toKCodeName(), it.description.orEmpty()).build()
         }
 

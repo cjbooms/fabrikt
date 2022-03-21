@@ -30,7 +30,8 @@ class SpringControllerGeneratorTest {
     @Suppress("unused")
     private fun testCases(): Stream<String> = Stream.of(
         "githubApi",
-        "singleAllOf"
+        "singleAllOf",
+        "pathLevelParameters",
     )
 
     private fun setupGithubApiTestEnv() {

@@ -53,7 +53,7 @@ class OkHttpSimpleClientGenerator(
                     FunSpec
                         .builder(functionName(operation, resource, verb))
                         .addModifiers(KModifier.PUBLIC)
-                        .addKdoc(operation.toKdoc())
+                        .addKdoc(operation.toKdoc(path))
                         .addAnnotation(
                             AnnotationSpec.builder(Throws::class)
                                 .addMember("%T::class", "ApiException".toClassName(packages.client)).build()

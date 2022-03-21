@@ -1,5 +1,7 @@
 package com.cjbooms.fabrikt.generators.controller
 
+import com.cjbooms.fabrikt.generators.GeneratorUtils
+import com.cjbooms.fabrikt.generators.GeneratorUtils.mergeParameters
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.ControllerType
@@ -51,7 +53,7 @@ object ControllerGeneratorUtils {
      * encapsulated here to ensure the order of parameters align between
      * services and controllers
      */
-    fun Operation.toIncomingParameters(basePackage: String): List<IncomingParameter> {
+    fun Operation.toIncomingParameters(basePackage: String, pathParameters: List<Parameter>): List<IncomingParameter> {
 
         val bodies = requestBody.contentMediaTypes.values
             .map {
@@ -62,7 +64,7 @@ object ControllerGeneratorUtils {
                 )
             }
 
-        val parameters = parameters
+        val parameters = mergeParameters(pathParameters, parameters)
             .map {
                 RequestParameter(
                     it.name,
