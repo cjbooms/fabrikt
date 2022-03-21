@@ -46,12 +46,12 @@ class ExamplePath1Service(
 
     @Throws(ApiException::class)
     fun postExamplePath1(
-        generatedType: Content,
+        content: Content,
         explodeListQueryParam: List<String>?,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.postExamplePath1(generatedType, explodeListQueryParam, additionalHeaders)
+            apiClient.postExamplePath1(content, explodeListQueryParam, additionalHeaders)
         }
 }
 
@@ -134,12 +134,12 @@ class ExamplePath3SubresourceService(
     @Throws(ApiException::class)
     fun putExamplePath3PathParamSubresource(
         firstModel: FirstModel,
-        csvListQueryParam: List<String>?,
         pathParam: String,
         ifMatch: String,
+        csvListQueryParam: List<String>?,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.putExamplePath3PathParamSubresource(firstModel, csvListQueryParam, pathParam, ifMatch, additionalHeaders)
+            apiClient.putExamplePath3PathParamSubresource(firstModel, pathParam, ifMatch, csvListQueryParam, additionalHeaders)
         }
 }

@@ -2,10 +2,8 @@ package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.GeneratorUtils.addOptionalParameter
 import com.cjbooms.fabrikt.generators.GeneratorUtils.firstResponse
 import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
-import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaTypeKey
 import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyParameterSpec
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
@@ -14,6 +12,8 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toParameterSpec
 import com.cjbooms.fabrikt.generators.TypeFactory
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ACCEPT_HEADER_VARIABLE_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_HEADERS_PARAMETER_NAME
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.addIncomingParameters
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.deriveClientParameters
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.enhancedClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
@@ -21,6 +21,7 @@ import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.HandlebarsTemplates
+import com.cjbooms.fabrikt.model.IncomingParameter
 import com.cjbooms.fabrikt.model.SimpleFile
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
@@ -50,6 +51,7 @@ class OkHttpEnhancedClientGenerator(
         return api.openApi3.routeToPaths().map { (resourceName, paths) ->
             val funSpecs: List<FunSpec> = paths.flatMap { (resource, path) ->
                 path.operations.map { (verb, operation) ->
+                    val parameters = deriveClientParameters(path, operation, packages.base)
                     FunSpec
                         .builder(functionName(operation, resource, verb))
                         .addModifiers(KModifier.PUBLIC)
@@ -57,17 +59,7 @@ class OkHttpEnhancedClientGenerator(
                             AnnotationSpec.builder(Throws::class)
                                 .addMember("%T::class", "ApiException".toClassName(packages.client)).build()
                         )
-                        .addParameters(operation.requestBody.toBodyParameterSpec(packages.base))
-                        .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
-                        .addOptionalParameter(
-                            ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class)
-                                .defaultValue("%S", operation.getPrimaryContentMediaTypeKey())
-                                .build(),
-                            operation,
-                        ) {
-                            it.hasMultipleContentMediaTypes() == true &&
-                                !operation.parameters.any { header -> header.name == "Accept" }
-                        }
+                        .addIncomingParameters(parameters)
                         .addParameter(
                             ParameterSpec.builder(
                                 ADDITIONAL_HEADERS_PARAMETER_NAME,
@@ -81,7 +73,8 @@ class OkHttpEnhancedClientGenerator(
                                 packages,
                                 resource,
                                 verb,
-                                operation
+                                operation,
+                                parameters,
                             ).toStatement()
                         )
                         .returns(operation.toClientReturnType(packages))
@@ -179,44 +172,27 @@ class Resilience4jClientOperationStatement(
     private val packages: Packages,
     private val resource: String,
     private val verb: String,
-    private val operation: Operation
+    private val operation: Operation,
+    private val parameters: List<IncomingParameter>,
 ) {
     fun toStatement(): CodeBlock =
         CodeBlock.builder()
-            .addCircuitBreakerStatement()
+            .addCircuitBreakerStatement(parameters)
             .build()
 
-    private fun CodeBlock.Builder.addCircuitBreakerStatement(): CodeBlock.Builder {
+    private fun CodeBlock.Builder.addCircuitBreakerStatement(parameters: List<IncomingParameter>): CodeBlock.Builder {
         this.add("return \n withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {\n")
-        this.addClientCallStatement()
+        this.addClientCallStatement(parameters)
         this.add("\n}\n")
         return this
     }
 
-    private fun CodeBlock.Builder.addClientCallStatement(): CodeBlock.Builder {
-        var isAcceptSet = false
-        val params = mutableListOf(
-            operation.requestBody.toBodyParameterSpec(packages.base),
-            operation.parameters.map { parameter ->
-                if (parameter.name == "Accept") isAcceptSet = true
-                parameter.toParameterSpec(packages.base)
-            }
+    private fun CodeBlock.Builder.addClientCallStatement(parameters: List<IncomingParameter>): CodeBlock.Builder {
+        this.add(
+            "apiClient.%N(%L)",
+            functionName(operation, resource, verb),
+            (parameters.map { it.name } + ADDITIONAL_HEADERS_PARAMETER_NAME).joinToString(","),
         )
-        if (!isAcceptSet) operation.firstResponse()?.let {
-            if (it.hasMultipleContentMediaTypes()) {
-                params.add(listOf(ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class).build()))
-            }
-        }
-        params.add(
-            listOf(
-                ParameterSpec.builder(
-                    ADDITIONAL_HEADERS_PARAMETER_NAME,
-                    TypeFactory.createMapOfStringToType(String::class.asTypeName())
-                ).build()
-            )
-        )
-
-        this.add("apiClient.%N(%L)", functionName(operation, resource, verb), params.flatten().joinToString(",") { it.name })
         return this
     }
 }

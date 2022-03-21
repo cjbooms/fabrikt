@@ -31,21 +31,21 @@ class ExampleService(
 
     @Throws(ApiException::class)
     fun getExampleB(
-        b: String,
-        b: String,
+        pathB: String,
+        queryB: String,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExampleB(b, b, additionalHeaders)
+            apiClient.getExampleB(pathB, queryB, additionalHeaders)
         }
 
     @Throws(ApiException::class)
     fun postExample(
-        someObject: SomeObject?,
-        someObject: String,
+        bodySomeObject: SomeObject,
+        querySomeObject: String,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.postExample(someObject, someObject, additionalHeaders)
+            apiClient.postExample(bodySomeObject, querySomeObject, additionalHeaders)
         }
 }
