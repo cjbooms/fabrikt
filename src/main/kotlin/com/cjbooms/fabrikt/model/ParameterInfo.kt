@@ -12,6 +12,12 @@ sealed class RequestParameterLocation {
     }
 }
 
-object QueryParam : RequestParameterLocation()
-object HeaderParam : RequestParameterLocation()
-object PathParam : RequestParameterLocation()
+object QueryParam : RequestParameterLocation() {
+    override fun toString() = "query"
+}
+object HeaderParam : RequestParameterLocation() {
+    override fun toString() = "header"
+}
+object PathParam : RequestParameterLocation() {
+    override fun toString() = "path"
+}

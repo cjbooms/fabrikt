@@ -1,6 +1,5 @@
 package com.cjbooms.fabrikt.generators
 
-import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.IncomingParameter
@@ -8,6 +7,7 @@ import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
+import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
 import com.reprezen.kaizen.oasparser.model3.MediaType
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Parameter
@@ -171,7 +171,35 @@ object GeneratorUtils {
             }
             .sortedBy { it.type.isNullable }
 
-        return bodies + parameters
+
+        val all = bodies + parameters
+
+        return if (all.map { it.name }.toSet().size != all.size) {
+            // at least one parameter name has been repeated,
+            // so do clash avoidance by renaming prefix all names with their scope
+
+            all.map { p ->
+                when (p) {
+                    is BodyParameter -> BodyParameter(
+                        "body_${p.oasName}".toKotlinParameterName(),
+                        p.description,
+                        p.type,
+                        p.schema,
+                    )
+                    is RequestParameter -> RequestParameter(
+                        "${p.parameterLocation}_${p.oasName}".toKotlinParameterName(),
+                        p.description,
+                        p.type,
+                        p.parameterLocation,
+                        p.typeInfo,
+                        p.minimum,
+                        p.maximum,
+                        p.isRequired,
+                        p.defaultValue,
+                    )
+                }
+            }
+        } else all
     }
 
     private fun isNullable(parameter: Parameter): Boolean = !parameter.isRequired && parameter.schema.default == null

@@ -32,6 +32,7 @@ class SpringControllerGeneratorTest {
         "githubApi",
         "singleAllOf",
         "pathLevelParameters",
+        "parameterNameClash",
     )
 
     private fun setupGithubApiTestEnv() {

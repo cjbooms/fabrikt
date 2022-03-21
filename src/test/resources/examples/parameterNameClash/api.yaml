@@ -1,0 +1,45 @@
+openapi: 3.0.0
+info:
+  version: '1'
+  title: pathLevelParameters
+paths:
+  /example/{b}:
+    get:
+      parameters:
+        - in: path
+          name: b
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: b
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: example
+  /example:
+    post:
+      parameters:
+        - in: query
+          name: someObject
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: example
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/SomeObject'
+      responses:
+        '204':
+          description: example
+components:
+  schemas:
+    SomeObject:
+      type: object
+      properties:
+        test:
+          type: string
