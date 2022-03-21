@@ -234,19 +234,20 @@ data class SimpleClientOperationStatement(
     }
 
     private fun CodeBlock.Builder.addRequestExecutionStatement() =
-        this.add("\nreturn request.execute(client, objectMapper, jacksonTypeRef())")
+        this.add("\nreturn request.execute(client, objectMapper, jacksonTypeRef())\n")
 
     private fun CodeBlock.Builder.addRequestSerializerStatement(verb: String) {
         val requestBody = operation.requestBody
+        val toRequestBody = "toRequestBody".toClassName("okhttp3.RequestBody.Companion")
         requestBody.toBodyRequestSchema().firstOrNull()?.let {
             this.add(
                 "\n.%N(objectMapper.writeValueAsString(%N).%T(%S.%T()))",
                 verb,
                 it.toVarName(),
-                "toRequestBody".toClassName("okhttp3.RequestBody.Companion"),
+                toRequestBody,
                 requestBody.getPrimaryContentMediaType()?.key,
                 "toMediaType".toClassName("okhttp3.MediaType.Companion")
             )
-        } ?: this.add("\n%N()", verb)
+        } ?: this.add("\n.%N(ByteArray(0).%T())", verb, toRequestBody)
     }
 }
