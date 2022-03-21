@@ -112,7 +112,8 @@ class RequestParameter(
     val minimum: Number? = null,
     val maximum: Number? = null,
     val isRequired: Boolean = false,
-    val defaultValue: Any? = null
+    val explode: Boolean? = null,
+    val defaultValue: Any? = null,
 ) : IncomingParameter(oasName, description, type) {
     constructor(oasName: String, description: String?, type: TypeName, parameter: Parameter) : this(
         oasName = oasName,
@@ -124,6 +125,7 @@ class RequestParameter(
         maximum = parameter.schema.maximum,
         parameterLocation = RequestParameterLocation(parameter.`in`),
         isRequired = parameter.isRequired,
+        explode = parameter.explode,
         defaultValue = parameter.schema.default
     )
 }

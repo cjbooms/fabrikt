@@ -47,7 +47,6 @@ class ExamplePath1Client(
             .build()
 
         val headerBuilder = Headers.Builder()
-            .header("Accept", "application/vnd.custom.media+json")
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
@@ -121,7 +120,6 @@ class ExamplePath2Client(
 
         val headerBuilder = Headers.Builder()
             .header("If-None-Match", ifNoneMatch)
-            .header("Accept", "application/json")
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 

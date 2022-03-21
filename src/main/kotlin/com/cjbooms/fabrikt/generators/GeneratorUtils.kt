@@ -199,6 +199,7 @@ object GeneratorUtils {
                         p.minimum,
                         p.maximum,
                         p.isRequired,
+                        p.explode,
                         p.defaultValue,
                     )
                 }
