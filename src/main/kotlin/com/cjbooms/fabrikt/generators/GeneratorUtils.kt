@@ -1,12 +1,16 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
+import com.cjbooms.fabrikt.model.BodyParameter
+import com.cjbooms.fabrikt.model.IncomingParameter
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.model.RequestParameter
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.reprezen.kaizen.oasparser.model3.MediaType
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Parameter
-import com.reprezen.kaizen.oasparser.model3.Path
 import com.reprezen.kaizen.oasparser.model3.RequestBody
 import com.reprezen.kaizen.oasparser.model3.Response
 import com.reprezen.kaizen.oasparser.model3.Schema
@@ -74,10 +78,10 @@ object GeneratorUtils {
     fun mergeParameters(path: List<Parameter>, operation: List<Parameter>): List<Parameter> =
         path.filter { pp -> !operation.any { op -> pp.name == op.name && pp.`in` == op.`in` } } + operation
 
-    fun Operation.toKdoc(path: Path): CodeBlock {
+    fun Operation.toKdoc(parameters: List<IncomingParameter>): CodeBlock {
         val kdoc = CodeBlock.builder().add("${this.summary.orEmpty()}\n${this.description.orEmpty()}\n")
 
-        mergeParameters(path.parameters, this.parameters).forEach {
+        parameters.forEach {
             kdoc.add("@param %L %L\n", it.name.toKCodeName(), it.description.orEmpty()).build()
         }
 
@@ -138,4 +142,37 @@ object GeneratorUtils {
         this.responses.filter { it.key != "default" }.values.filter(Response::hasContentMediaTypes)
 
     private fun Operation.filterParams(paramType: String): List<Parameter> = this.parameters.filter { it.`in` == paramType }
+
+    /**
+     * Returns a list of IncomingParameters, ordering logic should be
+     * encapsulated here to ensure the order of parameters align between
+     * services and controllers
+     */
+    fun Operation.toIncomingParameters(basePackage: String, pathParameters: List<Parameter>): List<IncomingParameter> {
+
+        val bodies = requestBody.contentMediaTypes.values
+            .map {
+                BodyParameter(
+                    it.schema.safeName(),
+                    requestBody.description,
+                    toModelType(basePackage, KotlinTypeInfo.from(it.schema)),
+                    it.schema
+                )
+            }
+
+        val parameters = mergeParameters(pathParameters, parameters)
+            .map {
+                RequestParameter(
+                    it.name,
+                    it.description,
+                    toModelType(basePackage, KotlinTypeInfo.from(it.schema), isNullable(it)),
+                    it
+                )
+            }
+            .sortedBy { it.type.isNullable }
+
+        return bodies + parameters
+    }
+
+    private fun isNullable(parameter: Parameter): Boolean = !parameter.isRequired && parameter.schema.default == null
 }

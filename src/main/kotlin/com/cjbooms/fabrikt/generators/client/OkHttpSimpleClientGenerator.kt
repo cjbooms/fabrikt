@@ -11,18 +11,16 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaTypeK
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getQueryParams
 import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
 import com.cjbooms.fabrikt.generators.GeneratorUtils.primaryPropertiesConstructor
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyParameterSpec
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyRequestSchema
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toParameterSpec
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toVarName
 import com.cjbooms.fabrikt.generators.TypeFactory
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ACCEPT_HEADER_VARIABLE_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_HEADERS_PARAMETER_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
+import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.model.GeneratedFile
@@ -50,16 +48,16 @@ class OkHttpSimpleClientGenerator(
         return api.openApi3.routeToPaths().map { (resourceName, paths) ->
             val funcSpecs: List<FunSpec> = paths.flatMap { (resource, path) ->
                 path.operations.map { (verb, operation) ->
+                    val parameters = operation.toIncomingParameters(packages.base, path.parameters)
                     FunSpec
                         .builder(functionName(operation, resource, verb))
                         .addModifiers(KModifier.PUBLIC)
-                        .addKdoc(operation.toKdoc(path))
+                        .addKdoc(operation.toKdoc(parameters))
                         .addAnnotation(
                             AnnotationSpec.builder(Throws::class)
                                 .addMember("%T::class", "ApiException".toClassName(packages.client)).build()
                         )
-                        .addParameters(operation.requestBody.toBodyParameterSpec(packages.base))
-                        .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
+                        .addParameters(parameters.map { it.toParameterSpecBuilder().build() })
                         .addOptionalParameter(
                             ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class)
                                 .defaultValue("%S", operation.getPrimaryContentMediaTypeKey())
@@ -82,7 +80,8 @@ class OkHttpSimpleClientGenerator(
                                 packages,
                                 resource,
                                 verb,
-                                operation
+                                operation,
+                                parameters.filterIsInstance<BodyParameter>(),
                             ).toStatement()
                         )
                         .returns(operation.toClientReturnType(packages))
@@ -140,7 +139,8 @@ data class SimpleClientOperationStatement(
     private val packages: Packages,
     private val resource: String,
     private val verb: String,
-    private val operation: Operation
+    private val operation: Operation,
+    private val bodyParameters: List<BodyParameter>
 ) {
     fun toStatement(): CodeBlock =
         CodeBlock.builder()
@@ -239,11 +239,11 @@ data class SimpleClientOperationStatement(
     private fun CodeBlock.Builder.addRequestSerializerStatement(verb: String) {
         val requestBody = operation.requestBody
         val toRequestBody = "toRequestBody".toClassName("okhttp3.RequestBody.Companion")
-        requestBody.toBodyRequestSchema().firstOrNull()?.let {
+        bodyParameters.firstOrNull()?.let {
             this.add(
                 "\n.%N(objectMapper.writeValueAsString(%N).%T(%S.%T()))",
                 verb,
-                it.toVarName(),
+                it.name,
                 toRequestBody,
                 requestBody.getPrimaryContentMediaType()?.key,
                 "toMediaType".toClassName("okhttp3.MediaType.Companion")

@@ -36,6 +36,8 @@ import kotlin.collections.List
 interface InternalEventsController {
     /**
      * Generate change events for a list of entities
+     *
+     * @param bulkEntityDetails
      */
     @RequestMapping(
         value = ["/internal/events"],
@@ -56,13 +58,13 @@ interface ContributorsController {
     /**
      * Page through all the Contributor resources matching the query filters
      *
+     * @param limit Upper bound for number of results to be returned from query api. A default limit
+     * will be applied if this is not present
+     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
      * @param includeInactive A query parameter to request both active and inactive entities
-     * @param limit Upper bound for number of results to be returned from query api. A default limit
-     * will be applied if this is not present
-     *
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
@@ -84,6 +86,7 @@ interface ContributorsController {
     /**
      * Create a new Contributor
      *
+     * @param contributor
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
@@ -112,16 +115,16 @@ interface ContributorsController {
     /**
      * Get a Contributor by ID
      *
+     * @param id The unique id for the resource
+     * @param status Changes the behavior of GET | HEAD based on the value of the status property.
+     * Will return a 404 if the status property does not match the query parameter."
+     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
-     * @param id The unique id for the resource
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     *
-     * @param status Changes the behavior of GET | HEAD based on the value of the status property.
-     * Will return a 404 if the status property does not match the query parameter."
      *
      */
     @RequestMapping(
@@ -140,14 +143,15 @@ interface ContributorsController {
     /**
      * Update an existing Contributor
      *
-     * @param xFlowId A custom header that will be passed onto any further requests and can be used
-     * for diagnosing.
-     *
+     * @param contributor
      * @param id The unique id for the resource
      * @param ifMatch The RFC7232 If-Match header field in a request requires the server to only
      * operate on the resource that matches at least one of the provided entity-tags. This allows clients
      * express a precondition that prevent the method from being applied if there have been any changes
      * to the resource.
+     *
+     * @param xFlowId A custom header that will be passed onto any further requests and can be used
+     * for diagnosing.
      *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
@@ -181,13 +185,13 @@ interface OrganisationsController {
     /**
      * Page through all the Organisation resources matching the query filters
      *
+     * @param limit Upper bound for number of results to be returned from query api. A default limit
+     * will be applied if this is not present
+     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
      * @param includeInactive A query parameter to request both active and inactive entities
-     * @param limit Upper bound for number of results to be returned from query api. A default limit
-     * will be applied if this is not present
-     *
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
@@ -209,6 +213,7 @@ interface OrganisationsController {
     /**
      * Create a new Organisation
      *
+     * @param organisation
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
@@ -237,16 +242,16 @@ interface OrganisationsController {
     /**
      * Get a Organisation by ID
      *
+     * @param id The unique id for the resource
+     * @param status Changes the behavior of GET | HEAD based on the value of the status property.
+     * Will return a 404 if the status property does not match the query parameter."
+     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
-     * @param id The unique id for the resource
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     *
-     * @param status Changes the behavior of GET | HEAD based on the value of the status property.
-     * Will return a 404 if the status property does not match the query parameter."
      *
      */
     @RequestMapping(
@@ -265,14 +270,15 @@ interface OrganisationsController {
     /**
      * Update an existing Organisation
      *
-     * @param xFlowId A custom header that will be passed onto any further requests and can be used
-     * for diagnosing.
-     *
+     * @param organisation
      * @param id The unique id for the resource
      * @param ifMatch The RFC7232 If-Match header field in a request requires the server to only
      * operate on the resource that matches at least one of the provided entity-tags. This allows clients
      * express a precondition that prevent the method from being applied if there have been any changes
      * to the resource.
+     *
+     * @param xFlowId A custom header that will be passed onto any further requests and can be used
+     * for diagnosing.
      *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
@@ -307,14 +313,14 @@ interface OrganisationsContributorsController {
      * Page through all the Contributor resources for this parent Organisation matching the query
      * filters
      *
-     * @param xFlowId A custom header that will be passed onto any further requests and can be used
-     * for diagnosing.
-     *
      * @param parentId The unique id for the parent resource
-     * @param includeInactive A query parameter to request both active and inactive entities
      * @param limit Upper bound for number of results to be returned from query api. A default limit
      * will be applied if this is not present
      *
+     * @param xFlowId A custom header that will be passed onto any further requests and can be used
+     * for diagnosing.
+     *
+     * @param includeInactive A query parameter to request both active and inactive entities
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
@@ -338,10 +344,10 @@ interface OrganisationsContributorsController {
      * Get a Contributor for this Organisation by ID
      *
      * @param parentId The unique id for the parent resource
+     * @param id The unique id for the resource
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
-     * @param id The unique id for the resource
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
@@ -363,14 +369,14 @@ interface OrganisationsContributorsController {
      * Add an existing Contributor to this Organisation
      *
      * @param parentId The unique id for the parent resource
-     * @param xFlowId A custom header that will be passed onto any further requests and can be used
-     * for diagnosing.
-     *
      * @param id The unique id for the resource
      * @param ifMatch The RFC7232 If-Match header field in a request requires the server to only
      * operate on the resource that matches at least one of the provided entity-tags. This allows clients
      * express a precondition that prevent the method from being applied if there have been any changes
      * to the resource.
+     *
+     * @param xFlowId A custom header that will be passed onto any further requests and can be used
+     * for diagnosing.
      *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
@@ -398,10 +404,10 @@ interface OrganisationsContributorsController {
      * Remove Contributor from this Organisation. Does not delete the underlying Contributor.
      *
      * @param parentId The unique id for the parent resource
+     * @param id The unique id for the resource
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
-     * @param id The unique id for the resource
      */
     @RequestMapping(
         value = ["/organisations/{parent-id}/contributors/{id}"],
@@ -422,6 +428,9 @@ interface RepositoriesController {
     /**
      * Page through all the Repository resources matching the query filters
      *
+     * @param limit Upper bound for number of results to be returned from query api. A default limit
+     * will be applied if this is not present
+     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
@@ -430,9 +439,6 @@ interface RepositoriesController {
      * @param name Filters resources by the [name] property. Accepts comma-delimited values
      *
      * @param includeInactive A query parameter to request both active and inactive entities
-     * @param limit Upper bound for number of results to be returned from query api. A default limit
-     * will be applied if this is not present
-     *
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
@@ -458,6 +464,7 @@ interface RepositoriesController {
     /**
      * Create a new Repository
      *
+     * @param repository
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
@@ -486,16 +493,16 @@ interface RepositoriesController {
     /**
      * Get a Repository by ID
      *
+     * @param id The unique id for the resource
+     * @param status Changes the behavior of GET | HEAD based on the value of the status property.
+     * Will return a 404 if the status property does not match the query parameter."
+     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
-     * @param id The unique id for the resource
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     *
-     * @param status Changes the behavior of GET | HEAD based on the value of the status property.
-     * Will return a 404 if the status property does not match the query parameter."
      *
      */
     @RequestMapping(
@@ -514,14 +521,15 @@ interface RepositoriesController {
     /**
      * Update an existing Repository
      *
-     * @param xFlowId A custom header that will be passed onto any further requests and can be used
-     * for diagnosing.
-     *
+     * @param repository
      * @param id The unique id for the resource
      * @param ifMatch The RFC7232 If-Match header field in a request requires the server to only
      * operate on the resource that matches at least one of the provided entity-tags. This allows clients
      * express a precondition that prevent the method from being applied if there have been any changes
      * to the resource.
+     *
+     * @param xFlowId A custom header that will be passed onto any further requests and can be used
+     * for diagnosing.
      *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
@@ -556,14 +564,14 @@ interface RepositoriesPullRequestsController {
      * Page through all the PullRequest resources for this parent Repository matching the query
      * filters
      *
-     * @param xFlowId A custom header that will be passed onto any further requests and can be used
-     * for diagnosing.
-     *
      * @param parentId The unique id for the parent resource
-     * @param includeInactive A query parameter to request both active and inactive entities
      * @param limit Upper bound for number of results to be returned from query api. A default limit
      * will be applied if this is not present
      *
+     * @param xFlowId A custom header that will be passed onto any further requests and can be used
+     * for diagnosing.
+     *
+     * @param includeInactive A query parameter to request both active and inactive entities
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
@@ -586,6 +594,7 @@ interface RepositoriesPullRequestsController {
     /**
      * Create a new PullRequest for this parent Repository
      *
+     * @param pullRequest
      * @param parentId The unique id for the parent resource
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
@@ -617,10 +626,10 @@ interface RepositoriesPullRequestsController {
      * Get a PullRequest for this Repository by ID
      *
      * @param parentId The unique id for the parent resource
+     * @param id The unique id for the resource
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
      *
-     * @param id The unique id for the resource
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
@@ -641,15 +650,16 @@ interface RepositoriesPullRequestsController {
     /**
      * Update the PullRequest owned by this Repository
      *
+     * @param pullRequest
      * @param parentId The unique id for the parent resource
-     * @param xFlowId A custom header that will be passed onto any further requests and can be used
-     * for diagnosing.
-     *
      * @param id The unique id for the resource
      * @param ifMatch The RFC7232 If-Match header field in a request requires the server to only
      * operate on the resource that matches at least one of the provided entity-tags. This allows clients
      * express a precondition that prevent the method from being applied if there have been any changes
      * to the resource.
+     *
+     * @param xFlowId A custom header that will be passed onto any further requests and can be used
+     * for diagnosing.
      *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as

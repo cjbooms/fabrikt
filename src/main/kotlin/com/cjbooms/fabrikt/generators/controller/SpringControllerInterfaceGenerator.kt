@@ -2,11 +2,11 @@ package com.cjbooms.fabrikt.generators.controller
 
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.controllerName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
-import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
@@ -88,7 +88,7 @@ class SpringControllerInterfaceGenerator(
         val funcSpec = FunSpec
             .builder(methodName)
             .addModifiers(KModifier.ABSTRACT)
-            .addKdoc(op.toKdoc(path))
+            .addKdoc(op.toKdoc(parameters))
             .addSpringFunAnnotation(op, verb, path.pathString)
             .addSuspendModifier()
             .returns(SpringImports.RESPONSE_ENTITY.parameterizedBy(returnType))
