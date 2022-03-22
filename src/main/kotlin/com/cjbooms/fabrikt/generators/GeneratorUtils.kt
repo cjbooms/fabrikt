@@ -175,36 +175,37 @@ object GeneratorUtils {
             }
             .sortedBy { it.type.isNullable }
 
-        val all = bodies + parameters + extraParameters
+        return detectAndAvoidNameClashes(bodies + parameters + extraParameters)
+    }
 
-        return if (all.map { it.name }.toSet().size != all.size) {
-            // at least one parameter name has been repeated,
-            // so avoid clashes by prefixing all names with their location
+    private fun detectAndAvoidNameClashes(parameters: List<IncomingParameter>): List<IncomingParameter> {
+        if (parameters.map { it.name }.toSet().size == parameters.size) {
+            return parameters
+        }
 
-            all.map { p ->
-                when (p) {
-                    is BodyParameter -> BodyParameter(
-                        "body_${p.oasName}".toKotlinParameterName(),
-                        p.description,
-                        p.type,
-                        p.schema,
-                    )
-                    is RequestParameter -> RequestParameter(
-                        "${p.parameterLocation}_${p.oasName}".toKotlinParameterName(),
-                        p.description,
-                        p.type,
-                        p.originalName,
-                        p.parameterLocation,
-                        p.typeInfo,
-                        p.minimum,
-                        p.maximum,
-                        p.isRequired,
-                        p.explode,
-                        p.defaultValue,
-                    )
-                }
+        return parameters.map { p ->
+            when (p) {
+                is BodyParameter -> BodyParameter(
+                    "body_${p.oasName}".toKotlinParameterName(),
+                    p.description,
+                    p.type,
+                    p.schema,
+                )
+                is RequestParameter -> RequestParameter(
+                    "${p.parameterLocation}_${p.oasName}".toKotlinParameterName(),
+                    p.description,
+                    p.type,
+                    p.originalName,
+                    p.parameterLocation,
+                    p.typeInfo,
+                    p.minimum,
+                    p.maximum,
+                    p.isRequired,
+                    p.explode,
+                    p.defaultValue,
+                )
             }
-        } else all
+        }
     }
 
     private fun isNullable(parameter: Parameter): Boolean = !parameter.isRequired && parameter.schema.default == null
