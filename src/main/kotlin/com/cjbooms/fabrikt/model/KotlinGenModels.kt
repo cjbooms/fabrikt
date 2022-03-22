@@ -93,32 +93,39 @@ private fun <T : GeneratedType> groupClasses(allModels: Collection<T>): Map<T, L
  * The IncomingParameter class is intended to represent a given name and type
  * of an incoming request, be it either a header, url param, path param, or body
  */
-sealed class IncomingParameter(val oasName: String, val type: TypeName) {
+sealed class IncomingParameter(val oasName: String, val description: String?, val type: TypeName) {
     val name: String = oasName.toKotlinParameterName()
-    fun toParameterSpecBuilder(): ParameterSpec.Builder =
+    open fun toParameterSpecBuilder(): ParameterSpec.Builder =
         ParameterSpec.builder(name, type)
 }
 
-class BodyParameter(oasName: String, type: TypeName, val schema: Schema) : IncomingParameter(oasName, type)
+class BodyParameter(oasName: String, description: String?, type: TypeName, val schema: Schema) :
+    IncomingParameter(oasName, description, type)
 
 class RequestParameter(
     oasName: String,
+    description: String?,
     type: TypeName,
+    var originalName: String,
     val parameterLocation: RequestParameterLocation,
     val typeInfo: KotlinTypeInfo,
     val minimum: Number? = null,
     val maximum: Number? = null,
     val isRequired: Boolean = false,
-    val defaultValue: Any? = null
-) : IncomingParameter(oasName, type) {
-    constructor(oasName: String, type: TypeName, parameter: Parameter) : this(
+    val explode: Boolean? = null,
+    val defaultValue: Any? = null,
+) : IncomingParameter(oasName, description, type) {
+    constructor(oasName: String, description: String?, type: TypeName, parameter: Parameter) : this(
         oasName = oasName,
+        description = description,
         type = type,
+        originalName = parameter.name,
         typeInfo = KotlinTypeInfo.from(parameter.schema, oasName),
         minimum = parameter.schema.minimum,
         maximum = parameter.schema.maximum,
         parameterLocation = RequestParameterLocation(parameter.`in`),
         isRequired = parameter.isRequired,
+        explode = parameter.explode,
         defaultValue = parameter.schema.default
     )
 }

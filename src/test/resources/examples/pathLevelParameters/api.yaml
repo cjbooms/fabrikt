@@ -1,0 +1,22 @@
+openapi: 3.0.0
+info:
+  version: '1'
+  title: pathLevelParameters
+paths:
+  /example:
+    parameters:
+      - in: query
+        name: a
+        required: true
+        schema:
+          type: string
+    get:
+      parameters:
+        - in: query
+          name: b
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: example

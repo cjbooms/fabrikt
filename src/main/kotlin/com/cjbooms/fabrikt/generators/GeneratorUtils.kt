@@ -1,8 +1,13 @@
 package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
+import com.cjbooms.fabrikt.model.BodyParameter
+import com.cjbooms.fabrikt.model.IncomingParameter
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.model.RequestParameter
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
+import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
 import com.reprezen.kaizen.oasparser.model3.MediaType
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Parameter
@@ -70,10 +75,13 @@ object GeneratorUtils {
     fun RequestBody.toBodyRequestSchema(): List<Schema> =
         listOfNotNull(this.getPrimaryContentMediaType()?.value?.schema)
 
-    fun Operation.toKdoc(): CodeBlock {
+    fun mergeParameters(path: List<Parameter>, operation: List<Parameter>): List<Parameter> =
+        path.filter { pp -> !operation.any { op -> pp.name == op.name && pp.`in` == op.`in` } } + operation
+
+    fun Operation.toKdoc(parameters: List<IncomingParameter>): CodeBlock {
         val kdoc = CodeBlock.builder().add("${this.summary.orEmpty()}\n${this.description.orEmpty()}\n")
 
-        this.parameters.forEach {
+        parameters.forEach {
             kdoc.add("@param %L %L\n", it.name.toKCodeName(), it.description.orEmpty()).build()
         }
 
@@ -134,4 +142,71 @@ object GeneratorUtils {
         this.responses.filter { it.key != "default" }.values.filter(Response::hasContentMediaTypes)
 
     private fun Operation.filterParams(paramType: String): List<Parameter> = this.parameters.filter { it.`in` == paramType }
+
+    /**
+     * Returns a list of IncomingParameters, ordering logic should be
+     * encapsulated here to ensure the order of parameters align between
+     * services and controllers
+     */
+    fun Operation.toIncomingParameters(
+        basePackage: String,
+        pathParameters: List<Parameter>,
+        extraParameters: List<IncomingParameter>,
+    ): List<IncomingParameter> {
+
+        val bodies = requestBody.contentMediaTypes.values
+            .map {
+                BodyParameter(
+                    it.schema.safeName().toKotlinParameterName().ifEmpty { it.schema.toVarName() },
+                    requestBody.description,
+                    toModelType(basePackage, KotlinTypeInfo.from(it.schema)),
+                    it.schema
+                )
+            }
+
+        val parameters = mergeParameters(pathParameters, parameters)
+            .map {
+                RequestParameter(
+                    it.name,
+                    it.description,
+                    toModelType(basePackage, KotlinTypeInfo.from(it.schema), isNullable(it)),
+                    it
+                )
+            }
+            .sortedBy { it.type.isNullable }
+
+        return detectAndAvoidNameClashes(bodies + parameters + extraParameters)
+    }
+
+    private fun detectAndAvoidNameClashes(parameters: List<IncomingParameter>): List<IncomingParameter> {
+        if (parameters.map { it.name }.toSet().size == parameters.size) {
+            return parameters
+        }
+
+        return parameters.map { p ->
+            when (p) {
+                is BodyParameter -> BodyParameter(
+                    "body_${p.oasName}".toKotlinParameterName(),
+                    p.description,
+                    p.type,
+                    p.schema,
+                )
+                is RequestParameter -> RequestParameter(
+                    "${p.parameterLocation}_${p.oasName}".toKotlinParameterName(),
+                    p.description,
+                    p.type,
+                    p.originalName,
+                    p.parameterLocation,
+                    p.typeInfo,
+                    p.minimum,
+                    p.maximum,
+                    p.isRequired,
+                    p.explode,
+                    p.defaultValue,
+                )
+            }
+        }
+    }
+
+    private fun isNullable(parameter: Parameter): Boolean = !parameter.isRequired && parameter.schema.default == null
 }

@@ -28,6 +28,7 @@ class ExamplePath1Client(
      *
      * @param explodeListQueryParam
      * @param queryParam2
+     * @param acceptHeader
      */
     @Throws(ApiException::class)
     fun getExamplePath1(

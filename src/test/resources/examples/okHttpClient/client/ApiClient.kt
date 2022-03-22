@@ -47,7 +47,6 @@ class ExamplePath1Client(
             .build()
 
         val headerBuilder = Headers.Builder()
-            .header("Accept", "application/vnd.custom.media+json")
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
@@ -63,11 +62,12 @@ class ExamplePath1Client(
     /**
      * POST example path 1
      *
+     * @param content
      * @param explodeListQueryParam
      */
     @Throws(ApiException::class)
     fun postExamplePath1(
-        generatedType: Content,
+        content: Content,
         explodeListQueryParam: List<String>?,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> {
@@ -84,7 +84,7 @@ class ExamplePath1Client(
         val request: Request = Request.Builder()
             .url(httpUrl)
             .headers(httpHeaders)
-            .post(objectMapper.writeValueAsString(generatedType).toRequestBody("application/json".toMediaType()))
+            .post(objectMapper.writeValueAsString(content).toRequestBody("application/json".toMediaType()))
             .build()
 
         return request.execute(client, objectMapper, jacksonTypeRef())
@@ -120,7 +120,6 @@ class ExamplePath2Client(
 
         val headerBuilder = Headers.Builder()
             .header("If-None-Match", ifNoneMatch)
-            .header("Accept", "application/json")
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
@@ -171,6 +170,7 @@ class ExamplePath2Client(
     /**
      * PUT example path 2
      *
+     * @param firstModel
      * @param pathParam The resource id
      * @param ifMatch The RFC7232 If-Match header field
      */
@@ -211,16 +211,17 @@ class ExamplePath3SubresourceClient(
     /**
      * PUT example path 3
      *
-     * @param csvListQueryParam
+     * @param firstModel
      * @param pathParam The resource id
      * @param ifMatch The RFC7232 If-Match header field
+     * @param csvListQueryParam
      */
     @Throws(ApiException::class)
     fun putExamplePath3PathParamSubresource(
         firstModel: FirstModel,
-        csvListQueryParam: List<String>?,
         pathParam: String,
         ifMatch: String,
+        csvListQueryParam: List<String>?,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit?> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-3/{path_param}/subresource"

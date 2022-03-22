@@ -1,15 +1,10 @@
 package com.cjbooms.fabrikt.generators.controller
 
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
-import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.ControllerType
-import com.cjbooms.fabrikt.model.IncomingParameter
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
-import com.cjbooms.fabrikt.model.RequestParameter
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.reprezen.kaizen.oasparser.model3.Operation
-import com.reprezen.kaizen.oasparser.model3.Parameter
 import com.reprezen.kaizen.oasparser.model3.Response
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
@@ -45,37 +40,6 @@ object ControllerGeneratorUtils {
 
         return toResponseMapping[code]!!
     }
-
-    /**
-     * Returns a list of IncomingParameters, ordering logic should be
-     * encapsulated here to ensure the order of parameters align between
-     * services and controllers
-     */
-    fun Operation.toIncomingParameters(basePackage: String): List<IncomingParameter> {
-
-        val bodies = requestBody.contentMediaTypes.values
-            .map {
-                BodyParameter(
-                    it.schema.safeName(),
-                    toModelType(basePackage, KotlinTypeInfo.from(it.schema)),
-                    it.schema
-                )
-            }
-
-        val parameters = parameters
-            .map {
-                RequestParameter(
-                    it.name,
-                    toModelType(basePackage, KotlinTypeInfo.from(it.schema), isNullable(it)),
-                    it
-                )
-            }
-            .sortedBy { it.type.isNullable }
-
-        return bodies + parameters
-    }
-
-    private fun isNullable(parameter: Parameter): Boolean = !parameter.isRequired && parameter.schema.default == null
 
     fun controllerName(resourceName: String) = "$resourceName${ControllerType.SUFFIX}"
 

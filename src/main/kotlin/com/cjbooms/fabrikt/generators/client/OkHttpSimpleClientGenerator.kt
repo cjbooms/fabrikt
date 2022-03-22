@@ -1,33 +1,28 @@
 package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.GeneratorUtils.addOptionalParameter
-import com.cjbooms.fabrikt.generators.GeneratorUtils.firstResponse
 import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
-import com.cjbooms.fabrikt.generators.GeneratorUtils.getHeaderParams
-import com.cjbooms.fabrikt.generators.GeneratorUtils.getPathParams
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
-import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaTypeKey
-import com.cjbooms.fabrikt.generators.GeneratorUtils.getQueryParams
-import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
 import com.cjbooms.fabrikt.generators.GeneratorUtils.primaryPropertiesConstructor
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyParameterSpec
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyRequestSchema
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toParameterSpec
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toVarName
 import com.cjbooms.fabrikt.generators.TypeFactory
-import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ACCEPT_HEADER_VARIABLE_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_HEADERS_PARAMETER_NAME
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.addIncomingParameters
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.deriveClientParameters
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
+import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.HandlebarsTemplates
+import com.cjbooms.fabrikt.model.HeaderParam
+import com.cjbooms.fabrikt.model.IncomingParameter
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.model.PathParam
+import com.cjbooms.fabrikt.model.QueryParam
+import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -50,25 +45,16 @@ class OkHttpSimpleClientGenerator(
         return api.openApi3.routeToPaths().map { (resourceName, paths) ->
             val funcSpecs: List<FunSpec> = paths.flatMap { (resource, path) ->
                 path.operations.map { (verb, operation) ->
+                    val parameters = deriveClientParameters(path, operation, packages.base)
                     FunSpec
                         .builder(functionName(operation, resource, verb))
                         .addModifiers(KModifier.PUBLIC)
-                        .addKdoc(operation.toKdoc())
+                        .addKdoc(operation.toKdoc(parameters))
                         .addAnnotation(
                             AnnotationSpec.builder(Throws::class)
                                 .addMember("%T::class", "ApiException".toClassName(packages.client)).build()
                         )
-                        .addParameters(operation.requestBody.toBodyParameterSpec(packages.base))
-                        .addParameters(operation.parameters.map { it.toParameterSpec(packages.base) })
-                        .addOptionalParameter(
-                            ParameterSpec.builder(ACCEPT_HEADER_VARIABLE_NAME, String::class)
-                                .defaultValue("%S", operation.getPrimaryContentMediaTypeKey())
-                                .build(),
-                            operation,
-                        ) {
-                            it.hasMultipleContentMediaTypes() == true &&
-                                !operation.parameters.any { header -> header.name == "Accept" }
-                        }
+                        .addIncomingParameters(parameters)
                         .addParameter(
                             ParameterSpec.builder(
                                 ADDITIONAL_HEADERS_PARAMETER_NAME,
@@ -82,7 +68,8 @@ class OkHttpSimpleClientGenerator(
                                 packages,
                                 resource,
                                 verb,
-                                operation
+                                operation,
+                                parameters,
                             ).toStatement()
                         )
                         .returns(operation.toClientReturnType(packages))
@@ -140,7 +127,8 @@ data class SimpleClientOperationStatement(
     private val packages: Packages,
     private val resource: String,
     private val verb: String,
-    private val operation: Operation
+    private val operation: Operation,
+    private val parameters: List<IncomingParameter>
 ) {
     fun toStatement(): CodeBlock =
         CodeBlock.builder()
@@ -158,7 +146,13 @@ data class SimpleClientOperationStatement(
     }
 
     private fun CodeBlock.Builder.addPathParamStatement(): CodeBlock.Builder {
-        operation.getPathParams().map { this.add("\n.pathParam(%S to %N)", "{${it.name}}", it.name.toKCodeName()) }
+        parameters
+            .filterIsInstance<RequestParameter>()
+            .filter { it.parameterLocation == PathParam }
+            .forEach {
+                this.add("\n.pathParam(%S to %N)", "{${it.originalName}}", it.name)
+            }
+
         this.add("\n.%T()\n.newBuilder()", "toHttpUrl".toClassName("okhttp3.HttpUrl.Companion"))
         return this
     }
@@ -168,51 +162,41 @@ data class SimpleClientOperationStatement(
      * serialization](https://swagger.io/docs/specification/serialization) query parameters style values
      */
     private fun CodeBlock.Builder.addQueryParamStatement(): CodeBlock.Builder {
-        operation.getQueryParams().map {
-            when (KotlinTypeInfo.from(it.schema)) {
-                is KotlinTypeInfo.Array -> this.add(
-                    "\n.%T(%S, %N, %L)",
-                    "queryParam".toClassName(packages.client),
-                    it.name,
-                    it.name.toKCodeName(),
-                    if (it.explode == null || it.explode == true) "true" else "false"
-                )
-                else -> this.add(
-                    "\n.%T(%S, %N)",
-                    "queryParam".toClassName(packages.client),
-                    it.name,
-                    it.name.toKCodeName()
-                )
+        parameters
+            .filterIsInstance<RequestParameter>()
+            .filter { it.parameterLocation == QueryParam }
+            .forEach {
+                when (it.typeInfo) {
+                    is KotlinTypeInfo.Array -> this.add(
+                        "\n.%T(%S, %N, %L)",
+                        "queryParam".toClassName(packages.client),
+                        it.originalName,
+                        it.name,
+                        if (it.explode == null || it.explode == true) "true" else "false"
+                    )
+                    else -> this.add(
+                        "\n.%T(%S, %N)",
+                        "queryParam".toClassName(packages.client),
+                        it.originalName,
+                        it.name
+                    )
+                }
             }
-        }
         return this.add("\n.build()\n")
     }
 
     private fun CodeBlock.Builder.addHeaderParamStatement(): CodeBlock.Builder {
         this.add("\nval headerBuilder = Headers.Builder()")
-        var isAcceptSet = false
-        operation.getHeaderParams().map {
-            if (it.name == "Accept") isAcceptSet = true
-            val typeInfo = KotlinTypeInfo.from(it.schema)
-            this.add(
-                "\n.%T(%S, %L)", "header".toClassName(packages.client),
-                it.name,
-                it.name.toKCodeName() + if (typeInfo is KotlinTypeInfo.Enum) "?.value" else ""
-            )
-        }
-
-        if (!isAcceptSet) operation.firstResponse()?.let {
-            if (it.hasMultipleContentMediaTypes()) {
-                this.add("\n.%T(%S, %L)", "header".toClassName(packages.client), "Accept", ACCEPT_HEADER_VARIABLE_NAME)
-            } else {
+        parameters
+            .filterIsInstance<RequestParameter>()
+            .filter { it.parameterLocation == HeaderParam }
+            .forEach {
                 this.add(
-                    "\n.%T(%S, %S)",
-                    "header".toClassName(packages.client),
-                    "Accept",
-                    operation.getPrimaryContentMediaTypeKey()
+                    "\n.%T(%S, %L)", "header".toClassName(packages.client),
+                    it.originalName,
+                    it.name + if (it.typeInfo is KotlinTypeInfo.Enum) "?.value" else ""
                 )
             }
-        }
         this.add("\nadditionalHeaders.forEach { headerBuilder.header(it.key, it.value) }")
 
         return this.add("\nval httpHeaders: %T = headerBuilder.build()\n", "Headers".toClassName("okhttp3"))
@@ -239,11 +223,11 @@ data class SimpleClientOperationStatement(
     private fun CodeBlock.Builder.addRequestSerializerStatement(verb: String) {
         val requestBody = operation.requestBody
         val toRequestBody = "toRequestBody".toClassName("okhttp3.RequestBody.Companion")
-        requestBody.toBodyRequestSchema().firstOrNull()?.let {
+        parameters.filterIsInstance<BodyParameter>().firstOrNull()?.let {
             this.add(
                 "\n.%N(objectMapper.writeValueAsString(%N).%T(%S.%T()))",
                 verb,
-                it.toVarName(),
+                it.name,
                 toRequestBody,
                 requestBody.getPrimaryContentMediaType()?.key,
                 "toMediaType".toClassName("okhttp3.MediaType.Companion")

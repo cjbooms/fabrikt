@@ -1,13 +1,12 @@
 package com.cjbooms.fabrikt.generators.controller
 
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
-import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.controllerName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
-import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
@@ -54,9 +53,9 @@ class SpringControllerInterfaceGenerator(
                 .filter { it.key.toUpperCase() != "HEAD" }
                 .map { op ->
                     buildFunction(
+                        path,
                         op.value,
                         op.key,
-                        path.pathString
                     )
                 }
         }.forEach { typeBuilder.addFunction(it) }
@@ -77,20 +76,20 @@ class SpringControllerInterfaceGenerator(
             .addAnnotation(SpringAnnotations.requestMappingBuilder().addMember("%S", basePath).build())
 
     private fun buildFunction(
+        path: Path,
         op: Operation,
         verb: String,
-        pathString: String
     ): FunSpec {
-        val methodName = methodName(op, verb, pathString.isSingleResource())
+        val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = op.happyPathResponse(packages.base)
-        val parameters = op.toIncomingParameters(packages.base)
+        val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
 
         // Main method builder
         val funcSpec = FunSpec
             .builder(methodName)
             .addModifiers(KModifier.ABSTRACT)
-            .addKdoc(op.toKdoc())
-            .addSpringFunAnnotation(op, verb, pathString)
+            .addKdoc(op.toKdoc(parameters))
+            .addSpringFunAnnotation(op, verb, path.pathString)
             .addSuspendModifier()
             .returns(SpringImports.RESPONSE_ENTITY.parameterizedBy(returnType))
 
