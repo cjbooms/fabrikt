@@ -46,8 +46,7 @@ object ClientGeneratorUtils {
                     } ?: Unit::class.asTypeName()
                 }
 
-        return "ApiResponse".toClassName(packages.client)
-            .parameterizedBy(returnType.copy(nullable = true))
+        return "ApiResponse".toClassName(packages.client).parameterizedBy(returnType)
     }
 
     fun simpleClientName(resourceName: String) = "$resourceName${ClientType.SIMPLE_CLIENT_SUFFIX}"

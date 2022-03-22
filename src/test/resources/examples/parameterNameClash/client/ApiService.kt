@@ -34,7 +34,7 @@ class ExampleService(
         pathB: String,
         queryB: String,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> =
+    ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExampleB(pathB, queryB, additionalHeaders)
         }
@@ -44,7 +44,7 @@ class ExampleService(
         bodySomeObject: SomeObject,
         querySomeObject: String,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> =
+    ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.postExample(bodySomeObject, querySomeObject, additionalHeaders)
         }

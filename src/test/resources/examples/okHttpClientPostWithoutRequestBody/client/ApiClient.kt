@@ -24,7 +24,7 @@ class ExampleClient(
      *
      */
     @Throws(ApiException::class)
-    fun putExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit?> {
+    fun putExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()
@@ -47,7 +47,7 @@ class ExampleClient(
      *
      */
     @Throws(ApiException::class)
-    fun postExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit?> {
+    fun postExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()
@@ -70,7 +70,7 @@ class ExampleClient(
      *
      */
     @Throws(ApiException::class)
-    fun patchExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit?> {
+    fun patchExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()

@@ -49,7 +49,7 @@ class ExamplePath1Service(
         content: Content,
         explodeListQueryParam: List<String>?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> =
+    ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.postExamplePath1(content, explodeListQueryParam, additionalHeaders)
         }
@@ -80,7 +80,7 @@ class ExamplePath2Service(
         queryParam2: Int?,
         ifNoneMatch: String?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Content?> =
+    ): ApiResponse<Content> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath2PathParam(pathParam, queryParam2, ifNoneMatch, additionalHeaders)
         }
@@ -91,7 +91,7 @@ class ExamplePath2Service(
         queryParam3: Boolean?,
         ifNoneMatch: String?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> =
+    ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.headOperationIdExample(pathParam, queryParam3, ifNoneMatch, additionalHeaders)
         }
@@ -102,7 +102,7 @@ class ExamplePath2Service(
         pathParam: String,
         ifMatch: String,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> =
+    ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.putExamplePath2PathParam(firstModel, pathParam, ifMatch, additionalHeaders)
         }
@@ -138,7 +138,7 @@ class ExamplePath3SubresourceService(
         ifMatch: String,
         csvListQueryParam: List<String>?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> =
+    ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.putExamplePath3PathParamSubresource(firstModel, pathParam, ifMatch, csvListQueryParam, additionalHeaders)
         }

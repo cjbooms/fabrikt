@@ -70,7 +70,7 @@ class ExamplePath1Client(
         content: Content,
         explodeListQueryParam: List<String>?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> {
+    ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
@@ -110,7 +110,7 @@ class ExamplePath2Client(
         queryParam2: Int?,
         ifNoneMatch: String?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Content?> {
+    ): ApiResponse<Content> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
             .toHttpUrl()
@@ -145,7 +145,7 @@ class ExamplePath2Client(
         queryParam3: Boolean?,
         ifNoneMatch: String?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> {
+    ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
             .toHttpUrl()
@@ -180,7 +180,7 @@ class ExamplePath2Client(
         pathParam: String,
         ifMatch: String,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> {
+    ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
             .toHttpUrl()
@@ -223,7 +223,7 @@ class ExamplePath3SubresourceClient(
         ifMatch: String,
         csvListQueryParam: List<String>?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> {
+    ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-3/{path_param}/subresource"
             .pathParam("{path_param}" to pathParam)
             .toHttpUrl()

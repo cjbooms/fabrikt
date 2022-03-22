@@ -38,7 +38,7 @@ class ExamplePath1Service(
         queryParam2: Int?,
         acceptHeader: String = "application/vnd.custom.media+xml",
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<QueryResult?> =
+    ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath1(explodeListQueryParam, queryParam2, acceptHeader, additionalHeaders)
         }

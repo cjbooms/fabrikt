@@ -36,7 +36,7 @@ class ExamplePath1Client(
         queryParam2: Int?,
         acceptHeader: String = "application/vnd.custom.media+xml",
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<QueryResult?> {
+    ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
