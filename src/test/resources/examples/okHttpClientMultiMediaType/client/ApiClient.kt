@@ -36,7 +36,7 @@ class ExamplePath1Client(
         queryParam2: Int?,
         acceptHeader: String = "application/vnd.custom.media+xml",
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<QueryResult?> {
+    ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
@@ -78,7 +78,7 @@ class ExamplePath2Client(
         queryParam2: Int?,
         accept: ContentType?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<QueryResult?> {
+    ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2"
             .toHttpUrl()
             .newBuilder()
@@ -117,7 +117,7 @@ class MultipleResponseSchemasClient(
         accept: ContentType?,
         additionalHeaders: Map<String, String> =
             emptyMap()
-    ): ApiResponse<JsonNode?> {
+    ): ApiResponse<JsonNode> {
         val httpUrl: HttpUrl = "$baseUrl/multiple-response-schemas"
             .toHttpUrl()
             .newBuilder()

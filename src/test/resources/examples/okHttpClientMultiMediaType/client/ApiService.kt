@@ -38,7 +38,7 @@ class ExamplePath1Service(
         queryParam2: Int?,
         acceptHeader: String = "application/vnd.custom.media+xml",
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<QueryResult?> =
+    ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath1(explodeListQueryParam, queryParam2, acceptHeader, additionalHeaders)
         }
@@ -69,7 +69,7 @@ class ExamplePath2Service(
         queryParam2: Int?,
         accept: ContentType?,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<QueryResult?> =
+    ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath2(explodeListQueryParam, queryParam2, accept, additionalHeaders)
         }
@@ -103,7 +103,7 @@ class MultipleResponseSchemasService(
         accept: ContentType?,
         additionalHeaders: Map<String, String> =
             emptyMap()
-    ): ApiResponse<JsonNode?> =
+    ): ApiResponse<JsonNode> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getMultipleResponseSchemas(accept, additionalHeaders)
         }

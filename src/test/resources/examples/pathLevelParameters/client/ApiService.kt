@@ -33,7 +33,7 @@ class ExampleService(
         a: String,
         b: String,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> =
+    ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExample(a, b, additionalHeaders)
         }

@@ -34,7 +34,7 @@ fun Headers.Builder.header(key: String, value: String?): Headers.Builder = this.
 }
 
 @Throws(ApiException::class)
-fun <T> Request.execute(client: OkHttpClient, objectMapper: ObjectMapper, typeRef: TypeReference<T>): ApiResponse<T?> =
+fun <T> Request.execute(client: OkHttpClient, objectMapper: ObjectMapper, typeRef: TypeReference<T>): ApiResponse<T> =
     client.newCall(this).execute().use { response ->
         when {
             response.isSuccessful ->

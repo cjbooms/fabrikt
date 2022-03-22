@@ -30,7 +30,7 @@ class ExampleClient(
         a: String,
         b: String,
         additionalHeaders: Map<String, String> = emptyMap()
-    ): ApiResponse<Unit?> {
+    ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()
