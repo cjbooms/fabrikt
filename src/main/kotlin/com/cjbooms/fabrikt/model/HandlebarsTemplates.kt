@@ -31,13 +31,13 @@ object HandlebarsTemplates {
     fun applyTemplate(
         template: Template,
         input: Any,
-        outputDirPath: Path,
+        path: Path,
         fileName: String,
         postProcessor: (String) -> String = { it }
     ): SimpleFile {
         val fileContents = postProcessor(template.apply(input))
         FirstOccurrenceChecker.STATE_BAG.clear()
-        return SimpleFile(outputDirPath.resolve(fileName), fileContents)
+        return SimpleFile(path.resolve(fileName), fileContents)
     }
 }
 

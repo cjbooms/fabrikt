@@ -1,14 +1,11 @@
 package com.cjbooms.fabrikt.model
 
 import java.nio.file.Path
-import java.nio.file.Paths
 
 object Destinations {
-    private val PATH_ROOT: Path = Paths.get("")
 
-    const val MAIN_KT_SOURCE = "src/main/kotlin/"
-    const val MAIN_RESOURCES = "src/main/resources"
-    val MAIN_KT_SRC: Path = PATH_ROOT.resolve(MAIN_KT_SOURCE)
+    val MAIN_KT_SOURCE: Path = Path.of("/src/main/kotlin/")
+    val MAIN_RESOURCES: Path = Path.of("/src/main/resources")
 
     fun modelsPackage(basePackage: String): String = "$basePackage.models"
     fun controllersPackage(basePackage: String): String = "$basePackage.controllers"

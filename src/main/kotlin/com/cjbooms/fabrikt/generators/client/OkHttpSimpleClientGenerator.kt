@@ -36,10 +36,12 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
+import java.nio.file.Path
 
 class OkHttpSimpleClientGenerator(
     private val packages: Packages,
-    private val api: SourceApi
+    private val api: SourceApi,
+    private val srcPath: Path = Destinations.MAIN_KT_SOURCE
 ) {
     fun generateDynamicClientCode(): Collection<ClientType> {
         return api.openApi3.routeToPaths().map { (resourceName, paths) ->
@@ -92,32 +94,32 @@ class OkHttpSimpleClientGenerator(
     }
 
     fun generateLibrary(): Collection<GeneratedFile> {
-        val codeDir = Destinations.MAIN_KT_SRC.resolve(CodeGenerationUtils.packageToPath(packages.base))
+        val codeDir = srcPath.resolve(CodeGenerationUtils.packageToPath(packages.base))
         val clientDir = codeDir.resolve("client")
         return setOf(
             HandlebarsTemplates.applyTemplate(
-                HandlebarsTemplates.clientApiModels,
-                packages,
-                clientDir,
-                "ApiModels.kt"
+                template = HandlebarsTemplates.clientApiModels,
+                input = packages,
+                path = clientDir,
+                fileName = "ApiModels.kt"
             ),
             HandlebarsTemplates.applyTemplate(
-                HandlebarsTemplates.clientHttpUtils,
-                packages,
-                clientDir,
-                "HttpUtil.kt"
+                template = HandlebarsTemplates.clientHttpUtils,
+                input = packages,
+                path = clientDir,
+                fileName = "HttpUtil.kt"
             ),
             HandlebarsTemplates.applyTemplate(
-                HandlebarsTemplates.clientOAuth,
-                packages,
-                clientDir,
-                "OAuth.kt"
+                template = HandlebarsTemplates.clientOAuth,
+                input = packages,
+                path = clientDir,
+                fileName = "OAuth.kt"
             ),
             HandlebarsTemplates.applyTemplate(
-                HandlebarsTemplates.clientLoggingInterceptor,
-                packages,
-                clientDir,
-                "LoggingInterceptor.kt"
+                template = HandlebarsTemplates.clientLoggingInterceptor,
+                input = packages,
+                path = clientDir,
+                fileName = "LoggingInterceptor.kt"
             )
         )
     }

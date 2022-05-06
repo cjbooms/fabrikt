@@ -142,6 +142,8 @@ This section documents the available CLI parameters for controlling what gets ge
 |                            |   `MICRONAUT_INTROSPECTION` - This option adds @Introspected to the generated models. Requires dependency "'io.micronaut:micronaut-core:+"
 |                            |   `MICRONAUT_REFLECTION` - This option adds @ReflectiveAccess to the generated models. Requires dependency "'io.micronaut:micronaut-core:+"
 |   `--output-directory`     | Allows the generation dir to be overridden. Defaults to current dir
+|   `--resources-path`       | Allows the path for generated resources to be overridden. Defaults to `src/main/resources`
+|   `--src-path`             | Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin`
 |   `--targets`              | Targets are the parts of the application that you want to be generated.
 |                            | CHOOSE ANY OF:
 |                            |   `HTTP_MODELS` - Jackson annotated data classes to represent the schema objects defined in the input.

@@ -19,8 +19,14 @@ import com.cjbooms.fabrikt.model.ResourceFile
 import com.cjbooms.fabrikt.model.ResourceSourceSet
 import com.cjbooms.fabrikt.model.SourceApi
 import com.squareup.kotlinpoet.FileSpec
+import java.nio.file.Path
 
-class CodeGenerator(private val packages: Packages, private val sourceApi: SourceApi) {
+class CodeGenerator(
+    private val packages: Packages,
+    private val sourceApi: SourceApi,
+    private val srcPath: Path,
+    private val resourcesPath: Path
+) {
 
     fun generate(): Collection<GeneratedFile> = MutableSettings.generationTypes().map(::generateCode).flatten()
 
@@ -38,15 +44,15 @@ class CodeGenerator(private val packages: Packages, private val sourceApi: Sourc
         sourceSet(controllers().files).plus(sourceSet(models().files))
 
     private fun generateClient(): Collection<GeneratedFile> {
-        val lib = OkHttpClientGenerator(packages, sourceApi).generateLibrary(MutableSettings.clientOptions())
+        val lib = OkHttpClientGenerator(packages, sourceApi, srcPath).generateLibrary(MutableSettings.clientOptions())
         return sourceSet(client().files).plus(lib).plus(sourceSet(models().files))
     }
 
     private fun generateQuarkusReflectionResource(): Collection<GeneratedFile> = resourceSet(resources(models()))
 
-    private fun sourceSet(fileSpec: Collection<FileSpec>) = setOf(KotlinSourceSet(fileSpec))
+    private fun sourceSet(fileSpec: Collection<FileSpec>) = setOf(KotlinSourceSet(fileSpec, srcPath))
 
-    private fun resourceSet(resFiles: Collection<ResourceFile>) = setOf(ResourceSourceSet(resFiles))
+    private fun resourceSet(resFiles: Collection<ResourceFile>) = setOf(ResourceSourceSet(resFiles, resourcesPath))
 
     private fun models(): Models =
         JacksonModelGenerator(packages, sourceApi, MutableSettings.modelOptions()).generate()
@@ -58,5 +64,5 @@ class CodeGenerator(private val packages: Packages, private val sourceApi: Sourc
         SpringControllerInterfaceGenerator(packages, sourceApi, MutableSettings.controllerOptions()).generate()
 
     private fun client(): Clients =
-        OkHttpClientGenerator(packages, sourceApi).generate(MutableSettings.clientOptions())
+        OkHttpClientGenerator(packages, sourceApi, srcPath).generate(MutableSettings.clientOptions())
 }

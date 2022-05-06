@@ -2,15 +2,10 @@ package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.GeneratorUtils.firstResponse
 import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
-import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toBodyParameterSpec
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toParameterSpec
 import com.cjbooms.fabrikt.generators.TypeFactory
-import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ACCEPT_HEADER_VARIABLE_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_HEADERS_PARAMETER_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.addIncomingParameters
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.deriveClientParameters
@@ -26,7 +21,6 @@ import com.cjbooms.fabrikt.model.SimpleFile
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.javaparser.utils.CodeGenerationUtils
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.CodeBlock
@@ -36,10 +30,12 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
+import java.nio.file.Path
 
 class OkHttpEnhancedClientGenerator(
     private val packages: Packages,
-    private val api: SourceApi
+    private val api: SourceApi,
+    private val srcPath: Path = Destinations.MAIN_KT_SOURCE
 ) {
 
     fun generateDynamicClientCode(options: Set<ClientCodeGenOptionType>): Collection<ClientType> =
@@ -133,8 +129,7 @@ class OkHttpEnhancedClientGenerator(
     }
 
     fun generateLibrary(options: Set<ClientCodeGenOptionType>): Collection<GeneratedFile> {
-        val codeDir = Destinations.MAIN_KT_SRC.resolve(CodeGenerationUtils.packageToPath(packages.base))
-        val clientDir = codeDir.resolve("client")
+        val clientDir = srcPath.resolve("client")
         return listOfNotNull(
             applyTemplateIfOptionIsEnabled(options, ClientCodeGenOptionType.RESILIENCE4J) {
                 HandlebarsTemplates.applyTemplate(
