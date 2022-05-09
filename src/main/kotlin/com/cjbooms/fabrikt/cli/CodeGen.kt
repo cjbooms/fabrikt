@@ -27,7 +27,9 @@ object CodeGen {
             codeGenArgs.apiFragments.map { it.toFile().readText() },
             codeGenArgs.controllerOptions,
             codeGenArgs.modelOptions,
-            codeGenArgs.clientOptions
+            codeGenArgs.clientOptions,
+            codeGenArgs.srcPath,
+            codeGenArgs.resourcesPath
         )
     }
 
@@ -39,7 +41,9 @@ object CodeGen {
         apiFragments: List<String> = emptyList(),
         controllerOptions: Set<ControllerCodeGenOptionType>,
         modelOptions: Set<ModelCodeGenOptionType>,
-        clientOptions: Set<ClientCodeGenOptionType>
+        clientOptions: Set<ClientCodeGenOptionType>,
+        srcPath: Path,
+        resourcesPath: Path,
     ) {
         MutableSettings.updateSettings(codeGenTypes, controllerOptions, modelOptions, clientOptions)
 
@@ -50,7 +54,7 @@ object CodeGen {
 
         val packages = Packages(basePackage)
         val sourceApi = SourceApi.create(suppliedApi, apiFragments, baseDir)
-        val generator = CodeGenerator(packages, sourceApi)
+        val generator = CodeGenerator(packages, sourceApi, srcPath, resourcesPath)
         generator.generate().forEach { it.writeFileTo(outputDir.toFile()) }
     }
 }

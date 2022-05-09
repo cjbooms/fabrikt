@@ -1,7 +1,5 @@
 package com.cjbooms.fabrikt.model
 
-import com.cjbooms.fabrikt.model.Destinations.MAIN_KT_SOURCE
-import com.cjbooms.fabrikt.model.Destinations.MAIN_RESOURCES
 import com.cjbooms.fabrikt.util.FileUtils.writeFileTo
 import com.squareup.kotlinpoet.FileSpec
 import java.io.File
@@ -26,13 +24,15 @@ data class ResourceFile(
     override fun writeFileTo(outputDir: File) = inputStream.writeFileTo(Path.of(outputDir.absolutePath, fileName))
 }
 
-data class KotlinSourceSet(val files: Collection<FileSpec>, val srcDir: String = MAIN_KT_SOURCE) : GeneratedFile() {
-    override fun writeFileTo(outputDir: File) = files.distinct().forEach { it.writeTo(outputDir.resolve(srcDir)) }
+data class KotlinSourceSet(val files: Collection<FileSpec>, val srcDir: Path) : GeneratedFile() {
+    override fun writeFileTo(outputDir: File) = files.distinct().forEach {
+        it.writeTo(outputDir.resolve(srcDir.toString()))
+    }
 }
 
-data class ResourceSourceSet(val files: Collection<ResourceFile>, val srcDir: String = MAIN_RESOURCES) : GeneratedFile() {
+data class ResourceSourceSet(val files: Collection<ResourceFile>, val srcDir: Path) : GeneratedFile() {
     override fun writeFileTo(outputDir: File) {
-        with(outputDir.resolve(srcDir)) {
+        with(outputDir.resolve(srcDir.toString())) {
             mkdirs()
             files.forEach { it.writeFileTo(this) }
         }

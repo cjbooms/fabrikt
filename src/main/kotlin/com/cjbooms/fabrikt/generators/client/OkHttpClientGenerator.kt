@@ -5,13 +5,15 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.model.Clients
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.SourceApi
+import java.nio.file.Path
 
 class OkHttpClientGenerator(
     packages: Packages,
-    api: SourceApi
+    api: SourceApi,
+    srcPath: Path,
 ) {
-    private val simpleClientGenerator = OkHttpSimpleClientGenerator(packages, api)
-    private val enhancedClientGenerator = OkHttpEnhancedClientGenerator(packages, api)
+    private val simpleClientGenerator = OkHttpSimpleClientGenerator(packages, api, srcPath)
+    private val enhancedClientGenerator = OkHttpEnhancedClientGenerator(packages, api, srcPath)
 
     fun generate(options: Set<ClientCodeGenOptionType>): Clients {
         val simpleClient = simpleClientGenerator.generateDynamicClientCode()

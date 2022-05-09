@@ -6,6 +6,7 @@ import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
 import com.beust.jcommander.ParameterException
 import com.beust.jcommander.converters.PathConverter
+import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.util.NormalisedString.isValidJavaPackage
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
@@ -96,6 +97,20 @@ class CodeGenArgs {
         converter = ClientCodeGenOptionConverter::class
     )
     var clientOptions: Set<ClientCodeGenOptionType> = emptySet()
+
+    @Parameter(
+        names = ["--src-path"],
+        description = "Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin`",
+        converter = PathConverter::class
+    )
+    var srcPath: Path = Destinations.MAIN_KT_SOURCE
+
+    @Parameter(
+        names = ["--resources-path"],
+        description = "Allows the path for generated resources to be overridden. Defaults to `src/main/resources`",
+        converter = PathConverter::class
+    )
+    var resourcesPath: Path = Destinations.MAIN_RESOURCES
 }
 
 class CodeGenerationTypesConverter : IStringConverter<CodeGenerationType> {
