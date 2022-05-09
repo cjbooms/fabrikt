@@ -29,7 +29,7 @@ val projectLicenseName = "Apache License 2.0"
 val projectLicenseUrl = "https://opensource.org/licenses/Apache-2.0"
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -43,7 +43,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
-    implementation("com.beust:jcommander:1.74")
+    implementation("com.beust:jcommander:1.82")
     implementation("com.reprezen.kaizen:openapi-parser:4.0.4") { exclude(group = "junit") }
     implementation("com.reprezen.jsonoverlay:jsonoverlay:4.0.3")
     implementation("com.squareup:kotlinpoet:1.3.0") { exclude(module = "kotlin-stdlib-jre7") }
