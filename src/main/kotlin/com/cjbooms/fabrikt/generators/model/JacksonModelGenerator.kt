@@ -26,7 +26,7 @@ import com.cjbooms.fabrikt.model.SchemaInfo
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedAdditionalProperties
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfPolymorphicTypes
@@ -221,7 +221,7 @@ class JacksonModelGenerator(
                                         it.name.toModelClassName(enclosingModelName), props
                                     )
                                 }
-                            items.isEnumDefinition() ->
+                            items.isInlinedEnumDefinition() ->
                                 setOf(
                                     buildEnumClass(
                                         KotlinTypeInfo.from(items, "items", enclosingModelName) as KotlinTypeInfo.Enum
