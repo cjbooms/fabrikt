@@ -30,7 +30,9 @@ components:
         enum_ref:
           $ref: '#/components/schemas/EnumObject'
         extensible_enum_ref:
-          $ref: '#/components/schemas/ExtensibleEnumObject'
+          $ref: '#/components/schemas/ExtensibleEnumObject'        
+        list_enums:
+          $ref: '#/components/schemas/ListEnums'
 
     EnumObject:
       type: string
@@ -51,5 +53,10 @@ components:
         - application/json
         - application/x.some-type+json    
         - application/x.some-other-type+json;version=2    
+          
+    ListEnums:
+      type: array
+      items: 
+        $ref: '#/components/schemas/ContentType'
 
 

@@ -38,7 +38,10 @@ data class EnumHolder(
     val enumRef: EnumObject? = null,
     @param:JsonProperty("extensible_enum_ref")
     @get:JsonProperty("extensible_enum_ref")
-    val extensibleEnumRef: ExtensibleEnumObject? = null
+    val extensibleEnumRef: ExtensibleEnumObject? = null,
+    @param:JsonProperty("list_enums")
+    @get:JsonProperty("list_enums")
+    val listEnums: List<ContentType>? = null
 )
 
 enum class EnumHolderArrayOfEnums(
