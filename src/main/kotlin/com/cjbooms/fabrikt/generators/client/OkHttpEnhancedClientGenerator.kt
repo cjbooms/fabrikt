@@ -21,6 +21,7 @@ import com.cjbooms.fabrikt.model.SimpleFile
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.javaparser.utils.CodeGenerationUtils
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.CodeBlock
@@ -129,7 +130,9 @@ class OkHttpEnhancedClientGenerator(
     }
 
     fun generateLibrary(options: Set<ClientCodeGenOptionType>): Collection<GeneratedFile> {
-        val clientDir = srcPath.resolve("client")
+        val clientDir = srcPath
+            .resolve(CodeGenerationUtils.packageToPath(packages.base))
+            .resolve("client")
         return listOfNotNull(
             applyTemplateIfOptionIsEnabled(options, ClientCodeGenOptionType.RESILIENCE4J) {
                 HandlebarsTemplates.applyTemplate(
