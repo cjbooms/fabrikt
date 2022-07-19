@@ -12,7 +12,7 @@ data class ApiResponse<T>(val statusCode: Int, val headers: Headers, val data: T
 /**
  * API non-2xx failure responses returned by API call.
  */
-open class ApiException(override val message: String) : Exception(message)
+open class ApiException(override val message: String) : RuntimeException(message)
 
 /**
  * API 4xx failure responses returned by API call.
