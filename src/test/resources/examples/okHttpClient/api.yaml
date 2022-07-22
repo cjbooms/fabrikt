@@ -40,6 +40,7 @@ paths:
         - $ref: "#/components/parameters/PathParam"
         - $ref: "#/components/parameters/QueryParam2"
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/PaginationLimitParam"
       responses:
         200:
           description: "successful operation"
@@ -144,6 +145,16 @@ components:
           type: "string"
       required: false
       allowEmptyValue: false
+      
+    PaginationLimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1000
+        default: 500
+      required: false
 
     QueryParam2:
       name: "query_param2"

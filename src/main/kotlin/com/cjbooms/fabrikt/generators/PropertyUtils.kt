@@ -20,35 +20,6 @@ enum class ClassType {
     SUB_MODEL
 }
 
-private sealed class OasDefault {
-
-    abstract fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder
-
-    data class StringValue(val strValue: String) : OasDefault() {
-        override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
-            return paramSpecBuilder.defaultValue("%S", strValue)
-        }
-    }
-
-    data class NumericValue(val numericValue: Number) : OasDefault() {
-        override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
-            return paramSpecBuilder.defaultValue("%L", numericValue)
-        }
-    }
-
-    data class BooleanValue(val boolValue: Boolean) : OasDefault() {
-        override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
-            return paramSpecBuilder.defaultValue("%L", boolValue)
-        }
-    }
-
-    data class EnumValue(val type: ClassName, val enumValue: String) : OasDefault() {
-        override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
-            return paramSpecBuilder.defaultValue("%T.${enumValue.toUpperCase()}", type)
-        }
-    }
-}
-
 object PropertyUtils {
 
     fun PropertyInfo.addToClass(
@@ -64,9 +35,9 @@ object PropertyUtils {
             property.initializer("mutableMapOf()")
             property.addAnnotation(JacksonMetadata.ignore)
             val value =
-                if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties)
+                if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties) {
                     Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), parameterizedType)
-                else parameterizedType
+                } else parameterizedType
             classBuilder.addFunction(
                 FunSpec.builder("get")
                     .returns(Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), value))
@@ -139,7 +110,7 @@ object PropertyUtils {
         return when (propTypeInfo) {
             is PropertyInfo.Field -> propTypeInfo.schema.default?.let {
                 val className = parameterizedType as? ClassName
-                getDefaultValue(propTypeInfo, className, it)
+                OasDefault.from(propTypeInfo.typeInfo, className, it)
             }
             else -> null
         }
@@ -221,23 +192,6 @@ object PropertyUtils {
                     addAnnotation(fieldValid())
                 }
             }
-        }
-    }
-
-    private fun getDefaultValue(field: PropertyInfo.Field, type: ClassName?, default: Any): OasDefault? {
-        return when (default) {
-            is String -> {
-                when (val typeInfo = field.typeInfo) {
-                    is KotlinTypeInfo.Enum -> {
-                        if (type != null && typeInfo.entries.contains(default)) OasDefault.EnumValue(type, default)
-                        else null
-                    }
-                    else -> OasDefault.StringValue(default)
-                }
-            }
-            is Number -> OasDefault.NumericValue(default)
-            is Boolean -> OasDefault.BooleanValue(default)
-            else -> null
         }
     }
 }

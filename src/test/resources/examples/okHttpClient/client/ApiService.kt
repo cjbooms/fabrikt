@@ -77,12 +77,13 @@ class ExamplePath2Service(
     @Throws(ApiException::class)
     fun getExamplePath2PathParam(
         pathParam: String,
+        limit: Int = 500,
         queryParam2: Int?,
         ifNoneMatch: String?,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Content> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExamplePath2PathParam(pathParam, queryParam2, ifNoneMatch, additionalHeaders)
+            apiClient.getExamplePath2PathParam(pathParam, limit, queryParam2, ifNoneMatch, additionalHeaders)
         }
 
     @Throws(ApiException::class)

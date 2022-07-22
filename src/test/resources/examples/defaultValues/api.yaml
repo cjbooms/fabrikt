@@ -24,3 +24,12 @@ components:
         string_phrase:
           type: string
           default: Cowabunga Dude
+        uri_type:
+          type: string
+          format: uri
+          description: |
+            An absolute URI that identifies the problem type.  When dereferenced,
+            it SHOULD provide human-readable documentation for the problem type
+            (e.g., using HTML).
+          default: 'about:blank'
+          example: 'https://zalando.github.io/problem/constraint-violation'

@@ -2,6 +2,7 @@ package examples.defaultValues.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import java.net.URI
 import javax.validation.constraints.NotNull
 import kotlin.Boolean
 import kotlin.Int
@@ -28,7 +29,11 @@ data class PersonWithDefaults(
     @param:JsonProperty("string_phrase")
     @get:JsonProperty("string_phrase")
     @get:NotNull
-    val stringPhrase: String = "Cowabunga Dude"
+    val stringPhrase: String = "Cowabunga Dude",
+    @param:JsonProperty("uri_type")
+    @get:JsonProperty("uri_type")
+    @get:NotNull
+    val uriType: URI = URI("about:blank")
 )
 
 enum class PersonWithDefaultsEnumDefault(

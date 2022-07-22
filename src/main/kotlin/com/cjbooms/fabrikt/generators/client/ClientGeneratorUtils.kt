@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleResponseSchemas
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
+import com.cjbooms.fabrikt.generators.OasDefault
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.HeaderParam
@@ -86,7 +87,7 @@ object ClientGeneratorUtils {
         val specs = parameters.map {
             val builder = it.toParameterSpecBuilder()
             if (it is RequestParameter && it.defaultValue != null) {
-                builder.defaultValue("%S", it.defaultValue)
+                OasDefault.from(it.typeInfo, it.type, it.defaultValue)?.setDefault(builder)
             }
             builder.build()
         }
