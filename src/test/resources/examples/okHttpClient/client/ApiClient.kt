@@ -101,12 +101,14 @@ class ExamplePath2Client(
      * GET example path 2
      *
      * @param pathParam The resource id
+     * @param limit
      * @param queryParam2
      * @param ifNoneMatch The RFC7232 If-None-Match header field
      */
     @Throws(ApiException::class)
     fun getExamplePath2PathParam(
         pathParam: String,
+        limit: Int = 500,
         queryParam2: Int?,
         ifNoneMatch: String?,
         additionalHeaders: Map<String, String> = emptyMap()
@@ -115,6 +117,7 @@ class ExamplePath2Client(
             .pathParam("{path_param}" to pathParam)
             .toHttpUrl()
             .newBuilder()
+            .queryParam("limit", limit)
             .queryParam("query_param2", queryParam2)
             .build()
 
