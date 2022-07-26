@@ -32,8 +32,8 @@ class ExamplePath1Client(
      */
     @Throws(ApiException::class)
     fun getExamplePath1(
-        explodeListQueryParam: List<String>?,
-        queryParam2: Int?,
+        explodeListQueryParam: List<String>? = null,
+        queryParam2: Int? = null,
         acceptHeader: String = "application/vnd.custom.media+xml",
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<QueryResult> {
@@ -74,9 +74,9 @@ class ExamplePath2Client(
      */
     @Throws(ApiException::class)
     fun getExamplePath2(
-        explodeListQueryParam: List<String>?,
-        queryParam2: Int?,
-        accept: ContentType?,
+        explodeListQueryParam: List<String>? = null,
+        queryParam2: Int? = null,
+        accept: ContentType? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2"
@@ -114,7 +114,7 @@ class MultipleResponseSchemasClient(
      */
     @Throws(ApiException::class)
     fun getMultipleResponseSchemas(
-        accept: ContentType?,
+        accept: ContentType? = null,
         additionalHeaders: Map<String, String> =
             emptyMap()
     ): ApiResponse<JsonNode> {
