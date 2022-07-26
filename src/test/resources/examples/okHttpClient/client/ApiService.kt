@@ -36,8 +36,8 @@ class ExamplePath1Service(
 
     @Throws(ApiException::class)
     fun getExamplePath1(
-        explodeListQueryParam: List<String>?,
-        queryParam2: Int?,
+        explodeListQueryParam: List<String>? = null,
+        queryParam2: Int? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
@@ -47,7 +47,7 @@ class ExamplePath1Service(
     @Throws(ApiException::class)
     fun postExamplePath1(
         content: Content,
-        explodeListQueryParam: List<String>?,
+        explodeListQueryParam: List<String>? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
@@ -78,8 +78,8 @@ class ExamplePath2Service(
     fun getExamplePath2PathParam(
         pathParam: String,
         limit: Int = 500,
-        queryParam2: Int?,
-        ifNoneMatch: String?,
+        queryParam2: Int? = null,
+        ifNoneMatch: String? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Content> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
@@ -89,8 +89,8 @@ class ExamplePath2Service(
     @Throws(ApiException::class)
     fun headOperationIdExample(
         pathParam: String,
-        queryParam3: Boolean?,
-        ifNoneMatch: String?,
+        queryParam3: Boolean? = null,
+        ifNoneMatch: String? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
@@ -137,7 +137,7 @@ class ExamplePath3SubresourceService(
         firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
-        csvListQueryParam: List<String>?,
+        csvListQueryParam: List<String>? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {

@@ -35,8 +35,8 @@ class ExamplePath1Client(
      */
     @Throws(ApiException::class)
     fun getExamplePath1(
-        explodeListQueryParam: List<String>?,
-        queryParam2: Int?,
+        explodeListQueryParam: List<String>? = null,
+        queryParam2: Int? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
@@ -68,7 +68,7 @@ class ExamplePath1Client(
     @Throws(ApiException::class)
     fun postExamplePath1(
         content: Content,
-        explodeListQueryParam: List<String>?,
+        explodeListQueryParam: List<String>? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
@@ -109,8 +109,8 @@ class ExamplePath2Client(
     fun getExamplePath2PathParam(
         pathParam: String,
         limit: Int = 500,
-        queryParam2: Int?,
-        ifNoneMatch: String?,
+        queryParam2: Int? = null,
+        ifNoneMatch: String? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Content> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
@@ -145,8 +145,8 @@ class ExamplePath2Client(
     @Throws(ApiException::class)
     fun headOperationIdExample(
         pathParam: String,
-        queryParam3: Boolean?,
-        ifNoneMatch: String?,
+        queryParam3: Boolean? = null,
+        ifNoneMatch: String? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
@@ -224,7 +224,7 @@ class ExamplePath3SubresourceClient(
         firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
-        csvListQueryParam: List<String>?,
+        csvListQueryParam: List<String>? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-3/{path_param}/subresource"

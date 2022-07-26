@@ -86,8 +86,9 @@ object ClientGeneratorUtils {
     fun FunSpec.Builder.addIncomingParameters(parameters: List<IncomingParameter>): FunSpec.Builder {
         val specs = parameters.map {
             val builder = it.toParameterSpecBuilder()
-            if (it is RequestParameter && it.defaultValue != null) {
-                OasDefault.from(it.typeInfo, it.type, it.defaultValue)?.setDefault(builder)
+            if (it is RequestParameter) {
+                if (it.defaultValue != null) OasDefault.from(it.typeInfo, it.type, it.defaultValue)?.setDefault(builder)
+                else if (!it.isRequired) builder.defaultValue("null")
             }
             builder.build()
         }
