@@ -61,9 +61,8 @@ sealed class OasType(
                 .filter { it.specialization == getSpecialization(oasKey) }
                 .filter { it.format == format || it.format == null }
                 .let { candidates ->
-                    if (candidates.size > 1) {
-                        candidates.find { it.format == format }
-                    } else candidates.firstOrNull()
+                    if (candidates.size > 1) candidates.find { it.format == format }
+                    else candidates.firstOrNull()
                 } ?: throw IllegalStateException(
                 "Unknown OAS type: ${safeType()} and format: $format and specialization: ${getSpecialization(oasKey)}"
             )
