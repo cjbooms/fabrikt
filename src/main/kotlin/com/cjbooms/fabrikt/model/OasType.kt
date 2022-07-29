@@ -5,10 +5,10 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isMapTypeAdditionalProper
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleMapDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleOneOfAnyDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isStringDefinitionWithFormat
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUnknownAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUntypedAdditionalProperties
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isStringDefinitionWithFormat
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeType
 import com.reprezen.kaizen.oasparser.model3.Schema
 import kotlin.reflect.KClass
@@ -20,7 +20,7 @@ sealed class OasType(
     val specialization: Specialization = Specialization.NONE
 ) {
     object Any : OasType(null)
-    object OneOfAny : OasType("object", specialization = Specialization.ONE_OF_ANY)
+    object OneOfAny : OasType(WILD_CARD_TYPE, specialization = Specialization.ONE_OF_ANY)
     object Boolean : OasType("boolean")
     object Date : OasType("string", "date")
     object DateTime : OasType("string", "date-time")
@@ -51,9 +51,13 @@ sealed class OasType(
         OasType("object", specialization = Specialization.TYPED_MAP_ADDITIONAL_PROPERTIES)
 
     companion object {
+        private const val WILD_CARD_TYPE: String = "wildcard"
         fun Schema.toOasType(oasKey: String): OasType =
             values(OasType::class)
-                .filter { it.type == safeType() }
+                .filter {
+                    it.type == safeType() ||
+                        it.type == WILD_CARD_TYPE && getSpecialization(oasKey) == Specialization.ONE_OF_ANY
+                }
                 .filter { it.specialization == getSpecialization(oasKey) }
                 .filter { it.format == format || it.format == null }
                 .let { candidates ->
