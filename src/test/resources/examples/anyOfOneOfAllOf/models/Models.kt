@@ -102,5 +102,8 @@ data class SecondOneB(
 data class SimpleOneOfs(
     @param:JsonProperty("oneof_property")
     @get:JsonProperty("oneof_property")
-    val oneofProperty: Any? = null
+    val oneofProperty: Any? = null,
+    @param:JsonProperty("primitive_oneof_property")
+    @get:JsonProperty("primitive_oneof_property")
+    val primitiveOneofProperty: Any? = null
 )

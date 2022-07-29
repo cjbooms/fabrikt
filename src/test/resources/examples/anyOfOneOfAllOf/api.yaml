@@ -3,9 +3,11 @@ components:
   schemas:
     SimpleOneOfs:
       type: object
-      properties: 
+      properties:
         oneof_property:
           $ref: '#/components/schemas/ContainsNestedOneOf'
+        primitive_oneof_property:
+          $ref: '#/components/schemas/ContainsPrimitiveOneOf'
 
     ComplexParent:
       allOf:
@@ -20,6 +22,13 @@ components:
       oneOf:
         - $ref: "#/components/schemas/FirstOneA"
         - $ref: "#/components/schemas/ComplexSecondOneA"
+        - type: string
+        - type: integer
+    
+    ContainsPrimitiveOneOf:
+      oneOf:
+        - type: string
+        - type: integer
 
     ContainsNestedAnyOf:
       anyOf:
@@ -66,13 +75,13 @@ components:
         second_property:
           type: string
         third_property:
-          type: string   
+          type: string
         forth_property:
           $ref: '#/components/schemas/AnyValue'
-            
+    
     AnyValue:
       description: Tests support for https://swagger.io/docs/specification/data-models/data-types/#any
-      
+    
     OneOfAdditionalProps:
       type: object
       properties:
