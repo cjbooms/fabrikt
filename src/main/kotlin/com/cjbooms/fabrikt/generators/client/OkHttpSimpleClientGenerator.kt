@@ -114,12 +114,6 @@ class OkHttpSimpleClientGenerator(
                 input = packages,
                 path = clientDir,
                 fileName = "OAuth.kt"
-            ),
-            HandlebarsTemplates.applyTemplate(
-                template = HandlebarsTemplates.clientLoggingInterceptor,
-                input = packages,
-                path = clientDir,
-                fileName = "LoggingInterceptor.kt"
             )
         )
     }
@@ -194,7 +188,8 @@ data class SimpleClientOperationStatement(
             .filter { it.parameterLocation == HeaderParam }
             .forEach {
                 this.add(
-                    "\n.%T(%S, %L)", "header".toClassName(packages.client),
+                    "\n.%T(%S, %L)",
+                    "header".toClassName(packages.client),
                     it.originalName,
                     it.name + if (it.typeInfo is KotlinTypeInfo.Enum) "?.value" else ""
                 )

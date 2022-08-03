@@ -120,23 +120,6 @@ class OkHttpClientGeneratorTest {
         assertThat(generatedHttpUtils.content).isEqualTo(expectedHttpUtils)
     }
 
-    @ParameterizedTest
-    @MethodSource("fullApiTestCases")
-    fun `correct logging interceptor libraries are generated`(testCaseName: String) {
-        val packages = Packages("examples.$testCaseName")
-        val sourceApi = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
-
-        val expectedLoggingInterceptor = readTextResource("/examples/$testCaseName/client/LoggingInterceptor.kt")
-
-        val generatedLoggingInterceptor = OkHttpSimpleClientGenerator(
-            packages,
-            sourceApi
-        ).generateLibrary().filterIsInstance<SimpleFile>()
-            .first { it.path.fileName.toString() == "LoggingInterceptor.kt" }
-
-        assertThat(generatedLoggingInterceptor.content).isEqualTo(expectedLoggingInterceptor)
-    }
-
     private fun Collection<ClientType>.toSingleFile(): String {
         val destPackage = if (this.isNotEmpty()) first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
