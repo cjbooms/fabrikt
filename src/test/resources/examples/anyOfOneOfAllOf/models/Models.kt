@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
+import javax.validation.constraints.NotNull
 import kotlin.Any
+import kotlin.Int
 import kotlin.String
 import kotlin.collections.Map
 import kotlin.collections.MutableMap
@@ -20,15 +22,25 @@ data class ComplexParent(
     @param:JsonProperty("second_nested_any_of_prop")
     @get:JsonProperty("second_nested_any_of_prop")
     val secondNestedAnyOfProp: String? = null,
+    @param:JsonProperty("required_string")
+    @get:JsonProperty("required_string")
+    @get:NotNull
+    val requiredString: String,
+    @param:JsonProperty("required_int")
+    @get:JsonProperty("required_int")
+    @get:NotNull
+    val requiredInt: Int,
     @param:JsonProperty("top_level_prop")
     @get:JsonProperty("top_level_prop")
-    val topLevelProp: BigDecimal? = null
+    @get:NotNull
+    val topLevelProp: BigDecimal
 )
 
 data class ComplexSecondOneA(
     @param:JsonProperty("more_nested_prop_one")
     @get:JsonProperty("more_nested_prop_one")
-    val moreNestedPropOne: String? = null
+    @get:NotNull
+    val moreNestedPropOne: String
 )
 
 data class ContainsNestedAnyOf(
@@ -61,7 +73,8 @@ data class FirstOneB(
 data class MoreNesting(
     @param:JsonProperty("more_nested_prop_one")
     @get:JsonProperty("more_nested_prop_one")
-    val moreNestedPropOne: String? = null
+    @get:NotNull
+    val moreNestedPropOne: String
 )
 
 data class OneOfAdditionalProps(
@@ -106,4 +119,15 @@ data class SimpleOneOfs(
     @param:JsonProperty("primitive_oneof_property")
     @get:JsonProperty("primitive_oneof_property")
     val primitiveOneofProperty: Any? = null
+)
+
+data class SimpleTypeWithRequiredProps(
+    @param:JsonProperty("required_string")
+    @get:JsonProperty("required_string")
+    @get:NotNull
+    val requiredString: String,
+    @param:JsonProperty("required_int")
+    @get:JsonProperty("required_int")
+    @get:NotNull
+    val requiredInt: Int
 )

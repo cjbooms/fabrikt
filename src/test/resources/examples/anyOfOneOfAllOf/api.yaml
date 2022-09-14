@@ -9,11 +9,25 @@ components:
         primitive_oneof_property:
           $ref: '#/components/schemas/ContainsPrimitiveOneOf'
 
+    SimpleTypeWithRequiredProps:
+      type: object
+      required:
+        - required_int
+        - required_string
+      properties:
+        required_string:
+          type: string
+        required_int:
+          type: integer
+
     ComplexParent:
       allOf:
         - $ref: '#/components/schemas/ContainsNestedOneOf'
         - $ref: '#/components/schemas/ContainsNestedAnyOf'
+        - $ref: '#/components/schemas/SimpleTypeWithRequiredProps'
         - type: object
+          required:
+            - top_level_prop
           properties:
             top_level_prop:
               type: number
@@ -47,6 +61,8 @@ components:
 
     MoreNesting:
       type: object
+      required:
+        - more_nested_prop_one
       properties:
         more_nested_prop_one:
           type: string
