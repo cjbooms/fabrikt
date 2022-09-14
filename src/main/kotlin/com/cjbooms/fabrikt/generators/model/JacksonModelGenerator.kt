@@ -342,7 +342,7 @@ class JacksonModelGenerator(
         val subTypes = allSchemas
             .filter { model ->
                 model.schema.allOfSchemas.any { allOfRef ->
-                    allOfRef.name == modelName && allOfRef.discriminator == discriminator
+                    allOfRef.name?.toModelClassName() == modelName && allOfRef.discriminator == discriminator
                 }
             }
         val mappings = subTypes.flatMap { schemaInfo ->

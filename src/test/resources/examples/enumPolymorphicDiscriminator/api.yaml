@@ -9,8 +9,8 @@ components:
       type: object
       properties:
         polymorph:
-          $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
-    PolymorphicEnumDiscriminator:
+          $ref: '#/components/schemas/polymorphicEnumDiscriminator'
+    polymorphicEnumDiscriminator:
       type: object
       discriminator:
         propertyName: some_enum
@@ -25,7 +25,7 @@ components:
 
     ConcreteImplOne:
       allOf:
-        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
+        - $ref: '#/components/schemas/polymorphicEnumDiscriminator'
         - type: object
           properties:
             some_prop:
@@ -33,7 +33,7 @@ components:
 
     ConcreteImplTwo:
       allOf:
-        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
+        - $ref: '#/components/schemas/polymorphicEnumDiscriminator'
         - type: object
           properties:
             some_prop:
@@ -41,7 +41,7 @@ components:
               
     ConcreteImplThree:
       allOf:
-        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
+        - $ref: '#/components/schemas/polymorphicEnumDiscriminator'
 
     EnumDiscriminator:
       type: string
