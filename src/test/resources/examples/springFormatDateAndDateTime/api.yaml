@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  version: '1'
+  title: queryLevelParameters
+paths:
+  /example:
+    get:
+      parameters:
+        - in: query
+          name: aDate
+          required: true
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: bDateTime
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: cInt
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: example

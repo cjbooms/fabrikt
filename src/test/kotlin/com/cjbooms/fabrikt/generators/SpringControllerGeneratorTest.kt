@@ -175,4 +175,13 @@ class SpringControllerGeneratorTest {
         }
         return Linter.lintString(singleFileBuilder.build().toString())
     }
+
+    @Test
+    fun `controller parameters should have spring DateTimeFormat annotations`() {
+        val api = SourceApi(readTextResource("/examples/springFormatDateAndDateTime/api.yaml"))
+        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api).generate().toSingleFile()
+        val expectedControllers = readTextResource("/examples/springFormatDateAndDateTime/controllers/Controllers.kt")
+
+        assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
+    }
 }
