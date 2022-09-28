@@ -15,6 +15,8 @@ object SpringImports {
         const val WEB_BIND_ANNOTATION = "$SPRING_BASE.web.bind.annotation"
 
         const val VALIDATION_ANNOTATION = "$SPRING_BASE.validation.annotation"
+
+        const val DATE_TIME_FORMAT = "org.springframework.format.annotation"
     }
 
     val CONTROLLER = ClassName(Packages.STEREOTYPE, "Controller")
@@ -33,6 +35,14 @@ object SpringImports {
 
     val VALIDATED = ClassName(Packages.VALIDATION_ANNOTATION, "Validated")
 
+    val DATE_TIME_FORMAT = ClassName(Packages.DATE_TIME_FORMAT, "DateTimeFormat")
+
+    object DateTimeFormat {
+        val ISO_DATE = "${DATE_TIME_FORMAT.simpleName}.ISO.DATE"
+
+        val ISO_DATE_TIME = "${DATE_TIME_FORMAT.simpleName}.ISO.DATE_TIME"
+    }
+
     object Static {
         val RESPONSE_STATUS = Pair(Packages.HTTP, "HttpStatus")
 
@@ -49,6 +59,12 @@ object SpringAnnotations {
     val VALIDATED: AnnotationSpec =
         AnnotationSpec
             .builder(SpringImports.VALIDATED)
+            .build()
+
+    fun dateTimeFormat( iso: String ): AnnotationSpec =
+        AnnotationSpec
+            .builder(SpringImports.DATE_TIME_FORMAT)
+            .addMember( "iso = %L", iso )
             .build()
 
     fun requestMappingBuilder(): AnnotationSpec.Builder =
