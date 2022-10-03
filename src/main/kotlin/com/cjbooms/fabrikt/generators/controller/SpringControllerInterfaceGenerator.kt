@@ -14,6 +14,7 @@ import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.HeaderParam
+import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PathParam
 import com.cjbooms.fabrikt.model.QueryParam
 import com.cjbooms.fabrikt.model.RequestParameter
@@ -167,9 +168,9 @@ class SpringControllerInterfaceGenerator(
             if (parameter.defaultValue != null)
                 it.addMember("defaultValue = %S", parameter.defaultValue)
 
-            if ( parameter.type == LocalDate::class.asTypeName() )
+            if ( parameter.typeInfo is KotlinTypeInfo.Date )
                 this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE ) )
-            else if (parameter.type == OffsetDateTime::class.asTypeName())
+            else if (parameter.typeInfo is KotlinTypeInfo.DateTime )
                 this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE_TIME ) )
 
             this.addAnnotation(it.build())
