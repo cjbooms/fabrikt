@@ -19,15 +19,9 @@ interface ExampleController {
     /**
      *
      *
-<<<<<<< HEAD
      * @param bDateTime
      * @param cInt
      * @param aDate
-=======
-     * @param aDate
-     * @param bDateTime
-     * @param cInt
->>>>>>> upstream/master
      */
     @RequestMapping(
         value = ["/example"],
@@ -35,23 +29,14 @@ interface ExampleController {
         method = [RequestMethod.GET]
     )
     fun get(
-<<<<<<< HEAD
-=======
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "aDate", required = true)
-        aDate: LocalDate,
->>>>>>> upstream/master
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(
             value = "bDateTime",
             required =
             true
         )
         bDateTime: OffsetDateTime,
-<<<<<<< HEAD
         @RequestParam(value = "cInt", required = true) cInt: Int,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "aDate", required = false)
         aDate: LocalDate?
-=======
-        @RequestParam(value = "cInt", required = true) cInt: Int
->>>>>>> upstream/master
     ): ResponseEntity<Unit>
 }

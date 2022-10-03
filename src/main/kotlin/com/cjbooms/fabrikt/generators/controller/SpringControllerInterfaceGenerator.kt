@@ -168,15 +168,9 @@ class SpringControllerInterfaceGenerator(
             if (parameter.defaultValue != null)
                 it.addMember("defaultValue = %S", parameter.defaultValue)
 
-<<<<<<< HEAD
             if ( parameter.typeInfo is KotlinTypeInfo.Date )
                 this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE ) )
             else if (parameter.typeInfo is KotlinTypeInfo.DateTime )
-=======
-            if ( parameter.type == LocalDate::class.asTypeName() )
-                this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE ) )
-            else if (parameter.type == OffsetDateTime::class.asTypeName())
->>>>>>> upstream/master
                 this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE_TIME ) )
 
             this.addAnnotation(it.build())
