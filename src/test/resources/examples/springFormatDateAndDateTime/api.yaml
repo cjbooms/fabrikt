@@ -8,7 +8,11 @@ paths:
       parameters:
         - in: query
           name: aDate
+<<<<<<< HEAD
           required: false
+=======
+          required: true
+>>>>>>> upstream/master
           schema:
             type: string
             format: date
