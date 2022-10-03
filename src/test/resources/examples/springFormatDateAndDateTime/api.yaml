@@ -8,7 +8,7 @@ paths:
       parameters:
         - in: query
           name: aDate
-          required: true
+          required: false
           schema:
             type: string
             format: date

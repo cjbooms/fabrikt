@@ -19,9 +19,9 @@ interface ExampleController {
     /**
      *
      *
-     * @param aDate
      * @param bDateTime
      * @param cInt
+     * @param aDate
      */
     @RequestMapping(
         value = ["/example"],
@@ -29,14 +29,14 @@ interface ExampleController {
         method = [RequestMethod.GET]
     )
     fun get(
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "aDate", required = true)
-        aDate: LocalDate,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(
             value = "bDateTime",
             required =
             true
         )
         bDateTime: OffsetDateTime,
-        @RequestParam(value = "cInt", required = true) cInt: Int
+        @RequestParam(value = "cInt", required = true) cInt: Int,
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "aDate", required = false)
+        aDate: LocalDate?
     ): ResponseEntity<Unit>
 }
