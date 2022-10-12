@@ -203,7 +203,7 @@ tasks {
 }
 
 dependencies {
-     fabric("com.cjbooms:fabrikt:+") // This should be pinned  
+     fabrikt("com.cjbooms:fabrikt:+") // This should be pinned  
      ...
 }
 ```
