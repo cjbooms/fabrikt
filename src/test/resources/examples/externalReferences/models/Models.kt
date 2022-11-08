@@ -71,11 +71,10 @@ data class ExternalObjectTwo(
     @param:JsonProperty("list-others")
     @get:JsonProperty("list-others")
     @get:Valid
-    val listOthers: List<ExternalObjectThree>? = null
-) {
+    val listOthers: List<ExternalObjectThree>? = null,
     @get:JsonIgnore
     val properties: MutableMap<String, Map<String, ExternalObjectFour>> = mutableMapOf()
-
+) {
     @JsonAnyGetter
     fun get(): Map<String, Map<String, ExternalObjectFour>> = properties
 

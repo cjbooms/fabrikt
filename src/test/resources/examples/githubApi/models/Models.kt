@@ -30,11 +30,10 @@ data class BulkEntityDetails(
     @get:JsonProperty("entities")
     @get:NotNull
     @get:Valid
-    val entities: List<EntityDetails>
-) {
+    val entities: List<EntityDetails>,
     @get:JsonIgnore
     val properties: MutableMap<String, Any> = mutableMapOf()
-
+) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
 
@@ -120,11 +119,10 @@ data class EntityDetails(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     @get:NotNull
-    val id: String
-) {
+    val id: String,
     @get:JsonIgnore
     val properties: MutableMap<String, Any> = mutableMapOf()
-
+) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
 
@@ -142,11 +140,10 @@ data class Event(
     @param:JsonProperty("data")
     @get:JsonProperty("data")
     @get:NotNull
-    val data: Map<String, Any>
-) {
+    val data: Map<String, Any>,
     @get:JsonIgnore
     val properties: MutableMap<String, Any> = mutableMapOf()
-
+) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
 
@@ -162,11 +159,10 @@ data class EventResults(
     @get:NotNull
     @get:Size(min = 0)
     @get:Valid
-    val changeEvents: List<Event>
-) {
+    val changeEvents: List<Event>,
     @get:JsonIgnore
     val properties: MutableMap<String, Any> = mutableMapOf()
-
+) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
 

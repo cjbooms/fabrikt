@@ -32,8 +32,12 @@ object PropertyUtils {
         val property = PropertySpec.builder(name, type)
 
         if (this is PropertyInfo.AdditionalProperties) {
-            property.initializer("mutableMapOf()")
+            property.initializer(name)
             property.addAnnotation(JacksonMetadata.ignore)
+            val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, type)
+            constructorParameter.defaultValue("mutableMapOf()")
+            constructorBuilder.addParameter(constructorParameter.build())
+
             val value =
                 if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties) {
                     Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), parameterizedType)
@@ -59,14 +63,17 @@ object PropertyUtils {
                     if (this is PropertyInfo.Field && isPolymorphicDiscriminator) property.addModifiers(KModifier.ABSTRACT)
                     else property.addModifiers(KModifier.OPEN)
                 }
+
                 ClassType.SUB_MODEL -> {
                     if (this is PropertyInfo.Field && isPolymorphicDiscriminator) {
                         property.addModifiers(KModifier.OVERRIDE)
                         when (maybeDiscriminator) {
                             is PropertyInfo.DiscriminatorKey.EnumKey ->
                                 property.initializer("%T.%L", type, maybeDiscriminator.enumKey)
+
                             is PropertyInfo.DiscriminatorKey.StringKey ->
                                 property.initializer("%S", maybeDiscriminator.stringValue)
+
                             else -> {
                                 property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
                             }
@@ -81,6 +88,7 @@ object PropertyUtils {
                     property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
                     property.addValidationAnnotations(this)
                 }
+
                 ClassType.VANILLA_MODEL -> {
                     property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
                     property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
@@ -88,9 +96,9 @@ object PropertyUtils {
                 }
             }
 
-            if (this !is PropertyInfo.Field || !isPolymorphicDiscriminator || isSubTypeDiscriminatorWithNoValue(
-                    classType
-                )
+            if (this !is PropertyInfo.Field ||
+                !isPolymorphicDiscriminator ||
+                isSubTypeDiscriminatorWithNoValue(classType)
             ) {
                 property.initializer(name)
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, type)
@@ -112,6 +120,7 @@ object PropertyUtils {
                 val className = parameterizedType as? ClassName
                 OasDefault.from(propTypeInfo.typeInfo, className, it)
             }
+
             else -> null
         }
     }
@@ -164,6 +173,7 @@ object PropertyUtils {
                     )
                 }
             }
+
             is PropertyInfo.CollectionValidation -> {
                 // Size Restrictions for collections
                 val (minCollLen, maxCollLen) = Pair(info.minItems, info.maxItems)
@@ -182,11 +192,13 @@ object PropertyUtils {
                     addAnnotation(fieldValid())
                 }
             }
+
             is KotlinTypeInfo.Array -> {
                 if (typeInfo.parameterizedType.isComplexType) {
                     addAnnotation(fieldValid())
                 }
             }
+
             else -> {
                 if (typeInfo.isComplexType) {
                     addAnnotation(fieldValid())

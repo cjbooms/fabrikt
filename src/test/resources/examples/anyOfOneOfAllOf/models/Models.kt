@@ -80,11 +80,10 @@ data class MoreNesting(
 data class OneOfAdditionalProps(
     @param:JsonProperty("second_nested_any_of_prop")
     @get:JsonProperty("second_nested_any_of_prop")
-    val secondNestedAnyOfProp: String? = null
-) {
+    val secondNestedAnyOfProp: String? = null,
     @get:JsonIgnore
     val properties: MutableMap<String, Any> = mutableMapOf()
-
+) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
 
