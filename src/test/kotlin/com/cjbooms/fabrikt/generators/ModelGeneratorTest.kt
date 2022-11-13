@@ -43,6 +43,7 @@ class ModelGeneratorTest {
         "oneOfPolymorphicModels",
         "optionalVsRequired",
         "polymorphicModels",
+        "nestedPolymorphicModels",
         "requiredReadOnly",
         "validationAnnotations",
         "wildCardTypes",
