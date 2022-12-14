@@ -7,17 +7,12 @@ import com.cjbooms.fabrikt.cli.CodeGenerationType.QUARKUS_REFLECTION_CONFIG
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
+import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
-import com.cjbooms.fabrikt.model.Clients
-import com.cjbooms.fabrikt.model.Controllers
-import com.cjbooms.fabrikt.model.GeneratedFile
-import com.cjbooms.fabrikt.model.KotlinSourceSet
-import com.cjbooms.fabrikt.model.Models
-import com.cjbooms.fabrikt.model.ResourceFile
-import com.cjbooms.fabrikt.model.ResourceSourceSet
-import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.generators.controller.SpringControllers
+import com.cjbooms.fabrikt.model.*
 import com.squareup.kotlinpoet.FileSpec
 import java.nio.file.Path
 
@@ -60,8 +55,14 @@ class CodeGenerator(
     private fun resources(models: Models): List<ResourceFile> =
         listOfNotNull(QuarkusReflectionModelGenerator(models, MutableSettings.generationTypes()).generate())
 
-    private fun controllers(): Controllers =
-        SpringControllerInterfaceGenerator(packages, sourceApi, MutableSettings.controllerOptions()).generate()
+    private fun controllers(): KotlinTypes {
+        val generator =
+            if (MutableSettings.controllerOptions().any { it == ControllerCodeGenOptionType.MICRONAUT })
+                MicronautControllerInterfaceGenerator(packages, sourceApi, MutableSettings.controllerOptions())
+            else
+                SpringControllerInterfaceGenerator(packages, sourceApi, MutableSettings.controllerOptions())
+        return generator.generate()
+    }
 
     private fun client(): Clients =
         OkHttpClientGenerator(packages, sourceApi, srcPath).generate(MutableSettings.clientOptions())

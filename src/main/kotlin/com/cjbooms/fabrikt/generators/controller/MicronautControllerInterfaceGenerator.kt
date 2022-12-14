@@ -8,26 +8,27 @@ import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.contro
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
-import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
-import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
+import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.model.*
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.basePath
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSingleResource
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
-import com.cjbooms.fabrikt.util.toUpperCase
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Path
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 
-class SpringControllerInterfaceGenerator(
+class MicronautControllerInterfaceGenerator(
     private val packages: Packages,
     private val api: SourceApi,
     private val options: Set<ControllerCodeGenOptionType> = emptySet()
 ) : ControllerInterfaceGenerator {
 
-    override fun generate(): SpringControllers =
-        SpringControllers(
+    private val useSuspendModifier: Boolean
+        get() = options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER }
+
+    override fun generate(): MicronautControllers =
+        MicronautControllers(
             api.openApi3.routeToPaths().map { (resourceName, paths) ->
                 buildController(resourceName, paths.values)
             }.toSet()
@@ -62,9 +63,11 @@ class SpringControllerInterfaceGenerator(
         basePath: String
     ) =
         TypeSpec.interfaceBuilder(className)
-            .addAnnotation(SpringAnnotations.CONTROLLER)
-            .addAnnotation(SpringAnnotations.VALIDATED)
-            .addAnnotation(SpringAnnotations.requestMappingBuilder().addMember("%S", basePath).build())
+            .addAnnotation(
+                AnnotationSpec
+                    .builder(MicronautImports.CONTROLLER)
+                    .build()
+            )
 
     private fun buildFunction(
         path: Path,
@@ -72,41 +75,64 @@ class SpringControllerInterfaceGenerator(
         verb: String,
     ): FunSpec {
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
-        val returnType = op.happyPathResponse(packages.base)
+        val returnType = MicronautImports.RESPONSE.parameterizedBy(op.happyPathResponse(packages.base))
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
+        val securityRequirements = op.securityRequirements
 
         // Main method builder
         val funcSpec = FunSpec
             .builder(methodName)
             .addModifiers(KModifier.ABSTRACT)
             .addKdoc(op.toKdoc(parameters))
-            .addSpringFunAnnotation(op, verb, path.pathString)
-            .addSuspendModifier()
-            .returns(SpringImports.RESPONSE_ENTITY.parameterizedBy(returnType))
+            .addMicronautFunAnnotation(op, verb, path.pathString)
+            .apply {
+                if (useSuspendModifier)
+                    addModifiers(KModifier.SUSPEND)
+            }
+            .returns(
 
+                if (useSuspendModifier)
+                    returnType
+                else
+                    MicronautImports.MONO.parameterizedBy(returnType)
+            )
+
+        // Function parameters
         parameters
             .map {
                 when (it) {
                     is BodyParameter ->
                         it
                             .toParameterSpecBuilder()
-                            .addAnnotation(SpringAnnotations.requestBodyBuilder().build())
+                            .addAnnotation(
+                                AnnotationSpec
+                                    .builder(MicronautImports.BODY).build()
+                            )
                             .addAnnotation(JavaXAnnotations.validBuilder().build())
                             .build()
+
                     is RequestParameter ->
                         it
                             .toParameterSpecBuilder()
                             .addValidationAnnotations(it)
-                            .addSpringParamAnnotation(it)
+                            .addMicronautParamAnnotation(it)
                             .build()
                 }
             }
             .forEach { funcSpec.addParameter(it) }
 
+        // Authentication parameter for OIDC
+        if (securityRequirements.any { "OpenID" in it.requirements.keys }) {
+            funcSpec.addParameter(
+                ParameterSpec.builder("authentication", MicronautImports.AUTHENTICATION)
+                    .build()
+            )
+        }
+
         return funcSpec.build()
     }
 
-    private fun FunSpec.Builder.addSpringFunAnnotation(op: Operation, verb: String, path: String): FunSpec.Builder {
+    private fun FunSpec.Builder.addMicronautFunAnnotation(op: Operation, verb: String, path: String): FunSpec.Builder {
         val produces = op.responses
             .flatMap { it.value.contentMediaTypes.keys }
             .toTypedArray()
@@ -115,24 +141,43 @@ class SpringControllerInterfaceGenerator(
             .contentMediaTypes.keys
             .toTypedArray()
 
-        val funcAnnotation =
-            SpringAnnotations
-                .requestMappingBuilder()
-                .addMember("value = [%S]", path)
-                .addMember(
-                    "produces = %L",
-                    produces.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" })
-                )
-                .addMember("method = [RequestMethod.%L]", verb.toUpperCase())
+
+        this.addAnnotation(
+            AnnotationSpec
+                .builder(MicronautImports.HttpMethods.byName(verb))
+                .addMember("uri = %S", path).build()
+        )
 
         if (consumes.isNotEmpty()) {
-            funcAnnotation.addMember(
-                "consumes = %L",
-                consumes.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" })
+            this.addAnnotation(
+                AnnotationSpec
+                    .builder(MicronautImports.CONSUMES)
+                    .addMember(
+                        consumes.joinToString(
+                            prefix = "[",
+                            postfix = "]",
+                            separator = ", ",
+                            transform = { "\"$it\"" })
+                    )
+                    .build()
             )
         }
 
-        this.addAnnotation(funcAnnotation.build())
+        if (produces.isNotEmpty()) {
+            this.addAnnotation(
+                AnnotationSpec
+                    .builder(MicronautImports.PRODUCES)
+                    .addMember(
+                        produces.joinToString(
+                            prefix = "[",
+                            postfix = "]",
+                            separator = ", ",
+                            transform = { "\"$it\"" })
+                    )
+                    .build()
+            )
+        }
+
         return this
     }
 
@@ -143,41 +188,49 @@ class SpringControllerInterfaceGenerator(
         return this
     }
 
-    private fun ParameterSpec.Builder.addSpringParamAnnotation(parameter: RequestParameter): ParameterSpec.Builder =
+    private fun ParameterSpec.Builder.addMicronautParamAnnotation(parameter: RequestParameter): ParameterSpec.Builder =
         when (parameter.parameterLocation) {
-            QueryParam -> SpringAnnotations.requestParamBuilder()
-            HeaderParam -> SpringAnnotations.requestHeaderBuilder()
-            PathParam -> SpringAnnotations.requestPathVariableBuilder()
+            QueryParam -> AnnotationSpec
+                .builder(MicronautImports.QUERY_VALUE)
+
+            HeaderParam -> AnnotationSpec
+                .builder(MicronautImports.HEADER)
+
+            PathParam -> AnnotationSpec
+                .builder(MicronautImports.PATH_VARIABLE)
         }.let {
             it.addMember("value = %S", parameter.oasName)
-            it.addMember("required = %L", parameter.isRequired)
 
             if (parameter.defaultValue != null)
                 it.addMember("defaultValue = %S", parameter.defaultValue)
 
-            if ( parameter.typeInfo is KotlinTypeInfo.Date )
-                this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE ) )
-            else if (parameter.typeInfo is KotlinTypeInfo.DateTime )
-                this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE_TIME ) )
+            if (parameter.typeInfo is KotlinTypeInfo.Date)
+                this.addAnnotation(
+                    AnnotationSpec
+                        .builder(MicronautImports.DATE_TIME_FORMAT)
+                        .addMember("iso = %L", MicronautImports.DateTimeFormat.ISO_DATE)
+                        .build()
+                )
+            else if (parameter.typeInfo is KotlinTypeInfo.DateTime)
+                this.addAnnotation(
+                    AnnotationSpec
+                        .builder(MicronautImports.DATE_TIME_FORMAT)
+                        .addMember("iso = %L", MicronautImports.DateTimeFormat.ISO_DATE_TIME)
+                        .build()
+                )
 
             this.addAnnotation(it.build())
         }
-
-    private fun FunSpec.Builder.addSuspendModifier(): FunSpec.Builder {
-        if (options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER })
-            this.addModifiers(KModifier.SUSPEND)
-        return this
-    }
 }
 
-data class SpringControllers(val controllers: Collection<ControllerType>) : KotlinTypes(controllers) {
+data class MicronautControllers(val controllers: Collection<ControllerType>) : KotlinTypes(controllers) {
     override val files: Collection<FileSpec> = super.files.map {
         it.toBuilder()
-            .addImport(SpringImports.Static.REQUEST_METHOD.first, SpringImports.Static.REQUEST_METHOD.second)
+            /*.addImport(MicronautImports.Static.REQUEST_METHOD.first, MicronautImports.Static.REQUEST_METHOD.second)
             .addImport(
-                SpringImports.Static.RESPONSE_STATUS.first,
-                SpringImports.Static.RESPONSE_STATUS.second
-            )
+                MicronautImports.Static.RESPONSE_STATUS.first,
+                MicronautImports.Static.RESPONSE_STATUS.second
+            )*/
             .build()
     }
 }
