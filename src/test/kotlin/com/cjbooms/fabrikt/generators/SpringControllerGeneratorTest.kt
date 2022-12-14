@@ -5,7 +5,7 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
-import com.cjbooms.fabrikt.model.Controllers
+import com.cjbooms.fabrikt.generators.controller.SpringControllers
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
@@ -160,7 +160,7 @@ class SpringControllerGeneratorTest {
         ).isTrue()
     }
 
-    private fun Controllers.toSingleFile(): String {
+    private fun SpringControllers.toSingleFile(): String {
         val destPackage = if (controllers.isNotEmpty()) controllers.first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
         controllers.forEach {

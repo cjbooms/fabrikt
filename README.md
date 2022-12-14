@@ -133,7 +133,8 @@ This section documents the available CLI parameters for controlling what gets ge
 |                            |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+"
 |   `--http-controller-opts` | Select the options for the controllers that you want to be generated.
 |                            | CHOOSE ANY OF:
-|                            |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions
+|                            |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions.
+|                            |   `MICRONAUT` - This option causes the generated controllers to use the Micronaut framework instead of the Spring framework.
 |   `--http-model-opts`      | Select the options for the http models that you want to be generated.
 |                            | CHOOSE ANY OF:
 |                            |   `X_EXTENSIBLE_ENUMS` - This option treats x-extensible-enums as enums
