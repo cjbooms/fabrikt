@@ -43,7 +43,8 @@ class ModelGeneratorTest {
         "requiredReadOnly",
         "validationAnnotations",
         "wildCardTypes",
-        "singleAllOf"
+        "singleAllOf",
+        "responsesSchema"
     )
 
     @BeforeEach

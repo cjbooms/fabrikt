@@ -1,0 +1,28 @@
+openapi: 3.0.0
+components:
+  responses:
+    ErrorResponse:
+      description: "Response on error"
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+              - code
+            properties:
+              message:
+                type: string
+              code:
+                type: integer
+    SucccessResponse:
+      description: "Response on success"
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string

@@ -41,6 +41,7 @@ data class SourceApi(
         }
         allSchemas = openApi3.schemas.entries.map { it.key to it.value }
             .plus(openApi3.parameters.entries.map { it.key to it.value.schema })
+            .plus(openApi3.responses.entries.flatMap { it.value.contentMediaTypes.entries.map { content -> it.key to content.value.schema } })
             .map { (key, schema) -> SchemaInfo(key, schema) }
     }
 
