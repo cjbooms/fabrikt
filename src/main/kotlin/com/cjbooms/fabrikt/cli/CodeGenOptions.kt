@@ -28,7 +28,8 @@ enum class ModelCodeGenOptionType(val description: String) {
     JAVA_SERIALIZATION("This option adds Java Serializable interface to the generated models"),
     QUARKUS_REFLECTION("This option adds @RegisterForReflection to the generated models. Requires dependency \"'io.quarkus:quarkus-core:+\""),
     MICRONAUT_INTROSPECTION("This option adds @Introspected to the generated models. Requires dependency \"'io.micronaut:micronaut-core:+\""),
-    MICRONAUT_REFLECTION("This option adds @ReflectiveAccess to the generated models. Requires dependency \"'io.micronaut:micronaut-core:+\"");
+    MICRONAUT_REFLECTION("This option adds @ReflectiveAccess to the generated models. Requires dependency \"'io.micronaut:micronaut-core:+\""),
+    INCLUDE_COMPANION_OBJECT("This option adds a companion object to the generated models.");
 
     override fun toString() = "`${super.toString()}` - $description"
 }
