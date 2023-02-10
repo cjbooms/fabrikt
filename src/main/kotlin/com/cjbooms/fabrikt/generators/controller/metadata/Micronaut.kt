@@ -14,8 +14,6 @@ object MicronautImports {
         const val MICRONAUT_HTTP_ANNOTATION = "$MICRONAUT_HTTP.annotation"
 
         const val MICRONAUT_AUTHENTICATION = "$MICRONAUT_BASE.security.authentication"
-
-        const val REACTOR_PUBLISHER = "reactor.core.publisher"
     }
 
     val CONSUMES = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Consumes")
@@ -29,8 +27,6 @@ object MicronautImports {
     val QUERY_VALUE = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "QueryValue")
     val PATH_VARIABLE = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "PathVariable")
     val AUTHENTICATION = ClassName(Packages.MICRONAUT_AUTHENTICATION, "Authentication")
-
-    val MONO = ClassName(Packages.REACTOR_PUBLISHER, "Mono")
 
     object HttpMethods {
         val GET = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Get")
