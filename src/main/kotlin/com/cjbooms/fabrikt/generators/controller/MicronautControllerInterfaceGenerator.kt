@@ -89,13 +89,7 @@ class MicronautControllerInterfaceGenerator(
                 if (useSuspendModifier)
                     addModifiers(KModifier.SUSPEND)
             }
-            .returns(
-
-                if (useSuspendModifier)
-                    returnType
-                else
-                    MicronautImports.MONO.parameterizedBy(returnType)
-            )
+            .returns(returnType)
 
         // Function parameters
         parameters
@@ -153,6 +147,7 @@ class MicronautControllerInterfaceGenerator(
                 AnnotationSpec
                     .builder(MicronautImports.CONSUMES)
                     .addMember(
+                        "value = %L",
                         consumes.joinToString(
                             prefix = "[",
                             postfix = "]",
@@ -168,6 +163,7 @@ class MicronautControllerInterfaceGenerator(
                 AnnotationSpec
                     .builder(MicronautImports.PRODUCES)
                     .addMember(
+                        "value = %L",
                         produces.joinToString(
                             prefix = "[",
                             postfix = "]",
