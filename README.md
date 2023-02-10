@@ -142,6 +142,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                            |   `QUARKUS_REFLECTION` - This option adds @RegisterForReflection to the generated models. Requires dependency "'io.quarkus:quarkus-core:+"
 |                            |   `MICRONAUT_INTROSPECTION` - This option adds @Introspected to the generated models. Requires dependency "'io.micronaut:micronaut-core:+"
 |                            |   `MICRONAUT_REFLECTION` - This option adds @ReflectiveAccess to the generated models. Requires dependency "'io.micronaut:micronaut-core:+"
+|                            |   `INCLUDE_COMPANION_OBJECT` - This option adds a companion object to the generated models.
 |   `--output-directory`     | Allows the generation dir to be overridden. Defaults to current dir
 |   `--resources-path`       | Allows the path for generated resources to be overridden. Defaults to `src/main/resources`
 |   `--src-path`             | Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin`

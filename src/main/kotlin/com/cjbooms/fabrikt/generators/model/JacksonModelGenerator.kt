@@ -57,7 +57,6 @@ import com.squareup.kotlinpoet.asTypeName
 import java.io.Serializable
 import java.net.MalformedURLException
 import java.net.URL
-
 class JacksonModelGenerator(
     private val packages: Packages,
     private val sourceApi: SourceApi,
@@ -325,6 +324,7 @@ class JacksonModelGenerator(
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
+            .addCompanionObject()
         properties.addToClass(classBuilder, ClassType.VANILLA_MODEL)
         return classBuilder.build()
     }
@@ -432,6 +432,12 @@ class JacksonModelGenerator(
             "ReflectiveAccess".toClassName("io.micronaut.core.annotation")
         )
 
+    private fun TypeSpec.Builder.addCompanionObject(): TypeSpec.Builder {
+        if(options.any { it == ModelCodeGenOptionType.INCLUDE_COMPANION_OBJECT })
+            this.addType(TypeSpec.companionObjectBuilder().build())
+        return this
+    }
+
     private fun TypeSpec.Builder.addOptionalAnnotation(optionType: ModelCodeGenOptionType, type: ClassName): TypeSpec.Builder {
         if (options.any { it == optionType })
             this.addAnnotation(
@@ -440,3 +446,4 @@ class JacksonModelGenerator(
         return this
     }
 }
+

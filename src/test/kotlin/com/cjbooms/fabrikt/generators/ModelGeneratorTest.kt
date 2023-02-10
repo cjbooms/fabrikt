@@ -43,7 +43,8 @@ class ModelGeneratorTest {
         "requiredReadOnly",
         "validationAnnotations",
         "wildCardTypes",
-        "singleAllOf"
+        "singleAllOf",
+        "responsesSchema"
     )
 
     @BeforeEach
@@ -190,6 +191,23 @@ class ModelGeneratorTest {
         )
             .generate()
             .toSingleFile()
+
+        assertThat(models).isEqualTo(expectedModels)
+    }
+
+    @Test
+    fun `companion object is added to models when generated from a full API definition when the companion object option is set`() {
+        val basePackage = "examples.companionObject"
+        val spec = readTextResource("/examples/companionObject/api.yaml")
+        val expectedModels = readTextResource("/examples/companionObject/models/Models.kt")
+
+        val models = JacksonModelGenerator(
+                Packages(basePackage),
+                SourceApi(spec),
+                setOf(ModelCodeGenOptionType.INCLUDE_COMPANION_OBJECT)
+        )
+                .generate()
+                .toSingleFile()
 
         assertThat(models).isEqualTo(expectedModels)
     }
