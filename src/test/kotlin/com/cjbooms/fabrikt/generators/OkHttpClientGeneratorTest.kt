@@ -37,10 +37,8 @@ class OkHttpClientGeneratorTest {
     @BeforeEach
     fun init() {
         MutableSettings.updateSettings(
-            setOf(CodeGenerationType.CLIENT),
-            emptySet(),
-            setOf(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS),
-            emptySet()
+            genTypes = setOf(CodeGenerationType.CLIENT),
+            modelOptions = setOf(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS),
         )
     }
 
