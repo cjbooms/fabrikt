@@ -219,14 +219,4 @@ class MicronautControllerInterfaceGenerator(
         }
 }
 
-data class MicronautControllers(val controllers: Collection<ControllerType>) : KotlinTypes(controllers) {
-    override val files: Collection<FileSpec> = super.files.map {
-        it.toBuilder()
-            /*.addImport(MicronautImports.Static.REQUEST_METHOD.first, MicronautImports.Static.REQUEST_METHOD.second)
-            .addImport(
-                MicronautImports.Static.RESPONSE_STATUS.first,
-                MicronautImports.Static.RESPONSE_STATUS.second
-            )*/
-            .build()
-    }
-}
+data class MicronautControllers(val controllers: Collection<ControllerType>) : KotlinTypes(controllers)
