@@ -10,11 +10,11 @@ object MutableSettings {
     private lateinit var clientOptions: MutableSet<ClientCodeGenOptionType>
 
     fun updateSettings(
-        genTypes: Set<CodeGenerationType>,
-        controllerOptions: Set<ControllerCodeGenOptionType>,
-        controllerTarget: ControllerCodeGenTargetType,
-        modelOptions: Set<ModelCodeGenOptionType>,
-        clientOptions: Set<ClientCodeGenOptionType>
+        genTypes: Set<CodeGenerationType> = emptySet(),
+        controllerOptions: Set<ControllerCodeGenOptionType> = emptySet(),
+        controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.SPRING,
+        modelOptions: Set<ModelCodeGenOptionType> = emptySet(),
+        clientOptions: Set<ClientCodeGenOptionType> = emptySet()
     ) {
         this.generationTypes = genTypes.toMutableSet()
         this.controllerOptions = controllerOptions.toMutableSet()

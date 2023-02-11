@@ -2,10 +2,11 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
+import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
+import com.cjbooms.fabrikt.generators.controller.MicronautControllers
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
-import com.cjbooms.fabrikt.generators.controller.SpringControllers
-import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
@@ -23,7 +24,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class SpringControllerGeneratorTest {
+class MicronautControllerGeneratorTest {
     private val basePackage = "ie.zalando"
     private lateinit var generated: Collection<FileSpec>
 
@@ -37,12 +38,15 @@ class SpringControllerGeneratorTest {
 
     private fun setupGithubApiTestEnv() {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        generated = SpringControllerInterfaceGenerator(Packages(basePackage), api).generate().files
+        generated = MicronautControllerInterfaceGenerator(Packages(basePackage), api).generate().files
     }
 
     @BeforeEach
     fun init() {
-        MutableSettings.updateSettings(genTypes = setOf(CodeGenerationType.CONTROLLERS))
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.CONTROLLERS),
+            controllerTarget = ControllerCodeGenTargetType.MICRONAUT
+        )
     }
 
     // @Test
@@ -55,7 +59,7 @@ class SpringControllerGeneratorTest {
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
         val expectedControllers = readTextResource("/examples/$testCaseName/controllers/Controllers.kt")
 
-        val controllers = SpringControllerInterfaceGenerator(
+        val controllers = MicronautControllerInterfaceGenerator(
             Packages(basePackage),
             api
         ).generate().toSingleFile()
@@ -160,18 +164,11 @@ class SpringControllerGeneratorTest {
         ).isTrue()
     }
 
-    private fun SpringControllers.toSingleFile(): String {
+    private fun MicronautControllers.toSingleFile(): String {
         val destPackage = if (controllers.isNotEmpty()) controllers.first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
         controllers.forEach {
-            val builder = singleFileBuilder
-                .addImport(SpringImports.Static.REQUEST_METHOD.first, SpringImports.Static.REQUEST_METHOD.second)
-                .addImport(
-                    SpringImports.Static.RESPONSE_STATUS.first,
-                    SpringImports.Static.RESPONSE_STATUS.second
-                )
-                .addType(it.spec)
-            builder.build()
+            singleFileBuilder.addType(it.spec).build()
         }
         return Linter.lintString(singleFileBuilder.build().toString())
     }
@@ -179,7 +176,7 @@ class SpringControllerGeneratorTest {
     @Test
     fun `controller parameters should have spring DateTimeFormat annotations`() {
         val api = SourceApi(readTextResource("/examples/springFormatDateAndDateTime/api.yaml"))
-        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api).generate().toSingleFile()
+        val controllers = MicronautControllerInterfaceGenerator(Packages(basePackage), api).generate().toSingleFile()
         val expectedControllers = readTextResource("/examples/springFormatDateAndDateTime/controllers/Controllers.kt")
 
         assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
