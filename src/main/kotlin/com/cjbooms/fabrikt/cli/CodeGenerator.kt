@@ -1,9 +1,6 @@
 package com.cjbooms.fabrikt.cli
 
-import com.cjbooms.fabrikt.cli.CodeGenerationType.CLIENT
-import com.cjbooms.fabrikt.cli.CodeGenerationType.CONTROLLERS
-import com.cjbooms.fabrikt.cli.CodeGenerationType.HTTP_MODELS
-import com.cjbooms.fabrikt.cli.CodeGenerationType.QUARKUS_REFLECTION_CONFIG
+import com.cjbooms.fabrikt.cli.CodeGenerationType.*
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
@@ -11,7 +8,6 @@ import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGen
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
-import com.cjbooms.fabrikt.generators.controller.SpringControllers
 import com.cjbooms.fabrikt.model.*
 import com.squareup.kotlinpoet.FileSpec
 import java.nio.file.Path
@@ -57,10 +53,19 @@ class CodeGenerator(
 
     private fun controllers(): KotlinTypes {
         val generator =
-            if (MutableSettings.controllerOptions().any { it == ControllerCodeGenOptionType.MICRONAUT })
-                MicronautControllerInterfaceGenerator(packages, sourceApi, MutableSettings.controllerOptions())
-            else
-                SpringControllerInterfaceGenerator(packages, sourceApi, MutableSettings.controllerOptions())
+            when (MutableSettings.controllerTarget()) {
+                ControllerCodeGenTargetType.SPRING -> SpringControllerInterfaceGenerator(
+                    packages,
+                    sourceApi,
+                    MutableSettings.controllerOptions()
+                )
+
+                ControllerCodeGenTargetType.MICRONAUT -> MicronautControllerInterfaceGenerator(
+                    packages,
+                    sourceApi,
+                    MutableSettings.controllerOptions()
+                )
+            }
         return generator.generate()
     }
 

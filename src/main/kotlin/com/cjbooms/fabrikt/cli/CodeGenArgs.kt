@@ -1,10 +1,6 @@
 package com.cjbooms.fabrikt.cli
 
-import com.beust.jcommander.IStringConverter
-import com.beust.jcommander.IValueValidator
-import com.beust.jcommander.JCommander
-import com.beust.jcommander.Parameter
-import com.beust.jcommander.ParameterException
+import com.beust.jcommander.*
 import com.beust.jcommander.converters.PathConverter
 import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.util.NormalisedString.isValidJavaPackage
@@ -85,6 +81,13 @@ class CodeGenArgs {
     var controllerOptions: Set<ControllerCodeGenOptionType> = emptySet()
 
     @Parameter(
+        names = ["--http-controller-target"],
+        description = "Select the target framework for the controllers that you want to be generated.",
+        converter = ControllerCodeGenTargetConverter::class
+    )
+    var controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.SPRING
+
+    @Parameter(
         names = ["--http-model-opts"],
         description = "Select the options for the http models that you want to be generated.",
         converter = ModelCodeGenOptionConverter::class
@@ -120,6 +123,10 @@ class CodeGenerationTypesConverter : IStringConverter<CodeGenerationType> {
 
 class ControllerCodeGenOptionConverter : IStringConverter<ControllerCodeGenOptionType> {
     override fun convert(value: String): ControllerCodeGenOptionType = convertToEnumValue(value)
+}
+
+class ControllerCodeGenTargetConverter : IStringConverter<ControllerCodeGenTargetType> {
+    override fun convert(value: String): ControllerCodeGenTargetType = convertToEnumValue(value)
 }
 
 class ModelCodeGenOptionConverter : IStringConverter<ModelCodeGenOptionType> {
