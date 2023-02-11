@@ -6,7 +6,6 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllers
-import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
@@ -111,7 +110,7 @@ class MicronautControllerGeneratorTest {
     @Test
     fun `ensure that subresource specific controllers are created`() {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api).generate()
+        val controllers = MicronautControllerInterfaceGenerator(Packages(basePackage), api).generate()
 
         assertThat(controllers.files).size().isEqualTo(6)
         assertThat(controllers.files.map { it.name }).containsAll(
@@ -149,7 +148,7 @@ class MicronautControllerGeneratorTest {
     @Test
     fun `ensure controller methods has the correct modifiers`() {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val controllers = SpringControllerInterfaceGenerator(
+        val controllers = MicronautControllerInterfaceGenerator(
             Packages(basePackage),
             api,
             setOf(ControllerCodeGenOptionType.SUSPEND_MODIFIER)
