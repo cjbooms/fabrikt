@@ -56,7 +56,7 @@ class MicronautControllerGeneratorTest {
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         val basePackage = "examples.$testCaseName"
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
-        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/Controllers.kt")
+        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/micronaut/Controllers.kt")
 
         val controllers = MicronautControllerInterfaceGenerator(
             Packages(basePackage),
@@ -101,9 +101,7 @@ class MicronautControllerGeneratorTest {
                 .distinct()
 
         assertThat(controllerAnnotations).containsOnly(
-            "org.springframework.stereotype.Controller",
-            "org.springframework.validation.annotation.Validated",
-            "org.springframework.web.bind.annotation.RequestMapping"
+            "io.micronaut.http.annotation.Controller",
         )
     }
 
@@ -170,14 +168,5 @@ class MicronautControllerGeneratorTest {
             singleFileBuilder.addType(it.spec).build()
         }
         return Linter.lintString(singleFileBuilder.build().toString())
-    }
-
-    @Test
-    fun `controller parameters should have spring DateTimeFormat annotations`() {
-        val api = SourceApi(readTextResource("/examples/springFormatDateAndDateTime/api.yaml"))
-        val controllers = MicronautControllerInterfaceGenerator(Packages(basePackage), api).generate().toSingleFile()
-        val expectedControllers = readTextResource("/examples/springFormatDateAndDateTime/controllers/Controllers.kt")
-
-        assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
     }
 }
