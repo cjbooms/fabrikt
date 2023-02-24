@@ -53,7 +53,7 @@ class SpringControllerGeneratorTest {
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         val basePackage = "examples.$testCaseName"
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
-        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/Controllers.kt")
+        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/spring/Controllers.kt")
 
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),

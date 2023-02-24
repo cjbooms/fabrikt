@@ -77,7 +77,6 @@ class MicronautControllerInterfaceGenerator(
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = MicronautImports.RESPONSE.parameterizedBy(op.happyPathResponse(packages.base))
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
-        val securityRequirements = op.securityRequirements
 
         // Main method builder
         val funcSpec = FunSpec
@@ -115,14 +114,6 @@ class MicronautControllerInterfaceGenerator(
             }
             .forEach { funcSpec.addParameter(it) }
 
-        // Authentication parameter for OIDC
-        if (securityRequirements.any { "OpenID" in it.requirements.keys }) {
-            funcSpec.addParameter(
-                ParameterSpec.builder("authentication", MicronautImports.AUTHENTICATION)
-                    .build()
-            )
-        }
-
         return funcSpec.build()
     }
 
@@ -134,7 +125,6 @@ class MicronautControllerInterfaceGenerator(
         val consumes = op.requestBody
             .contentMediaTypes.keys
             .toTypedArray()
-
 
         this.addAnnotation(
             AnnotationSpec
@@ -199,21 +189,6 @@ class MicronautControllerInterfaceGenerator(
 
             if (parameter.defaultValue != null)
                 it.addMember("defaultValue = %S", parameter.defaultValue)
-
-            if (parameter.typeInfo is KotlinTypeInfo.Date)
-                this.addAnnotation(
-                    AnnotationSpec
-                        .builder(MicronautImports.DATE_TIME_FORMAT)
-                        .addMember("iso = %L", MicronautImports.DateTimeFormat.ISO_DATE)
-                        .build()
-                )
-            else if (parameter.typeInfo is KotlinTypeInfo.DateTime)
-                this.addAnnotation(
-                    AnnotationSpec
-                        .builder(MicronautImports.DATE_TIME_FORMAT)
-                        .addMember("iso = %L", MicronautImports.DateTimeFormat.ISO_DATE_TIME)
-                        .build()
-                )
 
             this.addAnnotation(it.build())
         }
