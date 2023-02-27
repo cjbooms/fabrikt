@@ -1,12 +1,37 @@
 package examples.githubApi.controllers
 
-import examples.githubApi.models.*
+import examples.githubApi.models.BulkEntityDetails
+import examples.githubApi.models.Contributor
+import examples.githubApi.models.ContributorQueryResult
+import examples.githubApi.models.EventResults
+import examples.githubApi.models.Organisation
+import examples.githubApi.models.OrganisationQueryResult
+import examples.githubApi.models.PullRequest
+import examples.githubApi.models.PullRequestQueryResult
+import examples.githubApi.models.Repository
+import examples.githubApi.models.RepositoryQueryResult
+import examples.githubApi.models.StatusQueryParam
 import io.micronaut.http.HttpResponse
-import io.micronaut.http.annotation.*
-import java.util.*
+import io.micronaut.http.annotation.Body
+import io.micronaut.http.annotation.Consumes
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Delete
+import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Header
+import io.micronaut.http.annotation.PathVariable
+import io.micronaut.http.annotation.Post
+import io.micronaut.http.annotation.Produces
+import io.micronaut.http.annotation.Put
+import io.micronaut.http.annotation.QueryValue
+import java.util.UUID
 import javax.validation.Valid
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
+import kotlin.Boolean
+import kotlin.Int
+import kotlin.String
+import kotlin.Unit
+import kotlin.collections.List
 
 @Controller
 interface InternalEventsController {

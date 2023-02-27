@@ -1,6 +1,9 @@
 package com.cjbooms.fabrikt.cli
 
-import com.cjbooms.fabrikt.cli.CodeGenerationType.*
+import com.cjbooms.fabrikt.cli.CodeGenerationType.CLIENT
+import com.cjbooms.fabrikt.cli.CodeGenerationType.CONTROLLERS
+import com.cjbooms.fabrikt.cli.CodeGenerationType.HTTP_MODELS
+import com.cjbooms.fabrikt.cli.CodeGenerationType.QUARKUS_REFLECTION_CONFIG
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
@@ -8,7 +11,14 @@ import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGen
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
-import com.cjbooms.fabrikt.model.*
+import com.cjbooms.fabrikt.model.Clients
+import com.cjbooms.fabrikt.model.GeneratedFile
+import com.cjbooms.fabrikt.model.KotlinSourceSet
+import com.cjbooms.fabrikt.model.KotlinTypes
+import com.cjbooms.fabrikt.model.Models
+import com.cjbooms.fabrikt.model.ResourceFile
+import com.cjbooms.fabrikt.model.ResourceSourceSet
+import com.cjbooms.fabrikt.model.SourceApi
 import com.squareup.kotlinpoet.FileSpec
 import java.nio.file.Path
 
