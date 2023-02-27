@@ -2,9 +2,11 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.util.toUpperCase
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeName
 import java.net.URI
+import java.util.Base64
 
 sealed class OasDefault {
 
@@ -25,6 +27,11 @@ sealed class OasDefault {
     data class UriValue(val strValue: String) : OasDefault() {
         override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
             return paramSpecBuilder.defaultValue("%T(\"$strValue\")", URI::class)
+        }
+    }
+    data class ByteValue(val base64String: String) : OasDefault() {
+        override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
+            return paramSpecBuilder.defaultValue(CodeBlock.of("%T.getDecoder().decode(\"$base64String\")", Base64::class))
         }
     }
 
@@ -51,6 +58,7 @@ sealed class OasDefault {
                         }
                         is KotlinTypeInfo.Text -> OasDefault.StringValue(default)
                         is KotlinTypeInfo.Uri -> OasDefault.UriValue(default)
+                        is KotlinTypeInfo.ByteArray -> OasDefault.ByteValue(default)
                         else -> null
                     }
                 }

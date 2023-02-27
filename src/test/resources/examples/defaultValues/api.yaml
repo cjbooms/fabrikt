@@ -33,3 +33,7 @@ components:
             (e.g., using HTML).
           default: 'about:blank'
           example: 'https://zalando.github.io/problem/constraint-violation'
+        byte_type:
+          type: string
+          format: byte
+          default: U3dhZ2dlciByb2Nrcw==
