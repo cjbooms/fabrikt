@@ -1,6 +1,10 @@
 package com.cjbooms.fabrikt.cli
 
-import com.beust.jcommander.*
+import com.beust.jcommander.IStringConverter
+import com.beust.jcommander.IValueValidator
+import com.beust.jcommander.JCommander
+import com.beust.jcommander.Parameter
+import com.beust.jcommander.ParameterException
 import com.beust.jcommander.converters.PathConverter
 import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.util.NormalisedString.isValidJavaPackage

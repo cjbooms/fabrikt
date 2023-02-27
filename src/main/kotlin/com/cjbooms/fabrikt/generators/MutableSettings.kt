@@ -1,6 +1,10 @@
 package com.cjbooms.fabrikt.generators
 
-import com.cjbooms.fabrikt.cli.*
+import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
+import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
+import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
+import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 
 object MutableSettings {
     private lateinit var generationTypes: MutableSet<CodeGenerationType>
