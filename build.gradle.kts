@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.0" // Apply the Kotlin JVM plugin to add support for Kotlin.
+    id("org.jetbrains.kotlin.jvm") version "1.6.0" // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("com.github.johnrengelman.shadow") version "4.0.1"
     id("org.jetbrains.dokka") version "0.10.1"
     id("com.palantir.git-version") version "0.12.3"

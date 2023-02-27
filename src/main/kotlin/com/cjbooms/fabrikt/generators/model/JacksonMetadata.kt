@@ -6,6 +6,7 @@ import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeName
+import com.cjbooms.fabrikt.util.toLowerCase
 
 object JacksonMetadata {
     val TYPE_REFERENCE_IMPORT = Pair("com.fasterxml.jackson.module.kotlin", "jacksonTypeRef")

@@ -184,6 +184,8 @@ object PropertyUtils {
                     )
                 )
             }
+
+            else -> {}
         }
 
         when (val typeInfo = info.typeInfo) {

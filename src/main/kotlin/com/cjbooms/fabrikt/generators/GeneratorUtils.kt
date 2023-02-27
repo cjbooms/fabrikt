@@ -21,6 +21,8 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
+import com.cjbooms.fabrikt.util.capitalized
+import com.cjbooms.fabrikt.util.decapitalized
 import java.util.function.Predicate
 
 object GeneratorUtils {
@@ -63,9 +65,9 @@ object GeneratorUtils {
     fun String.toKCodeName(): String {
         val delimiters = this.partition(Char::isLetterOrDigit).second.toCharArray().map(Char::toString).toTypedArray()
         return this.splitToSequence(*delimiters)
-            .mapNotNull(String::capitalize)
+            .mapNotNull(String::capitalized)
             .joinToString("")
-            .decapitalize()
+            .decapitalized()
     }
 
     /**
