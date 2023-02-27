@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators.controller.metadata
 
+import com.cjbooms.fabrikt.util.toUpperCase
 import com.squareup.kotlinpoet.ClassName
 
 object MicronautImports {

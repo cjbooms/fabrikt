@@ -4,27 +4,37 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
-import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.controllerName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
-import com.cjbooms.fabrikt.model.*
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.basePath
+import com.cjbooms.fabrikt.model.BodyParameter
+import com.cjbooms.fabrikt.model.ControllerType
+import com.cjbooms.fabrikt.model.HeaderParam
+import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.model.KotlinTypes
+import com.cjbooms.fabrikt.model.PathParam
+import com.cjbooms.fabrikt.model.QueryParam
+import com.cjbooms.fabrikt.model.RequestParameter
+import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSingleResource
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.cjbooms.fabrikt.util.toUpperCase
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Path
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeSpec
 
 class SpringControllerInterfaceGenerator(
     private val packages: Packages,
     private val api: SourceApi,
     private val options: Set<ControllerCodeGenOptionType> = emptySet()
-) : ControllerInterfaceGenerator {
+) : ControllerInterfaceGenerator(packages, api) {
 
     override fun generate(): SpringControllers =
         SpringControllers(
@@ -33,31 +43,7 @@ class SpringControllerInterfaceGenerator(
             }.toSet()
         )
 
-    private fun buildController(resourceName: String, paths: Collection<Path>): ControllerType {
-        val typeBuilder: TypeSpec.Builder = controllerBuilder(
-            className = controllerName(resourceName),
-            basePath = api.openApi3.basePath()
-        )
-
-        paths.flatMap { path ->
-            path.operations
-                .filter { it.key.toUpperCase() != "HEAD" }
-                .map { op ->
-                    buildFunction(
-                        path,
-                        op.value,
-                        op.key,
-                    )
-                }
-        }.forEach { typeBuilder.addFunction(it) }
-
-        return ControllerType(
-            typeBuilder.build(),
-            packages.base
-        )
-    }
-
-    private fun controllerBuilder(
+    override fun controllerBuilder(
         className: String,
         basePath: String
     ) =
@@ -66,7 +52,7 @@ class SpringControllerInterfaceGenerator(
             .addAnnotation(SpringAnnotations.VALIDATED)
             .addAnnotation(SpringAnnotations.requestMappingBuilder().addMember("%S", basePath).build())
 
-    private fun buildFunction(
+    override fun buildFunction(
         path: Path,
         op: Operation,
         verb: String,
@@ -133,13 +119,6 @@ class SpringControllerInterfaceGenerator(
         }
 
         this.addAnnotation(funcAnnotation.build())
-        return this
-    }
-
-    private fun ParameterSpec.Builder.addValidationAnnotations(parameter: RequestParameter): ParameterSpec.Builder {
-        if (parameter.minimum != null) this.addAnnotation(JavaXAnnotations.min(parameter.minimum.toInt()))
-        if (parameter.maximum != null) this.addAnnotation(JavaXAnnotations.max(parameter.maximum.toInt()))
-        if (parameter.typeInfo.isComplexType) this.addAnnotation(JavaXAnnotations.validBuilder().build())
         return this
     }
 
