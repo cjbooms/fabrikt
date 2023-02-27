@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-    val jacksonVersion = "2.9.8"
+    val jacksonVersion = "2.14.2"
 
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
