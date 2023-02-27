@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.0" // Apply the Kotlin JVM plugin to add support for Kotlin.
+    id("org.jetbrains.kotlin.jvm") version "1.6.0" // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("com.github.johnrengelman.shadow") version "4.0.1"
     id("org.jetbrains.dokka") version "0.10.1"
     id("com.palantir.git-version") version "0.12.3"
@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-    val jacksonVersion = "2.9.8"
+    val jacksonVersion = "2.14.2"
 
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -55,7 +55,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.14.0")
     // Below dependencies are solely present so code examples in the test resources dir compile
     testImplementation("javax.validation:validation-api:2.0.1.Final")
-    testImplementation("org.springframework:spring-webmvc:5.1.9.RELEASE")
+    testImplementation("org.springframework:spring-webmvc:5.3.23")
     testImplementation("com.squareup.okhttp3:okhttp:4.9.1")
     testImplementation("com.pinterest.ktlint:ktlint-core:0.41.0")
     testImplementation("com.pinterest:ktlint:0.41.0")

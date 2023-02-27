@@ -12,6 +12,7 @@ import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.system.exitProcess
+import com.cjbooms.fabrikt.util.toUpperCase
 
 class CodeGenArgs {
 
