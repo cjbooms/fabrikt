@@ -5,7 +5,7 @@ enum class CodeGenerationType(val description: String) {
         "Jackson annotated data classes to represent the schema objects defined in the input."
     ),
     CONTROLLERS(
-        "Spring annotated HTTP controllers for each of the endpoints defined in the input."
+        "Spring / Micronaut annotated HTTP controllers for each of the endpoints defined in the input."
     ),
     CLIENT(
         "Simple http rest client."
@@ -36,6 +36,13 @@ enum class ModelCodeGenOptionType(val description: String) {
 
 enum class ControllerCodeGenOptionType(val description: String) {
     SUSPEND_MODIFIER("This option adds the suspend modifier to the generated controller functions");
+
+    override fun toString() = "`${super.toString()}` - $description"
+}
+
+enum class ControllerCodeGenTargetType(val description: String) {
+    SPRING("Generate for Spring framework."),
+    MICRONAUT("Generate for Micronaut framework.");
 
     override fun toString() = "`${super.toString()}` - $description"
 }
