@@ -27,6 +27,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     object BigInt : KotlinTypeInfo(Long::class)
     object Uuid : KotlinTypeInfo(UUID::class)
     object Uri : KotlinTypeInfo(URI::class)
+    object ByteArray : KotlinTypeInfo(kotlin.ByteArray::class)
     object Boolean : KotlinTypeInfo(kotlin.Boolean::class)
     object UntypedObject : KotlinTypeInfo(Any::class)
     object AnyType : KotlinTypeInfo(Any::class)
@@ -60,6 +61,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     Enum(schema.getEnumValues(), schema.toModelClassName(enclosingName.toModelClassName()))
                 OasType.Uuid -> Uuid
                 OasType.Uri -> Uri
+                OasType.ByteArray -> ByteArray
                 OasType.Double -> Double
                 OasType.Float -> Float
                 OasType.Number -> Numeric
