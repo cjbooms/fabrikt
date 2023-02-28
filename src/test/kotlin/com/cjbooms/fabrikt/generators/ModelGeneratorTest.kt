@@ -44,7 +44,8 @@ class ModelGeneratorTest {
         "validationAnnotations",
         "wildCardTypes",
         "singleAllOf",
-        "responsesSchema"
+        "responsesSchema",
+        "webhook",
     )
 
     @BeforeEach
