@@ -87,7 +87,7 @@ class CodeGenArgs {
 
     @Parameter(
         names = ["--http-controller-target"],
-        description = "Select the target framework for the controllers that you want to be generated.",
+        description = "Optionally select the target framework for the controllers that you want to be generated. Defaults to Spring Controllers",
         converter = ControllerCodeGenTargetConverter::class
     )
     var controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.SPRING

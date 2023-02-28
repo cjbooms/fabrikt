@@ -134,7 +134,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |   `--http-controller-opts`   | Select the options for the controllers that you want to be generated.
 |                              | CHOOSE ANY OF:
 |                              |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions
-|   `--http-controller-target` | Select the target framework for the controllers that you want to be generated.
+|   `--http-controller-target` | Optionally select the target framework for the controllers that you want to be generated. Defaults to Spring Controllers
 |                              | CHOOSE ONE OF:
 |                              |   `SPRING` - Generate for Spring framework.
 |                              |   `MICRONAUT` - Generate for Micronaut framework.
