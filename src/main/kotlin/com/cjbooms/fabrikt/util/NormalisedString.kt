@@ -14,7 +14,7 @@ object NormalisedString {
         Regex("[^A-Za-z0-9øæåØÆÅ]").replace(this, "_")
 
     private fun String.camelToSnake() =
-        Regex("[a-z][A-Z][øæåØÆÅ]")
+        Regex("[a-zøæå][A-ZØÆÅ]")
             .replace(this) { pair ->
                 val characters = pair.value.toCharArray()
                 "${characters[0]}_${characters[1]}"

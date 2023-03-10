@@ -56,6 +56,6 @@ class NormalisedStringTest {
     @Test
     fun `toEnumName should return an upper snake case enum with with norwegian characters`() {
         assertThat("PascalCase_enumWith-ÅabcØæ-åØÆÅHij-special/characters.json".toEnumName())
-            .isEqualTo("PASCALCASE_ENUMWITH_ÅABCØÆ_ÅØÆÅHIJ_SPECIAL_CHARACTERS_JSO")
+            .isEqualTo("PASCAL_CASE_ENUM_WITH_ÅABC_ØÆ_Å_ØÆÅHIJ_SPECIAL_CHARACTERS_JSON")
     }
 }
