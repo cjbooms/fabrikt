@@ -13,6 +13,10 @@ class NormalisedStringTest {
     fun `should transform string with underscores to pascal case`() {
         assertThat("abc_def-hij".pascalCase()).isEqualTo("AbcDefHij")
     }
+    @Test
+    fun `should handle norwegian characters`() {
+        assertThat("Åabc_øæå-ØÆÅ-hij".pascalCase()).isEqualTo("ÅabcØæåØÆÅHij")
+    }
 
     @Test
     fun `should transform string with underscores to camel case`() {
@@ -48,5 +52,10 @@ class NormalisedStringTest {
     fun `toEnumName should return an upper snake case enum with no special characters`() {
         assertThat("PascalCase_enumWith-special/characters.json".toEnumName())
             .isEqualTo("PASCAL_CASE_ENUM_WITH_SPECIAL_CHARACTERS_JSON")
+    }
+    @Test
+    fun `toEnumName should return an upper snake case enum with with norwegian characters`() {
+        assertThat("PascalCase_enumWith-ÅabcØæ-åØÆÅHij-special/characters.json".toEnumName())
+            .isEqualTo("PASCAL_CASE_ENUM_WITH_ÅABC_ØÆ_Å_ØÆÅHIJ_SPECIAL_CHARACTERS_JSON")
     }
 }
