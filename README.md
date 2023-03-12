@@ -191,7 +191,7 @@ tasks {
         outputs.dir(generationDir)
         outputs.cacheIf { true }
         classpath(fabrikt)
-        main = "com.cjbooms.fabrikt.cli.CodeGen"
+        mainClass.set("com.cjbooms.fabrikt.cli.CodeGen")
         args = listOf(
             "--output-directory", generationDir,
             "--base-package", "com.example",
@@ -201,7 +201,7 @@ tasks {
             "--http-client-opts", "resilience4j"
         )
     }
-    withType<KotlinCompile> {
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "11"
         dependsOn(generateCode)
     }
