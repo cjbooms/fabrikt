@@ -373,6 +373,7 @@ class JacksonModelGenerator(
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
+            .addCompanionObject()
             .superclass(
                 toModelType(packages.base, KotlinTypeInfo.from(superType.schema, superType.name))
             )

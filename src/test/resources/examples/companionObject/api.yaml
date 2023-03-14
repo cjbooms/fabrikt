@@ -84,17 +84,41 @@ components:
   schemas:
     Pet:
       type: object
+      discriminator:
+        propertyName: petType
       required:
         - id
         - name
+        - petType
       properties:
         id:
           type: integer
           format: int64
         name:
           type: string
+        petType:
+          type: string
         tag:
           type: string
+    Cat:
+      allOf:
+        - $ref: '#/components/schemas/Pet'
+        - type: object
+          properties:
+            hunts:
+              type: boolean
+            age:
+              type: integer
+    Dog:
+      allOf:
+        - $ref: '#/components/schemas/Pet'
+        - type: object
+          properties:
+            bark:
+              type: boolean
+            breed:
+              type: string
+              enum: [Dingo, Husky, Retriever, Shepherd]
     Pets:
       type: array
       maxItems: 100
