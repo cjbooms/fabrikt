@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.generators
 import com.beust.jcommander.ParameterException
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.TypeCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.Models
@@ -46,6 +47,7 @@ class ModelGeneratorTest {
         "singleAllOf",
         "responsesSchema",
         "webhook",
+        "instantDateTime"
     )
 
     @BeforeEach
@@ -63,6 +65,9 @@ class ModelGeneratorTest {
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         print("Testcase: $testCaseName")
         MutableSettings.addOption(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS)
+        if (testCaseName == "instantDateTime") {
+            MutableSettings.addOption(TypeCodeGenOptionType.INSTANT_DATETIME_TYPE)
+        }
         val basePackage = "examples.$testCaseName"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))

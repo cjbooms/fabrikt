@@ -119,6 +119,13 @@ class CodeGenArgs {
         converter = PathConverter::class
     )
     var resourcesPath: Path = Destinations.MAIN_RESOURCES
+
+    @Parameter(
+        names = ["--type-options"],
+        description = "Allows to use specific object types for generator. For example 'Instance' for a date-time",
+        converter = TypeCodeGenOptionsConverter::class
+    )
+    var typeOptions: Set<TypeCodeGenOptionType> = emptySet()
 }
 
 class CodeGenerationTypesConverter : IStringConverter<CodeGenerationType> {
@@ -141,6 +148,10 @@ class ModelCodeGenOptionConverter : IStringConverter<ModelCodeGenOptionType> {
 class ClientCodeGenOptionConverter : IStringConverter<ClientCodeGenOptionType> {
     override fun convert(value: String): ClientCodeGenOptionType =
         convertToEnumValue(value)
+}
+
+class TypeCodeGenOptionsConverter: IStringConverter<TypeCodeGenOptionType> {
+    override fun convert(value: String): TypeCodeGenOptionType = convertToEnumValue(value)
 }
 
 class PackageNameValidator : IValueValidator<String> {
