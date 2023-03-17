@@ -66,7 +66,7 @@ class ModelGeneratorTest {
         print("Testcase: $testCaseName")
         MutableSettings.addOption(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS)
         if (testCaseName == "instantDateTime") {
-            MutableSettings.addOption(CodeGenTypeOverride.INSTANT_FOR_DATETIME)
+            MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
         }
         val basePackage = "examples.$testCaseName"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!

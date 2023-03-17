@@ -122,7 +122,7 @@ class CodeGenArgs {
 
     @Parameter(
         names = ["--type-overrides"],
-        description = "Allows to use specific object types for generator. For example 'Instance' for a date-time",
+        description = "Specify non-default kotlin types for certain OAS types. For example, generate `Instant` instead of `OffsetDateTime`",
         converter = TypeCodeGenOptionsConverter::class
     )
     var typeOverrides: Set<CodeGenTypeOverride> = emptySet()

@@ -48,6 +48,7 @@ enum class ControllerCodeGenTargetType(val description: String) {
 }
 
 enum class CodeGenTypeOverride(val description: String) {
-    INSTANT_FOR_DATETIME("Use Instance as the datetime type, instead of OffsetDateTime"),
-    LOCALDATETIME_FOR_DATETIME("Use `LocalDateTime` as the datetime type, instead of `OffsetDateTime`")
+    DATETIME_AS_INSTANT("Use `Instant` as the datetime type. Defaults to `OffsetDateTime`"),
+    DATETIME_AS_LOCALDATETIME("Use `LocalDateTime` as the datetime type. Defaults to `OffsetDateTime`");
+    override fun toString() = "`${super.toString()}` - $description"
 }

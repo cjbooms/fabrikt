@@ -98,8 +98,8 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         private fun getOverridableDateTimeType(): KotlinTypeInfo {
             val typeOverrides = MutableSettings.typeOverrides()
             return when {
-                typeOverrides.contains(CodeGenTypeOverride.INSTANT_FOR_DATETIME) -> Instant
-                typeOverrides.contains(CodeGenTypeOverride.LOCALDATETIME_FOR_DATETIME) -> LocalDateTime
+                CodeGenTypeOverride.DATETIME_AS_INSTANT in typeOverrides -> Instant
+                CodeGenTypeOverride.DATETIME_AS_LOCALDATETIME in typeOverrides -> LocalDateTime
                 else -> DateTime
             }
         }
