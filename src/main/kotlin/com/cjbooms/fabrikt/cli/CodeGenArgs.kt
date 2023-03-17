@@ -119,6 +119,13 @@ class CodeGenArgs {
         converter = PathConverter::class
     )
     var resourcesPath: Path = Destinations.MAIN_RESOURCES
+
+    @Parameter(
+        names = ["--type-overrides"],
+        description = "Specify non-default kotlin types for certain OAS types. For example, generate `Instant` instead of `OffsetDateTime`",
+        converter = TypeCodeGenOptionsConverter::class
+    )
+    var typeOverrides: Set<CodeGenTypeOverride> = emptySet()
 }
 
 class CodeGenerationTypesConverter : IStringConverter<CodeGenerationType> {
@@ -141,6 +148,10 @@ class ModelCodeGenOptionConverter : IStringConverter<ModelCodeGenOptionType> {
 class ClientCodeGenOptionConverter : IStringConverter<ClientCodeGenOptionType> {
     override fun convert(value: String): ClientCodeGenOptionType =
         convertToEnumValue(value)
+}
+
+class TypeCodeGenOptionsConverter: IStringConverter<CodeGenTypeOverride> {
+    override fun convert(value: String): CodeGenTypeOverride = convertToEnumValue(value)
 }
 
 class PackageNameValidator : IValueValidator<String> {

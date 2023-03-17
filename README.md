@@ -123,38 +123,42 @@ data class ConcreteImplTwo(
 
 This section documents the available CLI parameters for controlling what gets generated. This documentation is generated using: `./gradlew printCodeGenUsage`
 
-| Parameter                    | Description
-| ---------------------------- | ----------------------------
-|   `--api-file`               | This must be a valid Open API v3 spec. All code generation will be based off this input.
-|   `--api-fragment`           | A partial Open API v3 fragment, to be combined with the primary API for code generation purposes.
-| * `--base-package`           | The base package which all code will be generated under.
-|   `--http-client-opts`       | Select the options for the http client code that you want to be generated.
-|                              | CHOOSE ANY OF:
-|                              |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+"
-|   `--http-controller-opts`   | Select the options for the controllers that you want to be generated.
-|                              | CHOOSE ANY OF:
-|                              |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions
-|   `--http-controller-target` | Optionally select the target framework for the controllers that you want to be generated. Defaults to Spring Controllers
-|                              | CHOOSE ONE OF:
-|                              |   `SPRING` - Generate for Spring framework.
-|                              |   `MICRONAUT` - Generate for Micronaut framework.
-|   `--http-model-opts`        | Select the options for the http models that you want to be generated.
-|                              | CHOOSE ANY OF:
-|                              |   `X_EXTENSIBLE_ENUMS` - This option treats x-extensible-enums as enums
-|                              |   `JAVA_SERIALIZATION` - This option adds Java Serializable interface to the generated models
-|                              |   `QUARKUS_REFLECTION` - This option adds @RegisterForReflection to the generated models. Requires dependency "'io.quarkus:quarkus-core:+"
-|                              |   `MICRONAUT_INTROSPECTION` - This option adds @Introspected to the generated models. Requires dependency "'io.micronaut:micronaut-core:+"
-|                              |   `MICRONAUT_REFLECTION` - This option adds @ReflectiveAccess to the generated models. Requires dependency "'io.micronaut:micronaut-core:+"
-|                              |   `INCLUDE_COMPANION_OBJECT` - This option adds a companion object to the generated models.
-|   `--output-directory`       | Allows the generation dir to be overridden. Defaults to current dir
-|   `--resources-path`         | Allows the path for generated resources to be overridden. Defaults to `src/main/resources`
-|   `--src-path`               | Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin`
-|   `--targets`                | Targets are the parts of the application that you want to be generated.
-|                              | CHOOSE ANY OF:
-|                              |   `HTTP_MODELS` - Jackson annotated data classes to represent the schema objects defined in the input.
-|                              |   `CONTROLLERS` - Spring / Micronaut annotated HTTP controllers for each of the endpoints defined in the input.
-|                              |   `CLIENT` - Simple http rest client.
-|                              |   `QUARKUS_REFLECTION_CONFIG` - This options generates the reflection-config.json file for quarkus integration projects
+| Parameter                    | Description |
+| ---------------------------- | ---------------------------- |
+|   `--api-file`               | This must be a valid Open API v3 spec. All code generation will be based off this input. |
+|   `--api-fragment`           | A partial Open API v3 fragment, to be combined with the primary API for code generation purposes. |
+| * `--base-package`           | The base package which all code will be generated under. |
+|   `--http-client-opts`       | Select the options for the http client code that you want to be generated. |
+|                              | CHOOSE ANY OF: |
+|                              |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+" |
+|   `--http-controller-opts`   | Select the options for the controllers that you want to be generated. |
+|                              | CHOOSE ANY OF: |
+|                              |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions |
+|   `--http-controller-target` | Optionally select the target framework for the controllers that you want to be generated. Defaults to Spring Controllers |
+|                              | CHOOSE ONE OF: |
+|                              |   `SPRING` - Generate for Spring framework. |
+|                              |   `MICRONAUT` - Generate for Micronaut framework. |
+|   `--http-model-opts`        | Select the options for the http models that you want to be generated. |
+|                              | CHOOSE ANY OF: |
+|                              |   `X_EXTENSIBLE_ENUMS` - This option treats x-extensible-enums as enums |
+|                              |   `JAVA_SERIALIZATION` - This option adds Java Serializable interface to the generated models |
+|                              |   `QUARKUS_REFLECTION` - This option adds @RegisterForReflection to the generated models. Requires dependency "'io.quarkus:quarkus-core:+" |
+|                              |   `MICRONAUT_INTROSPECTION` - This option adds @Introspected to the generated models. Requires dependency "'io.micronaut:micronaut-core:+" |
+|                              |   `MICRONAUT_REFLECTION` - This option adds @ReflectiveAccess to the generated models. Requires dependency "'io.micronaut:micronaut-core:+" |
+|                              |   `INCLUDE_COMPANION_OBJECT` - This option adds a companion object to the generated models. |
+|   `--output-directory`       | Allows the generation dir to be overridden. Defaults to current dir |
+|   `--resources-path`         | Allows the path for generated resources to be overridden. Defaults to `src/main/resources` |
+|   `--src-path`               | Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin` |
+|   `--targets`                | Targets are the parts of the application that you want to be generated. |
+|                              | CHOOSE ANY OF: |
+|                              |   `HTTP_MODELS` - Jackson annotated data classes to represent the schema objects defined in the input. |
+|                              |   `CONTROLLERS` - Spring / Micronaut annotated HTTP controllers for each of the endpoints defined in the input. |
+|                              |   `CLIENT` - Simple http rest client. |
+|                              |   `QUARKUS_REFLECTION_CONFIG` - This options generates the reflection-config.json file for quarkus integration projects |
+|   `--type-overrides`         | Specify non-default kotlin types for certain OAS types. For example, generate `Instant` instead of `OffsetDateTime` |
+|                              | CHOOSE ANY OF: |
+|                              |   `DATETIME_AS_INSTANT` - Use `Instant` as the datetime type. Defaults to `OffsetDateTime` |
+|                              |   `DATETIME_AS_LOCALDATETIME` - Use `LocalDateTime` as the datetime type. Defaults to `OffsetDateTime` |
 
 ### Command Line
 Fabrikt is packaged as an executable jar, allowing it to be integrated into any build tool. The CLI can be invoked as follows:
