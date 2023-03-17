@@ -1,6 +1,6 @@
 package com.cjbooms.fabrikt.model
 
-import com.cjbooms.fabrikt.cli.TypeCodeGenOptionType
+import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType.Companion.toOasType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getEnumValues
@@ -23,6 +23,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     object Date : KotlinTypeInfo(LocalDate::class)
     object DateTime : KotlinTypeInfo(OffsetDateTime::class)
     object Instant: KotlinTypeInfo(java.time.Instant::class)
+    object LocalDateTime: KotlinTypeInfo(java.time.LocalDateTime::class)
     object Double : KotlinTypeInfo(kotlin.Double::class)
     object Float : KotlinTypeInfo(kotlin.Float::class)
     object Numeric : KotlinTypeInfo(BigDecimal::class)
@@ -58,12 +59,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         fun from(schema: Schema, oasKey: String = "", enclosingName: String = ""): KotlinTypeInfo =
             when (schema.toOasType(oasKey)) {
                 OasType.Date -> Date
-                OasType.DateTime -> if (MutableSettings.typeOptions().contains(TypeCodeGenOptionType.INSTANT_DATETIME_TYPE)
-                ) {
-                    Instant
-                } else {
-                    DateTime
-                }
+                OasType.DateTime -> getOverridableDateTimeType()
                 OasType.Text -> Text
                 OasType.Enum ->
                     Enum(schema.getEnumValues(), schema.toModelClassName(enclosingName.toModelClassName()))
@@ -98,5 +94,14 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Any -> AnyType
                 OasType.OneOfAny -> AnyType
             }
+
+        private fun getOverridableDateTimeType(): KotlinTypeInfo {
+            val typeOverrides = MutableSettings.typeOverrides()
+            return when {
+                typeOverrides.contains(CodeGenTypeOverride.INSTANT_FOR_DATETIME) -> Instant
+                typeOverrides.contains(CodeGenTypeOverride.LOCALDATETIME_FOR_DATETIME) -> LocalDateTime
+                else -> DateTime
+            }
+        }
     }
 }

@@ -29,7 +29,7 @@ object CodeGen {
             codeGenArgs.controllerTarget,
             codeGenArgs.modelOptions,
             codeGenArgs.clientOptions,
-            codeGenArgs.typeOptions,
+            codeGenArgs.typeOverrides,
             codeGenArgs.srcPath,
             codeGenArgs.resourcesPath
         )
@@ -45,11 +45,11 @@ object CodeGen {
         controllerTarget: ControllerCodeGenTargetType,
         modelOptions: Set<ModelCodeGenOptionType>,
         clientOptions: Set<ClientCodeGenOptionType>,
-        typeOptions: Set<TypeCodeGenOptionType>,
+        typeOverrides: Set<CodeGenTypeOverride>,
         srcPath: Path,
         resourcesPath: Path,
     ) {
-        MutableSettings.updateSettings(codeGenTypes, controllerOptions, controllerTarget, modelOptions, clientOptions, typeOptions)
+        MutableSettings.updateSettings(codeGenTypes, controllerOptions, controllerTarget, modelOptions, clientOptions, typeOverrides)
 
         val suppliedApi = pathToApi.toFile().readText()
         val baseDir = pathToApi.parent

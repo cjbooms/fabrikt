@@ -155,6 +155,10 @@ This section documents the available CLI parameters for controlling what gets ge
 |                              |   `CONTROLLERS` - Spring / Micronaut annotated HTTP controllers for each of the endpoints defined in the input.
 |                              |   `CLIENT` - Simple http rest client.
 |                              |   `QUARKUS_REFLECTION_CONFIG` - This options generates the reflection-config.json file for quarkus integration projects
+|   `--type-overrides`         | Allows to use specific object types for generator. For example 'Instance' for a date-time
+|                              | CHOOSE ANY OF:
+|                              |   INSTANT_FOR_DATETIME
+|                              |   LOCALDATETIME_FOR_DATETIME
 
 ### Command Line
 Fabrikt is packaged as an executable jar, allowing it to be integrated into any build tool. The CLI can be invoked as follows:
