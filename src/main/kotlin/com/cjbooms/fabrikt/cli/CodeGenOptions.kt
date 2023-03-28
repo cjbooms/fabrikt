@@ -58,7 +58,7 @@ enum class CodeGenTypeOverride(val description: String) {
 }
 
 enum class ValidationLibrary(val description: String, val annotations: ValidationAnnotations) {
-    JAVAX_VALIDATION("Use `javax.validation` annotations in generated model classes", JavaxValidationAnnotations),
+    JAVAX_VALIDATION("Use `javax.validation` annotations in generated model classes (default)", JavaxValidationAnnotations),
     JAKARTA_VALIDATION("Use `jakarta.validation` annotations in generated model classes", JakartaAnnotations);
     override fun toString() = "`${super.toString()}` - $description"
 }
