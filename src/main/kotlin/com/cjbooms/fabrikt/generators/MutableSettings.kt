@@ -1,11 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
-import com.cjbooms.fabrikt.cli.CodeGenerationType
-import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
-import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
-import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
-import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
-import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
+import com.cjbooms.fabrikt.cli.*
 
 object MutableSettings {
     private lateinit var generationTypes: MutableSet<CodeGenerationType>
@@ -14,6 +9,7 @@ object MutableSettings {
     private lateinit var modelOptions: MutableSet<ModelCodeGenOptionType>
     private lateinit var clientOptions: MutableSet<ClientCodeGenOptionType>
     private lateinit var typeOverrides: MutableSet<CodeGenTypeOverride>
+    private lateinit var validationLibrary: ValidationLibrary
 
     fun updateSettings(
         genTypes: Set<CodeGenerationType> = emptySet(),
@@ -21,7 +17,8 @@ object MutableSettings {
         controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.SPRING,
         modelOptions: Set<ModelCodeGenOptionType> = emptySet(),
         clientOptions: Set<ClientCodeGenOptionType> = emptySet(),
-        typeOverrides: Set<CodeGenTypeOverride> = emptySet()
+        typeOverrides: Set<CodeGenTypeOverride> = emptySet(),
+        validationLibrary: ValidationLibrary = ValidationLibrary.JAVAX_VALIDATION
     ) {
         this.generationTypes = genTypes.toMutableSet()
         this.controllerOptions = controllerOptions.toMutableSet()
@@ -29,6 +26,7 @@ object MutableSettings {
         this.modelOptions = modelOptions.toMutableSet()
         this.clientOptions = clientOptions.toMutableSet()
         this.typeOverrides = typeOverrides.toMutableSet()
+        this.validationLibrary = validationLibrary
     }
 
     fun addOption(option: ModelCodeGenOptionType) = modelOptions.add(option)
@@ -40,4 +38,5 @@ object MutableSettings {
     fun modelOptions() = this.modelOptions.toSet()
     fun clientOptions() = this.clientOptions.toSet()
     fun typeOverrides() = this.typeOverrides.toSet()
+    fun validationLibrary() = this.validationLibrary
 }

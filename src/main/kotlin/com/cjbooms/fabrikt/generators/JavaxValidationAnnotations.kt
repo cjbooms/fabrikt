@@ -3,17 +3,17 @@ package com.cjbooms.fabrikt.generators
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 
-object ValidationAnnotations {
-    private val minClass = ClassName("javax.validation.constraints", "Min")
-    private val maxClass = ClassName("javax.validation.constraints", "Max")
-    private val validClass = ClassName("javax.validation", "Valid")
-    private val notNullClass = ClassName("javax.validation.constraints", "NotNull")
-    private val patternClass = ClassName("javax.validation.constraints", "Pattern")
-    private val sizeClass = ClassName("javax.validation.constraints", "Size")
-    private val decimalMinClass = ClassName("javax.validation.constraints", "DecimalMin")
-    private val decimalMaxClass = ClassName("javax.validation.constraints", "DecimalMax")
+abstract class ValidationAnnotations(packageName: String) {
+    private val minClass = ClassName("$packageName.constraints", "Min")
+    private val maxClass = ClassName("$packageName.constraints", "Max")
+    private val validClass = ClassName(packageName, "Valid")
+    private val notNullClass = ClassName("$packageName.constraints", "NotNull")
+    private val patternClass = ClassName("$packageName.constraints", "Pattern")
+    private val sizeClass = ClassName("$packageName.constraints", "Size")
+    private val decimalMinClass = ClassName("$packageName.constraints", "DecimalMin")
+    private val decimalMaxClass = ClassName("$packageName.constraints", "DecimalMax")
 
-    val NON_NULL_ANNOTATION = AnnotationSpec
+    val nonNullAnnotation = AnnotationSpec
         .builder(notNullClass)
         .useSiteTarget(AnnotationSpec.UseSiteTarget.GET)
         .build()
@@ -62,3 +62,7 @@ object ValidationAnnotations {
         .useSiteTarget(AnnotationSpec.UseSiteTarget.GET)
         .build()
 }
+
+object JavaxValidationAnnotations: ValidationAnnotations("javax.validation")
+
+object JakartaAnnotations: ValidationAnnotations("jakarta.validation")

@@ -1,5 +1,9 @@
 package com.cjbooms.fabrikt.cli
 
+import com.cjbooms.fabrikt.generators.JakartaAnnotations
+import com.cjbooms.fabrikt.generators.JavaxValidationAnnotations
+import com.cjbooms.fabrikt.generators.ValidationAnnotations
+
 enum class CodeGenerationType(val description: String) {
     HTTP_MODELS(
         "Jackson annotated data classes to represent the schema objects defined in the input."
@@ -50,5 +54,11 @@ enum class ControllerCodeGenTargetType(val description: String) {
 enum class CodeGenTypeOverride(val description: String) {
     DATETIME_AS_INSTANT("Use `Instant` as the datetime type. Defaults to `OffsetDateTime`"),
     DATETIME_AS_LOCALDATETIME("Use `LocalDateTime` as the datetime type. Defaults to `OffsetDateTime`");
+    override fun toString() = "`${super.toString()}` - $description"
+}
+
+enum class ValidationLibrary(val description: String, val annotations: ValidationAnnotations) {
+    JAVAX_VALIDATION("Use `javax.validation` annotations in generated model classes", JavaxValidationAnnotations),
+    JAKARTA_VALIDATION("Use `jakarta.validation` annotations in generated model classes", JakartaAnnotations);
     override fun toString() = "`${super.toString()}` - $description"
 }
