@@ -56,7 +56,7 @@ class CodeGenerator(
     private fun resourceSet(resFiles: Collection<ResourceFile>) = setOf(ResourceSourceSet(resFiles, resourcesPath))
 
     private fun models(): Models =
-        JacksonModelGenerator(packages, sourceApi, MutableSettings.modelOptions()).generate()
+        JacksonModelGenerator(packages, sourceApi, MutableSettings.modelOptions(), MutableSettings.validationLibrary().annotations).generate()
 
     private fun resources(models: Models): List<ResourceFile> =
         listOfNotNull(QuarkusReflectionModelGenerator(models, MutableSettings.generationTypes()).generate())

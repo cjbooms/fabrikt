@@ -1,6 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
-import com.cjbooms.fabrikt.generators.ValidationAnnotations.fieldValid
+import com.cjbooms.fabrikt.generators.JavaxValidationAnnotations.fieldValid
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PropertyInfo
@@ -27,7 +27,8 @@ object PropertyUtils {
         parameterizedType: TypeName,
         classBuilder: TypeSpec.Builder,
         constructorBuilder: FunSpec.Builder,
-        classType: ClassType = ClassType.VANILLA_MODEL
+        classType: ClassType = ClassType.VANILLA_MODEL,
+        validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations
     ) {
         val property = PropertySpec.builder(name, type)
 
@@ -86,13 +87,13 @@ object PropertyUtils {
                         property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
                     }
                     property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
-                    property.addValidationAnnotations(this)
+                    property.addValidationAnnotations(this, validationAnnotations)
                 }
 
                 ClassType.VANILLA_MODEL -> {
                     property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
                     property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
-                    property.addValidationAnnotations(this)
+                    property.addValidationAnnotations(this, validationAnnotations)
                 }
             }
 
@@ -148,28 +149,28 @@ object PropertyUtils {
      *   minProperties          - Not Supported. No equivalent javax validation. We could add our own as a
      *   enum                   - Not currently supported. Possible to do as a regex maybe.
      */
-    private fun PropertySpec.Builder.addValidationAnnotations(info: PropertyInfo) {
-        if (!info.isNullable()) addAnnotation(ValidationAnnotations.NON_NULL_ANNOTATION)
+    private fun PropertySpec.Builder.addValidationAnnotations(info: PropertyInfo, validationAnnotations: ValidationAnnotations) {
+        if (!info.isNullable()) addAnnotation(validationAnnotations.nonNullAnnotation)
         when (info) {
             is PropertyInfo.Field -> {
                 // Regex validation pattern to validate string input
-                info.pattern?.let { addAnnotation(ValidationAnnotations.regexPattern(it)) }
+                info.pattern?.let { addAnnotation(validationAnnotations.regexPattern(it)) }
 
                 // Size Restrictions for Strings
                 val (min, max) = Pair(info.minLength, info.maxLength)
                 if (min != null || max != null) addAnnotation(
-                    ValidationAnnotations.lengthRestriction(min, max)
+                    validationAnnotations.lengthRestriction(min, max)
                 )
 
                 // Numeric value validation
                 info.minimum?.let {
                     addAnnotation(
-                        ValidationAnnotations.minRestriction(it, info.exclusiveMinimum ?: false)
+                        validationAnnotations.minRestriction(it, info.exclusiveMinimum ?: false)
                     )
                 }
                 info.maximum?.let {
                     addAnnotation(
-                        ValidationAnnotations.maxRestriction(it, info.exclusiveMaximum ?: false)
+                        validationAnnotations.maxRestriction(it, info.exclusiveMaximum ?: false)
                     )
                 }
             }
@@ -178,7 +179,7 @@ object PropertyUtils {
                 // Size Restrictions for collections
                 val (minCollLen, maxCollLen) = Pair(info.minItems, info.maxItems)
                 if (minCollLen != null || maxCollLen != null) addAnnotation(
-                    ValidationAnnotations.lengthRestriction(
+                    validationAnnotations.lengthRestriction(
                         minCollLen,
                         maxCollLen
                     )

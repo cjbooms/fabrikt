@@ -1,9 +1,10 @@
 package com.cjbooms.fabrikt.generators
 
 import com.beust.jcommander.ParameterException
+import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
-import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
+import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.Models
@@ -79,6 +80,16 @@ class ModelGeneratorTest {
         ).generate().toSingleFile()
 
         assertThat(models).isEqualTo(expectedModels)
+    }
+
+    @Test
+    fun `generate models using jakarta validation`() {
+        val basePackage = "examples.jakarta"
+        val spec = readTextResource("/examples/validationAnnotations/api.yaml")
+        val expectedJakartaModel = readTextResource("/examples/validationAnnotations/jakarta/models/Models.kt")
+        MutableSettings.updateSettings(genTypes = setOf(CodeGenerationType.HTTP_MODELS))
+        val models = JacksonModelGenerator(Packages(basePackage), SourceApi(spec), validationAnnotations = ValidationLibrary.JAKARTA_VALIDATION.annotations).generate()
+        assertThat(Linter.lintString(models.files.first().toString())).isEqualTo(expectedJakartaModel)
     }
 
     @Test

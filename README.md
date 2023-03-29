@@ -159,6 +159,10 @@ This section documents the available CLI parameters for controlling what gets ge
 |                              | CHOOSE ANY OF: |
 |                              |   `DATETIME_AS_INSTANT` - Use `Instant` as the datetime type. Defaults to `OffsetDateTime` |
 |                              |   `DATETIME_AS_LOCALDATETIME` - Use `LocalDateTime` as the datetime type. Defaults to `OffsetDateTime` |
+|   `--validation-library`     | Specify which validation library to use for annotations in generated model classes. Default: JAVAX_VALIDATION |
+|                              | CHOOSE ONE OF: |
+|                              |   `JAVAX_VALIDATION` - Use `javax.validation` annotations in generated model classes (default) |
+|                              |   `JAKARTA_VALIDATION` - Use `jakarta.validation` annotations in generated model classes |
 
 ### Command Line
 Fabrikt is packaged as an executable jar, allowing it to be integrated into any build tool. The CLI can be invoked as follows:

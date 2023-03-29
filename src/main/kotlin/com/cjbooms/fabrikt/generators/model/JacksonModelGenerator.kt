@@ -11,6 +11,8 @@ import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfMapsStringToStringA
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfStringToType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfMapsStringToStringType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfStringToType
+import com.cjbooms.fabrikt.generators.JavaxValidationAnnotations
+import com.cjbooms.fabrikt.generators.ValidationAnnotations
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.JSON_VALUE
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.basePolymorphicType
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.polymorphicSubTypes
@@ -60,7 +62,8 @@ import java.net.URL
 class JacksonModelGenerator(
     private val packages: Packages,
     private val sourceApi: SourceApi,
-    private val options: Set<ModelCodeGenOptionType> = emptySet()
+    private val options: Set<ModelCodeGenOptionType> = emptySet(),
+    private val validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations
 ) {
     companion object {
         fun toModelType(basePackage: String, typeInfo: KotlinTypeInfo, isNullable: Boolean = false): TypeName {
@@ -402,7 +405,8 @@ class JacksonModelGenerator(
                 ),
                 classBuilder,
                 constructorBuilder,
-                classType
+                classType,
+                validationAnnotations
             )
         }
         if (constructorBuilder.parameters.isNotEmpty() && classBuilder.modifiers.isEmpty()) classBuilder.addModifiers(KModifier.DATA)

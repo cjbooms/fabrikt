@@ -55,6 +55,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.14.0")
     // Below dependencies are solely present so code examples in the test resources dir compile
     testImplementation("javax.validation:validation-api:2.0.1.Final")
+    testImplementation("jakarta.validation:jakarta.validation-api:3.0.2")
     testImplementation("org.springframework:spring-webmvc:5.1.9.RELEASE")
     testImplementation("io.micronaut:micronaut-core:3.8.4")
     testImplementation("io.micronaut:micronaut-http:3.8.4")

@@ -126,6 +126,13 @@ class CodeGenArgs {
         converter = TypeCodeGenOptionsConverter::class
     )
     var typeOverrides: Set<CodeGenTypeOverride> = emptySet()
+
+    @Parameter(
+        names = ["--validation-library"],
+        description = "Specify which validation library to use for annotations in generated model classes. Default: JAVAX_VALIDATION",
+        converter = ValidationLibraryOptionConverter::class
+    )
+    var validationLibrary: ValidationLibrary = ValidationLibrary.JAVAX_VALIDATION
 }
 
 class CodeGenerationTypesConverter : IStringConverter<CodeGenerationType> {
@@ -148,6 +155,10 @@ class ModelCodeGenOptionConverter : IStringConverter<ModelCodeGenOptionType> {
 class ClientCodeGenOptionConverter : IStringConverter<ClientCodeGenOptionType> {
     override fun convert(value: String): ClientCodeGenOptionType =
         convertToEnumValue(value)
+}
+
+class ValidationLibraryOptionConverter : IStringConverter<ValidationLibrary> {
+    override fun convert(value: String): ValidationLibrary = convertToEnumValue(value)
 }
 
 class TypeCodeGenOptionsConverter: IStringConverter<CodeGenTypeOverride> {
