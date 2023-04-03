@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Response
+import com.reprezen.kaizen.oasparser.model3.SecurityRequirement
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 
@@ -48,4 +49,25 @@ object ControllerGeneratorUtils {
 
     private fun httpVerbMethodName(verb: String, isSingleResource: Boolean) =
         if (isSingleResource) "${verb}ById" else verb
+
+    enum class SecurityOption {
+        NO_SECURITY,
+        AUTHENTICATION_REQUIRED,
+        AUTHENTICATION_PROHIBITED,
+        AUTHENTICATION_OPTIONAL
+    }
+    
+    fun List<SecurityRequirement>.securityOption(): SecurityOption {
+
+        val containsEmptyObject = this.any{ it.requirements.isEmpty()}
+        val containsNonEmptyObject =  this.any{ it.requirements.isNotEmpty()}
+
+        return when {
+            (containsEmptyObject && containsNonEmptyObject) -> SecurityOption.AUTHENTICATION_OPTIONAL
+            (containsEmptyObject) -> SecurityOption.AUTHENTICATION_PROHIBITED
+            (containsNonEmptyObject) -> SecurityOption.AUTHENTICATION_REQUIRED
+            else -> SecurityOption.NO_SECURITY
+        }
+
+    }
 }
