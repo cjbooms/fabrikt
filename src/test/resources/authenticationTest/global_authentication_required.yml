@@ -1,0 +1,35 @@
+openapi: 3.0.1
+info:
+  description: Testing setting of global security parameter
+  title: Test
+  version: '0.0'
+paths:
+  /test:
+    get:
+      operationId: testPath
+      parameters:
+        - in: query
+          name: testDTO
+          required: true
+          schema:
+            $ref: '#/components/schemas/testDTO'
+      responses:
+        '200':
+          description: generateTestModel 200 response
+      tags:
+        - additional-models
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    testDTO:
+      properties:
+        testProperty:
+          type: boolean
+      required:
+        - testProperty
+      type: object
+security:
+  - basicAuth: [ ]

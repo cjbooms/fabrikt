@@ -18,6 +18,7 @@ import com.reprezen.kaizen.oasparser.model3.Path
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.cjbooms.fabrikt.model.RequestParameter
+import com.reprezen.kaizen.oasparser.model3.SecurityRequirement
 
 
 class MicronautControllerInterfaceGenerator(
@@ -55,16 +56,14 @@ class MicronautControllerInterfaceGenerator(
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = MicronautImports.RESPONSE.parameterizedBy(op.happyPathResponse(packages.base))
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
-
-        // TODO set global Security
-        //val hasGlobalSecurity = this.api.
+        val globalSecurity = this.api.openApi3.getSecurityRequirements()
 
         // Main method builder
         val funcSpec = FunSpec
             .builder(methodName)
             .addModifiers(KModifier.ABSTRACT)
             .addKdoc(op.toKdoc(parameters))
-            .addMicronautFunAnnotation(op, verb, path.pathString)
+            .addMicronautFunAnnotation(op, verb, path.pathString, globalSecurity)
             .apply {
                 if (useSuspendModifier)
                     addModifiers(KModifier.SUSPEND)
@@ -96,21 +95,26 @@ class MicronautControllerInterfaceGenerator(
             .forEach { funcSpec.addParameter(it) }
 
 
-        val security = op.getSecurityRequirements()
-        val securityOption = security.securityOption()
-
-        // TODO add correct param depending on case
-        if(security.isNotEmpty()) {
-            funcSpec.addParameter(
-                ParameterSpec.builder("authentication", MicronautImports.AUTHENTICATION)
-                    .build())
+        // Add authentication
+        var securityOption = op.getSecurityRequirements().securityOption()
+        if(securityOption == SecurityOption.NO_SECURITY) {
+            securityOption = globalSecurity.securityOption()
         }
 
+        if (securityOption == SecurityOption.AUTHENTICATION_REQUIRED) {
+            funcSpec.addParameter(
+            ParameterSpec.builder("authentication", MicronautImports.AUTHENTICATION)
+                .build())
+        } else if(securityOption == SecurityOption.AUTHENTICATION_OPTIONAL) {
+             funcSpec.addParameter(
+                ParameterSpec.builder("authentication", MicronautImports.AUTHENTICATION.copy(true))
+                    .build())
+        }
 
         return funcSpec.build()
     }
 
-    private fun FunSpec.Builder.addMicronautFunAnnotation(op: Operation, verb: String, path: String): FunSpec.Builder {
+    private fun FunSpec.Builder.addMicronautFunAnnotation(op: Operation, verb: String, path: String, globalSecurity: List<SecurityRequirement>): FunSpec.Builder {
         val produces = op.responses
             .flatMap { it.value.contentMediaTypes.keys }
             .toTypedArray()
@@ -159,20 +163,37 @@ class MicronautControllerInterfaceGenerator(
             )
         }
 
-        // TODO we want to check if security is Basic or empty Object
-        if(security.isNotEmpty()) {
+
+        var securityOption = op.getSecurityRequirements().securityOption()
+        if(securityOption == SecurityOption.NO_SECURITY) {
+            securityOption = globalSecurity.securityOption()
+        }
+
+        val securityRule = setSecurityRule(securityOption)
+
+        if(securityRule != "") {
             this.addAnnotation(
                 AnnotationSpec
                     .builder(MicronautImports.SECURED)
                     .addMember(
-                        "SecurityRule.IS_AUTHENTICATED"
+                        securityRule
                     )
                     .build()
             )
         }
 
-
         return this
+    }
+
+    private fun setSecurityRule(
+        securityOption: SecurityOption,
+    ): String {
+        return when (securityOption) {
+            SecurityOption.AUTHENTICATION_REQUIRED -> "SecurityRule.IS_AUTHENTICATED"
+            SecurityOption.AUTHENTICATION_PROHIBITED -> "IS_ANONYMOUS"
+            SecurityOption.AUTHENTICATION_OPTIONAL -> "SecurityRule.IS_AUTHENTICATED, IS_ANONYMOUS"
+            else -> ""
+        }
     }
 
     private fun ParameterSpec.Builder.addMicronautParamAnnotation(parameter: RequestParameter): ParameterSpec.Builder =

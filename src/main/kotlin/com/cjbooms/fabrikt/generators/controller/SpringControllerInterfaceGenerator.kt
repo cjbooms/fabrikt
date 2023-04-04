@@ -6,7 +6,9 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securityOption
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
+import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.BodyParameter
@@ -60,6 +62,7 @@ class SpringControllerInterfaceGenerator(
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = op.happyPathResponse(packages.base)
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
+        val globalSecurity = this.api.openApi3.getSecurityRequirements()
 
         // Main method builder
         val funcSpec = FunSpec
@@ -88,6 +91,25 @@ class SpringControllerInterfaceGenerator(
                 }
             }
             .forEach { funcSpec.addParameter(it) }
+
+        // Add authentication
+        var securityOption = op.getSecurityRequirements().securityOption()
+        if(securityOption == ControllerGeneratorUtils.SecurityOption.NO_SECURITY) {
+            securityOption = globalSecurity.securityOption()
+        }
+
+        // TODO ask optional okay with default value?
+
+        if (securityOption == ControllerGeneratorUtils.SecurityOption.AUTHENTICATION_REQUIRED) {
+            funcSpec.addParameter(
+                ParameterSpec.builder("authentication", SpringImports.AUTHENTICATION)
+                    .build())
+        } else if(securityOption == ControllerGeneratorUtils.SecurityOption.AUTHENTICATION_OPTIONAL) {
+            funcSpec.addParameter(
+                ParameterSpec.builder("authentication", SpringImports.AUTHENTICATION)
+                    .defaultValue("null")
+                    .build())
+        }
 
         return funcSpec.build()
     }
