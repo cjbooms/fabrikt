@@ -72,15 +72,16 @@ object ControllerGeneratorUtils {
      *
      * depending on the security settings on an operation the SecuritySupport Enum is defined
      */
-    fun List<SecurityRequirement>.securitySupport(): SecuritySupport {
+    fun List<SecurityRequirement>.securitySupport(hasExplicitNone: Boolean): SecuritySupport? {
 
         val containsEmptyObject = this.any{ it.requirements.isEmpty()}
         val containsNonEmptyObject =  this.any{ it.requirements.isNotEmpty()}
 
         return when {
-            (containsEmptyObject && containsNonEmptyObject) -> SecuritySupport.AUTHENTICATION_OPTIONAL
-            (containsEmptyObject) -> SecuritySupport.AUTHENTICATION_PROHIBITED
-            (containsNonEmptyObject) -> SecuritySupport.AUTHENTICATION_REQUIRED
+            containsEmptyObject && containsNonEmptyObject -> SecuritySupport.AUTHENTICATION_OPTIONAL
+            containsEmptyObject -> SecuritySupport.AUTHENTICATION_PROHIBITED
+            containsNonEmptyObject -> SecuritySupport.AUTHENTICATION_REQUIRED
+            hasExplicitNone && this.isEmpty() -> null
             else -> SecuritySupport.NO_SECURITY
         }
 

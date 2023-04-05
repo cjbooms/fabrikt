@@ -92,14 +92,13 @@ class SpringControllerInterfaceGenerator(
             .forEach { funcSpec.addParameter(it) }
 
         // Add authentication
-        var securityOption = op.getSecurityRequirements().securitySupport()
-        val hasEmptyRequirements = op.getSecurityRequirements().size == 0 && op.hasSecurityRequirements()
-        if(securityOption == ControllerGeneratorUtils.SecuritySupport.NO_SECURITY && !hasEmptyRequirements) {
-            securityOption = globalSecurity.securitySupport()
+        var securityOption = op.getSecurityRequirements().securitySupport(op.hasSecurityRequirements())
+        if(securityOption == ControllerGeneratorUtils.SecuritySupport.NO_SECURITY) {
+            securityOption = globalSecurity.securitySupport(false)
         }
 
 
-        if (securityOption.allowsAuthenticated) {
+        if (securityOption != null && securityOption.allowsAuthenticated) {
             val typeName =
                 SpringImports.AUTHENTICATION
                     .copy(nullable = securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_OPTIONAL)
