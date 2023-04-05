@@ -56,6 +56,22 @@ paths:
   /none:
     get:
       operationId: testPath
+      security:
+        - [ ]
+      parameters:
+        - in: query
+          name: testDTO
+          required: true
+          schema:
+            $ref: '#/components/schemas/testDTO'
+      responses:
+        '200':
+          description: generateTestModel 200 response
+      tags:
+        - additional-
+  /default:
+    get:
+      operationId: testPath
       parameters:
         - in: query
           name: testDTO

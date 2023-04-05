@@ -97,7 +97,8 @@ class MicronautControllerInterfaceGenerator(
 
         // Add authentication
         var securityOption = op.getSecurityRequirements().securityOption()
-        if(securityOption == SecuritySupport.NO_SECURITY) {
+        val hasEmptyRequirements = op.getSecurityRequirements().size == 0 && op.hasSecurityRequirements()
+        if(securityOption == SecuritySupport.NO_SECURITY && !hasEmptyRequirements) {
             securityOption = globalSecurity
         }
 
@@ -165,8 +166,9 @@ class MicronautControllerInterfaceGenerator(
 
 
         var securityOption = op.getSecurityRequirements().securityOption()
+        val hasEmptyRequirements = op.getSecurityRequirements().size == 0 && op.hasSecurityRequirements()
 
-        if(securityOption == SecuritySupport.NO_SECURITY) {
+        if(securityOption == SecuritySupport.NO_SECURITY && !hasEmptyRequirements) {
             securityOption = globalSecurity
         }
 

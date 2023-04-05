@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyP
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securityOption
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
+import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.BodyParameter
@@ -93,21 +94,21 @@ class SpringControllerInterfaceGenerator(
 
         // Add authentication
         var securityOption = op.getSecurityRequirements().securityOption()
-        if(securityOption == ControllerGeneratorUtils.SecuritySupport.NO_SECURITY) {
+        val hasEmptyRequirements = op.getSecurityRequirements().size == 0 && op.hasSecurityRequirements()
+        if(securityOption == ControllerGeneratorUtils.SecuritySupport.NO_SECURITY && !hasEmptyRequirements) {
             securityOption = globalSecurity.securityOption()
         }
 
-        // TODO ask optional okay with default value?
 
-        if (securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_REQUIRED) {
+        if (securityOption.allowsAuthorized) {
+            val typeName =
+                MicronautImports.AUTHENTICATION
+                    .copy(nullable = securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_OPTIONAL)
             funcSpec.addParameter(
-                ParameterSpec.builder("authentication", SpringImports.AUTHENTICATION)
-                    .build())
-        } else if(securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_OPTIONAL) {
-            funcSpec.addParameter(
-                ParameterSpec.builder("authentication", SpringImports.AUTHENTICATION)
-                    .defaultValue("null")
-                    .build())
+                ParameterSpec
+                    .builder("authentication", typeName)
+                    .build()
+            )
         }
 
         return funcSpec.build()
