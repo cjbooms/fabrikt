@@ -26,11 +26,15 @@ object MicronautImports {
     val SECURED = ClassName(Packages.MICRONAUT_SECURITY_ANNOTATION, "Secured")
     val AUTHENTICATION = ClassName(Packages.MICRONAUT_AUTHENTICATION, "Authentication")
 
+    val SECURITY_RULE_IS_AUTHENTICATED = "SecurityRule.IS_AUTHENTICATED"
+    val SECURITY_RULE_IS_ANONYMOUS = "SecurityRule.IS_ANONYMOUS"
+
     val CONTROLLER = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Controller")
     val BODY = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Body")
     val HEADER = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Header")
     val QUERY_VALUE = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "QueryValue")
     val PATH_VARIABLE = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "PathVariable")
+
 
     object HttpMethods {
         val GET = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Get")

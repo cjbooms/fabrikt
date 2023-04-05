@@ -16,8 +16,6 @@ paths:
       responses:
         '200':
           description: generateTestModel 200 response
-      tags:
-        - additional-models
 components:
   securitySchemes:
     BasicAuth:

@@ -7,9 +7,11 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecuritySupport
-import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securityOption
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
+import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports.SECURITY_RULE_IS_ANONYMOUS
+import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports.SECURITY_RULE_IS_AUTHENTICATED
 import com.cjbooms.fabrikt.model.*
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSingleResource
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
@@ -18,7 +20,6 @@ import com.reprezen.kaizen.oasparser.model3.Path
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.cjbooms.fabrikt.model.RequestParameter
-import com.reprezen.kaizen.oasparser.model3.SecurityRequirement
 
 
 class MicronautControllerInterfaceGenerator(
@@ -56,14 +57,14 @@ class MicronautControllerInterfaceGenerator(
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = MicronautImports.RESPONSE.parameterizedBy(op.happyPathResponse(packages.base))
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
-        val globalSecurity = this.api.openApi3.getSecurityRequirements().securityOption()
+        val globalSecurity = this.api.openApi3.getSecurityRequirements().securitySupport()
 
         // Main method builder
         val funcSpec = FunSpec
             .builder(methodName)
             .addModifiers(KModifier.ABSTRACT)
             .addKdoc(op.toKdoc(parameters))
-            .addMicronautFunAnnotation(op, verb, path.pathString, globalSecurity)
+            .addMicronautFunAnnotation(op, verb, path.pathString)
             .apply {
                 if (useSuspendModifier)
                     addModifiers(KModifier.SUSPEND)
@@ -96,13 +97,13 @@ class MicronautControllerInterfaceGenerator(
 
 
         // Add authentication
-        var securityOption = op.getSecurityRequirements().securityOption()
+        var securityOption = op.getSecurityRequirements().securitySupport()
         val hasEmptyRequirements = op.getSecurityRequirements().size == 0 && op.hasSecurityRequirements()
         if(securityOption == SecuritySupport.NO_SECURITY && !hasEmptyRequirements) {
             securityOption = globalSecurity
         }
 
-        if (securityOption.allowsAuthorized) {
+        if (securityOption.allowsAuthenticated) {
             val typeName =
                 MicronautImports.AUTHENTICATION
                     .copy(nullable = securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL)
@@ -116,7 +117,9 @@ class MicronautControllerInterfaceGenerator(
         return funcSpec.build()
     }
 
-    private fun FunSpec.Builder.addMicronautFunAnnotation(op: Operation, verb: String, path: String, globalSecurity: SecuritySupport): FunSpec.Builder {
+    private fun FunSpec.Builder.addMicronautFunAnnotation(op: Operation, verb: String, path: String): FunSpec.Builder {
+        val globalSecurity = this@MicronautControllerInterfaceGenerator.api.openApi3.getSecurityRequirements().securitySupport()
+
         val produces = op.responses
             .flatMap { it.value.contentMediaTypes.keys }
             .toTypedArray()
@@ -165,7 +168,7 @@ class MicronautControllerInterfaceGenerator(
         }
 
 
-        var securityOption = op.getSecurityRequirements().securityOption()
+        var securityOption = op.getSecurityRequirements().securitySupport()
         val hasEmptyRequirements = op.getSecurityRequirements().size == 0 && op.hasSecurityRequirements()
 
         if(securityOption == SecuritySupport.NO_SECURITY && !hasEmptyRequirements) {
@@ -192,9 +195,9 @@ class MicronautControllerInterfaceGenerator(
         securityOption: SecuritySupport,
     ): String {
         return when (securityOption) {
-            SecuritySupport.AUTHENTICATION_REQUIRED -> "SecurityRule.IS_AUTHENTICATED"
-            SecuritySupport.AUTHENTICATION_PROHIBITED -> "SecurityRule.IS_ANONYMOUS"
-            SecuritySupport.AUTHENTICATION_OPTIONAL -> "SecurityRule.IS_AUTHENTICATED, SecurityRule.IS_ANONYMOUS"
+            SecuritySupport.AUTHENTICATION_REQUIRED -> SECURITY_RULE_IS_AUTHENTICATED
+            SecuritySupport.AUTHENTICATION_PROHIBITED -> SECURITY_RULE_IS_ANONYMOUS
+            SecuritySupport.AUTHENTICATION_OPTIONAL -> SECURITY_RULE_IS_AUTHENTICATED + ", " + SECURITY_RULE_IS_ANONYMOUS
             else -> ""
         }
     }
@@ -211,7 +214,6 @@ class MicronautControllerInterfaceGenerator(
                 .builder(MicronautImports.PATH_VARIABLE)
         }.let {
             it.addMember("value = %S", parameter.oasName)
-            // here it will be added to each parameter
 
             if (parameter.defaultValue != null)
                 it.addMember("defaultValue = %S", parameter.defaultValue)

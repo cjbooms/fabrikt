@@ -50,14 +50,29 @@ object ControllerGeneratorUtils {
     private fun httpVerbMethodName(verb: String, isSingleResource: Boolean) =
         if (isSingleResource) "${verb}ById" else verb
 
-    enum class SecuritySupport(val allowsAuthorized: Boolean, val allowsAnonymous: Boolean) {
+
+    /**
+     * Enum definition for different cases of authentication
+     *
+     * N0_SECURITY when no @Secured Annotation is to be added neither an authentication input parameter
+     * AUTHENTICATION_REQUIRED when @Secured Annotation IS_AUTHENTICATED (for micronaut) is to be added and authentication as input parameter
+     * AUTHENTICATION_PROHIBITED when @Secured Annotation IS_ANONYMOUS (for micronaut) is to be added and no authentication input parameter
+     * AUTHENTICATION_OPTIONAL when @Secured Annotation IS_AUTHENTICATED and IS_ANONYMOUS (for micronaut) is to be added and authentication as optional input parameter
+     */
+    enum class SecuritySupport(val allowsAuthenticated: Boolean, val allowsAnonymous: Boolean) {
         NO_SECURITY(false, false),
         AUTHENTICATION_REQUIRED(true, false),
         AUTHENTICATION_PROHIBITED(false, true),
         AUTHENTICATION_OPTIONAL(true, true),
     }
-    
-    fun List<SecurityRequirement>.securityOption(): SecuritySupport {
+
+
+    /**
+     * Differentiating the cases of authentication
+     *
+     * depending on the security settings on an operation the SecuritySupport Enum is defined
+     */
+    fun List<SecurityRequirement>.securitySupport(): SecuritySupport {
 
         val containsEmptyObject = this.any{ it.requirements.isEmpty()}
         val containsNonEmptyObject =  this.any{ it.requirements.isNotEmpty()}

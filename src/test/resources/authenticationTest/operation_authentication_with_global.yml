@@ -18,8 +18,6 @@ paths:
       responses:
         '200':
           description: generateTestModel 200 response
-      tags:
-        - additional-models
   /prohibited:
     get:
       operationId: testPath
@@ -34,8 +32,6 @@ paths:
       responses:
         '200':
           description: generateTestModel 200 response
-      tags:
-        - additional-models
   /optional:
     get:
       operationId: testPath
@@ -51,13 +47,11 @@ paths:
       responses:
         '200':
           description: generateTestModel 200 response
-      tags:
-        - additional-models
   /none:
     get:
       operationId: testPath
       security:
-        - [ ]
+        [ ]
       parameters:
         - in: query
           name: testDTO
@@ -67,8 +61,6 @@ paths:
       responses:
         '200':
           description: generateTestModel 200 response
-      tags:
-        - additional-
   /default:
     get:
       operationId: testPath
@@ -81,8 +73,6 @@ paths:
       responses:
         '200':
           description: generateTestModel 200 response
-      tags:
-        - additional-models
 components:
   securitySchemes:
     BasicAuth:

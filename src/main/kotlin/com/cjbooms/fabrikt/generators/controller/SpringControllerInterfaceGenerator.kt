@@ -6,9 +6,8 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
-import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securityOption
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
-import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.BodyParameter
@@ -93,16 +92,16 @@ class SpringControllerInterfaceGenerator(
             .forEach { funcSpec.addParameter(it) }
 
         // Add authentication
-        var securityOption = op.getSecurityRequirements().securityOption()
+        var securityOption = op.getSecurityRequirements().securitySupport()
         val hasEmptyRequirements = op.getSecurityRequirements().size == 0 && op.hasSecurityRequirements()
         if(securityOption == ControllerGeneratorUtils.SecuritySupport.NO_SECURITY && !hasEmptyRequirements) {
-            securityOption = globalSecurity.securityOption()
+            securityOption = globalSecurity.securitySupport()
         }
 
 
-        if (securityOption.allowsAuthorized) {
+        if (securityOption.allowsAuthenticated) {
             val typeName =
-                MicronautImports.AUTHENTICATION
+                SpringImports.AUTHENTICATION
                     .copy(nullable = securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_OPTIONAL)
             funcSpec.addParameter(
                 ParameterSpec
