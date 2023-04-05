@@ -9,10 +9,10 @@ paths:
       operationId: testPath
       parameters:
         - in: query
-          name: testDTO
+          name: testString
           required: true
           schema:
-            $ref: '#/components/schemas/testDTO'
+            type: string
       responses:
         '200':
           description: generateTestModel 200 response
@@ -21,11 +21,3 @@ components:
     BasicAuth:
       type: http
       scheme: basic
-  schemas:
-    testDTO:
-      properties:
-        testProperty:
-          type: boolean
-      required:
-        - testProperty
-      type: object

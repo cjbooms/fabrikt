@@ -11,10 +11,10 @@ paths:
         - BasicAuth: [ ]
       parameters:
         - in: query
-          name: testDTO
+          name: testString
           required: true
           schema:
-            $ref: '#/components/schemas/testDTO'
+            type: string
       responses:
         '200':
           description: generateTestModel 200 response
@@ -25,10 +25,10 @@ paths:
         - { }
       parameters:
         - in: query
-          name: testDTO
+          name: testString
           required: true
           schema:
-            $ref: '#/components/schemas/testDTO'
+            type: string
       responses:
         '200':
           description: generateTestModel 200 response
@@ -40,10 +40,10 @@ paths:
         - { }
       parameters:
         - in: query
-          name: testDTO
+          name: testString
           required: true
           schema:
-            $ref: '#/components/schemas/testDTO'
+            type: string
       responses:
         '200':
           description: generateTestModel 200 response
@@ -52,19 +52,12 @@ paths:
       operationId: testPath
       parameters:
         - in: query
-          name: testDTO
+          name: testString
           required: true
           schema:
-            $ref: '#/components/schemas/testDTO'
+            type: string
       responses:
         '200':
           description: generateTestModel 200 response
 components:
-  schemas:
-    testDTO:
-      properties:
-        testProperty:
-          type: boolean
-      required:
-        - testProperty
-      type: object
+
