@@ -50,23 +50,23 @@ object ControllerGeneratorUtils {
     private fun httpVerbMethodName(verb: String, isSingleResource: Boolean) =
         if (isSingleResource) "${verb}ById" else verb
 
-    enum class SecurityOption {
-        NO_SECURITY,
-        AUTHENTICATION_REQUIRED,
-        AUTHENTICATION_PROHIBITED,
-        AUTHENTICATION_OPTIONAL
+    enum class SecuritySupport(val allowsAuthorized: Boolean, val allowsAnonymous: Boolean) {
+        NO_SECURITY(false, false),
+        AUTHENTICATION_REQUIRED(true, false),
+        AUTHENTICATION_PROHIBITED(false, true),
+        AUTHENTICATION_OPTIONAL(true, true),
     }
     
-    fun List<SecurityRequirement>.securityOption(): SecurityOption {
+    fun List<SecurityRequirement>.securityOption(): SecuritySupport {
 
         val containsEmptyObject = this.any{ it.requirements.isEmpty()}
         val containsNonEmptyObject =  this.any{ it.requirements.isNotEmpty()}
 
         return when {
-            (containsEmptyObject && containsNonEmptyObject) -> SecurityOption.AUTHENTICATION_OPTIONAL
-            (containsEmptyObject) -> SecurityOption.AUTHENTICATION_PROHIBITED
-            (containsNonEmptyObject) -> SecurityOption.AUTHENTICATION_REQUIRED
-            else -> SecurityOption.NO_SECURITY
+            (containsEmptyObject && containsNonEmptyObject) -> SecuritySupport.AUTHENTICATION_OPTIONAL
+            (containsEmptyObject) -> SecuritySupport.AUTHENTICATION_PROHIBITED
+            (containsNonEmptyObject) -> SecuritySupport.AUTHENTICATION_REQUIRED
+            else -> SecuritySupport.NO_SECURITY
         }
 
     }

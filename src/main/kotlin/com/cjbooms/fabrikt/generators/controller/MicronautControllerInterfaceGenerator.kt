@@ -6,7 +6,7 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
-import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecurityOption
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecuritySupport
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securityOption
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
@@ -56,7 +56,7 @@ class MicronautControllerInterfaceGenerator(
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = MicronautImports.RESPONSE.parameterizedBy(op.happyPathResponse(packages.base))
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
-        val globalSecurity = this.api.openApi3.getSecurityRequirements()
+        val globalSecurity = this.api.openApi3.getSecurityRequirements().securityOption()
 
         // Main method builder
         val funcSpec = FunSpec
@@ -97,29 +97,29 @@ class MicronautControllerInterfaceGenerator(
 
         // Add authentication
         var securityOption = op.getSecurityRequirements().securityOption()
-        if(securityOption == SecurityOption.NO_SECURITY) {
-            securityOption = globalSecurity.securityOption()
+        if(securityOption == SecuritySupport.NO_SECURITY) {
+            securityOption = globalSecurity
         }
 
-        if (securityOption == SecurityOption.AUTHENTICATION_REQUIRED) {
+        if (securityOption.allowsAuthorized) {
+            val typeName =
+                MicronautImports.AUTHENTICATION
+                    .copy(nullable = securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL)
             funcSpec.addParameter(
-            ParameterSpec.builder("authentication", MicronautImports.AUTHENTICATION)
-                .build())
-        } else if(securityOption == SecurityOption.AUTHENTICATION_OPTIONAL) {
-             funcSpec.addParameter(
-                ParameterSpec.builder("authentication", MicronautImports.AUTHENTICATION.copy(true))
-                    .build())
+                ParameterSpec
+                    .builder("authentication", typeName)
+                    .build()
+            )
         }
 
         return funcSpec.build()
     }
 
-    private fun FunSpec.Builder.addMicronautFunAnnotation(op: Operation, verb: String, path: String, globalSecurity: List<SecurityRequirement>): FunSpec.Builder {
+    private fun FunSpec.Builder.addMicronautFunAnnotation(op: Operation, verb: String, path: String, globalSecurity: SecuritySupport): FunSpec.Builder {
         val produces = op.responses
             .flatMap { it.value.contentMediaTypes.keys }
             .toTypedArray()
 
-        val security = op.getSecurityRequirements()
 
         val consumes = op.requestBody
             .contentMediaTypes.keys
@@ -165,8 +165,9 @@ class MicronautControllerInterfaceGenerator(
 
 
         var securityOption = op.getSecurityRequirements().securityOption()
-        if(securityOption == SecurityOption.NO_SECURITY) {
-            securityOption = globalSecurity.securityOption()
+
+        if(securityOption == SecuritySupport.NO_SECURITY) {
+            securityOption = globalSecurity
         }
 
         val securityRule = setSecurityRule(securityOption)
@@ -186,12 +187,12 @@ class MicronautControllerInterfaceGenerator(
     }
 
     private fun setSecurityRule(
-        securityOption: SecurityOption,
+        securityOption: SecuritySupport,
     ): String {
         return when (securityOption) {
-            SecurityOption.AUTHENTICATION_REQUIRED -> "SecurityRule.IS_AUTHENTICATED"
-            SecurityOption.AUTHENTICATION_PROHIBITED -> "IS_ANONYMOUS"
-            SecurityOption.AUTHENTICATION_OPTIONAL -> "SecurityRule.IS_AUTHENTICATED, IS_ANONYMOUS"
+            SecuritySupport.AUTHENTICATION_REQUIRED -> "SecurityRule.IS_AUTHENTICATED"
+            SecuritySupport.AUTHENTICATION_PROHIBITED -> "SecurityRule.IS_ANONYMOUS"
+            SecuritySupport.AUTHENTICATION_OPTIONAL -> "SecurityRule.IS_AUTHENTICATED, SecurityRule.IS_ANONYMOUS"
             else -> ""
         }
     }

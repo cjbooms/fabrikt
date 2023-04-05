@@ -8,7 +8,6 @@ import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyP
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securityOption
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
-import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.BodyParameter
@@ -94,17 +93,17 @@ class SpringControllerInterfaceGenerator(
 
         // Add authentication
         var securityOption = op.getSecurityRequirements().securityOption()
-        if(securityOption == ControllerGeneratorUtils.SecurityOption.NO_SECURITY) {
+        if(securityOption == ControllerGeneratorUtils.SecuritySupport.NO_SECURITY) {
             securityOption = globalSecurity.securityOption()
         }
 
         // TODO ask optional okay with default value?
 
-        if (securityOption == ControllerGeneratorUtils.SecurityOption.AUTHENTICATION_REQUIRED) {
+        if (securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_REQUIRED) {
             funcSpec.addParameter(
                 ParameterSpec.builder("authentication", SpringImports.AUTHENTICATION)
                     .build())
-        } else if(securityOption == ControllerGeneratorUtils.SecurityOption.AUTHENTICATION_OPTIONAL) {
+        } else if(securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_OPTIONAL) {
             funcSpec.addParameter(
                 ParameterSpec.builder("authentication", SpringImports.AUTHENTICATION)
                     .defaultValue("null")
