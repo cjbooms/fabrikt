@@ -117,7 +117,8 @@ class MicronautControllerInterfaceGenerator(
     }
 
     private fun FunSpec.Builder.addMicronautFunAnnotation(op: Operation, verb: String, path: String): FunSpec.Builder {
-        val globalSecurity = this@MicronautControllerInterfaceGenerator.api.openApi3.getSecurityRequirements().securitySupport(false)
+        val globalSecurity =
+            this@MicronautControllerInterfaceGenerator.api.openApi3.getSecurityRequirements().securitySupport(false)
 
         val produces = op.responses
             .flatMap { it.value.contentMediaTypes.keys }
@@ -169,13 +170,18 @@ class MicronautControllerInterfaceGenerator(
 
         var securityOption = op.getSecurityRequirements().securitySupport(op.hasSecurityRequirements())
 
-        if(securityOption == SecuritySupport.NO_SECURITY) {
+        if (securityOption == SecuritySupport.NO_SECURITY) {
             securityOption = globalSecurity
         }
 
-        val securityRule = setSecurityRule(securityOption)
+        val securityRule = when (securityOption) {
+            SecuritySupport.AUTHENTICATION_REQUIRED -> SECURITY_RULE_IS_AUTHENTICATED
+            SecuritySupport.AUTHENTICATION_PROHIBITED -> SECURITY_RULE_IS_ANONYMOUS
+            SecuritySupport.AUTHENTICATION_OPTIONAL -> "$SECURITY_RULE_IS_AUTHENTICATED, $SECURITY_RULE_IS_ANONYMOUS"
+            else -> ""
+        }
 
-        if(securityRule != "") {
+        if (securityRule != "") {
             this.addAnnotation(
                 AnnotationSpec
                     .builder(MicronautImports.SECURED)
@@ -187,17 +193,6 @@ class MicronautControllerInterfaceGenerator(
         }
 
         return this
-    }
-
-    private fun setSecurityRule(
-        securityOption: SecuritySupport?,
-    ): String {
-        return when (securityOption) {
-            SecuritySupport.AUTHENTICATION_REQUIRED -> SECURITY_RULE_IS_AUTHENTICATED
-            SecuritySupport.AUTHENTICATION_PROHIBITED -> SECURITY_RULE_IS_ANONYMOUS
-            SecuritySupport.AUTHENTICATION_OPTIONAL -> "$SECURITY_RULE_IS_AUTHENTICATED, $SECURITY_RULE_IS_ANONYMOUS"
-            else -> ""
-        }
     }
 
     private fun ParameterSpec.Builder.addMicronautParamAnnotation(parameter: RequestParameter): ParameterSpec.Builder =
