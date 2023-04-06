@@ -4,9 +4,9 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecuritySupport
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
-import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecuritySupport
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
@@ -23,7 +23,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 class MicronautControllerInterfaceGenerator(
     private val packages: Packages,
     private val api: SourceApi,
-    private val options: Set<ControllerCodeGenOptionType> = emptySet()
+    private val options: Set<ControllerCodeGenOptionType> = emptySet(),
 ) : ControllerInterfaceGenerator(packages, api) {
 
     private val useSuspendModifier: Boolean
@@ -33,18 +33,18 @@ class MicronautControllerInterfaceGenerator(
         MicronautControllers(
             api.openApi3.routeToPaths().map { (resourceName, paths) ->
                 buildController(resourceName, paths.values)
-            }.toSet()
+            }.toSet(),
         )
 
     override fun controllerBuilder(
         className: String,
-        basePath: String
+        basePath: String,
     ) =
         TypeSpec.interfaceBuilder(className)
             .addAnnotation(
                 AnnotationSpec
                     .builder(MicronautImports.CONTROLLER)
-                    .build()
+                    .build(),
             )
 
     override fun buildFunction(
@@ -64,8 +64,9 @@ class MicronautControllerInterfaceGenerator(
             .addKdoc(op.toKdoc(parameters))
             .addMicronautFunAnnotation(op, verb, path.pathString)
             .apply {
-                if (useSuspendModifier)
+                if (useSuspendModifier) {
                     addModifiers(KModifier.SUSPEND)
+                }
             }
             .returns(returnType)
 
@@ -78,7 +79,7 @@ class MicronautControllerInterfaceGenerator(
                             .toParameterSpecBuilder()
                             .addAnnotation(
                                 AnnotationSpec
-                                    .builder(MicronautImports.BODY).build()
+                                    .builder(MicronautImports.BODY).build(),
                             )
                             .addAnnotation(JavaXAnnotations.validBuilder().build())
                             .build()
@@ -93,7 +94,6 @@ class MicronautControllerInterfaceGenerator(
             }
             .forEach { funcSpec.addParameter(it) }
 
-
         // Add authentication
         val securityOption = op.securitySupport(globalSecurity)
 
@@ -104,7 +104,7 @@ class MicronautControllerInterfaceGenerator(
             funcSpec.addParameter(
                 ParameterSpec
                     .builder("authentication", typeName)
-                    .build()
+                    .build(),
             )
         }
 
@@ -119,7 +119,6 @@ class MicronautControllerInterfaceGenerator(
             .flatMap { it.value.contentMediaTypes.keys }
             .toTypedArray()
 
-
         val consumes = op.requestBody
             .contentMediaTypes.keys
             .toTypedArray()
@@ -127,7 +126,7 @@ class MicronautControllerInterfaceGenerator(
         this.addAnnotation(
             AnnotationSpec
                 .builder(MicronautImports.HttpMethods.byName(verb))
-                .addMember("uri = %S", path).build()
+                .addMember("uri = %S", path).build(),
         )
 
         if (consumes.isNotEmpty()) {
@@ -140,9 +139,10 @@ class MicronautControllerInterfaceGenerator(
                             prefix = "[",
                             postfix = "]",
                             separator = ", ",
-                            transform = { "\"$it\"" })
+                            transform = { "\"$it\"" },
+                        ),
                     )
-                    .build()
+                    .build(),
             )
         }
 
@@ -156,9 +156,10 @@ class MicronautControllerInterfaceGenerator(
                             prefix = "[",
                             postfix = "]",
                             separator = ", ",
-                            transform = { "\"$it\"" })
+                            transform = { "\"$it\"" },
+                        ),
                     )
-                    .build()
+                    .build(),
             )
         }
 
@@ -174,9 +175,9 @@ class MicronautControllerInterfaceGenerator(
                 AnnotationSpec
                     .builder(MicronautImports.SECURED)
                     .addMember(
-                        securityRule
+                        securityRule,
                     )
-                    .build()
+                    .build(),
             )
         }
 
@@ -185,19 +186,23 @@ class MicronautControllerInterfaceGenerator(
 
     private fun ParameterSpec.Builder.addMicronautParamAnnotation(parameter: RequestParameter): ParameterSpec.Builder =
         when (parameter.parameterLocation) {
-            QueryParam -> AnnotationSpec
-                .builder(MicronautImports.QUERY_VALUE)
+            QueryParam ->
+                AnnotationSpec
+                    .builder(MicronautImports.QUERY_VALUE)
 
-            HeaderParam -> AnnotationSpec
-                .builder(MicronautImports.HEADER)
+            HeaderParam ->
+                AnnotationSpec
+                    .builder(MicronautImports.HEADER)
 
-            PathParam -> AnnotationSpec
-                .builder(MicronautImports.PATH_VARIABLE)
+            PathParam ->
+                AnnotationSpec
+                    .builder(MicronautImports.PATH_VARIABLE)
         }.let {
             it.addMember("value = %S", parameter.oasName)
 
-            if (parameter.defaultValue != null)
+            if (parameter.defaultValue != null) {
                 it.addMember("defaultValue = %S", parameter.defaultValue)
+            }
 
             this.addAnnotation(it.build())
         }

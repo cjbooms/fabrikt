@@ -34,19 +34,19 @@ import com.squareup.kotlinpoet.TypeSpec
 class SpringControllerInterfaceGenerator(
     private val packages: Packages,
     private val api: SourceApi,
-    private val options: Set<ControllerCodeGenOptionType> = emptySet()
+    private val options: Set<ControllerCodeGenOptionType> = emptySet(),
 ) : ControllerInterfaceGenerator(packages, api) {
 
     override fun generate(): SpringControllers =
         SpringControllers(
             api.openApi3.routeToPaths().map { (resourceName, paths) ->
                 buildController(resourceName, paths.values)
-            }.toSet()
+            }.toSet(),
         )
 
     override fun controllerBuilder(
         className: String,
-        basePath: String
+        basePath: String,
     ) =
         TypeSpec.interfaceBuilder(className)
             .addAnnotation(SpringAnnotations.CONTROLLER)
@@ -101,7 +101,7 @@ class SpringControllerInterfaceGenerator(
             funcSpec.addParameter(
                 ParameterSpec
                     .builder("authentication", typeName)
-                    .build()
+                    .build(),
             )
         }
 
@@ -123,14 +123,14 @@ class SpringControllerInterfaceGenerator(
                 .addMember("value = [%S]", path)
                 .addMember(
                     "produces = %L",
-                    produces.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" })
+                    produces.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" }),
                 )
                 .addMember("method = [RequestMethod.%L]", verb.toUpperCase())
 
         if (consumes.isNotEmpty()) {
             funcAnnotation.addMember(
                 "consumes = %L",
-                consumes.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" })
+                consumes.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" }),
             )
         }
 
@@ -147,20 +147,23 @@ class SpringControllerInterfaceGenerator(
             it.addMember("value = %S", parameter.oasName)
             it.addMember("required = %L", parameter.isRequired)
 
-            if (parameter.defaultValue != null)
+            if (parameter.defaultValue != null) {
                 it.addMember("defaultValue = %S", parameter.defaultValue)
+            }
 
-            if ( parameter.typeInfo is KotlinTypeInfo.Date )
-                this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE ) )
-            else if (parameter.typeInfo is KotlinTypeInfo.DateTime )
-                this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE_TIME ) )
+            if (parameter.typeInfo is KotlinTypeInfo.Date) {
+                this.addAnnotation(SpringAnnotations.dateTimeFormat(SpringImports.DateTimeFormat.ISO_DATE))
+            } else if (parameter.typeInfo is KotlinTypeInfo.DateTime) {
+                this.addAnnotation(SpringAnnotations.dateTimeFormat(SpringImports.DateTimeFormat.ISO_DATE_TIME))
+            }
 
             this.addAnnotation(it.build())
         }
 
     private fun FunSpec.Builder.addSuspendModifier(): FunSpec.Builder {
-        if (options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER })
+        if (options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER }) {
             this.addModifiers(KModifier.SUSPEND)
+        }
         return this
     }
 }
@@ -171,7 +174,7 @@ data class SpringControllers(val controllers: Collection<ControllerType>) : Kotl
             .addImport(SpringImports.Static.REQUEST_METHOD.first, SpringImports.Static.REQUEST_METHOD.second)
             .addImport(
                 SpringImports.Static.RESPONSE_STATUS.first,
-                SpringImports.Static.RESPONSE_STATUS.second
+                SpringImports.Static.RESPONSE_STATUS.second,
             )
             .build()
     }
