@@ -76,7 +76,7 @@ object ControllerGeneratorUtils {
     }
 
     /**
-     * computes the [SecuritySupport] of a list of [SecurityRequirements]
+     * Computes the [SecuritySupport] of a list of [SecurityRequirement]s.
      */
     fun List<SecurityRequirement>.securitySupport(): SecuritySupport {
         val containsEmptyObject = this.any { it.requirements.isEmpty() }
@@ -92,7 +92,7 @@ object ControllerGeneratorUtils {
 
     /**
      * Computes the [SecuritySupport] of a given operation.
-     * @param defaultValue The "API-global" security support to use in case the operation itself does not define any.
+     * @param defaultSupport The "API-global" security support to use in case the operation itself does not define any.
      */
     fun Operation.securitySupport(defaultSupport: SecuritySupport? = null) : SecuritySupport {
         if (!this.hasSecurityRequirements() && defaultSupport != null)
