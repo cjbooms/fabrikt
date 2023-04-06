@@ -44,25 +44,25 @@ class SpringAuthenticationTest {
     // global authentication tests
     @Test
     fun `ensure that global authentication set to any authentication will add the required parameter`() {
-        val controller = setupTest("global_authentication_required.yml")
+        val controllers = setupTest("global_authentication_required.yml")
 
-        val functionParameter = controller.flatMap { it.members }
+        val functionParameters = controllers.flatMap { it.members }
             .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }
 
-        assertThat(functionParameter).anySatisfy{ parameter ->
+        assertThat(functionParameters).anySatisfy{ parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
         }
     }
 
     @Test
     fun `ensure that global authentication set to any AND empty authentication will add the optional parameter`() {
-        val controller = setupTest("global_authentication_optional.yml")
+        val controllers = setupTest("global_authentication_optional.yml")
 
-        val functionParameter = controller.flatMap { it.members }
+        val functionParameters = controllers.flatMap { it.members }
             .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }
 
 
-        assertThat(functionParameter).anySatisfy{ parameter ->
+        assertThat(functionParameters).anySatisfy{ parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
             assertThat(parameter.type.isNullable)
         }
@@ -71,12 +71,12 @@ class SpringAuthenticationTest {
     @ParameterizedTest
     @MethodSource("testCasesNoAuthentication")
     fun `ensure that global authentication set to empty authentication will add the prohibited parameter`(testCasePath: String) {
-        val controller = setupTest(testCasePath)
+        val controllers = setupTest(testCasePath)
 
-        val functionParameter = controller.flatMap { it.members }
+        val functionParameters = controllers.flatMap { it.members }
             .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }
 
-        assertThat(functionParameter).noneSatisfy{ parameter ->
+        assertThat(functionParameters).noneSatisfy{ parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
         }
     }
@@ -85,66 +85,77 @@ class SpringAuthenticationTest {
     // operation level authentication tests
     @Test
     fun `ensure that both global security and operation-level security being defined will result in the correctly generated code`() {
-        val controller = setupTest("operation_authentication_with_global.yml")
+        val controllers = setupTest("operation_authentication_with_global.yml")
 
-        val prohibitedController = (controller.find{it.name == "ProhibitedController"}!!.members.single() as TypeSpec).funSpecs.single()
+        val prohibitedController = (controllers.find{it.name == "ProhibitedController"}!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(prohibitedController.parameters).noneSatisfy{parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")}
+            assertThat(parameter.name).isEqualTo("authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")}
 
 
-        val requiredController = (controller.find{it.name == "RequiredController"}!!.members.single() as TypeSpec).funSpecs.single()
+        val requiredController = (controllers.find{it.name == "RequiredController"}!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(requiredController.parameters).anySatisfy{parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")}
+            assertThat(parameter.name).isEqualTo("authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")}
 
 
-        val optionalController = (controller.find{it.name == "OptionalController"}!!.members.single() as TypeSpec).funSpecs.single()
+        val optionalController = (controllers.find{it.name == "OptionalController"}!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(optionalController.parameters).anySatisfy{parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")}
+            assertThat(parameter.name).isEqualTo("authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication?")
+            assertThat(parameter.type.isNullable)}
 
 
-        val defaultController = (controller.find{it.name == "DefaultController"}!!.members.single() as TypeSpec).funSpecs.single()
+        val defaultController = (controllers.find{it.name == "DefaultController"}!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(defaultController.parameters).anySatisfy{parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")}
+            assertThat(parameter.name).isEqualTo("authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")}
 
 
-        val noneController = (controller.find{it.name == "NoneController"}!!.members.single() as TypeSpec).funSpecs.single()
+        val noneController = (controllers.find{it.name == "NoneController"}!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(noneController.parameters).noneSatisfy{parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")}
+            assertThat(parameter.name).isEqualTo("authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")}
 
 
     }
 
     @Test
     fun `ensure that only operation-level security being defined will result in the correctly generated code`() {
-        val controller = setupTest("operation_authentication_without_global.yml")
+        val controllers = setupTest("operation_authentication_without_global.yml")
 
-        val prohibitedController = (controller.find{it.name == "ProhibitedController"}!!.members.single() as TypeSpec).funSpecs.single()
+        val prohibitedController = (controllers.find{it.name == "ProhibitedController"}!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(prohibitedController.parameters).noneSatisfy{parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")}
+            assertThat(parameter.name).isEqualTo("authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")}
 
 
-        val requiredController = (controller.find{it.name == "RequiredController"}!!.members.single() as TypeSpec).funSpecs.single()
+        val requiredController = (controllers.find{it.name == "RequiredController"}!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(requiredController.parameters).anySatisfy{parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")}
+            assertThat(parameter.name).isEqualTo("authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")}
 
 
-        val optionalController = (controller.find{it.name == "OptionalController"}!!.members.single() as TypeSpec).funSpecs.single()
+        val optionalController = (controllers.find{it.name == "OptionalController"}!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(optionalController.parameters).anySatisfy{parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")}
+            assertThat(parameter.name).isEqualTo("authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication?")
+            assertThat(parameter.type.isNullable)}
 
 
-        val noneController = (controller.find{it.name == "NoneController"}!!.members.single() as TypeSpec).funSpecs.single()
+        val noneController = (controllers.find{it.name == "NoneController"}!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(noneController.parameters).noneSatisfy{parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")}
+            assertThat(parameter.name).isEqualTo("authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")}
     }
 
 }
