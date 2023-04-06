@@ -19,7 +19,6 @@ import java.util.stream.Stream
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SpringAuthenticationTest {
     private val basePackage = "authenticationTest"
-    private lateinit var generated: Collection<FileSpec>
 
     @Suppress("unused")
     private fun testCasesNoAuthentication(): Stream<String> = Stream.of(
@@ -87,8 +86,7 @@ class SpringAuthenticationTest {
         val prohibitedController = (controllers.find { it.name == "ProhibitedController" }!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(prohibitedController.parameters).noneSatisfy { parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")
+            assertThat(parameter.type.toString()).endsWith("Authentication")
         }
 
         val requiredController = (controllers.find { it.name == "RequiredController" }!!.members.single() as TypeSpec).funSpecs.single()
@@ -116,8 +114,7 @@ class SpringAuthenticationTest {
         val noneController = (controllers.find { it.name == "NoneController" }!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(noneController.parameters).noneSatisfy { parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")
+            assertThat(parameter.type.toString()).endsWith("Authentication")
         }
     }
 
@@ -128,8 +125,7 @@ class SpringAuthenticationTest {
         val prohibitedController = (controllers.find { it.name == "ProhibitedController" }!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(prohibitedController.parameters).noneSatisfy { parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")
+            assertThat(parameter.type.toString()).endsWith("Authentication")
         }
 
         val requiredController = (controllers.find { it.name == "RequiredController" }!!.members.single() as TypeSpec).funSpecs.single()
@@ -150,8 +146,7 @@ class SpringAuthenticationTest {
         val noneController = (controllers.find { it.name == "NoneController" }!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(noneController.parameters).noneSatisfy { parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")
+            assertThat(parameter.type.toString()).endsWith("Authentication")
         }
     }
 }

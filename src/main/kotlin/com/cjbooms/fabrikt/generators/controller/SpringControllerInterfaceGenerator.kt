@@ -61,7 +61,7 @@ class SpringControllerInterfaceGenerator(
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = op.happyPathResponse(packages.base)
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
-        val globalSecurity = this.api.openApi3.getSecurityRequirements()
+        val globalSecurity = this.api.openApi3.getSecurityRequirements().securitySupport()
 
         // Main method builder
         val funcSpec = FunSpec
@@ -92,13 +92,9 @@ class SpringControllerInterfaceGenerator(
             .forEach { funcSpec.addParameter(it) }
 
         // Add authentication
-        var securityOption = op.getSecurityRequirements().securitySupport(op.hasSecurityRequirements())
-        if(securityOption == ControllerGeneratorUtils.SecuritySupport.NO_SECURITY) {
-            securityOption = globalSecurity.securitySupport(false)
-        }
+        val securityOption = op.securitySupport(globalSecurity)
 
-
-        if (securityOption != null && securityOption.allowsAuthenticated) {
+        if (securityOption.allowsAuthenticated) {
             val typeName =
                 SpringImports.AUTHENTICATION
                     .copy(nullable = securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_OPTIONAL)

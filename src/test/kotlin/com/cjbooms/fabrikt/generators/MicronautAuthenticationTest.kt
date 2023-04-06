@@ -19,7 +19,6 @@ import java.util.stream.Stream
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MicronautAuthenticationTest {
     private val basePackage = "authenticationTest"
-    private lateinit var generated: Collection<FileSpec>
 
     @Suppress("unused")
     private fun testCases(): Stream<Pair<String, String>> = Stream.of(
@@ -78,9 +77,7 @@ class MicronautAuthenticationTest {
             .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }
 
         assertThat(functionAnnotations).noneSatisfy { annotation ->
-            assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
-            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_AUTHENTICATED" }
-            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_ANONYMOUS" }
+            assertThat(annotation.className.simpleName).isEqualTo("Secured")
         }
 
         assertThat(functionParameters).noneSatisfy { parameter ->
@@ -101,8 +98,7 @@ class MicronautAuthenticationTest {
         }
 
         assertThat(prohibitedController.parameters).noneSatisfy { parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("io.micronaut.security.authentication.Authentication")
+            assertThat(parameter.type.toString()).endsWith("Authentication")
         }
 
         val requiredController = (controllers.find { it.name == "RequiredController" }!!.members.single() as TypeSpec).funSpecs.single()
@@ -134,12 +130,11 @@ class MicronautAuthenticationTest {
         val noneController = (controllers.find { it.name == "NoneController" }!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(noneController.annotations).noneSatisfy { annotation ->
-            assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
+            assertThat(annotation.className.simpleName).isEqualTo("Secured")
         }
 
         assertThat(noneController.parameters).noneSatisfy { parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("io.micronaut.security.authentication.Authentication")
+            assertThat(parameter.type.toString()).endsWith("Authentication")
         }
 
         val defaultController = (controllers.find { it.name == "DefaultController" }!!.members.single() as TypeSpec).funSpecs.single()
@@ -167,8 +162,7 @@ class MicronautAuthenticationTest {
         }
 
         assertThat(prohibitedController.parameters).noneSatisfy { parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("io.micronaut.security.authentication.Authentication")
+            assertThat(parameter.type.toString()).endsWith("Authentication")
         }
 
         val requiredController = (controllers.find { it.name == "RequiredController" }!!.members.single() as TypeSpec).funSpecs.single()
@@ -199,12 +193,11 @@ class MicronautAuthenticationTest {
         val noneController = (controllers.find { it.name == "NoneController" }!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(noneController.annotations).noneSatisfy { annotation ->
-            assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
+            assertThat(annotation.className.simpleName).isEqualTo("Secured")
         }
 
         assertThat(noneController.parameters).noneSatisfy { parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("io.micronaut.security.authentication.Authentication")
+            assertThat(parameter.type.toString()).endsWith("Authentication")
         }
     }
 }

@@ -19,8 +19,6 @@ import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Path
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.cjbooms.fabrikt.model.RequestParameter
-
 
 class MicronautControllerInterfaceGenerator(
     private val packages: Packages,
@@ -57,7 +55,7 @@ class MicronautControllerInterfaceGenerator(
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = MicronautImports.RESPONSE.parameterizedBy(op.happyPathResponse(packages.base))
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
-        val globalSecurity = this.api.openApi3.getSecurityRequirements().securitySupport(false)
+        val globalSecurity = this.api.openApi3.getSecurityRequirements().securitySupport()
 
         // Main method builder
         val funcSpec = FunSpec
@@ -97,12 +95,9 @@ class MicronautControllerInterfaceGenerator(
 
 
         // Add authentication
-        var securityOption = op.getSecurityRequirements().securitySupport(op.hasSecurityRequirements())
-        if(securityOption == SecuritySupport.NO_SECURITY) {
-            securityOption = globalSecurity
-        }
+        val securityOption = op.securitySupport(globalSecurity)
 
-        if (securityOption != null && securityOption.allowsAuthenticated) {
+        if (securityOption.allowsAuthenticated) {
             val typeName =
                 MicronautImports.AUTHENTICATION
                     .copy(nullable = securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL)
@@ -118,7 +113,7 @@ class MicronautControllerInterfaceGenerator(
 
     private fun FunSpec.Builder.addMicronautFunAnnotation(op: Operation, verb: String, path: String): FunSpec.Builder {
         val globalSecurity =
-            this@MicronautControllerInterfaceGenerator.api.openApi3.getSecurityRequirements().securitySupport(false)
+            this@MicronautControllerInterfaceGenerator.api.openApi3.getSecurityRequirements().securitySupport()
 
         val produces = op.responses
             .flatMap { it.value.contentMediaTypes.keys }
@@ -167,14 +162,7 @@ class MicronautControllerInterfaceGenerator(
             )
         }
 
-
-        var securityOption = op.getSecurityRequirements().securitySupport(op.hasSecurityRequirements())
-
-        if (securityOption == SecuritySupport.NO_SECURITY) {
-            securityOption = globalSecurity
-        }
-
-        val securityRule = when (securityOption) {
+        val securityRule = when (op.securitySupport(globalSecurity)) {
             SecuritySupport.AUTHENTICATION_REQUIRED -> SECURITY_RULE_IS_AUTHENTICATED
             SecuritySupport.AUTHENTICATION_PROHIBITED -> SECURITY_RULE_IS_ANONYMOUS
             SecuritySupport.AUTHENTICATION_OPTIONAL -> "$SECURITY_RULE_IS_AUTHENTICATED, $SECURITY_RULE_IS_ANONYMOUS"
