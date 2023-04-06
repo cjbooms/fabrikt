@@ -22,8 +22,9 @@ class SpringAuthenticationTest {
     private lateinit var generated: Collection<FileSpec>
 
     @Suppress("unused")
-    private fun testCases(): Stream<String> = Stream.of(
-        "authenticationTest"
+    private fun testCasesNoAuthentication(): Stream<String> = Stream.of(
+        "global_authentication_prohibited.yml",
+        "global_authentication_none.yml",
     )
 
     private fun setupTest(testPath: String): Collection<FileSpec> {
@@ -40,7 +41,6 @@ class SpringAuthenticationTest {
     }
 
 
-
     // global authentication tests
     @Test
     fun `ensure that global authentication set to any authentication will add the required parameter`() {
@@ -50,18 +50,6 @@ class SpringAuthenticationTest {
             .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }
 
         assertThat(functionParameter).anySatisfy{ parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-        }
-    }
-
-    @Test
-    fun `ensure that global authentication set to empty authentication will add the prohibited parameter`() {
-        val controller = setupTest("global_authentication_prohibited.yml")
-
-        val functionParameter = controller.flatMap { it.members }
-            .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }
-
-        assertThat(functionParameter).noneSatisfy{ parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
         }
     }
@@ -80,9 +68,10 @@ class SpringAuthenticationTest {
         }
     }
 
-    @Test
-    fun `ensure that no authentication defined will add no parameter`() {
-        val controller = setupTest("global_authentication_none.yml")
+    @ParameterizedTest
+    @MethodSource("testCasesNoAuthentication")
+    fun `ensure that global authentication set to empty authentication will add the prohibited parameter`(testCasePath: String) {
+        val controller = setupTest(testCasePath)
 
         val functionParameter = controller.flatMap { it.members }
             .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }

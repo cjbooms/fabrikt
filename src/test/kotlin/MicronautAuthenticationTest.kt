@@ -22,10 +22,10 @@ class MicronautAuthenticationTest {
     private lateinit var generated: Collection<FileSpec>
 
     @Suppress("unused")
-    private fun testCases(): Stream<String> = Stream.of(
-        "global_authentication_optional.yml",
-        "global_authentication_prohibited.yml",
-        "global_authentication_required.yml"
+    private fun testCases(): Stream<Pair<String, String>> = Stream.of(
+        Pair("global_authentication_required.yml", "SecurityRule.IS_AUTHENTICATED"),
+        Pair("global_authentication_prohibited.yml", "SecurityRule.IS_ANONYMOUS"),
+        Pair("global_authentication_optional.yml", "SecurityRule.IS_AUTHENTICATED, SecurityRule.IS_ANONYMOUS"),
     )
 
     private fun setupTest(testPath: String): Collection<FileSpec> {
@@ -43,12 +43,10 @@ class MicronautAuthenticationTest {
 
 
     // global authentication tests
-    //@ParameterizedTest
-    //@MethodSource("testCases")
-
-    /*
-    fun `ensure that global authentication set to any authentication will add the required parameter`(testCasePath: String) {
-        val controller = setupTest(testCasePath)
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `ensure that global authentication set to any authentication will add the required parameter`(testCase: Pair<String, String>) {
+        val controller = setupTest(testCase.first)
         val functionAnnotations = controller.flatMap { it.members }
             .flatMap { (it as TypeSpec).funSpecs.flatMap { it.annotations } }
 
@@ -57,52 +55,21 @@ class MicronautAuthenticationTest {
 
         assertThat(functionAnnotations).anySatisfy{annotation ->
             assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
-            assertThat(annotation.members).anyMatch{ it.toString() == "SecurityRule.IS_AUTHENTICATED"}
+            assertThat(annotation.members).anyMatch{ it.toString() == testCase.second}
         }
 
-        assertThat(functionParameter).anySatisfy{ parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-        }
-    }*/
-
-    @Test
-    fun `ensure that global authentication set to empty authentication will add the prohibited parameter`() {
-        val controller = setupTest("global_authentication_prohibited.yml")
-        val functionAnnotations = controller.flatMap { it.members }
-            .flatMap { (it as TypeSpec).funSpecs.flatMap { it.annotations } }
-
-        val functionParameter = controller.flatMap { it.members }
-            .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }
-
-        assertThat(functionAnnotations).anySatisfy{annotation ->
-            assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
-            assertThat(annotation.members).anyMatch{ it.toString() == "SecurityRule.IS_ANONYMOUS"}
+        if(testCase.second != "SecurityRule.IS_ANONYMOUS") {
+            assertThat(functionParameter).anySatisfy{ parameter ->
+                assertThat(parameter.name).isEqualTo("authentication")
+            }
+        } else {
+            assertThat(functionParameter).noneSatisfy{ parameter ->
+                assertThat(parameter.name).isEqualTo("authentication")
+            }
         }
 
-        assertThat(functionParameter).noneSatisfy{ parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-        }
     }
 
-    @Test
-    fun `ensure that global authentication set to any AND empty authentication will add the optional parameter`() {
-        val controller = setupTest("global_authentication_optional.yml")
-        val functionAnnotations = controller.flatMap { it.members }
-            .flatMap { (it as TypeSpec).funSpecs.flatMap { it.annotations } }
-
-        val functionParameter = controller.flatMap { it.members }
-            .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }
-
-        assertThat(functionAnnotations).anySatisfy{annotation ->
-            assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
-            assertThat(annotation.members).anyMatch{ it.toString() == "SecurityRule.IS_AUTHENTICATED, SecurityRule.IS_ANONYMOUS"}
-        }
-
-        assertThat(functionParameter).anySatisfy{ parameter ->
-            assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.isNullable == true)
-        }
-    }
 
     @Test
     fun `ensure that no authentication defined will add no parameter`() {
