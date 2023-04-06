@@ -59,5 +59,4 @@ paths:
       responses:
         '200':
           description: generateTestModel 200 response
-components:
 

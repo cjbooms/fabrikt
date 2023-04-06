@@ -52,25 +52,31 @@ object ControllerGeneratorUtils {
 
 
     /**
-     * Enum definition for different cases of authentication
-     *
-     * N0_SECURITY when no @Secured Annotation is to be added neither an authentication input parameter
-     * AUTHENTICATION_REQUIRED when @Secured Annotation IS_AUTHENTICATED (for micronaut) is to be added and authentication as input parameter
-     * AUTHENTICATION_PROHIBITED when @Secured Annotation IS_ANONYMOUS (for micronaut) is to be added and no authentication input parameter
-     * AUTHENTICATION_OPTIONAL when @Secured Annotation IS_AUTHENTICATED and IS_ANONYMOUS (for micronaut) is to be added and authentication as optional input parameter
+     * Enum definition for different cases of security checks for a given operation.
      */
     enum class SecuritySupport(val allowsAuthenticated: Boolean, val allowsAnonymous: Boolean) {
+        /**
+         * When the operation does not support any way of security checks.
+         */
         NO_SECURITY(false, false),
+        /**
+         * When the operation requires security checks
+         */
         AUTHENTICATION_REQUIRED(true, false),
+        /**
+         * When the operation does not allow any way of security checks
+         */
         AUTHENTICATION_PROHIBITED(false, true),
+        /**
+         * When the operation can support security checks.
+         */
         AUTHENTICATION_OPTIONAL(true, true),
     }
 
 
     /**
-     * Differentiating the cases of authentication
-     *
-     * depending on the security settings on an operation the SecuritySupport Enum is defined
+     * Computes the [SecuritySupport] of a given operation.
+     * @param defaultValue The "API-global" security support to use in case the operation itself does not define any.
      */
     fun List<SecurityRequirement>.securitySupport(hasExplicitNone: Boolean): SecuritySupport? {
 

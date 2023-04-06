@@ -195,7 +195,7 @@ class MicronautControllerInterfaceGenerator(
         return when (securityOption) {
             SecuritySupport.AUTHENTICATION_REQUIRED -> SECURITY_RULE_IS_AUTHENTICATED
             SecuritySupport.AUTHENTICATION_PROHIBITED -> SECURITY_RULE_IS_ANONYMOUS
-            SecuritySupport.AUTHENTICATION_OPTIONAL -> SECURITY_RULE_IS_AUTHENTICATED + ", " + SECURITY_RULE_IS_ANONYMOUS
+            SecuritySupport.AUTHENTICATION_OPTIONAL -> "$SECURITY_RULE_IS_AUTHENTICATED, $SECURITY_RULE_IS_ANONYMOUS"
             else -> ""
         }
     }
