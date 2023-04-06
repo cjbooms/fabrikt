@@ -94,9 +94,10 @@ object ControllerGeneratorUtils {
      * Computes the [SecuritySupport] of a given operation.
      * @param defaultSupport The "API-global" security support to use in case the operation itself does not define any.
      */
-    fun Operation.securitySupport(defaultSupport: SecuritySupport? = null) : SecuritySupport {
-        if (!this.hasSecurityRequirements() && defaultSupport != null)
+    fun Operation.securitySupport(defaultSupport: SecuritySupport? = null): SecuritySupport {
+        if (!this.hasSecurityRequirements() && defaultSupport != null) {
             return defaultSupport
+        }
 
         return this.securityRequirements.securitySupport()
     }
