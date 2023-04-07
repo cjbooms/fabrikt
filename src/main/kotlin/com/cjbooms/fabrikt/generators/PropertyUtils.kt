@@ -4,38 +4,43 @@ import com.cjbooms.fabrikt.generators.JavaxValidationAnnotations.fieldValid
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PropertyInfo
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
 
-enum class ClassType {
-    VANILLA_MODEL,
-    SUPER_MODEL,
-    SUB_MODEL
+data class ClassSettings(
+    val polymorphyType: PolymorphyType,
+    val isMergePatchPattern: Boolean,
+) {
+    enum class PolymorphyType {
+        NONE,
+        SUPER,
+        SUB,
+    }
 }
 
 object PropertyUtils {
-
     fun PropertyInfo.addToClass(
         type: TypeName,
         parameterizedType: TypeName,
         classBuilder: TypeSpec.Builder,
         constructorBuilder: FunSpec.Builder,
-        classType: ClassType = ClassType.VANILLA_MODEL,
+        classSettings: ClassSettings = ClassSettings(ClassSettings.PolymorphyType.NONE, false),
         validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations
     ) {
-        val property = PropertySpec.builder(name, type)
+        val wrappedType =
+            if (classSettings.isMergePatchPattern)
+                ClassName(
+                    "org.openapitools.jackson.nullable",
+                    "JsonNullable"
+                ).parameterizedBy(type.copy(nullable = false))
+            else
+                type
+        val property = PropertySpec.builder(name, wrappedType)
 
         if (this is PropertyInfo.AdditionalProperties) {
             property.initializer(name)
             property.addAnnotation(JacksonMetadata.ignore)
-            val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, type)
+            val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
             constructorParameter.defaultValue("mutableMapOf()")
             constructorBuilder.addParameter(constructorParameter.build())
 
@@ -59,18 +64,18 @@ object PropertyUtils {
                     .build()
             )
         } else {
-            when (classType) {
-                ClassType.SUPER_MODEL -> {
+            when (classSettings.polymorphyType) {
+                ClassSettings.PolymorphyType.SUPER -> {
                     if (this is PropertyInfo.Field && isPolymorphicDiscriminator) property.addModifiers(KModifier.ABSTRACT)
                     else property.addModifiers(KModifier.OPEN)
                 }
 
-                ClassType.SUB_MODEL -> {
+                ClassSettings.PolymorphyType.SUB -> {
                     if (this is PropertyInfo.Field && isPolymorphicDiscriminator) {
                         property.addModifiers(KModifier.OVERRIDE)
                         when (maybeDiscriminator) {
                             is PropertyInfo.DiscriminatorKey.EnumKey ->
-                                property.initializer("%T.%L", type, maybeDiscriminator.enumKey)
+                                property.initializer("%T.%L", wrappedType, maybeDiscriminator.enumKey)
 
                             is PropertyInfo.DiscriminatorKey.StringKey ->
                                 property.initializer("%S", maybeDiscriminator.stringValue)
@@ -90,7 +95,7 @@ object PropertyUtils {
                     property.addValidationAnnotations(this, validationAnnotations)
                 }
 
-                ClassType.VANILLA_MODEL -> {
+                ClassSettings.PolymorphyType.NONE -> {
                     property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
                     property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
                     property.addValidationAnnotations(this, validationAnnotations)
@@ -99,12 +104,22 @@ object PropertyUtils {
 
             if (this !is PropertyInfo.Field ||
                 !isPolymorphicDiscriminator ||
-                isSubTypeDiscriminatorWithNoValue(classType)
+                isSubTypeDiscriminatorWithNoValue(classSettings)
             ) {
                 property.initializer(name)
-                val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, type)
-                val default = getDefaultValue(this, parameterizedType)
-                if (!isRequired) default?.setDefault(constructorParameter) ?: constructorParameter.defaultValue("null")
+                val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
+                val oasDefault = getDefaultValue(this, parameterizedType)
+                if (!isRequired) {
+                    if (oasDefault != null) {
+                        oasDefault.setDefault(constructorParameter)
+                    } else {
+                        val undefinedDefault = if (classSettings.isMergePatchPattern)
+                            "JsonNullable.undefined()"
+                        else
+                            "null"
+                        constructorParameter.defaultValue(undefinedDefault)
+                    }
+                }
                 constructorBuilder.addParameter(constructorParameter.build())
             }
         }
@@ -112,8 +127,8 @@ object PropertyUtils {
         classBuilder.addProperty(property.build())
     }
 
-    private fun PropertyInfo.Field.isSubTypeDiscriminatorWithNoValue(classType: ClassType) =
-        classType == ClassType.SUB_MODEL && isPolymorphicDiscriminator && maybeDiscriminator == null
+    private fun PropertyInfo.Field.isSubTypeDiscriminatorWithNoValue(classType: ClassSettings) =
+        classType.polymorphyType == ClassSettings.PolymorphyType.SUB && isPolymorphicDiscriminator && maybeDiscriminator == null
 
     private fun getDefaultValue(propTypeInfo: PropertyInfo, parameterizedType: TypeName): OasDefault? {
         return when (propTypeInfo) {

@@ -37,6 +37,7 @@ class ModelGeneratorTest {
         "externalReferences",
         "githubApi",
         "inLinedObject",
+        "jsonMergePatch",
         "mapExamples",
         "mixingCamelSnakeLispCase",
         "oneOfPolymorphicModels",
