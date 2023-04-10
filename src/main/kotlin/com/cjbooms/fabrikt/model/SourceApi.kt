@@ -49,26 +49,34 @@ data class SourceApi(
         val schemaErrors = api.schemas.entries.fold(emptyList<ValidationError>()) { errors, entry ->
             val name = entry.key
             val schema = entry.value
-            if (schema.type == OasType.Object.type && (
-                schema.oneOfSchemas?.isNotEmpty() == true ||
-                    schema.allOfSchemas?.isNotEmpty() == true ||
-                    schema.anyOfSchemas?.isNotEmpty() == true
-                )
-            )
-                errors + listOf(
+
+            val newError =
+                if (schema.type == OasType.Object.type) {
+                val hasOneOf = schema.oneOfSchemas?.isNotEmpty() == true
+                val hasAnyOf = schema.anyOfSchemas?.isNotEmpty() == true
+                val hasAllOf = schema.allOfSchemas?.isNotEmpty() == true
+                val hasMapping = schema.discriminator.hasMappings()
+                if (hasMapping && !hasOneOf && !hasAllOf) {
+                    // Polymorphism currently is only supported via the 'mapping' property.
+                    // All 'anyOf' schemas have to be removed here to avoid stack overflows later.
+                    schema.anyOfSchemas.clear()
+                    null
+                } else if (hasOneOf || hasAnyOf || hasAllOf) {
                     ValidationError(
                         "'$name' schema contains an invalid combination of properties and `oneOf | anyOf | allOf`. " +
-                            "Do not use properties and a combiner at the same level."
+                                "Do not use properties and a combiner at the same level."
                     )
-                )
-            else if (schema.type == OasType.Object.type && schema.oneOfSchemas?.isNotEmpty() == true)
-                errors + listOf(ValidationError("The $name object contains invalid use of both properties and `oneOf`."))
-            else if (schema.type == OasType.Object.type && schema.oneOfSchemas?.isNotEmpty() == true)
-                errors + listOf(ValidationError("The $name object contains invalid use of both properties and `oneOf`."))
-            else if (schema.type == null && schema.properties?.isNotEmpty() == true) {
+                } else {
+                    null
+                }
+            } else if (schema.type == null && schema.properties?.isNotEmpty() == true) {
                 logger.warning("Schema '$name' has 'type: null' but defines properties. Assuming: 'type: object'")
-                errors
-            } else errors
+                null
+            } else {
+                null
+            }
+
+            errors + listOfNotNull(newError)
         }
 
         return api.schemas.map { it.value.properties }.flatMap { it.entries }

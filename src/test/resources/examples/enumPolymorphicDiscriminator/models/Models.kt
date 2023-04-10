@@ -19,7 +19,23 @@ data class ConcreteImplOne(
     override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE_ONLY
 }
 
+data class ConcreteImplOneLegacy(
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null
+) : PolymorphicEnumDiscriminatorLegacy() {
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE_ONLY
+}
+
 class ConcreteImplThree() : PolymorphicEnumDiscriminator() {
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_THREE
+}
+
+class ConcreteImplThreeLegacy() : PolymorphicEnumDiscriminatorLegacy() {
     @get:JsonProperty("some_enum")
     @get:NotNull
     override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_THREE
@@ -34,6 +50,16 @@ data class ConcreteImplTwo(
     @get:JsonProperty("some_prop")
     val someProp: String? = null
 ) : PolymorphicEnumDiscriminator()
+
+data class ConcreteImplTwoLegacy(
+    @param:JsonProperty("some_enum")
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator,
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null
+) : PolymorphicEnumDiscriminatorLegacy()
 
 enum class EnumDiscriminator(
     @JsonValue
@@ -80,6 +106,34 @@ enum class EnumDiscriminator(
     JsonSubTypes.Type(value = ConcreteImplThree::class, name = "obj_three")
 )
 sealed class PolymorphicEnumDiscriminator() {
+    abstract val someEnum: EnumDiscriminator
+}
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "some_enum",
+    visible = true
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(
+        value = ConcreteImplOneLegacy::class,
+        name =
+        "obj_one_only"
+    ),
+    JsonSubTypes.Type(
+        value = ConcreteImplTwoLegacy::class,
+        name =
+        "obj_two_first"
+    ),
+    JsonSubTypes.Type(
+        value = ConcreteImplTwoLegacy::class,
+        name =
+        "obj_two_second"
+    ),
+    JsonSubTypes.Type(value = ConcreteImplThreeLegacy::class, name = "obj_three")
+)
+sealed class PolymorphicEnumDiscriminatorLegacy() {
     abstract val someEnum: EnumDiscriminator
 }
 
