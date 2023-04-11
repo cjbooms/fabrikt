@@ -112,7 +112,7 @@ object GeneratorUtils {
 
     private fun Schema.toClassName() = KotlinTypeInfo.from(this).modelKClass.asTypeName()
 
-    fun String.toClassName(basePackage: String) = ClassName(packageName = basePackage, simpleName = this)
+    fun String.toClassName(basePackage: String) = ClassName(packageName = basePackage, this)
 
     fun RequestBody.getPrimaryContentMediaType(): Map.Entry<String, MediaType>? =
         this.contentMediaTypes.entries.firstOrNull()
