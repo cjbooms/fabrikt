@@ -35,7 +35,8 @@ enum class ModelCodeGenOptionType(val description: String) {
 }
 
 enum class ControllerCodeGenOptionType(val description: String) {
-    SUSPEND_MODIFIER("This option adds the suspend modifier to the generated controller functions");
+    SUSPEND_MODIFIER("This option adds the suspend modifier to the generated controller functions"),
+    AUTHENTICATION("blabla");
 
     override fun toString() = "`${super.toString()}` - $description"
 }
