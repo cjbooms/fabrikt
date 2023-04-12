@@ -18,7 +18,7 @@ object SpringImports {
 
         const val DATE_TIME_FORMAT = "org.springframework.format.annotation"
 
-        const val SPRING_AUTHENTICATION = "$SPRING_BASE.security.core.Authentication"
+        const val SPRING_AUTHENTICATION = "$SPRING_BASE.security.core"
     }
 
     val CONTROLLER = ClassName(Packages.STEREOTYPE, "Controller")

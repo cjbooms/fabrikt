@@ -185,6 +185,14 @@ class MicronautControllerInterfaceGenerator(
                         )
                         .build(),
                 )
+                this.addAnnotation(
+                    AnnotationSpec
+                        .builder(MicronautImports.SECURITY_RULE)
+                        .addMember(
+                            securityRule,
+                        )
+                        .build(),
+                )
             }
         }
 

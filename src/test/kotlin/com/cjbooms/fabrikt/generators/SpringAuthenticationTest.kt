@@ -94,14 +94,14 @@ class SpringAuthenticationTest {
 
         assertThat(requiredController.parameters).anySatisfy { parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication")
         }
 
         val optionalController = (controllers.find { it.name == "OptionalController" }!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(optionalController.parameters).anySatisfy { parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication?")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication?")
             assertThat(parameter.type.isNullable)
         }
 
@@ -109,7 +109,7 @@ class SpringAuthenticationTest {
 
         assertThat(defaultController.parameters).anySatisfy { parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication")
         }
 
         val noneController = (controllers.find { it.name == "NoneController" }!!.members.single() as TypeSpec).funSpecs.single()
@@ -133,14 +133,14 @@ class SpringAuthenticationTest {
 
         assertThat(requiredController.parameters).anySatisfy { parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication")
         }
 
         val optionalController = (controllers.find { it.name == "OptionalController" }!!.members.single() as TypeSpec).funSpecs.single()
 
         assertThat(optionalController.parameters).anySatisfy { parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
-            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication.Authentication?")
+            assertThat(parameter.type.toString()).isEqualTo("org.springframework.security.core.Authentication?")
             assertThat(parameter.type.isNullable)
         }
 

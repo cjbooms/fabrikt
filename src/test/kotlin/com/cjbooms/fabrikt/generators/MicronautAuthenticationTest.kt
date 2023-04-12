@@ -38,7 +38,7 @@ class MicronautAuthenticationTest {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.CONTROLLERS),
             controllerTarget = ControllerCodeGenTargetType.MICRONAUT,
-            controllerOptions = setOf(ControllerCodeGenOptionType.AUTHENTICATION)
+            controllerOptions = setOf(ControllerCodeGenOptionType.AUTHENTICATION),
         )
     }
 
@@ -96,7 +96,7 @@ class MicronautAuthenticationTest {
 
         assertThat(prohibitedController.annotations).anySatisfy { annotation ->
             assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
-            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_ANONYMOUS" } 
+            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_ANONYMOUS" }
         }
 
         assertThat(prohibitedController.parameters).noneSatisfy { parameter ->
@@ -107,7 +107,7 @@ class MicronautAuthenticationTest {
 
         assertThat(requiredController.annotations).anySatisfy { annotation ->
             assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
-            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_AUTHENTICATED" } 
+            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_AUTHENTICATED" }
         }
 
         assertThat(requiredController.parameters).anySatisfy { parameter ->
@@ -120,7 +120,7 @@ class MicronautAuthenticationTest {
 
         assertThat(optionalController.annotations).anySatisfy { annotation ->
             assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
-            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_AUTHENTICATED, SecurityRule.IS_ANONYMOUS" } 
+            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_AUTHENTICATED, SecurityRule.IS_ANONYMOUS" }
         }
 
         assertThat(optionalController.parameters).anySatisfy { parameter ->
@@ -143,7 +143,7 @@ class MicronautAuthenticationTest {
 
         assertThat(defaultController.annotations).anySatisfy { annotation ->
             assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
-            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_AUTHENTICATED" } 
+            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_AUTHENTICATED" }
         }
 
         assertThat(defaultController.parameters).anySatisfy { parameter ->
@@ -160,7 +160,7 @@ class MicronautAuthenticationTest {
 
         assertThat(prohibitedController.annotations).anySatisfy { annotation ->
             assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
-            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_ANONYMOUS" } 
+            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_ANONYMOUS" }
         }
 
         assertThat(prohibitedController.parameters).noneSatisfy { parameter ->
@@ -171,7 +171,7 @@ class MicronautAuthenticationTest {
 
         assertThat(requiredController.annotations).anySatisfy { annotation ->
             assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
-            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_AUTHENTICATED" } 
+            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_AUTHENTICATED" }
         }
 
         assertThat(requiredController.parameters).anySatisfy { parameter ->
@@ -183,7 +183,7 @@ class MicronautAuthenticationTest {
 
         assertThat(optionalController.annotations).anySatisfy { annotation ->
             assertThat(annotation.className.canonicalName).isEqualTo("io.micronaut.security.annotation.Secured")
-            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_AUTHENTICATED, SecurityRule.IS_ANONYMOUS" } 
+            assertThat(annotation.members).anyMatch { it.toString() == "SecurityRule.IS_AUTHENTICATED, SecurityRule.IS_ANONYMOUS" }
         }
 
         assertThat(optionalController.parameters).anySatisfy { parameter ->

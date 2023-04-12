@@ -57,7 +57,7 @@ class SpringControllerGeneratorTest {
 
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
-            api
+            api,
         ).generate().toSingleFile()
 
         assertThat(controllers).isEqualTo(expectedControllers)
@@ -72,7 +72,7 @@ class SpringControllerGeneratorTest {
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
             api,
-            setOf(ControllerCodeGenOptionType.AUTHENTICATION)
+            setOf(ControllerCodeGenOptionType.AUTHENTICATION),
         ).generate().toSingleFile()
 
         assertThat(controllers).isEqualTo(expectedControllers)
@@ -94,7 +94,7 @@ class SpringControllerGeneratorTest {
                 "OrganisationsController",
                 "OrganisationsContributorsController",
                 "RepositoriesController",
-                "RepositoriesPullRequestsController"
+                "RepositoriesPullRequestsController",
             )
     }
 
@@ -115,7 +115,7 @@ class SpringControllerGeneratorTest {
         assertThat(controllerAnnotations).containsOnly(
             "org.springframework.stereotype.Controller",
             "org.springframework.validation.annotation.Validated",
-            "org.springframework.web.bind.annotation.RequestMapping"
+            "org.springframework.web.bind.annotation.RequestMapping",
         )
     }
 
@@ -131,8 +131,8 @@ class SpringControllerGeneratorTest {
                 "OrganisationsController",
                 "OrganisationsContributorsController",
                 "RepositoriesController",
-                "RepositoriesPullRequestsController"
-            )
+                "RepositoriesPullRequestsController",
+            ),
         )
 
         val linkedFunctionNames = controllers.files
@@ -147,13 +147,13 @@ class SpringControllerGeneratorTest {
             "get",
             "getById",
             "putById",
-            "deleteById"
+            "deleteById",
         )
         assertThat(ownedFunctionNames).containsExactlyInAnyOrder(
             "get",
             "getById",
             "post",
-            "putById"
+            "putById",
         )
     }
 
@@ -163,7 +163,7 @@ class SpringControllerGeneratorTest {
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
             api,
-            setOf(ControllerCodeGenOptionType.SUSPEND_MODIFIER)
+            setOf(ControllerCodeGenOptionType.SUSPEND_MODIFIER),
         ).generate()
 
         assertThat(controllers.files).size().isEqualTo(6)
@@ -171,7 +171,7 @@ class SpringControllerGeneratorTest {
             controllers.files
                 .flatMap { file -> file.members }
                 .flatMap { (it as TypeSpec).funSpecs.map(FunSpec::modifiers) }
-                .all { it.contains(KModifier.SUSPEND) }
+                .all { it.contains(KModifier.SUSPEND) },
         ).isTrue()
     }
 
@@ -183,7 +183,7 @@ class SpringControllerGeneratorTest {
                 .addImport(SpringImports.Static.REQUEST_METHOD.first, SpringImports.Static.REQUEST_METHOD.second)
                 .addImport(
                     SpringImports.Static.RESPONSE_STATUS.first,
-                    SpringImports.Static.RESPONSE_STATUS.second
+                    SpringImports.Static.RESPONSE_STATUS.second,
                 )
                 .addType(it.spec)
             builder.build()

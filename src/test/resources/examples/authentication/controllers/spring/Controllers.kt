@@ -1,7 +1,7 @@
 package examples.authentication.controllers
 
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.Authentication.Authentication
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Controller
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.RequestMapping
@@ -45,7 +45,7 @@ interface ProhibitedController {
         method = [RequestMethod.GET]
     )
     fun testPath(@RequestParam(value = "testString", required = true) testString: String):
-            ResponseEntity<Unit>
+        ResponseEntity<Unit>
 }
 
 @Controller
@@ -83,7 +83,7 @@ interface NoneController {
         method = [RequestMethod.GET]
     )
     fun testPath(@RequestParam(value = "testString", required = true) testString: String):
-            ResponseEntity<Unit>
+        ResponseEntity<Unit>
 }
 
 @Controller
