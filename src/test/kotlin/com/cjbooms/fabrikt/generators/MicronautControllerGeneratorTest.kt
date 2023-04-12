@@ -33,6 +33,7 @@ class MicronautControllerGeneratorTest {
         "singleAllOf",
         "pathLevelParameters",
         "parameterNameClash",
+        "authentication"
     )
 
     private fun setupGithubApiTestEnv() {

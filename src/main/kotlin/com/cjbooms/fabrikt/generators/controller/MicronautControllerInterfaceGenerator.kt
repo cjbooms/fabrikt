@@ -29,6 +29,9 @@ class MicronautControllerInterfaceGenerator(
     private val useSuspendModifier: Boolean
         get() = options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER }
 
+    private val addAuthenticationParameter: Boolean
+        get() = options.any { it == ControllerCodeGenOptionType.AUTHENTICATION }
+
     override fun generate(): MicronautControllers =
         MicronautControllers(
             api.openApi3.routeToPaths().map { (resourceName, paths) ->
@@ -56,6 +59,7 @@ class MicronautControllerInterfaceGenerator(
         val returnType = MicronautImports.RESPONSE.parameterizedBy(op.happyPathResponse(packages.base))
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
         val globalSecurity = this.api.openApi3.getSecurityRequirements().securitySupport()
+
 
         // Main method builder
         val funcSpec = FunSpec
@@ -95,17 +99,19 @@ class MicronautControllerInterfaceGenerator(
             .forEach { funcSpec.addParameter(it) }
 
         // Add authentication
-        val securityOption = op.securitySupport(globalSecurity)
+        if (addAuthenticationParameter) {
+            val securityOption = op.securitySupport(globalSecurity)
 
-        if (securityOption.allowsAuthenticated) {
-            val typeName =
-                MicronautImports.AUTHENTICATION
-                    .copy(nullable = securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL)
-            funcSpec.addParameter(
-                ParameterSpec
-                    .builder("authentication", typeName)
-                    .build(),
-            )
+            if (securityOption.allowsAuthenticated) {
+                val typeName =
+                    MicronautImports.AUTHENTICATION
+                        .copy(nullable = securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL)
+                funcSpec.addParameter(
+                    ParameterSpec
+                        .builder("authentication", typeName)
+                        .build(),
+                )
+            }
         }
 
         return funcSpec.build()
@@ -163,22 +169,24 @@ class MicronautControllerInterfaceGenerator(
             )
         }
 
-        val securityRule = when (op.securitySupport(globalSecurity)) {
-            SecuritySupport.AUTHENTICATION_REQUIRED -> SECURITY_RULE_IS_AUTHENTICATED
-            SecuritySupport.AUTHENTICATION_PROHIBITED -> SECURITY_RULE_IS_ANONYMOUS
-            SecuritySupport.AUTHENTICATION_OPTIONAL -> "$SECURITY_RULE_IS_AUTHENTICATED, $SECURITY_RULE_IS_ANONYMOUS"
-            else -> ""
-        }
+        if (addAuthenticationParameter) {
+            val securityRule = when (op.securitySupport(globalSecurity)) {
+                SecuritySupport.AUTHENTICATION_REQUIRED -> SECURITY_RULE_IS_AUTHENTICATED
+                SecuritySupport.AUTHENTICATION_PROHIBITED -> SECURITY_RULE_IS_ANONYMOUS
+                SecuritySupport.AUTHENTICATION_OPTIONAL -> "$SECURITY_RULE_IS_AUTHENTICATED, $SECURITY_RULE_IS_ANONYMOUS"
+                else -> ""
+            }
 
-        if (securityRule != "") {
-            this.addAnnotation(
-                AnnotationSpec
-                    .builder(MicronautImports.SECURED)
-                    .addMember(
-                        securityRule,
-                    )
-                    .build(),
-            )
+            if (securityRule != "") {
+                this.addAnnotation(
+                    AnnotationSpec
+                        .builder(MicronautImports.SECURED)
+                        .addMember(
+                            securityRule,
+                        )
+                        .build(),
+                )
+            }
         }
 
         return this

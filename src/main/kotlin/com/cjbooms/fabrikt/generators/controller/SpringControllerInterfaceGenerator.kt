@@ -37,6 +37,9 @@ class SpringControllerInterfaceGenerator(
     private val options: Set<ControllerCodeGenOptionType> = emptySet(),
 ) : ControllerInterfaceGenerator(packages, api) {
 
+    private val addAuthenticationParameter: Boolean
+        get() = options.any { it == ControllerCodeGenOptionType.AUTHENTICATION }
+
     override fun generate(): SpringControllers =
         SpringControllers(
             api.openApi3.routeToPaths().map { (resourceName, paths) ->
@@ -92,17 +95,19 @@ class SpringControllerInterfaceGenerator(
             .forEach { funcSpec.addParameter(it) }
 
         // Add authentication
-        val securityOption = op.securitySupport(globalSecurity)
+        if (addAuthenticationParameter) {
+            val securityOption = op.securitySupport(globalSecurity)
 
-        if (securityOption.allowsAuthenticated) {
-            val typeName =
-                SpringImports.AUTHENTICATION
-                    .copy(nullable = securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_OPTIONAL)
-            funcSpec.addParameter(
-                ParameterSpec
-                    .builder("authentication", typeName)
-                    .build(),
-            )
+            if (securityOption.allowsAuthenticated) {
+                val typeName =
+                    SpringImports.AUTHENTICATION
+                        .copy(nullable = securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_OPTIONAL)
+                funcSpec.addParameter(
+                    ParameterSpec
+                        .builder("authentication", typeName)
+                        .build(),
+                )
+            }
         }
 
         return funcSpec.build()

@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
@@ -37,6 +38,7 @@ class MicronautAuthenticationTest {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.CONTROLLERS),
             controllerTarget = ControllerCodeGenTargetType.MICRONAUT,
+            controllerOptions = setOf(ControllerCodeGenOptionType.AUTHENTICATION)
         )
     }
 
