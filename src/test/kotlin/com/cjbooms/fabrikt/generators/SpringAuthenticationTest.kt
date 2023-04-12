@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
@@ -28,7 +29,7 @@ class SpringAuthenticationTest {
 
     private fun setupTest(testPath: String): Collection<FileSpec> {
         val api = SourceApi(readTextResource("/authenticationTest/$testPath"))
-        return SpringControllerInterfaceGenerator(Packages(basePackage), api).generate().files
+        return SpringControllerInterfaceGenerator(Packages(basePackage), api, setOf(ControllerCodeGenOptionType.AUTHENTICATION)).generate().files
     }
 
     @BeforeEach

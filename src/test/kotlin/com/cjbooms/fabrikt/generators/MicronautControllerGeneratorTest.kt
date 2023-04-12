@@ -32,8 +32,7 @@ class MicronautControllerGeneratorTest {
         "githubApi",
         "singleAllOf",
         "pathLevelParameters",
-        "parameterNameClash",
-        "authentication"
+        "parameterNameClash"
     )
 
     private fun setupGithubApiTestEnv() {
@@ -62,6 +61,21 @@ class MicronautControllerGeneratorTest {
         val controllers = MicronautControllerInterfaceGenerator(
             Packages(basePackage),
             api
+        ).generate().toSingleFile()
+
+        assertThat(controllers).isEqualTo(expectedControllers)
+    }
+
+    @Test
+    fun `correct models are generated for ControllerCodeGenOptionType_AUTHENTICATION`() {
+        val basePackage = "examples.authentication"
+        val api = SourceApi(readTextResource("/examples/authentication/api.yaml"))
+        val expectedControllers = readTextResource("/examples/authentication/controllers/micronaut/Controllers.kt")
+
+        val controllers = MicronautControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            setOf(ControllerCodeGenOptionType.AUTHENTICATION)
         ).generate().toSingleFile()
 
         assertThat(controllers).isEqualTo(expectedControllers)

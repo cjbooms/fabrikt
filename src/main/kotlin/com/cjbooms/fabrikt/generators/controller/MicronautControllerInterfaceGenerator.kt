@@ -60,7 +60,6 @@ class MicronautControllerInterfaceGenerator(
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
         val globalSecurity = this.api.openApi3.getSecurityRequirements().securitySupport()
 
-
         // Main method builder
         val funcSpec = FunSpec
             .builder(methodName)

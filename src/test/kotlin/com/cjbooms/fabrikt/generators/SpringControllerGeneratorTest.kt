@@ -64,6 +64,21 @@ class SpringControllerGeneratorTest {
     }
 
     @Test
+    fun `correct models are generated for ControllerCodeGenOptionType_AUTHENTICATION`() {
+        val basePackage = "examples.authentication"
+        val api = SourceApi(readTextResource("/examples/authentication/api.yaml"))
+        val expectedControllers = readTextResource("/examples/authentication/controllers/spring/Controllers.kt")
+
+        val controllers = SpringControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            setOf(ControllerCodeGenOptionType.AUTHENTICATION)
+        ).generate().toSingleFile()
+
+        assertThat(controllers).isEqualTo(expectedControllers)
+    }
+
+    @Test
     fun `should contain correct number of controller classes`() {
         setupGithubApiTestEnv()
         assertThat(generated.size).isEqualTo(6)

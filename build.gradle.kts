@@ -56,8 +56,10 @@ dependencies {
     // Below dependencies are solely present so code examples in the test resources dir compile
     testImplementation("javax.validation:validation-api:2.0.1.Final")
     testImplementation("org.springframework:spring-webmvc:5.1.9.RELEASE")
+    testImplementation("org.springframework.security:spring-security-web:5.4.0")
     testImplementation("io.micronaut:micronaut-core:3.8.4")
     testImplementation("io.micronaut:micronaut-http:3.8.4")
+    testImplementation("io.micronaut:micronaut-security-jwt:2.0.0.M2")
     testImplementation("com.squareup.okhttp3:okhttp:4.9.1")
     testImplementation("com.pinterest.ktlint:ktlint-core:0.41.0")
     testImplementation("com.pinterest:ktlint:0.41.0")
