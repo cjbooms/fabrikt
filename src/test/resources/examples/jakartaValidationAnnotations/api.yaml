@@ -26,6 +26,35 @@ components:
         friends:
           type: array
           items:
-            type: string
+            type: object
+            required:
+              - first_name
+            properties:
+              first_name:
+                type: string
+              last_name:
+                type: string
           minItems: 0
           maxItems: 10
+        address:
+          type: object
+          required:
+            - street
+            - city
+            - postal_code
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+            postal_code:
+              type: string
+        qualities:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              name:
+                type: string
+              value:
+                type: string

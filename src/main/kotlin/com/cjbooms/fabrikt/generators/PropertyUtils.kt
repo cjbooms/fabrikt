@@ -192,19 +192,19 @@ object PropertyUtils {
         when (val typeInfo = info.typeInfo) {
             is KotlinTypeInfo.Map -> {
                 if (typeInfo.parameterizedType.isComplexType) {
-                    addAnnotation(fieldValid())
+                    addAnnotation(validationAnnotations.fieldValid())
                 }
             }
 
             is KotlinTypeInfo.Array -> {
                 if (typeInfo.parameterizedType.isComplexType) {
-                    addAnnotation(fieldValid())
+                    addAnnotation(validationAnnotations.fieldValid())
                 }
             }
 
             else -> {
                 if (typeInfo.isComplexType) {
-                    addAnnotation(fieldValid())
+                    addAnnotation(validationAnnotations.fieldValid())
                 }
             }
         }
