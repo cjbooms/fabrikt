@@ -84,12 +84,16 @@ class ModelGeneratorTest {
 
     @Test
     fun `generate models using jakarta validation`() {
-        val basePackage = "examples.jakarta"
-        val spec = readTextResource("/examples/validationAnnotations/api.yaml")
-        val expectedJakartaModel = readTextResource("/examples/validationAnnotations/jakarta/models/Models.kt")
+        val basePackage = "examples.jakartaValidationAnnotations"
+        val spec = readTextResource("/examples/jakartaValidationAnnotations/api.yaml")
+        val expectedJakartaModel = readTextResource("/examples/jakartaValidationAnnotations/models/Models.kt")
         MutableSettings.updateSettings(genTypes = setOf(CodeGenerationType.HTTP_MODELS))
         val models = JacksonModelGenerator(Packages(basePackage), SourceApi(spec), validationAnnotations = ValidationLibrary.JAKARTA_VALIDATION.annotations).generate()
-        assertThat(Linter.lintString(models.files.first().toString())).isEqualTo(expectedJakartaModel)
+
+        assertThat(models.files.size).isEqualTo(4)
+        val validationAnnotationsModel = models.files.first { it.name == "ValidationAnnotations" }
+        assertThat(validationAnnotationsModel).isNotNull
+        assertThat(Linter.lintString(validationAnnotationsModel.toString())).isEqualTo(expectedJakartaModel)
     }
 
     @Test
