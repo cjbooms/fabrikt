@@ -64,7 +64,7 @@ class SpringControllerInterfaceGenerator(
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = op.happyPathResponse(packages.base)
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
-        val globalSecurity = this.api.openApi3.getSecurityRequirements().securitySupport()
+        val globalSecurity = api.openApi3.securityRequirements.securitySupport()
 
         // Main method builder
         val funcSpec = FunSpec

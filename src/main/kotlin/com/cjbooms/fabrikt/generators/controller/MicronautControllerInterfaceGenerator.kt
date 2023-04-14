@@ -12,13 +12,25 @@ import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports.SECURITY_RULE_IS_ANONYMOUS
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports.SECURITY_RULE_IS_AUTHENTICATED
-import com.cjbooms.fabrikt.model.*
+import com.cjbooms.fabrikt.model.BodyParameter
+import com.cjbooms.fabrikt.model.ControllerType
+import com.cjbooms.fabrikt.model.HeaderParam
+import com.cjbooms.fabrikt.model.KotlinTypes
+import com.cjbooms.fabrikt.model.PathParam
+import com.cjbooms.fabrikt.model.QueryParam
+import com.cjbooms.fabrikt.model.RequestParameter
+import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSingleResource
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Path
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeSpec
 
 class MicronautControllerInterfaceGenerator(
     private val packages: Packages,
@@ -59,7 +71,7 @@ class MicronautControllerInterfaceGenerator(
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = MicronautImports.RESPONSE.parameterizedBy(op.happyPathResponse(packages.base))
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
-        val globalSecurity = this.api.openApi3.getSecurityRequirements().securitySupport()
+        val globalSecurity = this.api.openApi3.securityRequirements.securitySupport()
 
         // Main method builder
         val funcSpec = FunSpec
@@ -119,7 +131,7 @@ class MicronautControllerInterfaceGenerator(
 
     private fun FunSpec.Builder.addMicronautFunAnnotation(op: Operation, verb: String, path: String): FunSpec.Builder {
         val globalSecurity =
-            this@MicronautControllerInterfaceGenerator.api.openApi3.getSecurityRequirements().securitySupport()
+            api.openApi3.securityRequirements.securitySupport()
 
         val produces = op.responses
             .flatMap { it.value.contentMediaTypes.keys }
