@@ -18,7 +18,7 @@ object MicronautImports {
 
         const val MICRONAUT_AUTHENTICATION = "$MICRONAUT_SECURITY.authentication"
 
-        const val MICRONAUT_RULE= "$MICRONAUT_SECURITY.rule"
+        const val MICRONAUT_RULE= "$MICRONAUT_SECURITY.rules"
     }
 
     val CONSUMES = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Consumes")
@@ -27,7 +27,7 @@ object MicronautImports {
 
     val SECURED = ClassName(Packages.MICRONAUT_SECURITY_ANNOTATION, "Secured")
     val AUTHENTICATION = ClassName(Packages.MICRONAUT_AUTHENTICATION, "Authentication")
-    val SECURITY_RULE = ClassName(Packages.MICRONAUT_RULE, "SecurityRule")
+    val SECURITY_RULE = Pair(Packages.MICRONAUT_RULE, "SecurityRule")
 
     val SECURITY_RULE_IS_AUTHENTICATED = "SecurityRule.IS_AUTHENTICATED"
     val SECURITY_RULE_IS_ANONYMOUS = "SecurityRule.IS_ANONYMOUS"

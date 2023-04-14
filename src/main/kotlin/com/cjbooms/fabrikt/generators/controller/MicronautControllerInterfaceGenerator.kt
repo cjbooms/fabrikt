@@ -37,6 +37,7 @@ class MicronautControllerInterfaceGenerator(
             api.openApi3.routeToPaths().map { (resourceName, paths) ->
                 buildController(resourceName, paths.values)
             }.toSet(),
+            addAuthenticationParameter,
         )
 
     override fun controllerBuilder(
@@ -185,14 +186,6 @@ class MicronautControllerInterfaceGenerator(
                         )
                         .build(),
                 )
-                this.addAnnotation(
-                    AnnotationSpec
-                        .builder(MicronautImports.SECURITY_RULE)
-                        .addMember(
-                            securityRule,
-                        )
-                        .build(),
-                )
             }
         }
 
@@ -218,9 +211,20 @@ class MicronautControllerInterfaceGenerator(
             if (parameter.defaultValue != null) {
                 it.addMember("defaultValue = %S", parameter.defaultValue)
             }
-
             this.addAnnotation(it.build())
         }
 }
 
-data class MicronautControllers(val controllers: Collection<ControllerType>) : KotlinTypes(controllers)
+data class MicronautControllers(val controllers: Collection<ControllerType>, val addAuthenticationParameter: Boolean) : KotlinTypes(controllers) {
+
+    override val files: Collection<FileSpec> =
+        if (addAuthenticationParameter) {
+            super.files.map {
+                it.toBuilder()
+                    .addImport(MicronautImports.SECURITY_RULE.first, MicronautImports.SECURITY_RULE.second)
+                    .build()
+            }
+        } else {
+            super.files
+        }
+}

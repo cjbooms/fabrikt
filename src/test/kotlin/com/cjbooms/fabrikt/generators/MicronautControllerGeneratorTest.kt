@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllers
+import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
@@ -180,7 +181,9 @@ class MicronautControllerGeneratorTest {
         val destPackage = if (controllers.isNotEmpty()) controllers.first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
         controllers.forEach {
-            singleFileBuilder.addType(it.spec).build()
+            singleFileBuilder.addType(it.spec)
+                .addImport(MicronautImports.SECURITY_RULE.first, MicronautImports.SECURITY_RULE.second)
+                .build()
         }
         return Linter.lintString(singleFileBuilder.build().toString())
     }

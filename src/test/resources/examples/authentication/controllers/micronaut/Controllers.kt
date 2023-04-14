@@ -6,7 +6,7 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.QueryValue
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
-import io.micronaut.security.rule.SecurityRule
+import io.micronaut.security.rules.SecurityRule
 import kotlin.String
 import kotlin.Unit
 
@@ -19,7 +19,6 @@ interface RequiredController {
      */
     @Get(uri = "/required")
     @Secured(SecurityRule.IS_AUTHENTICATED)
-    @SecurityRule(SecurityRule.IS_AUTHENTICATED)
     fun testPath(
         @QueryValue(value = "testString") testString: String,
         authentication: Authentication
@@ -35,7 +34,6 @@ interface ProhibitedController {
      */
     @Get(uri = "/prohibited")
     @Secured(SecurityRule.IS_ANONYMOUS)
-    @SecurityRule(SecurityRule.IS_ANONYMOUS)
     fun testPath(@QueryValue(value = "testString") testString: String): HttpResponse<Unit>
 }
 
@@ -48,7 +46,6 @@ interface OptionalController {
      */
     @Get(uri = "/optional")
     @Secured(SecurityRule.IS_AUTHENTICATED, SecurityRule.IS_ANONYMOUS)
-    @SecurityRule(SecurityRule.IS_AUTHENTICATED, SecurityRule.IS_ANONYMOUS)
     fun testPath(
         @QueryValue(value = "testString") testString: String,
         authentication: Authentication?
@@ -75,7 +72,6 @@ interface DefaultController {
      */
     @Get(uri = "/default")
     @Secured(SecurityRule.IS_AUTHENTICATED)
-    @SecurityRule(SecurityRule.IS_AUTHENTICATED)
     fun testPath(
         @QueryValue(value = "testString") testString: String,
         authentication: Authentication
