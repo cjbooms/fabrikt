@@ -11,6 +11,10 @@ plugins {
 
     `java-library` // For API and implementation separation.
 }
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
 val executableName = "fabrikt"
 
@@ -46,7 +50,7 @@ dependencies {
     implementation("com.beust:jcommander:1.82")
     implementation("com.reprezen.kaizen:openapi-parser:4.0.4") { exclude(group = "junit") }
     implementation("com.reprezen.jsonoverlay:jsonoverlay:4.0.4")
-    implementation("com.squareup:kotlinpoet:1.12.0") { exclude(module = "kotlin-stdlib-jre7") }
+    implementation("com.squareup:kotlinpoet:1.13.0") { exclude(module = "kotlin-stdlib-jre7") }
     implementation("com.google.flogger:flogger:0.7.4")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.1.0")
@@ -64,6 +68,7 @@ dependencies {
     testCompileOnly("io.micronaut.security:micronaut-security:3.8.7")
     testImplementation("com.squareup.okhttp3:okhttp:4.10.0")
     testImplementation("com.pinterest.ktlint:ktlint-core:0.48.2")
+    testImplementation("com.pinterest.ktlint:ktlint-ruleset-standard:0.48.2")
     testImplementation("com.pinterest:ktlint:0.48.2")
     testImplementation("org.openapitools:jackson-databind-nullable:0.2.6")
 }
@@ -107,12 +112,13 @@ tasks {
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "11"
+            jvmTarget = JavaVersion.VERSION_17.toString()
         }
     }
 
     withType<Test> {
         useJUnitPlatform()
+        jvmArgs = listOf("--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.base/java.util=ALL-UNNAMED")
     }
 }
 

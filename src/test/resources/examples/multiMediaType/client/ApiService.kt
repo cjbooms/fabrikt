@@ -27,7 +27,7 @@ class ExamplePath1Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
     var circuitBreakerName: String = "examplePath1Client"
 
@@ -38,7 +38,7 @@ class ExamplePath1Service(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         acceptHeader: String = "application/vnd.custom.media+xml",
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath1(explodeListQueryParam, queryParam2, acceptHeader, additionalHeaders)
@@ -58,7 +58,7 @@ class ExamplePath2Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
     var circuitBreakerName: String = "examplePath2Client"
 
@@ -69,7 +69,7 @@ class ExamplePath2Service(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         accept: ContentType? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath2(explodeListQueryParam, queryParam2, accept, additionalHeaders)
@@ -89,21 +89,21 @@ class MultipleResponseSchemasService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
     var circuitBreakerName: String = "multipleResponseSchemasClient"
 
     private val apiClient: MultipleResponseSchemasClient = MultipleResponseSchemasClient(
         objectMapper,
         baseUrl,
-        client
+        client,
     )
 
     @Throws(ApiException::class)
     fun getMultipleResponseSchemas(
         accept: ContentType? = null,
         additionalHeaders: Map<String, String> =
-            emptyMap()
+            emptyMap(),
     ): ApiResponse<JsonNode> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getMultipleResponseSchemas(accept, additionalHeaders)

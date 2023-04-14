@@ -16,5 +16,5 @@ data class Pet(
     val name: String,
     @param:JsonProperty("tag")
     @get:JsonProperty("tag")
-    val tag: String? = null
+    val tag: String? = null,
 )

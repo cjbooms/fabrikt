@@ -22,7 +22,7 @@ import kotlin.jvm.Throws
 class ExamplePath1Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      * GET example path 1
@@ -36,7 +36,7 @@ class ExamplePath1Client(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         acceptHeader: String = "application/vnd.custom.media+xml",
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
@@ -64,7 +64,7 @@ class ExamplePath1Client(
 class ExamplePath2Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      * GET example path 1
@@ -78,7 +78,7 @@ class ExamplePath2Client(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         accept: ContentType? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2"
             .toHttpUrl()
@@ -106,7 +106,7 @@ class ExamplePath2Client(
 class MultipleResponseSchemasClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      * GET with multiple response content schemas
@@ -117,7 +117,7 @@ class MultipleResponseSchemasClient(
     fun getMultipleResponseSchemas(
         accept: ContentType? = null,
         additionalHeaders: Map<String, String> =
-            emptyMap()
+            emptyMap(),
     ): ApiResponse<JsonNode> {
         val httpUrl: HttpUrl = "$baseUrl/multiple-response-schemas"
             .toHttpUrl()

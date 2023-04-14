@@ -20,7 +20,7 @@ import kotlin.jvm.Throws
 class ExampleClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      *
@@ -32,7 +32,7 @@ class ExampleClient(
     fun getExampleB(
         pathB: String,
         queryB: String,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example/{b}"
             .pathParam("{b}" to pathB)
@@ -64,7 +64,7 @@ class ExampleClient(
     fun postExample(
         bodySomeObject: SomeObject,
         querySomeObject: String,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()

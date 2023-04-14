@@ -26,15 +26,15 @@ interface ExampleController {
     @RequestMapping(
         value = ["/example/{b}"],
         produces = [],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
     fun getById(
         @PathVariable(value = "pathB", required = true) pathB: String,
         @RequestParam(
             value =
             "queryB",
-            required = true
-        ) queryB: String
+            required = true,
+        ) queryB: String,
     ): ResponseEntity<Unit>
 
     /**
@@ -47,14 +47,14 @@ interface ExampleController {
         value = ["/example"],
         produces = [],
         method = [RequestMethod.POST],
-        consumes = ["application/json"]
+        consumes = ["application/json"],
     )
     fun post(
         @RequestBody @Valid
         bodySomeObject: SomeObject,
         @RequestParam(
             value = "querySomeObject",
-            required = true
-        ) querySomeObject: String
+            required = true,
+        ) querySomeObject: String,
     ): ResponseEntity<Unit>
 }

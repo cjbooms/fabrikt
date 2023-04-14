@@ -15,5 +15,5 @@ data class MixingCamelSnakeLispCase(
     val lispCase: String? = null,
     @param:JsonProperty("PascalCase")
     @get:JsonProperty("PascalCase")
-    val pascalCase: String? = null
+    val pascalCase: String? = null,
 )

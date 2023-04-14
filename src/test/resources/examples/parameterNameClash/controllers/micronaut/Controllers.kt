@@ -25,7 +25,7 @@ interface ExampleController {
     fun getById(
         @PathVariable(value = "pathB") pathB: String,
         @QueryValue(value = "queryB")
-        queryB: String
+        queryB: String,
     ): HttpResponse<Unit>
 
     /**
@@ -40,6 +40,6 @@ interface ExampleController {
         @Body @Valid
         bodySomeObject: SomeObject,
         @QueryValue(value = "querySomeObject")
-        querySomeObject: String
+        querySomeObject: String,
     ): HttpResponse<Unit>
 }

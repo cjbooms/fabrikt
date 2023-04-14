@@ -18,7 +18,7 @@ import kotlin.jvm.Throws
 class ExampleClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      *

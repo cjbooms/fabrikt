@@ -23,7 +23,7 @@ class ExampleService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
     var circuitBreakerName: String = "exampleClient"
 
@@ -33,7 +33,7 @@ class ExampleService(
     fun getExampleB(
         pathB: String,
         queryB: String,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExampleB(pathB, queryB, additionalHeaders)
@@ -43,7 +43,7 @@ class ExampleService(
     fun postExample(
         bodySomeObject: SomeObject,
         querySomeObject: String,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.postExample(bodySomeObject, querySomeObject, additionalHeaders)

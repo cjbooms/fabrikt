@@ -12,5 +12,5 @@ data class OptionalVsRequired(
     val name: String,
     @param:JsonProperty("gender")
     @get:JsonProperty("gender")
-    val gender: UUID? = null
+    val gender: UUID? = null,
 )

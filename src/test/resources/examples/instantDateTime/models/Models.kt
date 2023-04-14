@@ -13,7 +13,7 @@ data class FirstModel(
     val date: Instant? = null,
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
-    val extraFirstAttr: List<Instant>? = null
+    val extraFirstAttr: List<Instant>? = null,
 )
 
 data class QueryResult(
@@ -22,5 +22,5 @@ data class QueryResult(
     @get:NotNull
     @get:Size(min = 0)
     @get:Valid
-    val items: List<FirstModel>
+    val items: List<FirstModel>,
 )

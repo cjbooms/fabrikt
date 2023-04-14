@@ -29,11 +29,11 @@ data class Cat(
     @param:JsonProperty("age")
     @get:JsonProperty("age")
     val age: Int? = null,
+) : Pet(id, name, tag) {
     @get:JsonProperty("petType")
     @get:NotNull
-    @param:JsonProperty("petType")
     override val petType: String = "Cat"
-) : Pet(id, name, tag) {
+
     companion object
 }
 
@@ -55,17 +55,17 @@ data class Dog(
     @param:JsonProperty("breed")
     @get:JsonProperty("breed")
     val breed: DogBreed? = null,
+) : Pet(id, name, tag) {
     @get:JsonProperty("petType")
     @get:NotNull
-    @param:JsonProperty("petType")
     override val petType: String = "Dog"
-) : Pet(id, name, tag) {
+
     companion object
 }
 
 enum class DogBreed(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     DINGO("Dingo"),
 
@@ -73,7 +73,8 @@ enum class DogBreed(
 
     RETRIEVER("Retriever"),
 
-    SHEPHERD("Shepherd");
+    SHEPHERD("Shepherd"),
+    ;
 
     companion object {
         private val mapping: Map<String, DogBreed> = values().associateBy(DogBreed::value)
@@ -90,7 +91,7 @@ data class Error(
     @param:JsonProperty("message")
     @get:JsonProperty("message")
     @get:NotNull
-    val message: String
+    val message: String,
 ) {
     companion object
 }
@@ -99,20 +100,20 @@ data class Error(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "petType",
-    visible = true
+    visible = true,
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = Cat::class, name = "Cat"),
     JsonSubTypes.Type(
         value =
         Dog::class,
-        name = "Dog"
-    )
+        name = "Dog",
+    ),
 )
 sealed class Pet(
     open val id: Long,
     open val name: String,
-    open val tag: String? = null
+    open val tag: String? = null,
 ) {
     abstract val petType: String
 }

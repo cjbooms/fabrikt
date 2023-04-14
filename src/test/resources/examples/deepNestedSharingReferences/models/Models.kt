@@ -7,7 +7,7 @@ import kotlin.String
 data class Address(
     @param:JsonProperty("eircode")
     @get:JsonProperty("eircode")
-    val eircode: String? = null
+    val eircode: String? = null,
 )
 
 data class Company(
@@ -18,7 +18,7 @@ data class Company(
     @param:JsonProperty("employee")
     @get:JsonProperty("employee")
     @get:Valid
-    val employee: Person? = null
+    val employee: Person? = null,
 )
 
 data class Department(
@@ -29,12 +29,12 @@ data class Department(
     @param:JsonProperty("manager")
     @get:JsonProperty("manager")
     @get:Valid
-    val manager: Person? = null
+    val manager: Person? = null,
 )
 
 data class Person(
     @param:JsonProperty("home_address")
     @get:JsonProperty("home_address")
     @get:Valid
-    val homeAddress: Address? = null
+    val homeAddress: Address? = null,
 )

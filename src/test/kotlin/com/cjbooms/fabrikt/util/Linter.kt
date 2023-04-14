@@ -1,28 +1,16 @@
 package com.cjbooms.fabrikt.util
 
-import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.RuleSetProvider
-import java.util.ServiceLoader
+import com.pinterest.ktlint.core.Code
+import com.pinterest.ktlint.core.KtLintRuleEngine
+import com.pinterest.ktlint.ruleset.standard.StandardRuleSetProvider
 
 object Linter {
 
-    private val lintRuleSets = ServiceLoader.load(RuleSetProvider::class.java)
-        .map { it.get() }.sortedBy {
-            when (it.id) {
-                "standard" -> 0
-                else -> 1
-            }
-        }
-
-    fun lintString(rawText: String) =
-        // lint twice, first lint adds whitespace after each line in a multiline field annotation.
-        internalLintString(internalLintString(rawText))
-
-    private fun internalLintString(rawText: String) = KtLint.format(
-        KtLint.Params(
-            text = rawText,
-            ruleSets = lintRuleSets,
-            cb = { _, _ -> }
-        )
-    )
+    fun lintString(rawText: String): String {
+        val code = Code.CodeSnippet(rawText)
+        val result = KtLintRuleEngine(
+            ruleProviders = StandardRuleSetProvider().getRuleProviders(),
+        ).format(code)
+        return result
+    }
 }

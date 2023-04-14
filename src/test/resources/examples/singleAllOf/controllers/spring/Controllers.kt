@@ -17,7 +17,7 @@ interface TestController {
     @RequestMapping(
         value = ["/test"],
         produces = ["application/json"],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
     fun test(): ResponseEntity<Result>
 }

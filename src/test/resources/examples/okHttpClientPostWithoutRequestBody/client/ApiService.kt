@@ -22,7 +22,7 @@ class ExampleService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
     var circuitBreakerName: String = "exampleClient"
 

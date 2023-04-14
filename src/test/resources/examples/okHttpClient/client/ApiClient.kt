@@ -25,7 +25,7 @@ import kotlin.jvm.Throws
 class ExamplePath1Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      * GET example path 1
@@ -37,7 +37,7 @@ class ExamplePath1Client(
     fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
@@ -69,7 +69,7 @@ class ExamplePath1Client(
     fun postExamplePath1(
         content: Content,
         explodeListQueryParam: List<String>? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
@@ -95,7 +95,7 @@ class ExamplePath1Client(
 class ExamplePath2Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      * GET example path 2
@@ -111,7 +111,7 @@ class ExamplePath2Client(
         limit: Int = 500,
         queryParam2: Int? = null,
         ifNoneMatch: String? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Content> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
@@ -147,7 +147,7 @@ class ExamplePath2Client(
         pathParam: String,
         queryParam3: Boolean? = null,
         ifNoneMatch: String? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
@@ -182,7 +182,7 @@ class ExamplePath2Client(
         firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
@@ -209,7 +209,7 @@ class ExamplePath2Client(
 class ExamplePath3SubresourceClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      * PUT example path 3
@@ -225,7 +225,7 @@ class ExamplePath3SubresourceClient(
         pathParam: String,
         ifMatch: String,
         csvListQueryParam: List<String>? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-3/{path_param}/subresource"
             .pathParam("{path_param}" to pathParam)

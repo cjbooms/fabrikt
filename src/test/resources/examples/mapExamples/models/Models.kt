@@ -15,7 +15,7 @@ import kotlin.collections.MutableMap
 data class BasicObject(
     @param:JsonProperty("one")
     @get:JsonProperty("one")
-    val one: String? = null
+    val one: String? = null,
 )
 
 data class ComplexObjectWithMapsOfMaps(
@@ -26,7 +26,7 @@ data class ComplexObjectWithMapsOfMaps(
     @param:JsonProperty("map-of-maps")
     @get:JsonProperty("map-of-maps")
     @get:Valid
-    val mapOfMaps: Map<String, Map<String, BasicObject>>? = null
+    val mapOfMaps: Map<String, Map<String, BasicObject>>? = null,
 )
 
 data class ComplexObjectWithRefTypedMap(
@@ -37,7 +37,7 @@ data class ComplexObjectWithRefTypedMap(
     @get:JsonProperty("code")
     val code: Int? = null,
     @get:JsonIgnore
-    val properties: MutableMap<String, SomeRef> = mutableMapOf()
+    val properties: MutableMap<String, SomeRef> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, SomeRef> = properties
@@ -56,7 +56,7 @@ data class ComplexObjectWithTypedMap(
     @get:JsonProperty("code")
     val code: Int? = null,
     @get:JsonIgnore
-    val properties: MutableMap<String, ComplexObjectWithTypedMapValue> = mutableMapOf()
+    val properties: MutableMap<String, ComplexObjectWithTypedMapValue> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, ComplexObjectWithTypedMapValue> = properties
@@ -73,7 +73,7 @@ data class ComplexObjectWithTypedMapValue(
     val otherText: String? = null,
     @param:JsonProperty("other_number")
     @get:JsonProperty("other_number")
-    val otherNumber: Int? = null
+    val otherNumber: Int? = null,
 )
 
 data class ComplexObjectWithUntypedMap(
@@ -84,7 +84,7 @@ data class ComplexObjectWithUntypedMap(
     @get:JsonProperty("code")
     val code: Int? = null,
     @get:JsonIgnore
-    val properties: MutableMap<String, Any> = mutableMapOf()
+    val properties: MutableMap<String, Any> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
@@ -98,7 +98,7 @@ data class ComplexObjectWithUntypedMap(
 data class ExternalObjectFour(
     @param:JsonProperty("blah")
     @get:JsonProperty("blah")
-    val blah: String? = null
+    val blah: String? = null,
 )
 
 data class InlinedComplexObjectWithTypedMapValue(
@@ -107,7 +107,7 @@ data class InlinedComplexObjectWithTypedMapValue(
     val otherText: String? = null,
     @param:JsonProperty("other_number")
     @get:JsonProperty("other_number")
-    val otherNumber: Int? = null
+    val otherNumber: Int? = null,
 )
 
 data class InlinedTypedObjectMapValue(
@@ -116,7 +116,7 @@ data class InlinedTypedObjectMapValue(
     val code: Int? = null,
     @param:JsonProperty("text")
     @get:JsonProperty("text")
-    val text: String? = null
+    val text: String? = null,
 )
 
 data class MapHolder(
@@ -163,7 +163,7 @@ data class MapHolder(
     @get:Valid
     val inlinedComplexObjectWithTypedMap: MapHolderInlinedComplexObjectWithTypedMap? = null,
     @get:JsonIgnore
-    val properties: MutableMap<String, Map<String, ExternalObjectFour>> = mutableMapOf()
+    val properties: MutableMap<String, Map<String, ExternalObjectFour>> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, Map<String, ExternalObjectFour>> = properties
@@ -182,7 +182,7 @@ data class MapHolderInlinedComplexObjectWithTypedMap(
     @get:JsonProperty("code")
     val code: Int? = null,
     @get:JsonIgnore
-    val properties: MutableMap<String, InlinedComplexObjectWithTypedMapValue> = mutableMapOf()
+    val properties: MutableMap<String, InlinedComplexObjectWithTypedMapValue> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, InlinedComplexObjectWithTypedMapValue> = properties
@@ -201,7 +201,7 @@ data class MapHolderInlinedComplexObjectWithUntypedMap(
     @get:JsonProperty("code")
     val code: Int? = null,
     @get:JsonIgnore
-    val properties: MutableMap<String, Any> = mutableMapOf()
+    val properties: MutableMap<String, Any> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
@@ -218,7 +218,7 @@ data class SomeRef(
     val otherText: String? = null,
     @param:JsonProperty("other_number")
     @get:JsonProperty("other_number")
-    val otherNumber: Int? = null
+    val otherNumber: Int? = null,
 )
 
 data class TypedObjectMapValue(
@@ -227,5 +227,5 @@ data class TypedObjectMapValue(
     val code: Int? = null,
     @param:JsonProperty("text")
     @get:JsonProperty("text")
-    val text: String? = null
+    val text: String? = null,
 )

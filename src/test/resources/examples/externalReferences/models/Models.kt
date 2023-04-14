@@ -18,7 +18,7 @@ data class ContainingExternalReference(
     @param:JsonProperty("some-external-reference")
     @get:JsonProperty("some-external-reference")
     @get:Valid
-    val someExternalReference: ExternalObject? = null
+    val someExternalReference: ExternalObject? = null,
 )
 
 data class ExternalObject(
@@ -29,13 +29,13 @@ data class ExternalObject(
     @param:JsonProperty("one_of")
     @get:JsonProperty("one_of")
     @get:Valid
-    val oneOf: ParentOneOf? = null
+    val oneOf: ParentOneOf? = null,
 )
 
 data class ExternalObjectFour(
     @param:JsonProperty("blah")
     @get:JsonProperty("blah")
-    val blah: String? = null
+    val blah: String? = null,
 )
 
 data class ExternalObjectThree(
@@ -46,18 +46,19 @@ data class ExternalObjectThree(
     @param:JsonProperty("description")
     @get:JsonProperty("description")
     @get:NotNull
-    val description: String
+    val description: String,
 )
 
 enum class ExternalObjectThreeEnum(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     ONE("one"),
 
     TWO("two"),
 
-    THREE("three");
+    THREE("three"),
+    ;
 
     companion object {
         private val mapping: Map<String, ExternalObjectThreeEnum> =
@@ -73,7 +74,7 @@ data class ExternalObjectTwo(
     @get:Valid
     val listOthers: List<ExternalObjectThree>? = null,
     @get:JsonIgnore
-    val properties: MutableMap<String, Map<String, ExternalObjectFour>> = mutableMapOf()
+    val properties: MutableMap<String, Map<String, ExternalObjectFour>> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, Map<String, ExternalObjectFour>> = properties
@@ -88,35 +89,35 @@ data class OneOfOne(
     @param:JsonProperty("oneOfOne")
     @get:JsonProperty("oneOfOne")
     val oneOfOne: String? = null,
+) : ParentOneOf() {
     @get:JsonProperty("discriminator")
     @get:NotNull
-    @param:JsonProperty("discriminator")
     override val discriminator: String = "OneOfOne"
-) : ParentOneOf()
+}
 
 data class OneOfTwo(
     @param:JsonProperty("oneOfTwo")
     @get:JsonProperty("oneOfTwo")
     val oneOfTwo: String? = null,
+) : ParentOneOf() {
     @get:JsonProperty("discriminator")
     @get:NotNull
-    @param:JsonProperty("discriminator")
     override val discriminator: String = "OneOfTwo"
-) : ParentOneOf()
+}
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "discriminator",
-    visible = true
+    visible = true,
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = OneOfOne::class, name = "OneOfOne"),
     JsonSubTypes.Type(
         value =
         OneOfTwo::class,
-        name = "OneOfTwo"
-    )
+        name = "OneOfTwo",
+    ),
 )
 sealed class ParentOneOf() {
     abstract val discriminator: String

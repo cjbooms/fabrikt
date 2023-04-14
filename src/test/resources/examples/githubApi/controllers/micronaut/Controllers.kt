@@ -45,7 +45,7 @@ interface InternalEventsController {
     @Produces(value = ["application/json", "application/problem+json"])
     fun post(
         @Body @Valid
-        bulkEntityDetails: BulkEntityDetails
+        bulkEntityDetails: BulkEntityDetails,
     ): HttpResponse<EventResults>
 }
 
@@ -69,11 +69,13 @@ interface ContributorsController {
     @Get(uri = "/contributors")
     @Produces(value = ["application/json"])
     fun searchContributors(
-        @Min(1) @Max(100) @QueryValue(value = "limit", defaultValue = "10")
+        @Min(1)
+        @Max(100)
+        @QueryValue(value = "limit", defaultValue = "10")
         limit: Int,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @QueryValue(value = "include_inactive") includeInactive: Boolean?,
-        @QueryValue(value = "cursor") cursor: String?
+        @QueryValue(value = "cursor") cursor: String?,
     ): HttpResponse<ContributorQueryResult>
 
     /**
@@ -98,7 +100,7 @@ interface ContributorsController {
         @Body @Valid
         contributor: Contributor,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "Idempotency-Key") idempotencyKey: UUID?
+        @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
 
     /**
@@ -122,7 +124,7 @@ interface ContributorsController {
         @PathVariable(value = "id") id: String,
         @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParam,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "If-None-Match") ifNoneMatch: String?
+        @Header(value = "If-None-Match") ifNoneMatch: String?,
     ): HttpResponse<Contributor>
 
     /**
@@ -155,7 +157,7 @@ interface ContributorsController {
         @PathVariable(value = "id") id: String,
         @Header(value = "If-Match") ifMatch: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "Idempotency-Key") idempotencyKey: UUID?
+        @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
 }
 
@@ -179,11 +181,13 @@ interface OrganisationsController {
     @Get(uri = "/organisations")
     @Produces(value = ["application/json"])
     fun get(
-        @Min(1) @Max(100) @QueryValue(value = "limit", defaultValue = "10")
+        @Min(1)
+        @Max(100)
+        @QueryValue(value = "limit", defaultValue = "10")
         limit: Int,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @QueryValue(value = "include_inactive") includeInactive: Boolean?,
-        @QueryValue(value = "cursor") cursor: String?
+        @QueryValue(value = "cursor") cursor: String?,
     ): HttpResponse<OrganisationQueryResult>
 
     /**
@@ -208,7 +212,7 @@ interface OrganisationsController {
         @Body @Valid
         organisation: Organisation,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "Idempotency-Key") idempotencyKey: UUID?
+        @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
 
     /**
@@ -232,7 +236,7 @@ interface OrganisationsController {
         @PathVariable(value = "id") id: String,
         @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParam,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "If-None-Match") ifNoneMatch: String?
+        @Header(value = "If-None-Match") ifNoneMatch: String?,
     ): HttpResponse<Organisation>
 
     /**
@@ -265,7 +269,7 @@ interface OrganisationsController {
         @PathVariable(value = "id") id: String,
         @Header(value = "If-Match") ifMatch: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "Idempotency-Key") idempotencyKey: UUID?
+        @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
 }
 
@@ -292,11 +296,13 @@ interface OrganisationsContributorsController {
     @Produces(value = ["application/json"])
     fun get(
         @PathVariable(value = "parent-id") parentId: String,
-        @Min(1) @Max(100) @QueryValue(value = "limit", defaultValue = "10")
+        @Min(1)
+        @Max(100)
+        @QueryValue(value = "limit", defaultValue = "10")
         limit: Int,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @QueryValue(value = "include_inactive") includeInactive: Boolean?,
-        @QueryValue(value = "cursor") cursor: String?
+        @QueryValue(value = "cursor") cursor: String?,
     ): HttpResponse<ContributorQueryResult>
 
     /**
@@ -318,7 +324,7 @@ interface OrganisationsContributorsController {
         @PathVariable(value = "parent-id") parentId: String,
         @PathVariable(value = "id") id: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "If-None-Match") ifNoneMatch: String?
+        @Header(value = "If-None-Match") ifNoneMatch: String?,
     ): HttpResponse<Contributor>
 
     /**
@@ -349,7 +355,7 @@ interface OrganisationsContributorsController {
         @PathVariable(value = "id") id: String,
         @Header(value = "If-Match") ifMatch: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "Idempotency-Key") idempotencyKey: UUID?
+        @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
 
     /**
@@ -365,7 +371,7 @@ interface OrganisationsContributorsController {
     fun deleteById(
         @PathVariable(value = "parent-id") parentId: String,
         @PathVariable(value = "id") id: String,
-        @Header(value = "X-Flow-Id") xFlowId: String?
+        @Header(value = "X-Flow-Id") xFlowId: String?,
     ): HttpResponse<Unit>
 }
 
@@ -393,15 +399,19 @@ interface RepositoriesController {
     @Get(uri = "/repositories")
     @Produces(value = ["application/json"])
     fun get(
-        @Min(1) @Max(100) @QueryValue(value = "limit", defaultValue = "10")
+        @Min(1)
+        @Max(100)
+        @QueryValue(value = "limit", defaultValue = "10")
         limit: Int,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Valid @QueryValue(value = "slug")
+        @Valid
+        @QueryValue(value = "slug")
         slug: List<String>?,
-        @Valid @QueryValue(value = "name")
+        @Valid
+        @QueryValue(value = "name")
         name: List<String>?,
         @QueryValue(value = "include_inactive") includeInactive: Boolean?,
-        @QueryValue(value = "cursor") cursor: String?
+        @QueryValue(value = "cursor") cursor: String?,
     ): HttpResponse<RepositoryQueryResult>
 
     /**
@@ -426,7 +436,7 @@ interface RepositoriesController {
         @Body @Valid
         repository: Repository,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "Idempotency-Key") idempotencyKey: UUID?
+        @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
 
     /**
@@ -450,7 +460,7 @@ interface RepositoriesController {
         @PathVariable(value = "id") id: String,
         @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParam,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "If-None-Match") ifNoneMatch: String?
+        @Header(value = "If-None-Match") ifNoneMatch: String?,
     ): HttpResponse<Repository>
 
     /**
@@ -483,7 +493,7 @@ interface RepositoriesController {
         @PathVariable(value = "id") id: String,
         @Header(value = "If-Match") ifMatch: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "Idempotency-Key") idempotencyKey: UUID?
+        @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
 }
 
@@ -510,11 +520,13 @@ interface RepositoriesPullRequestsController {
     @Produces(value = ["application/json"])
     fun get(
         @PathVariable(value = "parent-id") parentId: String,
-        @Min(1) @Max(100) @QueryValue(value = "limit", defaultValue = "10")
+        @Min(1)
+        @Max(100)
+        @QueryValue(value = "limit", defaultValue = "10")
         limit: Int,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @QueryValue(value = "include_inactive") includeInactive: Boolean?,
-        @QueryValue(value = "cursor") cursor: String?
+        @QueryValue(value = "cursor") cursor: String?,
     ): HttpResponse<PullRequestQueryResult>
 
     /**
@@ -541,7 +553,7 @@ interface RepositoriesPullRequestsController {
         pullRequest: PullRequest,
         @PathVariable(value = "parent-id") parentId: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "Idempotency-Key") idempotencyKey: UUID?
+        @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
 
     /**
@@ -563,7 +575,7 @@ interface RepositoriesPullRequestsController {
         @PathVariable(value = "parent-id") parentId: String,
         @PathVariable(value = "id") id: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "If-None-Match") ifNoneMatch: String?
+        @Header(value = "If-None-Match") ifNoneMatch: String?,
     ): HttpResponse<PullRequest>
 
     /**
@@ -598,6 +610,6 @@ interface RepositoriesPullRequestsController {
         @PathVariable(value = "id") id: String,
         @Header(value = "If-Match") ifMatch: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Header(value = "Idempotency-Key") idempotencyKey: UUID?
+        @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
 }

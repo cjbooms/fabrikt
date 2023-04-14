@@ -25,21 +25,21 @@ data class ArrayComplexInLinedQuantities(
 data class ArrayRef(
     @param:JsonProperty("grams")
     @get:JsonProperty("grams")
-    val grams: Int? = null
+    val grams: Int? = null,
 )
 
 data class ArraySimpleInLined(
     @param:JsonProperty("quantities")
     @get:JsonProperty("quantities")
     @get:NotNull
-    val quantities: List<Long>
+    val quantities: List<Long>,
 )
 
 data class ContainsArrayOfArrays(
     @param:JsonProperty("array_of_arrays")
     @get:JsonProperty("array_of_arrays")
     @get:Valid
-    val arrayOfArrays: List<List<Something>>? = null
+    val arrayOfArrays: List<List<Something>>? = null,
 )
 
 data class ContainsArrayRef(
@@ -47,11 +47,11 @@ data class ContainsArrayRef(
     @get:JsonProperty("weight_on_mars")
     @get:NotNull
     @get:Valid
-    val weightOnMars: List<ArrayRef>
+    val weightOnMars: List<ArrayRef>,
 )
 
 data class Something(
     @param:JsonProperty("some_value")
     @get:JsonProperty("some_value")
-    val someValue: Int? = null
+    val someValue: Int? = null,
 )

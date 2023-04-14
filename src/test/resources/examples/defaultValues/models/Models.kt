@@ -39,16 +39,17 @@ data class PersonWithDefaults(
     @param:JsonProperty("byte_type")
     @get:JsonProperty("byte_type")
     @get:NotNull
-    val byteType: ByteArray = Base64.getDecoder().decode("U3dhZ2dlciByb2Nrcw==")
+    val byteType: ByteArray = Base64.getDecoder().decode("U3dhZ2dlciByb2Nrcw=="),
 )
 
 enum class PersonWithDefaultsEnumDefault(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     TALL("tall"),
 
-    SHORT("short");
+    SHORT("short"),
+    ;
 
     companion object {
         private val mapping: Map<String, PersonWithDefaultsEnumDefault> =

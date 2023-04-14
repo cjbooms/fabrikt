@@ -22,14 +22,14 @@ interface ExampleController {
     @RequestMapping(
         value = ["/example"],
         produces = [],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
     fun get(
         @RequestParam(value = "a", required = true) a: String,
         @RequestParam(
             value = "b",
             required =
-            true
-        ) b: String
+            true,
+        ) b: String,
     ): ResponseEntity<Unit>
 }

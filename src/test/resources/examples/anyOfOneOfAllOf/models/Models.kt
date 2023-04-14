@@ -33,14 +33,14 @@ data class ComplexParent(
     @param:JsonProperty("top_level_prop")
     @get:JsonProperty("top_level_prop")
     @get:NotNull
-    val topLevelProp: BigDecimal
+    val topLevelProp: BigDecimal,
 )
 
 data class ComplexSecondOneA(
     @param:JsonProperty("more_nested_prop_one")
     @get:JsonProperty("more_nested_prop_one")
     @get:NotNull
-    val moreNestedPropOne: String
+    val moreNestedPropOne: String,
 )
 
 data class ContainsNestedAnyOf(
@@ -49,32 +49,32 @@ data class ContainsNestedAnyOf(
     val firstNestedAnyOfProp: String? = null,
     @param:JsonProperty("second_nested_any_of_prop")
     @get:JsonProperty("second_nested_any_of_prop")
-    val secondNestedAnyOfProp: String? = null
+    val secondNestedAnyOfProp: String? = null,
 )
 
 data class FirstAnyA(
     @param:JsonProperty("first_nested_any_of_prop")
     @get:JsonProperty("first_nested_any_of_prop")
-    val firstNestedAnyOfProp: String? = null
+    val firstNestedAnyOfProp: String? = null,
 )
 
 data class FirstOneA(
     @param:JsonProperty("first_nested_one_of_prop")
     @get:JsonProperty("first_nested_one_of_prop")
-    val firstNestedOneOfProp: String? = null
+    val firstNestedOneOfProp: String? = null,
 )
 
 data class FirstOneB(
     @param:JsonProperty("first_property")
     @get:JsonProperty("first_property")
-    val firstProperty: String? = null
+    val firstProperty: String? = null,
 )
 
 data class MoreNesting(
     @param:JsonProperty("more_nested_prop_one")
     @get:JsonProperty("more_nested_prop_one")
     @get:NotNull
-    val moreNestedPropOne: String
+    val moreNestedPropOne: String,
 )
 
 data class OneOfAdditionalProps(
@@ -82,7 +82,7 @@ data class OneOfAdditionalProps(
     @get:JsonProperty("second_nested_any_of_prop")
     val secondNestedAnyOfProp: String? = null,
     @get:JsonIgnore
-    val properties: MutableMap<String, Any> = mutableMapOf()
+    val properties: MutableMap<String, Any> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
@@ -96,7 +96,7 @@ data class OneOfAdditionalProps(
 data class SecondAnyA(
     @param:JsonProperty("second_nested_any_of_prop")
     @get:JsonProperty("second_nested_any_of_prop")
-    val secondNestedAnyOfProp: String? = null
+    val secondNestedAnyOfProp: String? = null,
 )
 
 data class SecondOneB(
@@ -108,7 +108,7 @@ data class SecondOneB(
     val thirdProperty: String? = null,
     @param:JsonProperty("forth_property")
     @get:JsonProperty("forth_property")
-    val forthProperty: Any? = null
+    val forthProperty: Any? = null,
 )
 
 data class SimpleOneOfs(
@@ -117,7 +117,7 @@ data class SimpleOneOfs(
     val oneofProperty: Any? = null,
     @param:JsonProperty("primitive_oneof_property")
     @get:JsonProperty("primitive_oneof_property")
-    val primitiveOneofProperty: Any? = null
+    val primitiveOneofProperty: Any? = null,
 )
 
 data class SimpleTypeWithRequiredProps(
@@ -128,5 +128,5 @@ data class SimpleTypeWithRequiredProps(
     @param:JsonProperty("required_int")
     @get:JsonProperty("required_int")
     @get:NotNull
-    val requiredInt: Int
+    val requiredInt: Int,
 )

@@ -12,5 +12,5 @@ data class RequiredReadOnly(
     val userName: String,
     @param:JsonProperty("created")
     @get:JsonProperty("created")
-    val created: OffsetDateTime? = null
+    val created: OffsetDateTime? = null,
 )

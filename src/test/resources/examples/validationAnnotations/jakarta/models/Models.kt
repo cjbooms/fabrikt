@@ -21,11 +21,11 @@ data class ValidationAnnotations(
     @get:NotNull
     @get:DecimalMin(
         value = "0",
-        inclusive = false
+        inclusive = false,
     )
     @get:DecimalMax(
         value = "100",
-        inclusive = true
+        inclusive = true,
     )
     val age: Int,
     @param:JsonProperty("bio")
@@ -33,7 +33,7 @@ data class ValidationAnnotations(
     @get:NotNull
     @get:Size(
         min = 20,
-        max = 200
+        max = 200,
     )
     val bio: String,
     @param:JsonProperty("friends")
@@ -41,7 +41,7 @@ data class ValidationAnnotations(
     @get:NotNull
     @get:Size(
         min = 0,
-        max = 10
+        max = 10,
     )
-    val friends: List<String>
+    val friends: List<String>,
 )

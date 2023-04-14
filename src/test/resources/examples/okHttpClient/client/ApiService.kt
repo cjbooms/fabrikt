@@ -28,7 +28,7 @@ class ExamplePath1Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
     var circuitBreakerName: String = "examplePath1Client"
 
@@ -38,7 +38,7 @@ class ExamplePath1Service(
     fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath1(explodeListQueryParam, queryParam2, additionalHeaders)
@@ -48,7 +48,7 @@ class ExamplePath1Service(
     fun postExamplePath1(
         content: Content,
         explodeListQueryParam: List<String>? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.postExamplePath1(content, explodeListQueryParam, additionalHeaders)
@@ -68,7 +68,7 @@ class ExamplePath2Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
     var circuitBreakerName: String = "examplePath2Client"
 
@@ -80,7 +80,7 @@ class ExamplePath2Service(
         limit: Int = 500,
         queryParam2: Int? = null,
         ifNoneMatch: String? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Content> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath2PathParam(pathParam, limit, queryParam2, ifNoneMatch, additionalHeaders)
@@ -91,7 +91,7 @@ class ExamplePath2Service(
         pathParam: String,
         queryParam3: Boolean? = null,
         ifNoneMatch: String? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.headOperationIdExample(pathParam, queryParam3, ifNoneMatch, additionalHeaders)
@@ -102,7 +102,7 @@ class ExamplePath2Service(
         firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.putExamplePath2PathParam(firstModel, pathParam, ifMatch, additionalHeaders)
@@ -122,14 +122,14 @@ class ExamplePath3SubresourceService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
     var circuitBreakerName: String = "examplePath3SubresourceClient"
 
     private val apiClient: ExamplePath3SubresourceClient = ExamplePath3SubresourceClient(
         objectMapper,
         baseUrl,
-        client
+        client,
     )
 
     @Throws(ApiException::class)
@@ -138,9 +138,15 @@ class ExamplePath3SubresourceService(
         pathParam: String,
         ifMatch: String,
         csvListQueryParam: List<String>? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.putExamplePath3PathParamSubresource(firstModel, pathParam, ifMatch, csvListQueryParam, additionalHeaders)
+            apiClient.putExamplePath3PathParamSubresource(
+                firstModel,
+                pathParam,
+                ifMatch,
+                csvListQueryParam,
+                additionalHeaders,
+            )
         }
 }

@@ -13,12 +13,12 @@ data class ErrorResponse(
     @param:JsonProperty("code")
     @get:JsonProperty("code")
     @get:NotNull
-    val code: Int
+    val code: Int,
 )
 
 data class SucccessResponse(
     @param:JsonProperty("message")
     @get:JsonProperty("message")
     @get:NotNull
-    val message: String
+    val message: String,
 )

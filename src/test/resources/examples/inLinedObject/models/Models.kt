@@ -10,21 +10,21 @@ data class FirstInlineObject(
     @param:JsonProperty("generation")
     @get:JsonProperty("generation")
     @get:Valid
-    val generation: FirstInlineObjectGeneration? = null
+    val generation: FirstInlineObjectGeneration? = null,
 )
 
 data class FirstInlineObjectCallHome(
     @param:JsonProperty("url")
     @get:JsonProperty("url")
     @get:NotNull
-    val url: String
+    val url: String,
 )
 
 data class FirstInlineObjectDatabaseView(
     @param:JsonProperty("view_name")
     @get:JsonProperty("view_name")
     @get:NotNull
-    val viewName: String
+    val viewName: String,
 )
 
 data class FirstInlineObjectGeneration(
@@ -38,28 +38,28 @@ data class FirstInlineObjectGeneration(
     val databaseView: FirstInlineObjectDatabaseView? = null,
     @param:JsonProperty("direct")
     @get:JsonProperty("direct")
-    val direct: String? = null
+    val direct: String? = null,
 )
 
 data class SecondInlineObject(
     @param:JsonProperty("generation")
     @get:JsonProperty("generation")
     @get:Valid
-    val generation: SecondInlineObjectGeneration? = null
+    val generation: SecondInlineObjectGeneration? = null,
 )
 
 data class SecondInlineObjectCallHome(
     @param:JsonProperty("url")
     @get:JsonProperty("url")
     @get:NotNull
-    val url: String
+    val url: String,
 )
 
 data class SecondInlineObjectDatabaseView(
     @param:JsonProperty("view_name")
     @get:JsonProperty("view_name")
     @get:NotNull
-    val viewName: String
+    val viewName: String,
 )
 
 data class SecondInlineObjectGeneration(
@@ -73,14 +73,14 @@ data class SecondInlineObjectGeneration(
     val databaseView: SecondInlineObjectDatabaseView? = null,
     @param:JsonProperty("direct")
     @get:JsonProperty("direct")
-    val direct: String? = null
+    val direct: String? = null,
 )
 
 data class ThirdInlineObject(
     @param:JsonProperty("generation")
     @get:JsonProperty("generation")
     @get:Valid
-    val generation: ThirdInlineObjectGeneration? = null
+    val generation: ThirdInlineObjectGeneration? = null,
 )
 
 data class ThirdInlineObjectGeneration(
@@ -90,11 +90,11 @@ data class ThirdInlineObjectGeneration(
     val urls: List<ThirdInlineObjectUrls>? = null,
     @param:JsonProperty("view_name")
     @get:JsonProperty("view_name")
-    val viewName: String? = null
+    val viewName: String? = null,
 )
 
 data class ThirdInlineObjectUrls(
     @param:JsonProperty("version")
     @get:JsonProperty("version")
-    val version: String? = null
+    val version: String? = null,
 )

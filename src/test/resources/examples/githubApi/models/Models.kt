@@ -22,7 +22,7 @@ data class Author(
     val name: String? = null,
     @param:JsonProperty("email")
     @get:JsonProperty("email")
-    val email: String? = null
+    val email: String? = null,
 )
 
 data class BulkEntityDetails(
@@ -32,7 +32,7 @@ data class BulkEntityDetails(
     @get:Valid
     val entities: List<EntityDetails>,
     @get:JsonIgnore
-    val properties: MutableMap<String, Any> = mutableMapOf()
+    val properties: MutableMap<String, Any> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
@@ -81,7 +81,7 @@ data class Contributor(
     val username: String,
     @param:JsonProperty("name")
     @get:JsonProperty("name")
-    val name: String? = null
+    val name: String? = null,
 )
 
 data class ContributorQueryResult(
@@ -96,16 +96,17 @@ data class ContributorQueryResult(
     @get:NotNull
     @get:Size(min = 0)
     @get:Valid
-    val items: List<Contributor>
+    val items: List<Contributor>,
 )
 
 enum class ContributorStatus(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     ACTIVE("active"),
 
-    INACTIVE("inactive");
+    INACTIVE("inactive"),
+    ;
 
     companion object {
         private val mapping: Map<String, ContributorStatus> =
@@ -121,7 +122,7 @@ data class EntityDetails(
     @get:NotNull
     val id: String,
     @get:JsonIgnore
-    val properties: MutableMap<String, Any> = mutableMapOf()
+    val properties: MutableMap<String, Any> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
@@ -142,7 +143,7 @@ data class Event(
     @get:NotNull
     val data: Map<String, Any>,
     @get:JsonIgnore
-    val properties: MutableMap<String, Any> = mutableMapOf()
+    val properties: MutableMap<String, Any> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
@@ -161,7 +162,7 @@ data class EventResults(
     @get:Valid
     val changeEvents: List<Event>,
     @get:JsonIgnore
-    val properties: MutableMap<String, Any> = mutableMapOf()
+    val properties: MutableMap<String, Any> = mutableMapOf(),
 ) {
     @JsonAnyGetter
     fun get(): Map<String, Any> = properties
@@ -214,7 +215,7 @@ data class Organisation(
     @param:JsonProperty("hooks")
     @get:JsonProperty("hooks")
     @get:Valid
-    val hooks: List<Webhook>? = null
+    val hooks: List<Webhook>? = null,
 )
 
 data class OrganisationQueryResult(
@@ -229,16 +230,17 @@ data class OrganisationQueryResult(
     @get:NotNull
     @get:Size(min = 0)
     @get:Valid
-    val items: List<Organisation>
+    val items: List<Organisation>,
 )
 
 enum class OrganisationStatus(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     ACTIVE("active"),
 
-    INACTIVE("inactive");
+    INACTIVE("inactive"),
+    ;
 
     companion object {
         private val mapping: Map<String, OrganisationStatus> =
@@ -290,7 +292,7 @@ data class PullRequest(
     @param:JsonProperty("author")
     @get:JsonProperty("author")
     @get:Valid
-    val author: Author? = null
+    val author: Author? = null,
 )
 
 data class PullRequestQueryResult(
@@ -305,16 +307,17 @@ data class PullRequestQueryResult(
     @get:NotNull
     @get:Size(min = 0)
     @get:Valid
-    val items: List<PullRequest>
+    val items: List<PullRequest>,
 )
 
 enum class PullRequestStatus(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     ACTIVE("active"),
 
-    INACTIVE("inactive");
+    INACTIVE("inactive"),
+    ;
 
     companion object {
         private val mapping: Map<String, PullRequestStatus> =
@@ -369,7 +372,7 @@ data class Repository(
     val visibility: RepositoryVisibility? = null,
     @param:JsonProperty("tags")
     @get:JsonProperty("tags")
-    val tags: List<String>? = null
+    val tags: List<String>? = null,
 )
 
 data class RepositoryQueryResult(
@@ -384,16 +387,17 @@ data class RepositoryQueryResult(
     @get:NotNull
     @get:Size(min = 0)
     @get:Valid
-    val items: List<Repository>
+    val items: List<Repository>,
 )
 
 enum class RepositoryStatus(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     ACTIVE("active"),
 
-    INACTIVE("inactive");
+    INACTIVE("inactive"),
+    ;
 
     companion object {
         private val mapping: Map<String, RepositoryStatus> =
@@ -405,11 +409,12 @@ enum class RepositoryStatus(
 
 enum class RepositoryVisibility(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     PRIVATE("Private"),
 
-    PUBLIC("Public");
+    PUBLIC("Public"),
+    ;
 
     companion object {
         private val mapping: Map<String, RepositoryVisibility> =
@@ -421,13 +426,14 @@ enum class RepositoryVisibility(
 
 enum class StatusQueryParam(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     ACTIVE("active"),
 
     INACTIVE("inactive"),
 
-    ALL("all");
+    ALL("all"),
+    ;
 
     companion object {
         private val mapping: Map<String, StatusQueryParam> =
@@ -444,5 +450,5 @@ data class Webhook(
     val url: String,
     @param:JsonProperty("name")
     @get:JsonProperty("name")
-    val name: String? = null
+    val name: String? = null,
 )

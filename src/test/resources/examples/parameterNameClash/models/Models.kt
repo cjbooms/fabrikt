@@ -6,5 +6,5 @@ import kotlin.String
 data class SomeObject(
     @param:JsonProperty("test")
     @get:JsonProperty("test")
-    val test: String? = null
+    val test: String? = null,
 )

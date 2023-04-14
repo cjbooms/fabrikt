@@ -15,13 +15,14 @@ data class BarBar(
 
 enum class ContentType(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     APPLICATION_JSON("application/json"),
 
     APPLICATION_X_SOME_TYPE_JSON("application/x.some-type+json"),
 
-    APPLICATION_X_SOME_OTHER_TYPE_JSON_VERSION_2("application/x.some-other-type+json;version=2");
+    APPLICATION_X_SOME_OTHER_TYPE_JSON_VERSION_2("application/x.some-other-type+json;version=2"),
+    ;
 
     companion object {
         private val mapping: Map<String, ContentType> = values().associateBy(ContentType::value)
@@ -48,16 +49,17 @@ data class EnumHolder(
     val extensibleEnumRef: ExtensibleEnumObject? = null,
     @param:JsonProperty("list_enums")
     @get:JsonProperty("list_enums")
-    val listEnums: List<ContentType>? = null
+    val listEnums: List<ContentType>? = null,
 )
 
 enum class EnumHolderArrayOfEnums(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     ARRAY_ENUM_ONE("array_enum_one"),
 
-    ARRAY_ENUM_TWO("array_enum_two");
+    ARRAY_ENUM_TWO("array_enum_two"),
+    ;
 
     companion object {
         private val mapping: Map<String, EnumHolderArrayOfEnums> =
@@ -69,13 +71,14 @@ enum class EnumHolderArrayOfEnums(
 
 enum class EnumHolderInlinedEnum(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     INLINED_ONE("inlined_one"),
 
     INLINED_TWO("inlined_two"),
 
-    INLINED_THREE("inlined_three");
+    INLINED_THREE("inlined_three"),
+    ;
 
     companion object {
         private val mapping: Map<String, EnumHolderInlinedEnum> =
@@ -87,13 +90,14 @@ enum class EnumHolderInlinedEnum(
 
 enum class EnumHolderInlinedExtensibleEnum(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     INLINED_ONE("inlined_one"),
 
     INLINED_TWO("inlined_two"),
 
-    INLINED_THREE("inlined_three");
+    INLINED_THREE("inlined_three"),
+    ;
 
     companion object {
         private val mapping: Map<String, EnumHolderInlinedExtensibleEnum> =
@@ -105,13 +109,14 @@ enum class EnumHolderInlinedExtensibleEnum(
 
 enum class EnumObject(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     ONE("one"),
 
     TWO("two"),
 
-    THREE("three");
+    THREE("three"),
+    ;
 
     companion object {
         private val mapping: Map<String, EnumObject> = values().associateBy(EnumObject::value)
@@ -122,11 +127,12 @@ enum class EnumObject(
 
 enum class ExtensibleEnumObject(
     @JsonValue
-    val value: String
+    val value: String,
 ) {
     ACTIVE("active"),
 
-    INACTIVE("inactive");
+    INACTIVE("inactive"),
+    ;
 
     companion object {
         private val mapping: Map<String, ExtensibleEnumObject> =

@@ -23,8 +23,11 @@ fun <T : Any> FormBody.Builder.formParam(key: String, value: T?): FormBody.Build
 @Suppress("unused")
 fun HttpUrl.Builder.queryParam(key: String, values: List<String>?, explode: Boolean = true) = this.apply {
     if (values != null) {
-        if (explode) values.forEach { addQueryParameter(key, it) }
-        else addQueryParameter(key, values.joinToString(","))
+        if (explode) {
+            values.forEach { addQueryParameter(key, it) }
+        } else {
+            addQueryParameter(key, values.joinToString(","))
+        }
     }
 }
 
@@ -39,10 +42,13 @@ fun <T> Request.execute(client: OkHttpClient, objectMapper: ObjectMapper, typeRe
         when {
             response.isSuccessful ->
                 ApiResponse(response.code, response.headers, response.body?.deserialize(objectMapper, typeRef))
+
             response.isBadRequest() ->
                 throw ApiClientException(response.code, response.headers, response.errorMessage())
+
             response.isServerError() ->
                 throw ApiServerException(response.code, response.headers, response.errorMessage())
+
             else -> throw ApiException("[${response.code}]: ${response.errorMessage()}")
         }
     }
