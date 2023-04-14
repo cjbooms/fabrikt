@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllers
+import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
@@ -44,7 +45,7 @@ class MicronautControllerGeneratorTest {
     fun init() {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.CONTROLLERS),
-            controllerTarget = ControllerCodeGenTargetType.MICRONAUT
+            controllerTarget = ControllerCodeGenTargetType.MICRONAUT,
         )
     }
 
@@ -60,7 +61,22 @@ class MicronautControllerGeneratorTest {
 
         val controllers = MicronautControllerInterfaceGenerator(
             Packages(basePackage),
-            api
+            api,
+        ).generate().toSingleFile()
+
+        assertThat(controllers).isEqualTo(expectedControllers)
+    }
+
+    @Test
+    fun `correct models are generated for ControllerCodeGenOptionType_AUTHENTICATION`() {
+        val basePackage = "examples.authentication"
+        val api = SourceApi(readTextResource("/examples/authentication/api.yaml"))
+        val expectedControllers = readTextResource("/examples/authentication/controllers/micronaut/Controllers.kt")
+
+        val controllers = MicronautControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            setOf(ControllerCodeGenOptionType.AUTHENTICATION),
         ).generate().toSingleFile()
 
         assertThat(controllers).isEqualTo(expectedControllers)
@@ -82,7 +98,7 @@ class MicronautControllerGeneratorTest {
                 "OrganisationsController",
                 "OrganisationsContributorsController",
                 "RepositoriesController",
-                "RepositoriesPullRequestsController"
+                "RepositoriesPullRequestsController",
             )
     }
 
@@ -117,8 +133,8 @@ class MicronautControllerGeneratorTest {
                 "OrganisationsController",
                 "OrganisationsContributorsController",
                 "RepositoriesController",
-                "RepositoriesPullRequestsController"
-            )
+                "RepositoriesPullRequestsController",
+            ),
         )
 
         val linkedFunctionNames = controllers.files
@@ -133,13 +149,13 @@ class MicronautControllerGeneratorTest {
             "get",
             "getById",
             "putById",
-            "deleteById"
+            "deleteById",
         )
         assertThat(ownedFunctionNames).containsExactlyInAnyOrder(
             "get",
             "getById",
             "post",
-            "putById"
+            "putById",
         )
     }
 
@@ -149,7 +165,7 @@ class MicronautControllerGeneratorTest {
         val controllers = MicronautControllerInterfaceGenerator(
             Packages(basePackage),
             api,
-            setOf(ControllerCodeGenOptionType.SUSPEND_MODIFIER)
+            setOf(ControllerCodeGenOptionType.SUSPEND_MODIFIER),
         ).generate()
 
         assertThat(controllers.files).size().isEqualTo(6)
@@ -157,7 +173,7 @@ class MicronautControllerGeneratorTest {
             controllers.files
                 .flatMap { file -> file.members }
                 .flatMap { (it as TypeSpec).funSpecs.map(FunSpec::modifiers) }
-                .all { it.contains(KModifier.SUSPEND) }
+                .all { it.contains(KModifier.SUSPEND) },
         ).isTrue()
     }
 
@@ -165,7 +181,9 @@ class MicronautControllerGeneratorTest {
         val destPackage = if (controllers.isNotEmpty()) controllers.first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
         controllers.forEach {
-            singleFileBuilder.addType(it.spec).build()
+            singleFileBuilder.addType(it.spec)
+                .addImport(MicronautImports.SECURITY_RULE.first, MicronautImports.SECURITY_RULE.second)
+                .build()
         }
         return Linter.lintString(singleFileBuilder.build().toString())
     }

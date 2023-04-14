@@ -1,0 +1,82 @@
+openapi: 3.0.1
+info:
+  description: Testing setting of global security parameter
+  title: Test
+  version: '0.0'
+paths:
+  /required:
+    get:
+      operationId: testPath
+      security:
+        - BasicAuth: [ ]
+      parameters:
+        - in: query
+          name: testString
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: generateTestModel 200 response
+  /prohibited:
+    get:
+      operationId: testPath
+      security:
+        - { }
+      parameters:
+        - in: query
+          name: testString
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: generateTestModel 200 response
+  /optional:
+    get:
+      operationId: testPath
+      security:
+        - BasicAuth: [ ]
+        - { }
+      parameters:
+        - in: query
+          name: testString
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: generateTestModel 200 response
+  /none:
+    get:
+      operationId: testPath
+      security:
+        [ ]
+      parameters:
+        - in: query
+          name: testString
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: generateTestModel 200 response
+  /default:
+    get:
+      operationId: testPath
+      parameters:
+        - in: query
+          name: testString
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: generateTestModel 200 response
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+security:
+  - basicAuth: [ ]

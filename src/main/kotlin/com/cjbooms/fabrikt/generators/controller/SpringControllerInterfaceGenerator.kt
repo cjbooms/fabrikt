@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
@@ -33,19 +34,22 @@ import com.squareup.kotlinpoet.TypeSpec
 class SpringControllerInterfaceGenerator(
     private val packages: Packages,
     private val api: SourceApi,
-    private val options: Set<ControllerCodeGenOptionType> = emptySet()
+    private val options: Set<ControllerCodeGenOptionType> = emptySet(),
 ) : ControllerInterfaceGenerator(packages, api) {
+
+    private val addAuthenticationParameter: Boolean
+        get() = options.any { it == ControllerCodeGenOptionType.AUTHENTICATION }
 
     override fun generate(): SpringControllers =
         SpringControllers(
             api.openApi3.routeToPaths().map { (resourceName, paths) ->
                 buildController(resourceName, paths.values)
-            }.toSet()
+            }.toSet(),
         )
 
     override fun controllerBuilder(
         className: String,
-        basePath: String
+        basePath: String,
     ) =
         TypeSpec.interfaceBuilder(className)
             .addAnnotation(SpringAnnotations.CONTROLLER)
@@ -60,6 +64,7 @@ class SpringControllerInterfaceGenerator(
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = op.happyPathResponse(packages.base)
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
+        val globalSecurity = this.api.openApi3.getSecurityRequirements().securitySupport()
 
         // Main method builder
         val funcSpec = FunSpec
@@ -89,6 +94,22 @@ class SpringControllerInterfaceGenerator(
             }
             .forEach { funcSpec.addParameter(it) }
 
+        // Add authentication
+        if (addAuthenticationParameter) {
+            val securityOption = op.securitySupport(globalSecurity)
+
+            if (securityOption.allowsAuthenticated) {
+                val typeName =
+                    SpringImports.AUTHENTICATION
+                        .copy(nullable = securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_OPTIONAL)
+                funcSpec.addParameter(
+                    ParameterSpec
+                        .builder("authentication", typeName)
+                        .build(),
+                )
+            }
+        }
+
         return funcSpec.build()
     }
 
@@ -107,14 +128,14 @@ class SpringControllerInterfaceGenerator(
                 .addMember("value = [%S]", path)
                 .addMember(
                     "produces = %L",
-                    produces.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" })
+                    produces.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" }),
                 )
                 .addMember("method = [RequestMethod.%L]", verb.toUpperCase())
 
         if (consumes.isNotEmpty()) {
             funcAnnotation.addMember(
                 "consumes = %L",
-                consumes.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" })
+                consumes.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" }),
             )
         }
 
@@ -131,20 +152,23 @@ class SpringControllerInterfaceGenerator(
             it.addMember("value = %S", parameter.oasName)
             it.addMember("required = %L", parameter.isRequired)
 
-            if (parameter.defaultValue != null)
+            if (parameter.defaultValue != null) {
                 it.addMember("defaultValue = %S", parameter.defaultValue)
+            }
 
-            if ( parameter.typeInfo is KotlinTypeInfo.Date )
-                this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE ) )
-            else if (parameter.typeInfo is KotlinTypeInfo.DateTime )
-                this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE_TIME ) )
+            if (parameter.typeInfo is KotlinTypeInfo.Date) {
+                this.addAnnotation(SpringAnnotations.dateTimeFormat(SpringImports.DateTimeFormat.ISO_DATE))
+            } else if (parameter.typeInfo is KotlinTypeInfo.DateTime) {
+                this.addAnnotation(SpringAnnotations.dateTimeFormat(SpringImports.DateTimeFormat.ISO_DATE_TIME))
+            }
 
             this.addAnnotation(it.build())
         }
 
     private fun FunSpec.Builder.addSuspendModifier(): FunSpec.Builder {
-        if (options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER })
+        if (options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER }) {
             this.addModifiers(KModifier.SUSPEND)
+        }
         return this
     }
 }
@@ -155,7 +179,7 @@ data class SpringControllers(val controllers: Collection<ControllerType>) : Kotl
             .addImport(SpringImports.Static.REQUEST_METHOD.first, SpringImports.Static.REQUEST_METHOD.second)
             .addImport(
                 SpringImports.Static.RESPONSE_STATUS.first,
-                SpringImports.Static.RESPONSE_STATUS.second
+                SpringImports.Static.RESPONSE_STATUS.second,
             )
             .build()
     }
