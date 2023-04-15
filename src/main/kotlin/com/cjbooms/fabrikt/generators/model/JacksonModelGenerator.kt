@@ -16,10 +16,16 @@ import com.cjbooms.fabrikt.generators.ValidationAnnotations
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.JSON_VALUE
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.basePolymorphicType
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.polymorphicSubTypes
-import com.cjbooms.fabrikt.model.*
 import com.cjbooms.fabrikt.model.Destinations.modelsPackage
+import com.cjbooms.fabrikt.model.GeneratedType
+import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.model.ModelType
+import com.cjbooms.fabrikt.model.Models
+import com.cjbooms.fabrikt.model.PropertyInfo
 import com.cjbooms.fabrikt.model.PropertyInfo.Companion.HTTP_SETTINGS
 import com.cjbooms.fabrikt.model.PropertyInfo.Companion.topLevelProperties
+import com.cjbooms.fabrikt.model.SchemaInfo
+import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
@@ -40,7 +46,16 @@ import com.reprezen.kaizen.oasparser.OpenApi3Parser
 import com.reprezen.kaizen.oasparser.model3.Discriminator
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asTypeName
 import java.io.Serializable
 import java.net.MalformedURLException
 import java.net.URL
@@ -415,7 +430,8 @@ class JacksonModelGenerator(
                 validationAnnotations
             )
         }
-        if (constructorBuilder.parameters.isNotEmpty() && classBuilder.modifiers.isEmpty()) classBuilder.addModifiers(KModifier.DATA)
+        if (constructorBuilder.parameters.isNotEmpty() && classBuilder.modifiers.isEmpty()) classBuilder.addModifiers(
+            KModifier.DATA)
         return classBuilder.primaryConstructor(constructorBuilder.build())
     }
 

@@ -4,8 +4,15 @@ import com.cjbooms.fabrikt.generators.JavaxValidationAnnotations.fieldValid
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PropertyInfo
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asTypeName
 
 data class ClassSettings(
     val polymorphyType: PolymorphyType,
