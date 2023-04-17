@@ -26,6 +26,7 @@ import com.cjbooms.fabrikt.model.PropertyInfo.Companion.HTTP_SETTINGS
 import com.cjbooms.fabrikt.model.PropertyInfo.Companion.topLevelProperties
 import com.cjbooms.fabrikt.model.SchemaInfo
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.getDiscriminatorForInLinedObjectUnderAllOf
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
@@ -168,6 +169,15 @@ class JacksonModelGenerator(
     ): TypeSpec {
         val modelName = schemaInfo.name.toModelClassName()
         return when {
+            schemaInfo.schema.isPolymorphicSuperType() && schemaInfo.schema.isPolymorphicSubType(api) ->
+                polymorphicSuperSubType(
+                    modelName,
+                    properties,
+                    checkNotNull(schemaInfo.schema.getDiscriminatorForInLinedObjectUnderAllOf()),
+                    schemaInfo.schema.getSuperType(api)!!.let { SchemaInfo(it.name, it) },
+                    schemaInfo.schema.extensions,
+                    allSchemas
+            )
             schemaInfo.schema.isPolymorphicSuperType() -> polymorphicSuperType(
                 modelName,
                 properties,
@@ -342,58 +352,97 @@ class JacksonModelGenerator(
             .addMicronautReflectionAnnotation()
             .addCompanionObject()
         properties.addToClass(
-            classBuilder,
-            ClassSettings(ClassSettings.PolymorphyType.NONE, extensions.hasJsonMergePatchExtension)
+            modelName = modelName,
+            classBuilder = classBuilder,
+            classType = ClassSettings(ClassSettings.PolymorphyType.NONE, extensions.hasJsonMergePatchExtension)
         )
         return classBuilder.build()
     }
+
+    private fun polymorphicSuperSubType(
+        modelName: String,
+        properties: Collection<PropertyInfo>,
+        discriminator: Discriminator,
+        superType: SchemaInfo,
+        extensions: Map<String, Any>,
+        allSchemas: List<SchemaInfo>
+    ): TypeSpec = with(FunSpec.constructorBuilder()) {
+        TypeSpec.classBuilder(generatedType(packages.base, modelName))
+            .buildPolymorphicSubType(modelName, properties.filter(PropertyInfo::isInherited), superType, extensions, this)
+            .buildPolymorphicSuperType(modelName, properties.filterNot(PropertyInfo::isInherited), discriminator, extensions, allSchemas, this)
+            .build()
+        }
 
     private fun polymorphicSuperType(
         modelName: String,
         properties: Collection<PropertyInfo>,
         discriminator: Discriminator,
         extensions: Map<String, Any>,
+        allSchemas: List<SchemaInfo>
+    ): TypeSpec = TypeSpec.classBuilder(generatedType(packages.base, modelName))
+        .buildPolymorphicSuperType(modelName, properties, discriminator, extensions, allSchemas)
+        .build()
+
+    private fun TypeSpec.Builder.buildPolymorphicSuperType(
+        modelName: String,
+        properties: Collection<PropertyInfo>,
+        discriminator: Discriminator,
+        extensions: Map<String, Any>,
         allSchemas: List<SchemaInfo>,
-    ): TypeSpec {
-        val classBuilder = TypeSpec.classBuilder(generatedType(packages.base, modelName))
-            .addModifiers(KModifier.SEALED)
+        constructorBuilder: FunSpec.Builder = FunSpec.constructorBuilder()
+    ): TypeSpec.Builder {
+        this.addModifiers(KModifier.SEALED)
             .addAnnotation(basePolymorphicType(discriminator.propertyName))
+            .modifiers.remove(KModifier.DATA)
 
         val subTypes = allSchemas
             .filter { model ->
                 model.schema.allOfSchemas.any { allOfRef ->
-                    allOfRef.name?.toModelClassName() == modelName && allOfRef.discriminator == discriminator
+                    allOfRef.name?.toModelClassName() == modelName &&
+                            (allOfRef.discriminator == discriminator ||
+                             allOfRef.allOfSchemas.any { it.discriminator == discriminator })
                 }
             }
-        val mappings = subTypes.flatMap { schemaInfo ->
-            discriminator.mappingKeys(schemaInfo.schema).map {
-                it to toModelType(packages.base, KotlinTypeInfo.from(schemaInfo.schema, schemaInfo.name))
-            }
-        }.toMap()
+
+        val mappings: Map<String, TypeName> = subTypes.map { schemaInfo ->
+            discriminator.getDiscriminatorMappings(schemaInfo)
+        }.toMapList()
+            .firstValueMap()
+
         val maybeEnumDiscriminator = properties
             .firstOrNull { it.name == discriminator.propertyName }?.typeInfo as? KotlinTypeInfo.Enum
 
-        classBuilder.addAnnotation(polymorphicSubTypes(mappings, maybeEnumDiscriminator))
+        this.addAnnotation(polymorphicSubTypes(mappings, maybeEnumDiscriminator))
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
 
         properties.addToClass(
-            classBuilder,
+            modelName,
+            constructorBuilder,
+            this,
             ClassSettings(ClassSettings.PolymorphyType.SUPER, extensions.hasJsonMergePatchExtension)
         )
 
-        return classBuilder.build()
+        return this
     }
 
     private fun polymorphicSubType(
         modelName: String,
         properties: Collection<PropertyInfo>,
         superType: SchemaInfo,
+        extensions: Map<String, Any>
+    ): TypeSpec = TypeSpec.classBuilder(generatedType(packages.base, modelName))
+        .buildPolymorphicSubType(modelName, properties, superType, extensions).build()
+
+    private fun TypeSpec.Builder.buildPolymorphicSubType(
+        modelName: String,
+        allProperties: Collection<PropertyInfo>,
+        superType: SchemaInfo,
         extensions: Map<String, Any>,
-    ): TypeSpec {
-        val classBuilder = TypeSpec.classBuilder(generatedType(packages.base, modelName))
-            .addSerializableInterface()
+        constructorBuilder: FunSpec.Builder = FunSpec.constructorBuilder()
+    ): TypeSpec.Builder {
+        this.addSerializableInterface()
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
@@ -401,20 +450,34 @@ class JacksonModelGenerator(
             .superclass(
                 toModelType(packages.base, KotlinTypeInfo.from(superType.schema, superType.name))
             )
+
+        val properties = superType.schema.getDiscriminatorForInLinedObjectUnderAllOf()?.let { discriminator ->
+            allProperties.filterNot {
+                when (it) {
+                    is PropertyInfo.Field -> it.isPolymorphicDiscriminator && it.name != discriminator.propertyName
+                    else -> false
+                }
+            }
+        } ?: allProperties
+
         properties.addToClass(
-            classBuilder,
+            modelName,
+            constructorBuilder,
+            this,
             ClassSettings(ClassSettings.PolymorphyType.SUB, extensions.hasJsonMergePatchExtension)
         )
-        return classBuilder.build()
+        return this
     }
 
     private fun Collection<PropertyInfo>.addToClass(
+        modelName: String,
+        constructorBuilder: FunSpec.Builder = FunSpec.constructorBuilder(),
         classBuilder: TypeSpec.Builder,
-        classType: ClassSettings
+        classType: ClassSettings,
     ): TypeSpec.Builder {
-        val constructorBuilder = FunSpec.constructorBuilder()
         this.forEach {
             it.addToClass(
+                modelName,
                 toModelType(
                     packages.base,
                     it.typeInfo,
@@ -434,6 +497,23 @@ class JacksonModelGenerator(
             KModifier.DATA)
         return classBuilder.primaryConstructor(constructorBuilder.build())
     }
+
+    private fun Discriminator.getDiscriminatorMappings(schemaInfo: SchemaInfo): Map<String, TypeName> =
+        mappingKeys(schemaInfo.schema)
+            .filter { it.value == schemaInfo.schema.name }
+            .map {
+                it.key to toModelType(packages.base, KotlinTypeInfo.from(schemaInfo.schema, schemaInfo.name))
+            }
+            .toMap()
+
+    private fun <K, V> List<Map<K,V>>.toMapList(): Map<K, List<V>> =
+        asSequence()
+            .flatMap {
+                it.asSequence()
+            }.groupBy({ it.key }, { it.value })
+
+    private fun <K, V> Map<K,List<V>>.firstValueMap(): Map<K, V> =
+            map { it.key to it.value.first() }.toMap()
 
     private fun TypeSpec.Builder.addSerializableInterface(): TypeSpec.Builder {
         if (options.any { it == ModelCodeGenOptionType.JAVA_SERIALIZATION })
