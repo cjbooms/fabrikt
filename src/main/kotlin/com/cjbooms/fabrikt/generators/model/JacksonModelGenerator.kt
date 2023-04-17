@@ -2,8 +2,9 @@ package com.cjbooms.fabrikt.generators.model
 
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.ClassType
+import com.cjbooms.fabrikt.generators.ClassSettings
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
+import com.cjbooms.fabrikt.generators.JavaxValidationAnnotations
 import com.cjbooms.fabrikt.generators.PropertyUtils.addToClass
 import com.cjbooms.fabrikt.generators.PropertyUtils.isNullable
 import com.cjbooms.fabrikt.generators.TypeFactory.createList
@@ -11,7 +12,6 @@ import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfMapsStringToStringA
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfStringToType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfMapsStringToStringType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfStringToType
-import com.cjbooms.fabrikt.generators.JavaxValidationAnnotations
 import com.cjbooms.fabrikt.generators.ValidationAnnotations
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.JSON_VALUE
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.basePolymorphicType
@@ -59,6 +59,7 @@ import com.squareup.kotlinpoet.asTypeName
 import java.io.Serializable
 import java.net.MalformedURLException
 import java.net.URL
+
 class JacksonModelGenerator(
     private val packages: Packages,
     private val sourceApi: SourceApi,
@@ -171,15 +172,17 @@ class JacksonModelGenerator(
                 modelName,
                 properties,
                 schemaInfo.schema.discriminator,
+                schemaInfo.schema.extensions,
                 allSchemas
             )
             schemaInfo.schema.isPolymorphicSubType(api) -> polymorphicSubType(
                 modelName,
                 properties,
-                schemaInfo.schema.getSuperType(api)!!.let { SchemaInfo(it.name, it) }
+                schemaInfo.schema.getSuperType(api)!!.let { SchemaInfo(it.name, it) },
+                schemaInfo.schema.extensions,
             )
             schemaInfo.typeInfo is KotlinTypeInfo.Enum -> buildEnumClass(schemaInfo.typeInfo)
-            else -> standardDataClass(modelName, properties)
+            else -> standardDataClass(modelName, properties, schemaInfo.schema.extensions)
         }
     }
 
@@ -196,7 +199,11 @@ class JacksonModelGenerator(
             when (it) {
                 is PropertyInfo.ObjectInlinedField -> {
                     val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
-                    val currentModel = standardDataClass(it.name.toModelClassName(enclosingModelName), props)
+                    val currentModel = standardDataClass(
+                        it.name.toModelClassName(enclosingModelName),
+                        props,
+                        it.schema.extensions
+                    )
                     val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
                     inlinedModels + currentModel
                 }
@@ -207,7 +214,8 @@ class JacksonModelGenerator(
                     if (it.schema.isComplexTypedAdditionalProperties("additionalProperties")) setOf(
                         standardDataClass(
                             if (it.schema.isInlinedTypedAdditionalProperties()) it.schema.toMapValueClassName() else it.schema.toModelClassName(),
-                            it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
+                            it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema),
+                            it.schema.extensions
                         )
                     )
                     else emptySet()
@@ -220,7 +228,7 @@ class JacksonModelGenerator(
                             items.isInlinedObjectDefinition() ->
                                 items.topLevelProperties(HTTP_SETTINGS, enclosingSchema).let { props ->
                                     buildInLinedModels(props, enclosingSchema, apiDocUrl) + standardDataClass(
-                                        it.name.toModelClassName(enclosingModelName), props
+                                        it.name.toModelClassName(enclosingModelName), props, it.schema.extensions
                                     )
                                 }
                             items.isInlinedEnumDefinition() ->
@@ -317,18 +325,26 @@ class JacksonModelGenerator(
             val schema = mapField.schema.additionalPropertiesSchema
             standardDataClass(
                 if (schema.isInlinedTypedAdditionalProperties()) schema.toMapValueClassName() else schema.toModelClassName(),
-                mapField.schema.additionalPropertiesSchema.topLevelProperties(HTTP_SETTINGS)
+                mapField.schema.additionalPropertiesSchema.topLevelProperties(HTTP_SETTINGS),
+                mapField.schema.extensions
             )
         } else null
 
-    private fun standardDataClass(modelName: String, properties: Collection<PropertyInfo>): TypeSpec {
+    private fun standardDataClass(
+        modelName: String,
+        properties: Collection<PropertyInfo>,
+        extensions: Map<String, Any>,
+    ): TypeSpec {
         val classBuilder = TypeSpec.classBuilder(generatedType(packages.base, modelName))
             .addSerializableInterface()
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
             .addCompanionObject()
-        properties.addToClass(classBuilder, ClassType.VANILLA_MODEL)
+        properties.addToClass(
+            classBuilder,
+            ClassSettings(ClassSettings.PolymorphyType.NONE, extensions.hasJsonMergePatchExtension)
+        )
         return classBuilder.build()
     }
 
@@ -336,7 +352,8 @@ class JacksonModelGenerator(
         modelName: String,
         properties: Collection<PropertyInfo>,
         discriminator: Discriminator,
-        allSchemas: List<SchemaInfo>
+        extensions: Map<String, Any>,
+        allSchemas: List<SchemaInfo>,
     ): TypeSpec {
         val classBuilder = TypeSpec.classBuilder(generatedType(packages.base, modelName))
             .addModifiers(KModifier.SEALED)
@@ -361,7 +378,10 @@ class JacksonModelGenerator(
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
 
-        properties.addToClass(classBuilder, ClassType.SUPER_MODEL)
+        properties.addToClass(
+            classBuilder,
+            ClassSettings(ClassSettings.PolymorphyType.SUPER, extensions.hasJsonMergePatchExtension)
+        )
 
         return classBuilder.build()
     }
@@ -369,7 +389,8 @@ class JacksonModelGenerator(
     private fun polymorphicSubType(
         modelName: String,
         properties: Collection<PropertyInfo>,
-        superType: SchemaInfo
+        superType: SchemaInfo,
+        extensions: Map<String, Any>,
     ): TypeSpec {
         val classBuilder = TypeSpec.classBuilder(generatedType(packages.base, modelName))
             .addSerializableInterface()
@@ -382,14 +403,14 @@ class JacksonModelGenerator(
             )
         properties.addToClass(
             classBuilder,
-            ClassType.SUB_MODEL
+            ClassSettings(ClassSettings.PolymorphyType.SUB, extensions.hasJsonMergePatchExtension)
         )
         return classBuilder.build()
     }
 
     private fun Collection<PropertyInfo>.addToClass(
         classBuilder: TypeSpec.Builder,
-        classType: ClassType
+        classType: ClassSettings
     ): TypeSpec.Builder {
         val constructorBuilder = FunSpec.constructorBuilder()
         this.forEach {
@@ -409,7 +430,8 @@ class JacksonModelGenerator(
                 validationAnnotations
             )
         }
-        if (constructorBuilder.parameters.isNotEmpty() && classBuilder.modifiers.isEmpty()) classBuilder.addModifiers(KModifier.DATA)
+        if (constructorBuilder.parameters.isNotEmpty() && classBuilder.modifiers.isEmpty()) classBuilder.addModifiers(
+            KModifier.DATA)
         return classBuilder.primaryConstructor(constructorBuilder.build())
     }
 
@@ -443,7 +465,10 @@ class JacksonModelGenerator(
         return this
     }
 
-    private fun TypeSpec.Builder.addOptionalAnnotation(optionType: ModelCodeGenOptionType, type: ClassName): TypeSpec.Builder {
+    private fun TypeSpec.Builder.addOptionalAnnotation(
+        optionType: ModelCodeGenOptionType,
+        type: ClassName
+    ): TypeSpec.Builder {
         if (options.any { it == optionType })
             this.addAnnotation(
                 AnnotationSpec.builder(type).build()
@@ -451,4 +476,7 @@ class JacksonModelGenerator(
         return this
     }
 }
+
+private val Map<String, Any>.hasJsonMergePatchExtension
+    get() = this.containsKey("x-json-merge-patch")
 

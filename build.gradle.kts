@@ -53,6 +53,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.1.0")
     testImplementation("org.assertj:assertj-core:3.14.0")
+
     // Below dependencies are solely present so code examples in the test resources dir compile
     testImplementation("javax.validation:validation-api:2.0.1.Final")
     testImplementation("jakarta.validation:jakarta.validation-api:3.0.2")
@@ -64,6 +65,7 @@ dependencies {
     testImplementation("com.squareup.okhttp3:okhttp:4.9.1")
     testImplementation("com.pinterest.ktlint:ktlint-core:0.41.0")
     testImplementation("com.pinterest:ktlint:0.41.0")
+    testImplementation("org.openapitools:jackson-databind-nullable:0.2.6")
 }
 
 tasks {
