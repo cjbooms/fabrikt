@@ -177,10 +177,12 @@ class JacksonModelGenerator(
         allSchemas: List<SchemaInfo>,
     ): TypeSpec {
         val modelName = schemaInfo.name.toModelClassName()
+        val schemaName = schemaInfo.name
         return when {
             schemaInfo.schema.isPolymorphicSuperType() && schemaInfo.schema.isPolymorphicSubType(api) ->
                 polymorphicSuperSubType(
                     modelName,
+                    schemaName,
                     properties,
                     checkNotNull(schemaInfo.schema.getDiscriminatorForInLinedObjectUnderAllOf()),
                     schemaInfo.schema.getSuperType(api)!!.let { SchemaInfo(it.name, it) },
@@ -190,6 +192,7 @@ class JacksonModelGenerator(
 
             schemaInfo.schema.isPolymorphicSuperType() -> polymorphicSuperType(
                 modelName,
+                schemaName,
                 properties,
                 schemaInfo.schema.discriminator,
                 schemaInfo.schema.extensions,
@@ -198,13 +201,14 @@ class JacksonModelGenerator(
 
             schemaInfo.schema.isPolymorphicSubType(api) -> polymorphicSubType(
                 modelName,
+                schemaName,
                 properties,
                 schemaInfo.schema.getSuperType(api)!!.let { SchemaInfo(it.name, it) },
                 schemaInfo.schema.extensions,
             )
 
             schemaInfo.typeInfo is KotlinTypeInfo.Enum -> buildEnumClass(schemaInfo.typeInfo)
-            else -> standardDataClass(modelName, properties, schemaInfo.schema.extensions)
+            else -> standardDataClass(modelName, schemaName, properties, schemaInfo.schema.extensions)
         }
     }
 
@@ -223,6 +227,7 @@ class JacksonModelGenerator(
                     val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
                     val currentModel = standardDataClass(
                         it.name.toModelClassName(enclosingModelName),
+                        it.name,
                         props,
                         it.schema.extensions,
                     )
@@ -239,6 +244,7 @@ class JacksonModelGenerator(
                         setOf(
                             standardDataClass(
                                 modelName = if (it.schema.isInlinedTypedAdditionalProperties()) it.schema.toMapValueClassName() else it.schema.toModelClassName(),
+                                schemaName = it.name,
                                 properties = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema),
                                 extensions = it.schema.extensions,
                             ),
@@ -265,6 +271,7 @@ class JacksonModelGenerator(
                                         apiDocUrl = apiDocUrl,
                                     ) + standardDataClass(
                                         modelName = it.name.toModelClassName(enclosingModelName),
+                                        schemaName = it.name,
                                         properties = props,
                                         extensions = it.schema.extensions,
                                     )
@@ -367,6 +374,7 @@ class JacksonModelGenerator(
             val schema = mapField.schema.additionalPropertiesSchema
             standardDataClass(
                 modelName = if (schema.isInlinedTypedAdditionalProperties()) schema.toMapValueClassName() else schema.toModelClassName(),
+                schemaName = schema.safeName(),
                 properties = mapField.schema.additionalPropertiesSchema.topLevelProperties(HTTP_SETTINGS),
                 extensions = mapField.schema.extensions,
             )
@@ -376,6 +384,7 @@ class JacksonModelGenerator(
 
     private fun standardDataClass(
         modelName: String,
+        schemaName: String,
         properties: Collection<PropertyInfo>,
         extensions: Map<String, Any>,
     ): TypeSpec {
@@ -387,6 +396,7 @@ class JacksonModelGenerator(
             .addCompanionObject()
         properties.addToClass(
             modelName = modelName,
+            schemaName = schemaName,
             classBuilder = classBuilder,
             classType = ClassSettings(ClassSettings.PolymorphyType.NONE, extensions.hasJsonMergePatchExtension),
         )
@@ -395,6 +405,7 @@ class JacksonModelGenerator(
 
     private fun polymorphicSuperSubType(
         modelName: String,
+        schemaName: String,
         properties: Collection<PropertyInfo>,
         discriminator: Discriminator,
         superType: SchemaInfo,
@@ -404,6 +415,7 @@ class JacksonModelGenerator(
         TypeSpec.classBuilder(generatedType(packages.base, modelName))
             .buildPolymorphicSubType(
                 modelName,
+                schemaName,
                 properties.filter(PropertyInfo::isInherited),
                 superType,
                 extensions,
@@ -411,6 +423,7 @@ class JacksonModelGenerator(
             )
             .buildPolymorphicSuperType(
                 modelName,
+                schemaName,
                 properties.filterNot(PropertyInfo::isInherited),
                 discriminator,
                 extensions,
@@ -422,16 +435,18 @@ class JacksonModelGenerator(
 
     private fun polymorphicSuperType(
         modelName: String,
+        schemaName: String,
         properties: Collection<PropertyInfo>,
         discriminator: Discriminator,
         extensions: Map<String, Any>,
         allSchemas: List<SchemaInfo>,
     ): TypeSpec = TypeSpec.classBuilder(generatedType(packages.base, modelName))
-        .buildPolymorphicSuperType(modelName, properties, discriminator, extensions, allSchemas)
+        .buildPolymorphicSuperType(modelName, schemaName, properties, discriminator, extensions, allSchemas)
         .build()
 
     private fun TypeSpec.Builder.buildPolymorphicSuperType(
         modelName: String,
+        schemaName: String,
         properties: Collection<PropertyInfo>,
         discriminator: Discriminator,
         extensions: Map<String, Any>,
@@ -468,6 +483,7 @@ class JacksonModelGenerator(
 
         properties.addToClass(
             modelName,
+            schemaName,
             constructorBuilder,
             this,
             ClassSettings(ClassSettings.PolymorphyType.SUPER, extensions.hasJsonMergePatchExtension),
@@ -478,14 +494,16 @@ class JacksonModelGenerator(
 
     private fun polymorphicSubType(
         modelName: String,
+        schemaName: String,
         properties: Collection<PropertyInfo>,
         superType: SchemaInfo,
         extensions: Map<String, Any>,
     ): TypeSpec = TypeSpec.classBuilder(generatedType(packages.base, modelName))
-        .buildPolymorphicSubType(modelName, properties, superType, extensions).build()
+        .buildPolymorphicSubType(modelName, schemaName, properties, superType, extensions).build()
 
     private fun TypeSpec.Builder.buildPolymorphicSubType(
         modelName: String,
+        schemaName: String,
         allProperties: Collection<PropertyInfo>,
         superType: SchemaInfo,
         extensions: Map<String, Any>,
@@ -513,6 +531,7 @@ class JacksonModelGenerator(
 
         properties.addToClass(
             modelName,
+            schemaName,
             constructorBuilder,
             this,
             ClassSettings(ClassSettings.PolymorphyType.SUB, extensions.hasJsonMergePatchExtension),
@@ -522,6 +541,7 @@ class JacksonModelGenerator(
 
     private fun Collection<PropertyInfo>.addToClass(
         modelName: String,
+        schemaName: String,
         constructorBuilder: FunSpec.Builder = FunSpec.constructorBuilder(),
         classBuilder: TypeSpec.Builder,
         classType: ClassSettings,
@@ -529,6 +549,7 @@ class JacksonModelGenerator(
         this.forEach {
             it.addToClass(
                 modelName,
+                schemaName,
                 toModelType(
                     packages.base,
                     it.typeInfo,
@@ -554,7 +575,7 @@ class JacksonModelGenerator(
 
     private fun Discriminator.getDiscriminatorMappings(schemaInfo: SchemaInfo): Map<String, TypeName> =
         mappingKeys(schemaInfo.schema)
-            .filter { it.value == schemaInfo.schema.name }
+            .filter { it.value == schemaInfo.schema.name || it.key == schemaInfo.schema.name }
             .map {
                 it.key to toModelType(packages.base, KotlinTypeInfo.from(schemaInfo.schema, schemaInfo.name))
             }

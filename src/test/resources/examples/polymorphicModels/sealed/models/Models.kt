@@ -22,7 +22,7 @@ import kotlin.String
     JsonSubTypes.Type(
         value = PolymorphicTypeTwo::class,
         name =
-        "PolymorphicTypeTwo"
+        "polymorphic_type_two"
     )
 )
 sealed class PolymorphicSuperType(
@@ -68,5 +68,5 @@ data class PolymorphicTypeTwo(
 ) : PolymorphicSuperType(firstName, lastName) {
     @get:JsonProperty("generation")
     @get:NotNull
-    override val generation: String = "PolymorphicTypeTwo"
+    override val generation: String = "polymorphic_type_two"
 }
