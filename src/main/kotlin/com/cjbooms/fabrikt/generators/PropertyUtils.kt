@@ -1,6 +1,5 @@
 package com.cjbooms.fabrikt.generators
 
-import com.cjbooms.fabrikt.generators.JavaxValidationAnnotations.fieldValid
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PropertyInfo
@@ -33,16 +32,17 @@ object PropertyUtils {
         classBuilder: TypeSpec.Builder,
         constructorBuilder: FunSpec.Builder,
         classSettings: ClassSettings = ClassSettings(ClassSettings.PolymorphyType.NONE, false),
-        validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations
+        validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations,
     ) {
         val wrappedType =
-            if (classSettings.isMergePatchPattern)
+            if (classSettings.isMergePatchPattern) {
                 ClassName(
                     "org.openapitools.jackson.nullable",
-                    "JsonNullable"
+                    "JsonNullable",
                 ).parameterizedBy(type.copy(nullable = false))
-            else
+            } else {
                 type
+            }
         val property = PropertySpec.builder(name, wrappedType)
 
         if (this is PropertyInfo.AdditionalProperties) {
@@ -55,13 +55,15 @@ object PropertyUtils {
             val value =
                 if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties) {
                     Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), parameterizedType)
-                } else parameterizedType
+                } else {
+                    parameterizedType
+                }
             classBuilder.addFunction(
                 FunSpec.builder("get")
                     .returns(Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), value))
                     .addStatement("return $name")
                     .addAnnotation(JacksonMetadata.anyGetter)
-                    .build()
+                    .build(),
             )
             classBuilder.addFunction(
                 FunSpec.builder("set")
@@ -69,13 +71,16 @@ object PropertyUtils {
                     .addParameter("value", value)
                     .addStatement("$name[name] = value")
                     .addAnnotation(JacksonMetadata.anySetter)
-                    .build()
+                    .build(),
             )
         } else {
             when (classSettings.polymorphyType) {
                 ClassSettings.PolymorphyType.SUPER -> {
-                    if (this is PropertyInfo.Field && isPolymorphicDiscriminator) property.addModifiers(KModifier.ABSTRACT)
-                    else property.addModifiers(KModifier.OPEN)
+                    if (this is PropertyInfo.Field && isPolymorphicDiscriminator) {
+                        property.addModifiers(KModifier.ABSTRACT)
+                    } else {
+                        property.addModifiers(KModifier.OPEN)
+                    }
                 }
 
                 ClassSettings.PolymorphyType.SUB -> {
@@ -123,10 +128,11 @@ object PropertyUtils {
                     if (oasDefault != null) {
                         oasDefault.setDefault(constructorParameter)
                     } else {
-                        val undefinedDefault = if (classSettings.isMergePatchPattern)
+                        val undefinedDefault = if (classSettings.isMergePatchPattern) {
                             "JsonNullable.undefined()"
-                        else
+                        } else {
                             "null"
+                        }
                         constructorParameter.defaultValue(undefinedDefault)
                     }
                 }
@@ -138,19 +144,22 @@ object PropertyUtils {
     }
 
     private fun Map<String, PropertyInfo.DiscriminatorKey>?.getDiscriminatorMappings(
-        modelName: String
+        modelName: String,
     ): List<PropertyInfo.DiscriminatorKey> =
-        this?.filter { it.value.modelName == modelName }?.map {it.value}.orEmpty()
+        this?.filter { it.value.modelName == modelName }?.map { it.value }.orEmpty()
 
     private fun PropertyInfo.Field.isSubTypeDiscriminatorWithNoValue(classType: ClassSettings) =
         classType.polymorphyType == ClassSettings.PolymorphyType.SUB &&
-                isPolymorphicDiscriminator &&
-                maybeDiscriminator == null
+            isPolymorphicDiscriminator &&
+            maybeDiscriminator == null
 
-    private fun PropertyInfo.Field.isSubTypeDiscriminatorWithMultipleValues(classType: ClassSettings, modelName: String) =
+    private fun PropertyInfo.Field.isSubTypeDiscriminatorWithMultipleValues(
+        classType: ClassSettings,
+        modelName: String,
+    ) =
         classType.polymorphyType == ClassSettings.PolymorphyType.SUB &&
-                isPolymorphicDiscriminator &&
-                maybeDiscriminator.getDiscriminatorMappings(modelName).size > 1
+            isPolymorphicDiscriminator &&
+            maybeDiscriminator.getDiscriminatorMappings(modelName).size > 1
 
     private fun getDefaultValue(propTypeInfo: PropertyInfo, parameterizedType: TypeName): OasDefault? {
         return when (propTypeInfo) {
@@ -186,7 +195,10 @@ object PropertyUtils {
      *   minProperties          - Not Supported. No equivalent javax validation. We could add our own as a
      *   enum                   - Not currently supported. Possible to do as a regex maybe.
      */
-    private fun PropertySpec.Builder.addValidationAnnotations(info: PropertyInfo, validationAnnotations: ValidationAnnotations) {
+    private fun PropertySpec.Builder.addValidationAnnotations(
+        info: PropertyInfo,
+        validationAnnotations: ValidationAnnotations,
+    ) {
         if (!info.isNullable()) addAnnotation(validationAnnotations.nonNullAnnotation)
         when (info) {
             is PropertyInfo.Field -> {
@@ -195,19 +207,21 @@ object PropertyUtils {
 
                 // Size Restrictions for Strings
                 val (min, max) = Pair(info.minLength, info.maxLength)
-                if (min != null || max != null) addAnnotation(
-                    validationAnnotations.lengthRestriction(min, max)
-                )
+                if (min != null || max != null) {
+                    addAnnotation(
+                        validationAnnotations.lengthRestriction(min, max),
+                    )
+                }
 
                 // Numeric value validation
                 info.minimum?.let {
                     addAnnotation(
-                        validationAnnotations.minRestriction(it, info.exclusiveMinimum ?: false)
+                        validationAnnotations.minRestriction(it, info.exclusiveMinimum ?: false),
                     )
                 }
                 info.maximum?.let {
                     addAnnotation(
-                        validationAnnotations.maxRestriction(it, info.exclusiveMaximum ?: false)
+                        validationAnnotations.maxRestriction(it, info.exclusiveMaximum ?: false),
                     )
                 }
             }
@@ -215,12 +229,14 @@ object PropertyUtils {
             is PropertyInfo.CollectionValidation -> {
                 // Size Restrictions for collections
                 val (minCollLen, maxCollLen) = Pair(info.minItems, info.maxItems)
-                if (minCollLen != null || maxCollLen != null) addAnnotation(
-                    validationAnnotations.lengthRestriction(
-                        minCollLen,
-                        maxCollLen
+                if (minCollLen != null || maxCollLen != null) {
+                    addAnnotation(
+                        validationAnnotations.lengthRestriction(
+                            minCollLen,
+                            maxCollLen,
+                        ),
                     )
-                )
+                }
             }
 
             else -> {}

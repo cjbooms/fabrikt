@@ -50,7 +50,7 @@ class ModelGeneratorTest {
         "singleAllOf",
         "responsesSchema",
         "webhook",
-        "instantDateTime"
+        "instantDateTime",
     )
 
     @BeforeEach
@@ -78,7 +78,7 @@ class ModelGeneratorTest {
 
         val models = JacksonModelGenerator(
             Packages(basePackage),
-            sourceApi
+            sourceApi,
         ).generate().toSingleFile()
 
         assertThat(models).isEqualTo(expectedModels)
@@ -90,7 +90,11 @@ class ModelGeneratorTest {
         val spec = readTextResource("/examples/jakartaValidationAnnotations/api.yaml")
         val expectedJakartaModel = readTextResource("/examples/jakartaValidationAnnotations/models/Models.kt")
         MutableSettings.updateSettings(genTypes = setOf(CodeGenerationType.HTTP_MODELS))
-        val models = JacksonModelGenerator(Packages(basePackage), SourceApi(spec), validationAnnotations = ValidationLibrary.JAKARTA_VALIDATION.annotations).generate()
+        val models = JacksonModelGenerator(
+            Packages(basePackage),
+            SourceApi(spec),
+            validationAnnotations = ValidationLibrary.JAKARTA_VALIDATION.annotations,
+        ).generate()
 
         assertThat(models.files.size).isEqualTo(4)
         val validationAnnotationsModel = models.files.first { it.name == "ValidationAnnotations" }
@@ -106,7 +110,7 @@ class ModelGeneratorTest {
 
         val models = JacksonModelGenerator(
             Packages(basePackage),
-            SourceApi(spec)
+            SourceApi(spec),
         ).generate()
 
         assertThat(Linter.lintString(models.files.first().toString())).isEqualTo(expectedModels)
@@ -121,7 +125,7 @@ class ModelGeneratorTest {
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION)
+            setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION),
         )
             .generate()
             .toSingleFile()
@@ -132,31 +136,31 @@ class ModelGeneratorTest {
     @Test
     fun `missing array reference throws constructive message`() = assertExceptionWithMessage(
         "/badInput/ErrorMissingRefArray.yaml",
-        "Array type 'hooks' cannot be parsed to a Schema. Check your input"
+        "Array type 'hooks' cannot be parsed to a Schema. Check your input",
     )
 
     @Test
     fun `missing object reference throws constructive message`() = assertExceptionWithMessage(
         "/badInput/ErrorMissingRefObject.yaml",
-        "Property 'propB' cannot be parsed to a Schema. Check your input"
+        "Property 'propB' cannot be parsed to a Schema. Check your input",
     )
 
     @Test
     fun `mixing oneOf with object type throws constructive error`() = assertExceptionWithMessage(
         "/badInput/ErrorMixingOneOfWithObject.yaml",
-        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`"
+        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`",
     )
 
     @Test
     fun `mixing anyOf with object type throws constructive error`() = assertExceptionWithMessage(
         "/badInput/ErrorMixingAnyOfWithObject.yaml",
-        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`"
+        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`",
     )
 
     @Test
     fun `mixing allOf with object type throws constructive error`() = assertExceptionWithMessage(
         "/badInput/ErrorMixingAllOfWithObject.yaml",
-        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`"
+        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`",
     )
 
     private fun assertExceptionWithMessage(path: String, expectedMessage: String) {
@@ -178,7 +182,7 @@ class ModelGeneratorTest {
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION)
+            setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION),
         )
             .generate()
             .toSingleFile()
@@ -195,7 +199,7 @@ class ModelGeneratorTest {
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.MICRONAUT_INTROSPECTION)
+            setOf(ModelCodeGenOptionType.MICRONAUT_INTROSPECTION),
         )
             .generate()
             .toSingleFile()
@@ -212,7 +216,7 @@ class ModelGeneratorTest {
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.MICRONAUT_REFLECTION)
+            setOf(ModelCodeGenOptionType.MICRONAUT_REFLECTION),
         )
             .generate()
             .toSingleFile()
@@ -227,12 +231,12 @@ class ModelGeneratorTest {
         val expectedModels = readTextResource("/examples/companionObject/models/Models.kt")
 
         val models = JacksonModelGenerator(
-                Packages(basePackage),
-                SourceApi(spec),
-                setOf(ModelCodeGenOptionType.INCLUDE_COMPANION_OBJECT)
+            Packages(basePackage),
+            SourceApi(spec),
+            setOf(ModelCodeGenOptionType.INCLUDE_COMPANION_OBJECT),
         )
-                .generate()
-                .toSingleFile()
+            .generate()
+            .toSingleFile()
 
         assertThat(models).isEqualTo(expectedModels)
     }
