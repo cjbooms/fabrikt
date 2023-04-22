@@ -25,19 +25,19 @@ object KaizenParserExtensions {
             "application~1json",
             "content",
             "additionalProperties",
-            "properties"
+            "properties",
         )
     private val simpleTypes = listOf(
         OasType.Text.type,
         OasType.Number.type,
         OasType.Integer.type,
-        OasType.Boolean.type
+        OasType.Boolean.type,
     )
 
     private const val EXTENSIBLE_ENUM_KEY = "x-extensible-enum"
 
     fun Schema.isPolymorphicSuperType(): Boolean = discriminator?.propertyName != null ||
-            getDiscriminatorForInLinedObjectUnderAllOf()?.propertyName != null
+        getDiscriminatorForInLinedObjectUnderAllOf()?.propertyName != null
 
     fun Schema.isInlinedObjectDefinition() =
         isObjectType() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("properties")
@@ -132,31 +132,40 @@ object KaizenParserExtensions {
     fun Schema.isRequired(
         prop: Map.Entry<String, Schema>,
         markReadWriteOnlyOptional: Boolean,
-        markAllOptional: Boolean
+        markAllOptional: Boolean,
     ): Boolean =
-        if (markAllOptional || (prop.value.isReadOnly && markReadWriteOnlyOptional) || (prop.value.isWriteOnly && markReadWriteOnlyOptional))
+        if (markAllOptional || (prop.value.isReadOnly && markReadWriteOnlyOptional) || (prop.value.isWriteOnly && markReadWriteOnlyOptional)) {
             false
-        else requiredFields.contains(prop.key) || isDiscriminatorProperty(prop) // A discriminator property should be required
+        } else {
+            requiredFields.contains(prop.key) || isDiscriminatorProperty(prop) // A discriminator property should be required
+        }
 
     fun Schema.isDiscriminatorProperty(prop: Map.Entry<String, Schema>): Boolean =
         discriminator?.propertyName == prop.key
 
     fun Schema.getKeyIfSingleDiscriminatorValue(
         prop: Map.Entry<String, Schema>,
-        enclosingSchema: Schema
+        enclosingSchema: Schema,
     ): Map<String, PropertyInfo.DiscriminatorKey>? =
         if (isDiscriminatorProperty(prop) && discriminator.mappingKeys(enclosingSchema).isNotEmpty()) {
             discriminator.mappingKeys(enclosingSchema).map {
-                if (prop.value.isEnumDefinition()) it.key to PropertyInfo.DiscriminatorKey.EnumKey(it.key, it.value)
-                else it.key to PropertyInfo.DiscriminatorKey.StringKey(it.key, it.value)
+                if (prop.value.isEnumDefinition()) {
+                    it.key to PropertyInfo.DiscriminatorKey.EnumKey(it.key, it.value)
+                } else {
+                    it.key to PropertyInfo.DiscriminatorKey.StringKey(it.key, it.value)
+                }
             }.toMap()
-        } else null
+        } else {
+            null
+        }
 
     fun Discriminator.mappingKeys(enclosingSchema: Schema): Map<String, String> {
         val discriminatorMappings = mappings?.map { it.key to it.value.split("/").last() }?.toMap()
         return if (discriminatorMappings.isNullOrEmpty()) {
             mapOf(enclosingSchema.name to enclosingSchema.safeName().toModelClassName())
-        } else discriminatorMappings
+        } else {
+            discriminatorMappings
+        }
     }
 
     fun Schema.isInLinedObjectUnderAllOf(): Boolean =
