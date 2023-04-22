@@ -23,7 +23,7 @@ components:
           properties:
             child_one_name:
               type: string
-    PolymorphicTypeTwo:
+    polymorphic_type_two:
       allOf:
         - $ref: "#/components/schemas/PolymorphicSuperType"
         - $ref: "#/components/schemas/AnotherObject"
