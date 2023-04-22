@@ -35,6 +35,18 @@ components:
           items:
             type: integer
             format: int64
+    ArrayComplexInLined:
+      type: object
+      required:
+        - quantities
+      properties:
+        quantities:
+          type: array
+          items:
+            type: object
+            properties:
+              prop_one:
+                type: string
 
     ContainsArrayRef:
       type: object

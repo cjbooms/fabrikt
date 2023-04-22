@@ -40,13 +40,19 @@ object KaizenParserExtensions {
         getDiscriminatorForInLinedObjectUnderAllOf()?.propertyName != null
 
     fun Schema.isInlinedObjectDefinition() =
-        isObjectType() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("properties")
+        isObjectType() && !isSchemaLess() && (
+            Overlay.of(this).pathFromRoot.contains("properties") ||
+                Overlay.of(this).pathFromRoot.contains("items")
+            )
 
     fun Schema.isInlinedTypedAdditionalProperties() =
         isObjectType() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("additionalProperties")
 
     fun Schema.isInlinedEnumDefinition() =
-        isEnumDefinition() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("properties")
+        isEnumDefinition() && !isSchemaLess() && (
+            Overlay.of(this).pathFromRoot.contains("properties") ||
+                Overlay.of(this).pathFromRoot.contains("items")
+            )
 
     fun Schema.isInlinedArrayDefinition() =
         isArrayType() && !isSchemaLess() && this.itemsSchema.isInlinedObjectDefinition()
