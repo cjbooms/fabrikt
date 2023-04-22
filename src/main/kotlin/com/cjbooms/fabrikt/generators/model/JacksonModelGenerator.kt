@@ -238,9 +238,9 @@ class JacksonModelGenerator(
                     if (it.schema.isComplexTypedAdditionalProperties("additionalProperties")) {
                         setOf(
                             standardDataClass(
-                                if (it.schema.isInlinedTypedAdditionalProperties()) it.schema.toMapValueClassName() else it.schema.toModelClassName(),
-                                it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema),
-                                it.schema.extensions,
+                                modelName = if (it.schema.isInlinedTypedAdditionalProperties()) it.schema.toMapValueClassName() else it.schema.toModelClassName(),
+                                properties = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema),
+                                extensions = it.schema.extensions,
                             ),
                         )
                     } else {
