@@ -51,6 +51,8 @@ class ModelGeneratorTest {
         "responsesSchema",
         "webhook",
         "instantDateTime",
+        "singleAllOf",
+        "discriminatedOneOf",
     )
 
     @BeforeEach
@@ -79,6 +81,7 @@ class ModelGeneratorTest {
         val models = JacksonModelGenerator(
             Packages(basePackage),
             sourceApi,
+            setOf(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF),
         ).generate().toSingleFile()
 
         assertThat(models).isEqualTo(expectedModels)

@@ -102,7 +102,7 @@ object KaizenParserExtensions {
         "additionalProperties" && properties?.isEmpty() != true && !isSimpleType()
 
     fun Schema.isSimpleType(): Boolean =
-        (simpleTypes.contains(type) && !isEnumDefinition()) || isSimpleMapDefinition() || isSimpleOneOfAnyDefinition()
+        !isOneOfSuperInterface() && ((simpleTypes.contains(type) && !isEnumDefinition()) || isSimpleMapDefinition() || isSimpleOneOfAnyDefinition())
 
     private fun Schema.isObjectType() = OasType.Object.type == type
 
@@ -209,6 +209,9 @@ object KaizenParserExtensions {
 
     fun Schema.isOneOfPolymorphicTypes() =
         this.oneOfSchemas?.firstOrNull()?.allOfSchemas?.firstOrNull() != null
+
+    fun Schema.isOneOfSuperInterface() =
+        discriminator != null && discriminator.propertyName != null && oneOfSchemas.isNotEmpty()
 
     fun OpenApi3.basePath(): String =
         servers
