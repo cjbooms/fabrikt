@@ -163,7 +163,7 @@ class JacksonModelGenerator(
         .filterNot { it.schema.isSimpleType() }
         .filterNot { it.schema.isOneOfPolymorphicTypes() }
         .flatMap {
-            val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
+            val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it)
             if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
                 val primaryModel = buildPrimaryModel(api, it, properties, schemas)
                 val inlinedModels = buildInLinedModels(properties, it, it.schema.getDocumentUrl())
@@ -267,7 +267,7 @@ class JacksonModelGenerator(
         } else {
             when (it) {
                 is PropertyInfo.ObjectInlinedField -> {
-                    val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo.schema)
+                    val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo)
                     val currentModel = standardDataClass(
                         it.name.toModelClassName(enclosingModelName),
                         it.name,
@@ -289,7 +289,7 @@ class JacksonModelGenerator(
                             standardDataClass(
                                 modelName = if (it.schema.isInlinedTypedAdditionalProperties()) it.schema.toMapValueClassName() else it.schema.toModelClassName(),
                                 schemaName = it.name,
-                                properties = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo.schema),
+                                properties = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo),
                                 extensions = it.schema.extensions,
                                 oneOfInterfaces = emptySet(),
                             ),
@@ -309,7 +309,7 @@ class JacksonModelGenerator(
                     it.schema.itemsSchema.let { items ->
                         when {
                             items.isInlinedObjectDefinition() ->
-                                items.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo.schema).let { props ->
+                                items.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo).let { props ->
                                     buildInLinedModels(
                                         topLevelProperties = props,
                                         enclosingSchemaInfo = enclosingSchemaInfo,

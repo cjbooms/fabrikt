@@ -46,13 +46,20 @@ data class ObjectPostApplicationJsonRequest(
     @param:JsonProperty("prop2")
     @get:JsonProperty("prop2")
     @get:Valid
-    val prop2: RequestBodyProp2? = null
+    val prop2: ObjectPostApplicationJsonRequestProp2? = null
+)
+
+data class ObjectPostApplicationJsonRequestInnerProp(
+    @param:JsonProperty("inner_inner_prop")
+    @get:JsonProperty("inner_inner_prop")
+    val innerInnerProp: Int? = null
 )
 
 data class ObjectPostApplicationJsonRequestProp2(
     @param:JsonProperty("inner_prop")
     @get:JsonProperty("inner_prop")
-    val innerProp: Int? = null
+    @get:Valid
+    val innerProp: ObjectPostApplicationJsonRequestInnerProp? = null
 )
 
 data class ObjectPostPParameter(
@@ -62,7 +69,7 @@ data class ObjectPostPParameter(
     @param:JsonProperty("prop2")
     @get:JsonProperty("prop2")
     @get:Valid
-    val prop2: ParametersProp2? = null
+    val prop2: ObjectPostPParameterProp2? = null
 )
 
 data class ObjectPostPParameterProp2(

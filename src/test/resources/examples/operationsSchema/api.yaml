@@ -2,7 +2,7 @@ openapi: 3.0.0
 paths:
   /simple:
     parameters:
-      - pathp:
+      - path_p:
         name: path_p
         in: query
         schema:
@@ -61,7 +61,10 @@ paths:
                   type: object
                   properties:
                     inner_prop:
-                      type: integer
+                      type: object
+                      properties:
+                        inner_inner_prop:
+                          type: integer
       responses:
         200:
           {}
