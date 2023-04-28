@@ -11,9 +11,11 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.logging.Logger
 
-data class SchemaInfo(val name: String, val schema: Schema, private val enclosingName: String = "") {
-    val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, name, enclosingName)
-}
+data class SchemaInfo(
+    val name: String,
+    val schema: Schema,
+    val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, name, ""),
+)
 
 data class SourceApi(
     private val rawApiSpec: String,
@@ -63,20 +65,20 @@ data class SourceApi(
         val operationResponses = mutableListOf<Pair<String, Schema>>()
         val operationParameters = mutableListOf<Pair<String, Schema>>()
         openApi3.paths.forEach { (pathName, path) ->
-            pathParameters += path.parameters.map { "$pathName-${it.name}-Parameter" to it.schema }
+            pathParameters += path.parameters.map { "$pathName-${it.name}" to it.schema }
             path.operations.forEach { (operationName, operation) ->
-                operationsRequests += operation.requestBody.contentMediaTypes.map { "$pathName-$operationName-${it.key}-Request" to it.value.schema }
+                operationsRequests += operation.requestBody.contentMediaTypes.map { "$pathName-$operationName-${it.key}" to it.value.schema }
                 operation.responses.forEach { (responseName, response) ->
-                    operationResponses += response.contentMediaTypes.map { "$pathName-$operationName-$responseName-${it.key}-Response" to it.value.schema }
+                    operationResponses += response.contentMediaTypes.map { "$pathName-$operationName-$responseName-${it.key}" to it.value.schema }
                 }
-                operationParameters += operation.parameters.map { "$pathName-$operationName-${it.name}-Parameter" to it.schema }
+                operationParameters += operation.parameters.map { "$pathName-$operationName-${it.name}" to it.schema }
             }
         }
         val pathSchemaInfos = (pathParameters + operationsRequests + operationResponses + operationParameters).map { (key, schema) ->
-            SchemaInfo(key, schema, key.pascalCase())
+            val typeInfo = KotlinTypeInfo.from(schema, key, key.pascalCase())
+            SchemaInfo(typeInfo.generatedModelClassName ?: key, schema, typeInfo)
         }
 
-        println()
         allSchemas = componentSchemaInfos + pathSchemaInfos
     }
 

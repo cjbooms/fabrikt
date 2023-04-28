@@ -65,12 +65,13 @@ class MicronautControllerInterfaceGenerator(
 
     override fun buildFunction(
         path: Path,
+        resource: String,
         op: Operation,
         verb: String,
     ): FunSpec {
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = MicronautImports.RESPONSE.parameterizedBy(op.happyPathResponse(packages.base))
-        val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
+        val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList(), resource, verb)
         val globalSecurity = this.api.openApi3.securityRequirements.securitySupport()
 
         // Main method builder

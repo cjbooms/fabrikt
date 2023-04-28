@@ -1,7 +1,7 @@
 package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.GeneratorUtils
+import com.cjbooms.fabrikt.generators.GeneratorUtils.filterOverrides
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaTypeKey
 import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
@@ -54,10 +54,15 @@ object ClientGeneratorUtils {
 
     fun enhancedClientName(resourceName: String) = "$resourceName${ClientType.ENHANCED_CLIENT_SUFFIX}"
 
-    fun deriveClientParameters(path: Path, operation: Operation, basePackage: String): List<IncomingParameter> {
+    fun deriveClientParameters(path: Path, pathName: String, operation: Operation, operationName: String, basePackage: String): List<IncomingParameter> {
         fun needsAcceptHeaderParameter(path: Path, operation: Operation): Boolean {
-            val hasAcceptParameter = GeneratorUtils.mergeParameters(path.parameters, operation.parameters)
-                .any { parameter -> parameter.`in` == "header" && parameter.name.equals(ACCEPT_HEADER_NAME, ignoreCase = true) }
+            val hasAcceptParameter = (path.parameters.filterOverrides(operation.parameters) + operation.parameters)
+                .any { parameter ->
+                    parameter.`in` == "header" && parameter.name.equals(
+                        ACCEPT_HEADER_NAME,
+                        ignoreCase = true
+                    )
+                }
             return operation.hasMultipleContentMediaTypes() == true && !hasAcceptParameter
         }
 
@@ -80,6 +85,8 @@ object ClientGeneratorUtils {
             basePackage,
             path.parameters,
             extra,
+            pathName,
+            operationName,
         )
     }
 

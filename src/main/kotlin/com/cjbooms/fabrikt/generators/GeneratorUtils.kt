@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.generators.GeneratorUtils.filterOverrides
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.IncomingParameter
@@ -77,8 +78,8 @@ object GeneratorUtils {
     fun RequestBody.toBodyRequestSchema(): List<Schema> =
         listOfNotNull(this.getPrimaryContentMediaType()?.value?.schema)
 
-    fun mergeParameters(path: List<Parameter>, operation: List<Parameter>): List<Parameter> =
-        path.filter { pp -> !operation.any { op -> pp.name == op.name && pp.`in` == op.`in` } } + operation
+    fun List<Parameter>.filterOverrides(other: List<Parameter>): List<Parameter> =
+        filter { pp -> !other.any { op -> pp.name == op.name && pp.`in` == op.`in` } }
 
     fun Operation.toKdoc(parameters: List<IncomingParameter>): CodeBlock {
         val kdoc = CodeBlock.builder().add("${this.summary.orEmpty()}\n${this.description.orEmpty()}\n")
@@ -154,6 +155,8 @@ object GeneratorUtils {
         basePackage: String,
         pathParameters: List<Parameter>,
         extraParameters: List<IncomingParameter>,
+        pathName: String,
+        operationName: String,
     ): List<IncomingParameter> {
 
         val bodies = requestBody.contentMediaTypes.values
@@ -166,17 +169,36 @@ object GeneratorUtils {
                 )
             }
 
-        val parameters = mergeParameters(pathParameters, parameters)
+        val pathParametersResult = pathParameters.filterOverrides(parameters).map {
+            val typeInfo = if (it.schema.type == "object") {
+                KotlinTypeInfo.from(it.schema, enclosingName = "$pathName-${it.name}")
+            } else {
+                KotlinTypeInfo.from(it.schema)
+            }
+            RequestParameter(
+                it.name,
+                it.description,
+                toModelType(basePackage, typeInfo, isNullable(it)),
+                it
+            )
+        }
+
+        val opParametersResult = parameters
             .map {
+                val typeInfo = if (it.schema.type == "object") {
+                    KotlinTypeInfo.from(it.schema, enclosingName = "$pathName-$operationName-${it.name}")
+                } else {
+                    KotlinTypeInfo.from(it.schema)
+                }
                 RequestParameter(
                     it.name,
                     it.description,
-                    toModelType(basePackage, KotlinTypeInfo.from(it.schema), isNullable(it)),
+                    toModelType(basePackage, typeInfo, isNullable(it)),
                     it
                 )
             }
-            .sortedBy { it.type.isNullable }
 
+        val parameters = (pathParametersResult + opParametersResult).sortedBy { it.type.isNullable }
         return detectAndAvoidNameClashes(bodies + parameters + extraParameters)
     }
 

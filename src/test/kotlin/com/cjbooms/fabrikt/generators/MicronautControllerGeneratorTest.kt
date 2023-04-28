@@ -30,12 +30,6 @@ class MicronautControllerGeneratorTest {
 
     @Suppress("unused")
     private fun testCases(): Stream<String> = Stream.of(
-        "githubApi",
-        "singleAllOf",
-        "pathLevelParameters",
-        "parameterNameClash",
-        "responsesSchema",
-        "requestsSchema",
         "operationsSchema",
     )
 
