@@ -1,8 +1,10 @@
 package examples.operationsSchema.controllers
 
+import examples.operationsSchema.models.ArrayPostApplicationJsonRequestBody
+import examples.operationsSchema.models.EnumPostApplicationJsonRequestBody
+import examples.operationsSchema.models.EnumPostPParameters
+import examples.operationsSchema.models.ObjectPostApplicationJsonRequestBody
 import examples.operationsSchema.models.ObjectPostPParameters
-import examples.operationsSchema.models.Parameters
-import examples.operationsSchema.models.RequestBody
 import examples.operationsSchema.models.SimplePathPParameters
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
@@ -48,10 +50,10 @@ interface EnumController {
     @Consumes(value = ["application/json"])
     fun post(
         @Body @Valid
-        requestBody: RequestBody,
-        @QueryValue(value = "p") p: Parameters?
-    ):
-            HttpResponse<Unit>
+        requestBody: EnumPostApplicationJsonRequestBody,
+        @QueryValue(value = "p")
+        p: EnumPostPParameters?
+    ): HttpResponse<Unit>
 }
 
 @Controller
@@ -66,8 +68,11 @@ interface ObjectController {
     @Consumes(value = ["application/json"])
     fun post(
         @Body @Valid
-        requestBody: RequestBody,
-        @Valid @QueryValue(value = "p")
+        requestBody: ObjectPostApplicationJsonRequestBody,
+        @Valid @QueryValue(
+            value =
+            "p"
+        )
         p: ObjectPostPParameters?
     ): HttpResponse<Unit>
 }
@@ -84,8 +89,9 @@ interface ArrayController {
     @Consumes(value = ["application/json"])
     fun post(
         @Body @Valid
-        requestBody: List<RequestBody>,
-        @Valid @QueryValue(value = "p")
+        requestBody: List<ArrayPostApplicationJsonRequestBody>,
+        @Valid
+        @QueryValue(value = "p")
         p: List<Int>?
     ): HttpResponse<Unit>
 }

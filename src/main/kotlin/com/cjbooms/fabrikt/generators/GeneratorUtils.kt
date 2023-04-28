@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.IncomingParameter
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.RequestParameter
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
@@ -159,18 +160,24 @@ object GeneratorUtils {
         operationName: String,
     ): List<IncomingParameter> {
 
-        val bodies = requestBody.contentMediaTypes.values
-            .map {
+        val bodies = requestBody.contentMediaTypes
+            .map { (key, value) ->
+                val schema = value.schema
+                val typeInfo = if (schema.name == null) {
+                    KotlinTypeInfo.from(schema, enclosingName = "$pathName-$operationName-${key}")
+                } else {
+                    KotlinTypeInfo.from(schema)
+                }
                 BodyParameter(
-                    it.schema.safeName().toKotlinParameterName().ifEmpty { it.schema.toVarName() },
+                    schema.safeName().toKotlinParameterName().ifEmpty { schema.toVarName() },
                     requestBody.description,
-                    toModelType(basePackage, KotlinTypeInfo.from(it.schema)),
-                    it.schema
+                    toModelType(basePackage, typeInfo),
+                    schema
                 )
             }
 
         val pathParametersResult = pathParameters.filterOverrides(parameters).map {
-            val typeInfo = if (it.schema.type == "object") {
+            val typeInfo = if (!it.schema.isSimpleType()) {
                 KotlinTypeInfo.from(it.schema, enclosingName = "$pathName-${it.name}")
             } else {
                 KotlinTypeInfo.from(it.schema)
@@ -185,7 +192,7 @@ object GeneratorUtils {
 
         val opParametersResult = parameters
             .map {
-                val typeInfo = if (it.schema.type == "object") {
+                val typeInfo = if (!it.schema.isSimpleType()) {
                     KotlinTypeInfo.from(it.schema, enclosingName = "$pathName-$operationName-${it.name}")
                 } else {
                     KotlinTypeInfo.from(it.schema)
