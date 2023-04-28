@@ -4,6 +4,7 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType
 import com.cjbooms.fabrikt.model.PropertyInfo
+import com.cjbooms.fabrikt.util.NormalisedString.pascalCase
 import com.cjbooms.fabrikt.util.NormalisedString.toMapValueClassName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.jsonoverlay.Overlay
@@ -178,16 +179,24 @@ object KaizenParserExtensions {
 
     fun Schema.hasNoDiscriminator(): Boolean = this.discriminator.propertyName == null
 
-    fun Schema.safeName(): String =
-        when {
-            isOneOfPolymorphicTypes() -> this.oneOfSchemas.first().allOfSchemas.first().safeName()
-            name != null -> name
-            else -> Overlay.of(this).pathFromRoot
+    fun Schema.safeName(): String {
+        if (isOneOfPolymorphicTypes())
+            return this.oneOfSchemas.first().allOfSchemas.first().safeName()
+        if (name != null)
+            return name
+
+        val pathFromRoot = Overlay.of(this).pathFromRoot
+        return if (pathFromRoot.startsWith("/paths")) {
+            // TODO: nicer name
+            return pathFromRoot.pascalCase()
+        } else {
+            pathFromRoot
                 .splitToSequence("/")
                 .filterNot { invalidNames.contains(it) }
                 .filter { it.toIntOrNull() == null } // Ignore numeric-identifiers path-parts in: allOf / oneOf / anyOf
                 .last()
         }
+    }
 
     fun Schema.safeType(): String? =
         when {
