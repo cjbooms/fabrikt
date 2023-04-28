@@ -10,8 +10,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.logging.Logger
 
-data class SchemaInfo(val name: String, val schema: Schema) {
-    val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, name)
+data class SchemaInfo(val name: String, val schema: Schema, private val enclosingName: String = "") {
+    val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, name, enclosingName)
 }
 
 data class SourceApi(
@@ -53,6 +53,9 @@ data class SourceApi(
                     response.key to content.value.schema
                 }
             }
+        val componentSchemaInfos = (componentSchemas + componentParameters + componentRequests + componentResponses).map { (key, schema) ->
+            SchemaInfo(key, schema)
+        }
 
         val pathParameters = mutableListOf<Pair<String, Schema>>()
         val operationsRequests = mutableListOf<Pair<String, Schema>>()
@@ -66,11 +69,12 @@ data class SourceApi(
                 operationParameters += operation.parameters.map { "TODOParam$pathName$operationName" to it.schema }
             }
         }
+        val pathSchemaInfos = (pathParameters + operationsRequests + operationResponses + operationParameters).map { (key, schema) ->
+            SchemaInfo(key, schema, key)
+        }
 
         println()
-        allSchemas = ( componentSchemas + componentParameters + componentRequests + componentResponses + pathParameters + operationsRequests + operationResponses + operationParameters).map { (key, schema) ->
-            SchemaInfo(key, schema)
-        }
+        allSchemas = componentSchemaInfos + pathSchemaInfos
     }
 
     private fun validateSchemaObjects(api: OpenApi3): List<ValidationError> {

@@ -165,7 +165,7 @@ class JacksonModelGenerator(
             val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
             if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
                 val primaryModel = buildPrimaryModel(api, it, properties, schemas)
-                val inlinedModels = buildInLinedModels(properties, it.schema, it.schema.getDocumentUrl())
+                val inlinedModels = buildInLinedModels(properties, it, it.schema.getDocumentUrl())
                 listOf(primaryModel) + inlinedModels
             } else {
                 emptyList()
@@ -256,17 +256,17 @@ class JacksonModelGenerator(
 
     private fun buildInLinedModels(
         topLevelProperties: Collection<PropertyInfo>,
-        enclosingSchema: Schema,
+        enclosingSchemaInfo: SchemaInfo,
         apiDocUrl: String,
     ): List<TypeSpec> = topLevelProperties.flatMap {
-        val enclosingModelName = enclosingSchema.toModelClassName()
+        val enclosingModelName = enclosingSchemaInfo.name
         if (it.schema.isInExternalDocument(apiDocUrl)) {
             it.schema.captureMissingExternalSchemas(apiDocUrl)
             emptySet()
         } else {
             when (it) {
                 is PropertyInfo.ObjectInlinedField -> {
-                    val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
+                    val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo.schema)
                     val currentModel = standardDataClass(
                         it.name.toModelClassName(enclosingModelName),
                         it.name,
@@ -274,7 +274,7 @@ class JacksonModelGenerator(
                         it.schema.extensions,
                         oneOfInterfaces = emptySet(),
                     )
-                    val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
+                    val inlinedModels = buildInLinedModels(props, enclosingSchemaInfo, apiDocUrl)
                     inlinedModels + currentModel
                 }
 
@@ -288,7 +288,7 @@ class JacksonModelGenerator(
                             standardDataClass(
                                 modelName = if (it.schema.isInlinedTypedAdditionalProperties()) it.schema.toMapValueClassName() else it.schema.toModelClassName(),
                                 schemaName = it.name,
-                                properties = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema),
+                                properties = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo.schema),
                                 extensions = it.schema.extensions,
                                 oneOfInterfaces = emptySet(),
                             ),
@@ -308,10 +308,10 @@ class JacksonModelGenerator(
                     it.schema.itemsSchema.let { items ->
                         when {
                             items.isInlinedObjectDefinition() ->
-                                items.topLevelProperties(HTTP_SETTINGS, enclosingSchema).let { props ->
+                                items.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo.schema).let { props ->
                                     buildInLinedModels(
                                         topLevelProperties = props,
-                                        enclosingSchema = enclosingSchema,
+                                        enclosingSchemaInfo = enclosingSchemaInfo,
                                         apiDocUrl = apiDocUrl,
                                     ) + standardDataClass(
                                         modelName = it.name.toModelClassName(enclosingModelName),
