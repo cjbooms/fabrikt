@@ -1,6 +1,15 @@
 openapi: 3.0.0
 paths:
   /simple:
+    parameters:
+      - pathp:
+        name: pathp
+        in: query
+        schema:
+          type: object
+          properties:
+            a:
+              type: string
     post:
       requestBody:
         content:

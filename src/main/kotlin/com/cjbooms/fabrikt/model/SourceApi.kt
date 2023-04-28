@@ -39,20 +39,36 @@ data class SourceApi(
         validateSchemaObjects(openApi3).let {
             if (it.isNotEmpty()) throw ParameterException("Invalid models or api file:\n${it.joinToString("\n\t")}")
         }
-        val globalSchemas = openApi3.schemas.entries.map { it.key to it.value }
-        val globalParameters = openApi3.parameters.entries.map { it.key to it.value.schema }
-        val globalRequests = openApi3.requestBodies.entries.flatMap {  request ->
+
+        val componentSchemas = openApi3.schemas.entries.map { it.key to it.value }
+        val componentParameters = openApi3.parameters.entries.map { it.key to it.value.schema }
+        val componentRequests = openApi3.requestBodies.entries.flatMap {  request ->
             request.value.contentMediaTypes.entries.map { content ->
                 request.key to content.value.schema
             }
         }
-        val globalResponses =
+        val componentResponses =
             openApi3.responses.entries.flatMap {  response ->
                 response.value.contentMediaTypes.entries.map { content ->
                     response.key to content.value.schema
                 }
             }
-        allSchemas = (globalSchemas + globalParameters + globalRequests + globalResponses).map { (key, schema) ->
+
+        val pathParameters = mutableListOf<Pair<String, Schema>>()
+        val operationsRequests = mutableListOf<Pair<String, Schema>>()
+        val operationResponses = mutableListOf<Pair<String, Schema>>()
+        val operationParameters = mutableListOf<Pair<String, Schema>>()
+        openApi3.paths.forEach { (pathName, path) ->
+            pathParameters += path.parameters.map { "TODOParam$pathName" to it.schema }
+            path.operations.forEach { (operationName, operation) ->
+                operationsRequests += operation.requestBody.contentMediaTypes.values.map { "TODORequest$pathName$operationName" to it.schema }
+                operationResponses += operation.responses.values.flatMap { it.contentMediaTypes.values }.map { "TODOResponse$pathName$operationName" to it.schema }
+                operationParameters += operation.parameters.map { "TODOParam$pathName$operationName" to it.schema }
+            }
+        }
+
+        println()
+        allSchemas = ( componentSchemas + componentParameters + componentRequests + componentResponses + pathParameters + operationsRequests + operationResponses + operationParameters).map { (key, schema) ->
             SchemaInfo(key, schema)
         }
     }
