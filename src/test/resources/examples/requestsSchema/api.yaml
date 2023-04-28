@@ -1,0 +1,22 @@
+openapi: 3.0.0
+paths:
+  /foo:
+    post:
+      requestBody:
+        $ref: '#/components/requestBodies/DummyRequest'
+      responses:
+        200:
+          {}
+components:
+  requestBodies:
+    DummyRequest:
+      description: Request body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              age:
+                type: integer

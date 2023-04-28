@@ -34,6 +34,8 @@ class MicronautControllerGeneratorTest {
         "singleAllOf",
         "pathLevelParameters",
         "parameterNameClash",
+        "responsesSchema",
+        "requestsSchema",
     )
 
     private fun setupGithubApiTestEnv() {

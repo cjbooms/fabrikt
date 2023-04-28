@@ -170,7 +170,7 @@ class MicronautControllerInterfaceGenerator(
                     .builder(MicronautImports.PRODUCES)
                     .addMember(
                         "value = %L",
-                        produces.joinToString(
+                        produces.distinct().joinToString(
                             prefix = "[",
                             postfix = "]",
                             separator = ", ",

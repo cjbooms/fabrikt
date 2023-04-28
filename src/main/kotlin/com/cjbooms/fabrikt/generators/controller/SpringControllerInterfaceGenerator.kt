@@ -128,14 +128,16 @@ class SpringControllerInterfaceGenerator(
                 .addMember("value = [%S]", path)
                 .addMember(
                     "produces = %L",
-                    produces.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" }),
+                    produces.distinct()
+                        .joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" }),
                 )
                 .addMember("method = [RequestMethod.%L]", verb.toUpperCase())
 
         if (consumes.isNotEmpty()) {
             funcAnnotation.addMember(
                 "consumes = %L",
-                consumes.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" }),
+                consumes.distinct()
+                    .joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" }),
             )
         }
 

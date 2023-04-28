@@ -176,8 +176,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/FirstModel"
-
+            type: string
 
   schemas:
     QueryResult:

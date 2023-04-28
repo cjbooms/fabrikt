@@ -158,4 +158,44 @@
   "allPublicMethods" : true,
   "allDeclaredFields" : true,
   "allPublicFields" : true
+}, {
+  "name" : "examples.githubApi.models.BulkEventGenerationBody",
+  "allDeclaredConstructors" : true,
+  "allPublicConstructors" : true,
+  "allDeclaredMethods" : true,
+  "allPublicMethods" : true,
+  "allDeclaredFields" : true,
+  "allPublicFields" : true
+}, {
+  "name" : "examples.githubApi.models.ContributorBody",
+  "allDeclaredConstructors" : true,
+  "allPublicConstructors" : true,
+  "allDeclaredMethods" : true,
+  "allPublicMethods" : true,
+  "allDeclaredFields" : true,
+  "allPublicFields" : true
+}, {
+  "name" : "examples.githubApi.models.OrganisationBody",
+  "allDeclaredConstructors" : true,
+  "allPublicConstructors" : true,
+  "allDeclaredMethods" : true,
+  "allPublicMethods" : true,
+  "allDeclaredFields" : true,
+  "allPublicFields" : true
+}, {
+  "name" : "examples.githubApi.models.RepositoryBody",
+  "allDeclaredConstructors" : true,
+  "allPublicConstructors" : true,
+  "allDeclaredMethods" : true,
+  "allPublicMethods" : true,
+  "allDeclaredFields" : true,
+  "allPublicFields" : true
+}, {
+  "name" : "examples.githubApi.models.PullRequestBody",
+  "allDeclaredConstructors" : true,
+  "allPublicConstructors" : true,
+  "allDeclaredMethods" : true,
+  "allPublicMethods" : true,
+  "allDeclaredFields" : true,
+  "allPublicFields" : true
 } ]
