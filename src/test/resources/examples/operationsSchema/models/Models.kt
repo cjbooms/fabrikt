@@ -7,13 +7,23 @@ import kotlin.Int
 import kotlin.String
 import kotlin.collections.Map
 
-data class `TODOParam/objectpostProp2`(
-    @param:JsonProperty("inner_prop")
-    @get:JsonProperty("inner_prop")
-    val innerProp: Int? = null
-)
+enum class EnumPostApplicationJsonRequestRequestBody(
+    @JsonValue
+    val value: String
+) {
+    A("A"),
 
-enum class TODOParamEnumpostParameters(
+    B("B");
+
+    companion object {
+        private val mapping: Map<String, EnumPostApplicationJsonRequestRequestBody> =
+            values().associateBy(EnumPostApplicationJsonRequestRequestBody::value)
+
+        fun fromValue(value: String): EnumPostApplicationJsonRequestRequestBody? = mapping[value]
+    }
+}
+
+enum class EnumPostPParameterParameters(
     @JsonValue
     val value: String
 ) {
@@ -22,14 +32,30 @@ enum class TODOParamEnumpostParameters(
     Y("Y");
 
     companion object {
-        private val mapping: Map<String, TODOParamEnumpostParameters> =
-            values().associateBy(TODOParamEnumpostParameters::value)
+        private val mapping: Map<String, EnumPostPParameterParameters> =
+            values().associateBy(EnumPostPParameterParameters::value)
 
-        fun fromValue(value: String): TODOParamEnumpostParameters? = mapping[value]
+        fun fromValue(value: String): EnumPostPParameterParameters? = mapping[value]
     }
 }
 
-data class TODOParamObjectpost(
+data class ObjectPostApplicationJsonRequest(
+    @param:JsonProperty("prop1")
+    @get:JsonProperty("prop1")
+    val prop1: Int? = null,
+    @param:JsonProperty("prop2")
+    @get:JsonProperty("prop2")
+    @get:Valid
+    val prop2: RequestBodyProp2? = null
+)
+
+data class ObjectPostApplicationJsonRequestProp2(
+    @param:JsonProperty("inner_prop")
+    @get:JsonProperty("inner_prop")
+    val innerProp: Int? = null
+)
+
+data class ObjectPostPParameter(
     @param:JsonProperty("prop1")
     @get:JsonProperty("prop1")
     val prop1: Int? = null,
@@ -39,40 +65,14 @@ data class TODOParamObjectpost(
     val prop2: ParametersProp2? = null
 )
 
-data class TODOParamSimple(
-    @param:JsonProperty("a")
-    @get:JsonProperty("a")
-    val a: String? = null
-)
-
-data class `TODORequest/objectpostProp2`(
+data class ObjectPostPParameterProp2(
     @param:JsonProperty("inner_prop")
     @get:JsonProperty("inner_prop")
     val innerProp: Int? = null
 )
 
-enum class TODORequestEnumpostRequestBody(
-    @JsonValue
-    val value: String
-) {
-    A("A"),
-
-    B("B");
-
-    companion object {
-        private val mapping: Map<String, TODORequestEnumpostRequestBody> =
-            values().associateBy(TODORequestEnumpostRequestBody::value)
-
-        fun fromValue(value: String): TODORequestEnumpostRequestBody? = mapping[value]
-    }
-}
-
-data class TODORequestObjectpost(
-    @param:JsonProperty("prop1")
-    @get:JsonProperty("prop1")
-    val prop1: Int? = null,
-    @param:JsonProperty("prop2")
-    @get:JsonProperty("prop2")
-    @get:Valid
-    val prop2: RequestBodyProp2? = null
+data class SimplePathPParameter(
+    @param:JsonProperty("a")
+    @get:JsonProperty("a")
+    val a: String? = null
 )

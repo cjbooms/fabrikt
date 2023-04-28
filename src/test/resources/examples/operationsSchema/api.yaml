@@ -3,7 +3,7 @@ paths:
   /simple:
     parameters:
       - pathp:
-        name: pathp
+        name: path_p
         in: query
         schema:
           type: object

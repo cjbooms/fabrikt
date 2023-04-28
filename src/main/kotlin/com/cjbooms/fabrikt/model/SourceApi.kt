@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.model
 
 import com.beust.jcommander.ParameterException
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
+import com.cjbooms.fabrikt.util.NormalisedString.pascalCase
 import com.cjbooms.fabrikt.util.YamlUtils
 import com.cjbooms.fabrikt.validation.ValidationError
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
@@ -62,15 +63,17 @@ data class SourceApi(
         val operationResponses = mutableListOf<Pair<String, Schema>>()
         val operationParameters = mutableListOf<Pair<String, Schema>>()
         openApi3.paths.forEach { (pathName, path) ->
-            pathParameters += path.parameters.map { "TODOParam$pathName" to it.schema }
+            pathParameters += path.parameters.map { "$pathName-${it.name}-Parameter" to it.schema }
             path.operations.forEach { (operationName, operation) ->
-                operationsRequests += operation.requestBody.contentMediaTypes.values.map { "TODORequest$pathName$operationName" to it.schema }
-                operationResponses += operation.responses.values.flatMap { it.contentMediaTypes.values }.map { "TODOResponse$pathName$operationName" to it.schema }
-                operationParameters += operation.parameters.map { "TODOParam$pathName$operationName" to it.schema }
+                operationsRequests += operation.requestBody.contentMediaTypes.map { "$pathName-$operationName-${it.key}-Request" to it.value.schema }
+                operation.responses.forEach { (responseName, response) ->
+                    operationResponses += response.contentMediaTypes.map { "$pathName-$operationName-$responseName-${it.key}-Response" to it.value.schema }
+                }
+                operationParameters += operation.parameters.map { "$pathName-$operationName-${it.name}-Parameter" to it.schema }
             }
         }
         val pathSchemaInfos = (pathParameters + operationsRequests + operationResponses + operationParameters).map { (key, schema) ->
-            SchemaInfo(key, schema, key)
+            SchemaInfo(key, schema, key.pascalCase())
         }
 
         println()
