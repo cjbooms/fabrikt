@@ -28,6 +28,7 @@ import com.cjbooms.fabrikt.model.PropertyInfo.Companion.topLevelProperties
 import com.cjbooms.fabrikt.model.SchemaInfo
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getDiscriminatorForInLinedObjectUnderAllOf
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSchemaRefName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
@@ -179,7 +180,7 @@ class JacksonModelGenerator(
         allSchemas: List<SchemaInfo>,
     ): TypeSpec {
         val modelName = schemaInfo.name.toModelClassName()
-        val schemaName = schemaInfo.name
+        val schemaName = schemaInfo.schema.getSchemaRefName()
         return when {
             schemaInfo.schema.isOneOfSuperInterface() && SEALED_INTERFACES_FOR_ONE_OF in options -> oneOfSuperInterface(
                 modelName,
@@ -462,7 +463,6 @@ class JacksonModelGenerator(
 
         if (!generateObject) {
             filteredProperties.addToClass(
-            modelName = modelName,
             schemaName = schemaName,
             classBuilder = classBuilder,
             classType = ClassSettings(ClassSettings.PolymorphyType.NONE, extensions.hasJsonMergePatchExtension),
@@ -483,7 +483,6 @@ class JacksonModelGenerator(
     ): TypeSpec = with(FunSpec.constructorBuilder()) {
         TypeSpec.classBuilder(generatedType(packages.base, modelName))
             .buildPolymorphicSubType(
-                modelName,
                 schemaName,
                 properties.filter(PropertyInfo::isInherited),
                 superType,
@@ -598,7 +597,6 @@ class JacksonModelGenerator(
             .addMicronautReflectionAnnotation()
 
         properties.addToClass(
-            modelName,
             schemaName,
             constructorBuilder,
             this,
@@ -616,10 +614,9 @@ class JacksonModelGenerator(
         extensions: Map<String, Any>,
         oneOfSuperInterfaces: Set<SchemaInfo>,
     ): TypeSpec = TypeSpec.classBuilder(generatedType(packages.base, modelName))
-        .buildPolymorphicSubType(modelName, schemaName, properties, superType, extensions, oneOfSuperInterfaces).build()
+        .buildPolymorphicSubType(schemaName, properties, superType, extensions, oneOfSuperInterfaces).build()
 
     private fun TypeSpec.Builder.buildPolymorphicSubType(
-        modelName: String,
         schemaName: String,
         allProperties: Collection<PropertyInfo>,
         superType: SchemaInfo,
@@ -652,7 +649,6 @@ class JacksonModelGenerator(
         } ?: allProperties
 
         properties.addToClass(
-            modelName,
             schemaName,
             constructorBuilder,
             this,
@@ -662,7 +658,6 @@ class JacksonModelGenerator(
     }
 
     private fun Collection<PropertyInfo>.addToClass(
-        modelName: String,
         schemaName: String,
         constructorBuilder: FunSpec.Builder = FunSpec.constructorBuilder(),
         classBuilder: TypeSpec.Builder,
@@ -670,7 +665,6 @@ class JacksonModelGenerator(
     ): TypeSpec.Builder {
         this.forEach {
             it.addToClass(
-                modelName,
                 schemaName,
                 toModelType(
                     packages.base,
