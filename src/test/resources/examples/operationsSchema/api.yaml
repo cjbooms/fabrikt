@@ -1,0 +1,95 @@
+openapi: 3.0.0
+paths:
+  /simple:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        200:
+          {}
+      parameters:
+        - p:
+          name: p
+          in: query
+          schema:
+            type: integer
+  /enum:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - A
+                - B
+      responses:
+        200:
+          {}
+      parameters:
+        - p:
+          name: p
+          in: query
+          schema:
+            type: string
+            enum:
+              - X
+              - Y
+  /object:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prop1:
+                  type: integer
+                prop2:
+                  type: object
+                  properties:
+                    inner_prop:
+                      type: integer
+      responses:
+        200:
+          {}
+      parameters:
+        - p:
+          name: p
+          in: query
+          schema:
+            type: object
+            properties:
+              prop1:
+                type: integer
+              prop2:
+                type: object
+                properties:
+                  inner_prop:
+                    type: integer
+  /array:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  prop1:
+                    type: string
+      responses:
+        200:
+          {}
+      parameters:
+        - p:
+          name: p
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer

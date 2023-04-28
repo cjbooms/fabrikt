@@ -50,6 +50,7 @@ class ModelGeneratorTest {
         "singleAllOf",
         "responsesSchema",
         "requestsSchema",
+        "operationsSchema",
         "webhook",
         "instantDateTime",
         "singleAllOf",

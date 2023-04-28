@@ -36,6 +36,7 @@ class MicronautControllerGeneratorTest {
         "parameterNameClash",
         "responsesSchema",
         "requestsSchema",
+        "operationsSchema",
     )
 
     private fun setupGithubApiTestEnv() {

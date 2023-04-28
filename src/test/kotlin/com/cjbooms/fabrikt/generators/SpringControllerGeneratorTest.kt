@@ -35,6 +35,7 @@ class SpringControllerGeneratorTest {
         "parameterNameClash",
         "responsesSchema",
         "requestsSchema",
+        "operationsSchema",
     )
 
     private fun setupGithubApiTestEnv() {
