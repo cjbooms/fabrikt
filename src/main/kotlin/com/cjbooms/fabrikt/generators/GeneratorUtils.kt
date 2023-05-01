@@ -9,21 +9,11 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.cjbooms.fabrikt.util.NormalisedString.pascalCase
 import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
-import com.reprezen.kaizen.oasparser.model3.MediaType
-import com.reprezen.kaizen.oasparser.model3.Operation
-import com.reprezen.kaizen.oasparser.model3.Parameter
-import com.reprezen.kaizen.oasparser.model3.RequestBody
-import com.reprezen.kaizen.oasparser.model3.Response
-import com.reprezen.kaizen.oasparser.model3.Schema
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.ParameterSpec
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
 import com.cjbooms.fabrikt.util.capitalized
 import com.cjbooms.fabrikt.util.decapitalized
+import com.reprezen.jsonoverlay.Overlay
+import com.reprezen.kaizen.oasparser.model3.*
+import com.squareup.kotlinpoet.*
 import java.util.function.Predicate
 
 object GeneratorUtils {
@@ -169,10 +159,12 @@ object GeneratorUtils {
 
         val parameters = mergeParameters(pathParameters, parameters)
             .map {
+                // For backwards compatibility, only non-ref parameters get the name suffix.
+                val nameSuffix = if (Overlay.of(it).pathFromRoot.startsWith("/paths")) it.name.pascalCase() else ""
                 RequestParameter(
                     it.name,
                     it.description,
-                    toModelType(basePackage, KotlinTypeInfo.from(it.schema, nameSuffix = it.name.pascalCase()), isNullable(it)),
+                    toModelType(basePackage, KotlinTypeInfo.from(it.schema, nameSuffix = nameSuffix), isNullable(it)),
                     it
                 )
             }

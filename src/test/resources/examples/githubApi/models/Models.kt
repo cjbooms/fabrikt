@@ -8,9 +8,12 @@ import com.fasterxml.jackson.annotation.JsonValue
 import java.net.URI
 import java.time.OffsetDateTime
 import javax.validation.Valid
+import javax.validation.constraints.DecimalMax
+import javax.validation.constraints.DecimalMin
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 import kotlin.Any
+import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
@@ -351,6 +354,33 @@ enum class OrganisationStatus(
         fun fromValue(value: String): OrganisationStatus? = mapping[value]
     }
 }
+
+data class Problem(
+    @param:JsonProperty("type")
+    @get:JsonProperty("type")
+    @get:NotNull
+    val type: URI = URI("about:blank"),
+    @param:JsonProperty("title")
+    @get:JsonProperty("title")
+    val title: String? = null,
+    @param:JsonProperty("status")
+    @get:JsonProperty("status")
+    @get:DecimalMin(
+        value = "100",
+        inclusive = true
+    )
+    @get:DecimalMax(
+        value = "600",
+        inclusive = false
+    )
+    val status: Int? = null,
+    @param:JsonProperty("detail")
+    @get:JsonProperty("detail")
+    val detail: String? = null,
+    @param:JsonProperty("instance")
+    @get:JsonProperty("instance")
+    val instance: URI? = null
+)
 
 data class PullRequest(
     @param:JsonProperty("id")

@@ -10,7 +10,7 @@ import examples.githubApi.models.PullRequest
 import examples.githubApi.models.PullRequestQueryResult
 import examples.githubApi.models.Repository
 import examples.githubApi.models.RepositoryQueryResult
-import examples.githubApi.models.StatusQueryParamStatus
+import examples.githubApi.models.StatusQueryParam
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.annotation.Validated
@@ -135,7 +135,7 @@ interface ContributorsController {
     fun getContributor(
         @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
-        status: StatusQueryParamStatus,
+        status: StatusQueryParam,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
     ): ResponseEntity<Contributor>
@@ -262,7 +262,7 @@ interface OrganisationsController {
     fun getById(
         @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
-        status: StatusQueryParamStatus,
+        status: StatusQueryParam,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
     ): ResponseEntity<Organisation>
@@ -513,7 +513,7 @@ interface RepositoriesController {
     fun getById(
         @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
-        status: StatusQueryParamStatus,
+        status: StatusQueryParam,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
         @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
     ): ResponseEntity<Repository>
