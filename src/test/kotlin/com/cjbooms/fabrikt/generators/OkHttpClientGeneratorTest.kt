@@ -42,7 +42,7 @@ class OkHttpClientGeneratorTest {
         )
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "generate client code: {arguments}")
     @MethodSource("fullApiTestCases")
     fun `correct api simple client is generated from a full API definition`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
@@ -66,7 +66,7 @@ class OkHttpClientGeneratorTest {
         assertThat(simpleClientCode).isEqualTo(expectedClient)
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "generate resilience4j and service code: {arguments}")
     @MethodSource("fullApiTestCases")
     fun `correct api fault-tolerant service client is generated when the resilience4j option is set`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
@@ -86,7 +86,7 @@ class OkHttpClientGeneratorTest {
         assertThat(enhancedClientCode.toSingleFile()).isEqualTo(expectedClientCode)
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "do not generate any code: {arguments}")
     @MethodSource("fullApiTestCases")
     fun `the enhanced client is not generated when no specific options are provided`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
@@ -101,7 +101,7 @@ class OkHttpClientGeneratorTest {
         assertThat(enhancedClientCode).isEqualTo(emptySet<ClientType>())
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "generate http utility code: {arguments}")
     @MethodSource("fullApiTestCases")
     fun `correct http utility libraries are generated`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
