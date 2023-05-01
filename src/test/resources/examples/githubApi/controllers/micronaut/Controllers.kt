@@ -10,7 +10,7 @@ import examples.githubApi.models.PullRequest
 import examples.githubApi.models.PullRequestQueryResult
 import examples.githubApi.models.Repository
 import examples.githubApi.models.RepositoryQueryResult
-import examples.githubApi.models.StatusQueryParam
+import examples.githubApi.models.StatusQueryParamStatus
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Consumes
@@ -120,7 +120,7 @@ interface ContributorsController {
     @Produces(value = ["application/json"])
     fun getContributor(
         @PathVariable(value = "id") id: String,
-        @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParam,
+        @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParamStatus,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @Header(value = "If-None-Match") ifNoneMatch: String?
     ): HttpResponse<Contributor>
@@ -230,7 +230,7 @@ interface OrganisationsController {
     @Produces(value = ["application/json"])
     fun getById(
         @PathVariable(value = "id") id: String,
-        @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParam,
+        @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParamStatus,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @Header(value = "If-None-Match") ifNoneMatch: String?
     ): HttpResponse<Organisation>
@@ -448,7 +448,7 @@ interface RepositoriesController {
     @Produces(value = ["application/json"])
     fun getById(
         @PathVariable(value = "id") id: String,
-        @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParam,
+        @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParamStatus,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @Header(value = "If-None-Match") ifNoneMatch: String?
     ): HttpResponse<Repository>

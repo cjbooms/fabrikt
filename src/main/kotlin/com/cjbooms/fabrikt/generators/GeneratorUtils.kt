@@ -66,7 +66,7 @@ object GeneratorUtils {
     fun String.toKCodeName(): String {
         val delimiters = this.partition(Char::isLetterOrDigit).second.toCharArray().map(Char::toString).toTypedArray()
         return this.splitToSequence(*delimiters)
-            .mapNotNull(String::capitalized)
+            .map(String::capitalized)
             .joinToString("")
             .decapitalized()
     }
@@ -75,7 +75,7 @@ object GeneratorUtils {
      * It resolves the schema for the given API operation. If multiple content medias are found, then it will
      * resolve to the schema reference of the first media type.
      */
-    fun RequestBody.toBodyRequestSchema(): List<Schema> =
+    private fun RequestBody.toBodyRequestSchema(): List<Schema> =
         listOfNotNull(this.getPrimaryContentMediaType()?.value?.schema)
 
     fun mergeParameters(path: List<Parameter>, operation: List<Parameter>): List<Parameter> =
@@ -109,7 +109,7 @@ object GeneratorUtils {
 
     fun functionName(op: Operation, resource: String, verb: String) = op.operationId?.camelCase() ?: "$verb $resource".toKCodeName()
 
-    fun Schema.toVarName() = this.name?.toKCodeName() ?: this.toClassName().simpleName.toKCodeName()
+    private fun Schema.toVarName() = this.name?.toKCodeName() ?: this.toClassName().simpleName.toKCodeName()
 
     private fun Schema.toClassName() = KotlinTypeInfo.from(this).modelKClass.asTypeName()
 
@@ -123,7 +123,7 @@ object GeneratorUtils {
 
     fun Response.hasMultipleContentMediaTypes(): Boolean = this.contentMediaTypes.entries.size > 1
 
-    fun Operation.firstResponse(): Response? = this.getBodyResponses().firstOrNull()
+    private fun Operation.firstResponse(): Response? = this.getBodyResponses().firstOrNull()
 
     fun Operation.getPrimaryContentMediaType(): Map.Entry<String, MediaType>? =
         this.getBodyResponses().map { response -> response.getPrimaryContentMediaType() }.firstOrNull()

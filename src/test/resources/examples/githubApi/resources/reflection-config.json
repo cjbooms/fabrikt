@@ -198,4 +198,12 @@
   "allPublicMethods" : true,
   "allDeclaredFields" : true,
   "allPublicFields" : true
+}, {
+  "name" : "examples.githubApi.models.StatusQueryParamStatus",
+  "allDeclaredConstructors" : true,
+  "allPublicConstructors" : true,
+  "allDeclaredMethods" : true,
+  "allPublicMethods" : true,
+  "allDeclaredFields" : true,
+  "allPublicFields" : true
 } ]

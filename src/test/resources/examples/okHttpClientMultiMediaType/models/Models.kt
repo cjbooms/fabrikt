@@ -101,6 +101,22 @@ enum class ContentType(
     }
 }
 
+enum class ContentTypeAccept(
+    @JsonValue
+    val value: String
+) {
+    APPLICATION_JSON("application/json"),
+
+    APPLICATION_VND_CUSTOM_MEDIA_JSON("application/vnd.custom.media+json");
+
+    companion object {
+        private val mapping: Map<String, ContentTypeAccept> =
+            values().associateBy(ContentTypeAccept::value)
+
+        fun fromValue(value: String): ContentTypeAccept? = mapping[value]
+    }
+}
+
 data class FirstModel(
     @param:JsonProperty("id")
     @get:JsonProperty("id")

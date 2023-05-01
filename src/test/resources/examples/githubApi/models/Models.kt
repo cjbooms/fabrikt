@@ -634,6 +634,24 @@ enum class StatusQueryParam(
     }
 }
 
+enum class StatusQueryParamStatus(
+    @JsonValue
+    val value: String
+) {
+    ACTIVE("active"),
+
+    INACTIVE("inactive"),
+
+    ALL("all");
+
+    companion object {
+        private val mapping: Map<String, StatusQueryParamStatus> =
+            values().associateBy(StatusQueryParamStatus::value)
+
+        fun fromValue(value: String): StatusQueryParamStatus? = mapping[value]
+    }
+}
+
 data class Webhook(
     @param:JsonProperty("url")
     @get:JsonProperty("url")

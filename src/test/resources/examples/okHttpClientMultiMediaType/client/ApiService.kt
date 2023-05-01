@@ -2,7 +2,7 @@ package examples.okHttpClientMultiMediaType.client
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import examples.okHttpClientMultiMediaType.models.ContentType
+import examples.okHttpClientMultiMediaType.models.ContentTypeAccept
 import examples.okHttpClientMultiMediaType.models.QueryResult
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import okhttp3.OkHttpClient
@@ -67,7 +67,7 @@ class ExamplePath2Service(
     fun getExamplePath2(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
-        accept: ContentType? = null,
+        accept: ContentTypeAccept? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
@@ -100,9 +100,9 @@ class MultipleResponseSchemasService(
 
     @Throws(ApiException::class)
     fun getMultipleResponseSchemas(
-        accept: ContentType? = null,
-        additionalHeaders: Map<String, String> =
-            emptyMap()
+        accept: ContentTypeAccept? = null,
+        additionalHeaders: Map<String,
+                String> = emptyMap()
     ): ApiResponse<JsonNode> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getMultipleResponseSchemas(accept, additionalHeaders)

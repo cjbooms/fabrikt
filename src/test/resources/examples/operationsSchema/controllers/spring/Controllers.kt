@@ -1,11 +1,11 @@
 package examples.operationsSchema.controllers
 
-import examples.operationsSchema.models.ArrayPostApplicationJsonRequestBody
-import examples.operationsSchema.models.EnumPostApplicationJsonRequestBody
-import examples.operationsSchema.models.EnumPostPParameters
-import examples.operationsSchema.models.ObjectPostApplicationJsonRequestBody
-import examples.operationsSchema.models.ObjectPostPParameters
-import examples.operationsSchema.models.SimplePathPParameters
+import examples.operationsSchema.models.ArrayPostRequestBody
+import examples.operationsSchema.models.EnumPostParametersP
+import examples.operationsSchema.models.EnumPostRequestBody
+import examples.operationsSchema.models.ObjectPostParametersP
+import examples.operationsSchema.models.ObjectPostRequestBody
+import examples.operationsSchema.models.SimpleParametersPathP
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.annotation.Validated
@@ -26,7 +26,7 @@ interface SimpleController {
     /**
      *
      *
-     * @param requestBody
+     * @param simplePostRequestBody
      * @param pathP
      * @param p
      */
@@ -38,9 +38,9 @@ interface SimpleController {
     )
     fun post(
         @RequestBody @Valid
-        requestBody: String,
+        simplePostRequestBody: String,
         @Valid @RequestParam(value = "path_p", required = false)
-        pathP: SimplePathPParameters?,
+        pathP: SimpleParametersPathP?,
         @RequestParam(value = "p", required = false) p: Int?
     ): ResponseEntity<Unit>
 }
@@ -52,7 +52,7 @@ interface EnumController {
     /**
      *
      *
-     * @param requestBody
+     * @param enumPostRequestBody
      * @param p
      */
     @RequestMapping(
@@ -63,12 +63,11 @@ interface EnumController {
     )
     fun post(
         @RequestBody @Valid
-        requestBody: EnumPostApplicationJsonRequestBody,
+        enumPostRequestBody: EnumPostRequestBody,
         @RequestParam(
-            value =
-            "p",
+            value = "p",
             required = false
-        ) p: EnumPostPParameters?
+        ) p: EnumPostParametersP?
     ): ResponseEntity<Unit>
 }
 
@@ -79,7 +78,7 @@ interface ObjectController {
     /**
      *
      *
-     * @param requestBody
+     * @param objectPostRequestBody
      * @param p
      */
     @RequestMapping(
@@ -90,10 +89,10 @@ interface ObjectController {
     )
     fun post(
         @RequestBody @Valid
-        requestBody: ObjectPostApplicationJsonRequestBody,
+        objectPostRequestBody: ObjectPostRequestBody,
         @Valid
         @RequestParam(value = "p", required = false)
-        p: ObjectPostPParameters?
+        p: ObjectPostParametersP?
     ): ResponseEntity<Unit>
 }
 
@@ -104,7 +103,7 @@ interface ArrayController {
     /**
      *
      *
-     * @param requestBody
+     * @param arrayPostRequestBody
      * @param p
      */
     @RequestMapping(
@@ -115,7 +114,7 @@ interface ArrayController {
     )
     fun post(
         @RequestBody @Valid
-        requestBody: List<ArrayPostApplicationJsonRequestBody>,
+        arrayPostRequestBody: List<ArrayPostRequestBody>,
         @Valid
         @RequestParam(value = "p", required = false)
         p: List<Int>?

@@ -3,7 +3,7 @@ package examples.okHttpClientMultiMediaType.client
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import examples.okHttpClientMultiMediaType.models.ContentType
+import examples.okHttpClientMultiMediaType.models.ContentTypeAccept
 import examples.okHttpClientMultiMediaType.models.QueryResult
 import okhttp3.Headers
 import okhttp3.HttpUrl
@@ -76,7 +76,7 @@ class ExamplePath2Client(
     fun getExamplePath2(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
-        accept: ContentType? = null,
+        accept: ContentTypeAccept? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2"
@@ -114,9 +114,9 @@ class MultipleResponseSchemasClient(
      */
     @Throws(ApiException::class)
     fun getMultipleResponseSchemas(
-        accept: ContentType? = null,
-        additionalHeaders: Map<String, String> =
-            emptyMap()
+        accept: ContentTypeAccept? = null,
+        additionalHeaders: Map<String,
+                String> = emptyMap()
     ): ApiResponse<JsonNode> {
         val httpUrl: HttpUrl = "$baseUrl/multiple-response-schemas"
             .toHttpUrl()

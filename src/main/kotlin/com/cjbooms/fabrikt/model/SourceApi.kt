@@ -60,21 +60,14 @@ data class SourceApi(
             SchemaInfo(key, schema)
         }
 
-        val pathParameters = mutableListOf<Pair<String, Schema>>()
-        val operationsRequests = mutableListOf<Pair<String, Schema>>()
-        val operationResponses = mutableListOf<Pair<String, Schema>>()
-        val operationParameters = mutableListOf<Pair<String, Schema>>()
-        openApi3.paths.forEach { (pathName, path) ->
-            pathParameters += path.parameters.map { it.name to it.schema }
-            path.operations.forEach { (operationName, operation) ->
-                operationsRequests += operation.requestBody.contentMediaTypes.map { "" to it.value.schema }
-                operation.responses.forEach { (responseName, response) ->
-                    operationResponses += response.contentMediaTypes.map { "" to it.value.schema }
-                }
-                operationParameters += operation.parameters.map { it.name to it.schema }
-            }
-        }
+        val pathParameters = openApi3.paths.values.flatMap { it.parameters }.map { it.name to it.schema }
+        val operations = openApi3.paths.values.flatMap { it.operations.values }
+        val operationsRequests = operations.flatMap { it.requestBody.contentMediaTypes.values }.map { "" to it.schema }
+        val operationResponses = operations.flatMap { it.responses.values }.flatMap { it.contentMediaTypes.values }.map { "" to it.schema }
+        val operationParameters = operations.flatMap { it.parameters }.map { it.name to it.schema }
         val pathSchemaInfos = (pathParameters + operationsRequests + operationResponses + operationParameters).mapNotNull { (key, schema) ->
+            if (schema == null)
+                return@mapNotNull null
             val typeInfo = KotlinTypeInfo.from(schema, nameSuffix = key.pascalCase())
             typeInfo.generatedModelClassName?.let { SchemaInfo(it, schema, typeInfo) }
         }
