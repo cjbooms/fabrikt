@@ -67,16 +67,16 @@ data class SourceApi(
         openApi3.paths.forEach { (pathName, path) ->
             pathParameters += path.parameters.map { it.name to it.schema }
             path.operations.forEach { (operationName, operation) ->
-                operationsRequests += operation.requestBody.contentMediaTypes.map { it.key to it.value.schema }
+                operationsRequests += operation.requestBody.contentMediaTypes.map { "" to it.value.schema }
                 operation.responses.forEach { (responseName, response) ->
-                    operationResponses += response.contentMediaTypes.map { it.key to it.value.schema }
+                    operationResponses += response.contentMediaTypes.map { "" to it.value.schema }
                 }
                 operationParameters += operation.parameters.map { it.name to it.schema }
             }
         }
-        val pathSchemaInfos = (pathParameters + operationsRequests + operationResponses + operationParameters).map { (key, schema) ->
+        val pathSchemaInfos = (pathParameters + operationsRequests + operationResponses + operationParameters).mapNotNull { (key, schema) ->
             val typeInfo = KotlinTypeInfo.from(schema, nameSuffix = key.pascalCase())
-            SchemaInfo(typeInfo.generatedModelClassName ?: "", schema, typeInfo)
+            typeInfo.generatedModelClassName?.let { SchemaInfo(it, schema, typeInfo) }
         }
 
         allSchemas = componentSchemaInfos + pathSchemaInfos

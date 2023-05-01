@@ -23,7 +23,7 @@ enum class EnumPostParametersP(
     }
 }
 
-enum class EnumPostRequestBodyApplicationJson(
+enum class EnumPostRequestBody(
     @JsonValue
     val value: String
 ) {
@@ -32,10 +32,10 @@ enum class EnumPostRequestBodyApplicationJson(
     B("B");
 
     companion object {
-        private val mapping: Map<String, EnumPostRequestBodyApplicationJson> =
-            values().associateBy(EnumPostRequestBodyApplicationJson::value)
+        private val mapping: Map<String, EnumPostRequestBody> =
+            values().associateBy(EnumPostRequestBody::value)
 
-        fun fromValue(value: String): EnumPostRequestBodyApplicationJson? = mapping[value]
+        fun fromValue(value: String): EnumPostRequestBody? = mapping[value]
     }
 }
 
@@ -55,7 +55,7 @@ data class ObjectPostParametersProp2(
     val innerProp: Int? = null
 )
 
-data class ObjectPostRequestBodyApplicationJson(
+data class ObjectPostRequestBody(
     @param:JsonProperty("prop1")
     @get:JsonProperty("prop1")
     val prop1: Int? = null,

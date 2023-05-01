@@ -7,6 +7,7 @@ import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
+import com.cjbooms.fabrikt.util.NormalisedString.pascalCase
 import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
 import com.reprezen.kaizen.oasparser.model3.MediaType
 import com.reprezen.kaizen.oasparser.model3.Operation
@@ -171,7 +172,7 @@ object GeneratorUtils {
                 RequestParameter(
                     it.name,
                     it.description,
-                    toModelType(basePackage, KotlinTypeInfo.from(it.schema), isNullable(it)),
+                    toModelType(basePackage, KotlinTypeInfo.from(it.schema, nameSuffix = it.name.pascalCase()), isNullable(it)),
                     it
                 )
             }

@@ -1,11 +1,11 @@
 package examples.operationsSchema.controllers
 
-import examples.operationsSchema.models.Paths1arrayPostRequestBodyContentApplication1jsonSchemaItems
-import examples.operationsSchema.models.Paths1enumPostParameters0Schema
-import examples.operationsSchema.models.Paths1enumPostRequestBodyContentApplication1jsonSchema
-import examples.operationsSchema.models.Paths1objectPostParameters0Schema
-import examples.operationsSchema.models.Paths1objectPostRequestBodyContentApplication1jsonSchema
-import examples.operationsSchema.models.Paths1simpleParameters0Schema
+import examples.operationsSchema.models.ArrayPostRequestBody
+import examples.operationsSchema.models.EnumPostParametersP
+import examples.operationsSchema.models.EnumPostRequestBody
+import examples.operationsSchema.models.ObjectPostParametersP
+import examples.operationsSchema.models.ObjectPostRequestBody
+import examples.operationsSchema.models.SimpleParametersPathP
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Consumes
@@ -23,7 +23,7 @@ interface SimpleController {
     /**
      *
      *
-     * @param paths1simplePostRequestBodyContentApplication1jsonSchema
+     * @param simplePostRequestBody
      * @param pathP
      * @param p
      */
@@ -31,9 +31,9 @@ interface SimpleController {
     @Consumes(value = ["application/json"])
     fun post(
         @Body @Valid
-        paths1simplePostRequestBodyContentApplication1jsonSchema: String,
+        simplePostRequestBody: String,
         @Valid @QueryValue(value = "path_p")
-        pathP: Paths1simpleParameters0Schema?,
+        pathP: SimpleParametersPathP?,
         @QueryValue(value = "p") p: Int?
     ): HttpResponse<Unit>
 }
@@ -43,15 +43,16 @@ interface EnumController {
     /**
      *
      *
-     * @param paths1enumPostRequestBodyContentApplication1jsonSchema
+     * @param enumPostRequestBody
      * @param p
      */
     @Post(uri = "/enum")
     @Consumes(value = ["application/json"])
     fun post(
         @Body @Valid
-        paths1enumPostRequestBodyContentApplication1jsonSchema: Paths1enumPostRequestBodyContentApplication1jsonSchema,
-        @QueryValue(value = "p") p: Paths1enumPostParameters0Schema?
+        enumPostRequestBody: EnumPostRequestBody,
+        @QueryValue(value = "p")
+        p: EnumPostParametersP?
     ): HttpResponse<Unit>
 }
 
@@ -60,16 +61,19 @@ interface ObjectController {
     /**
      *
      *
-     * @param paths1objectPostRequestBodyContentApplication1jsonSchema
+     * @param objectPostRequestBody
      * @param p
      */
     @Post(uri = "/object")
     @Consumes(value = ["application/json"])
     fun post(
         @Body @Valid
-        paths1objectPostRequestBodyContentApplication1jsonSchema: Paths1objectPostRequestBodyContentApplication1jsonSchema,
-        @Valid @QueryValue(value = "p")
-        p: Paths1objectPostParameters0Schema?
+        objectPostRequestBody: ObjectPostRequestBody,
+        @Valid @QueryValue(
+            value =
+            "p"
+        )
+        p: ObjectPostParametersP?
     ): HttpResponse<Unit>
 }
 
@@ -78,15 +82,18 @@ interface ArrayController {
     /**
      *
      *
-     * @param paths1arrayPostRequestBodyContentApplication1jsonSchema
+     * @param arrayPostRequestBody
      * @param p
      */
     @Post(uri = "/array")
     @Consumes(value = ["application/json"])
     fun post(
         @Body @Valid
-        paths1arrayPostRequestBodyContentApplication1jsonSchema: List<Paths1arrayPostRequestBodyContentApplication1jsonSchemaItems>,
-        @Valid @QueryValue(value = "p")
+        arrayPostRequestBody: List<ArrayPostRequestBody>,
+        @Valid @QueryValue(
+            value =
+            "p"
+        )
         p: List<Int>?
     ): HttpResponse<Unit>
 }
