@@ -39,21 +39,21 @@ sealed class PropertyInfo {
 
         val HTTP_SETTINGS = Settings()
 
-        fun Schema.topLevelProperties(settings: Settings, enclosingSchemaInfo: SchemaInfo? = null): Collection<PropertyInfo> {
+        fun Schema.topLevelProperties(settings: Settings, enclosingSchema: Schema? = null): Collection<PropertyInfo> {
             val results = mutableListOf<PropertyInfo>() +
                 allOfSchemas.flatMap {
                     it.topLevelProperties(
                         maybeMarkInherited(
                             settings,
-                            enclosingSchemaInfo?.schema,
+                            enclosingSchema,
                             it
                         ),
-                        SchemaInfo(this.toModelClassName(), this)
+                        this
                     )
                 } +
                 (if (oneOfSchemas.isEmpty()) emptyList() else listOf(OneOfAny(oneOfSchemas.first()))) +
-                anyOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true), SchemaInfo(this.toModelClassName(), this)) } +
-                getInLinedProperties(settings, enclosingSchemaInfo)
+                anyOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true), this) } +
+                getInLinedProperties(settings, enclosingSchema)
             return results.distinctBy { it.oasKey }
         }
 
@@ -69,7 +69,7 @@ sealed class PropertyInfo {
 
         private fun Schema.getInLinedProperties(
             settings: Settings,
-            enclosingSchemaInfo: SchemaInfo? = null
+            enclosingSchema: Schema? = null
         ): Collection<PropertyInfo> {
             val mainProperties: List<PropertyInfo> = properties.map { property ->
                 when (property.value.safeType()) {
@@ -81,7 +81,7 @@ sealed class PropertyInfo {
                             settings.markAsInherited,
                             this,
                             if (property.value.isInlinedArrayDefinition() || property.value.itemsSchema.isInlinedEnumDefinition())
-                                enclosingSchemaInfo?.schema
+                                enclosingSchema
                             else null
                         )
                     OasType.Object.type ->
@@ -106,7 +106,7 @@ sealed class PropertyInfo {
                                 schema = property.value,
                                 isInherited = settings.markAsInherited,
                                 parentSchema = this,
-                                enclosingSchemaInfo = enclosingSchemaInfo
+                                enclosingSchema = enclosingSchema
                             )
                         else
                             ObjectRefField(
@@ -126,8 +126,8 @@ sealed class PropertyInfo {
                                 schema = property.value,
                                 isInherited = settings.markAsInherited,
                                 isPolymorphicDiscriminator = isDiscriminatorProperty(property),
-                                maybeDiscriminator = enclosingSchemaInfo?.let {
-                                    this.getKeyIfSingleDiscriminatorValue(property, it.schema)
+                                maybeDiscriminator = enclosingSchema?.let {
+                                    this.getKeyIfSingleDiscriminatorValue(property, it)
                                 },
                                 enclosingSchema = if (property.value.isInlinedEnumDefinition()) this else null
                             )
@@ -218,10 +218,10 @@ sealed class PropertyInfo {
         override val schema: Schema,
         override val isInherited: Boolean,
         val parentSchema: Schema,
-        val enclosingSchemaInfo: SchemaInfo?
+        val enclosingSchema: Schema?
     ) : PropertyInfo() {
         override val typeInfo: KotlinTypeInfo =
-            KotlinTypeInfo.from(schema, oasKey, enclosingSchemaInfo?.name ?: "")
+            KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
     }
 
     data class AdditionalProperties(

@@ -42,7 +42,6 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeys
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
-import com.cjbooms.fabrikt.util.NormalisedString.pascalCase
 import com.cjbooms.fabrikt.util.NormalisedString.toEnumName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.jsonoverlay.Overlay
@@ -163,10 +162,10 @@ class JacksonModelGenerator(
         .filterNot { it.schema.isSimpleType() }
         .filterNot { it.schema.isOneOfPolymorphicTypes() }
         .flatMap {
-            val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it)
+            val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
             if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
                 val primaryModel = buildPrimaryModel(api, it, properties, schemas)
-                val inlinedModels = buildInLinedModels(properties, it, it.schema.getDocumentUrl())
+                val inlinedModels = buildInLinedModels(properties, it.schema, it.schema.getDocumentUrl())
                 listOf(primaryModel) + inlinedModels
             } else {
                 emptyList()
@@ -257,17 +256,17 @@ class JacksonModelGenerator(
 
     private fun buildInLinedModels(
         topLevelProperties: Collection<PropertyInfo>,
-        enclosingSchemaInfo: SchemaInfo,
+        enclosingSchema: Schema,
         apiDocUrl: String,
     ): List<TypeSpec> = topLevelProperties.flatMap {
-        val enclosingModelName = enclosingSchemaInfo.name
+        val enclosingModelName = enclosingSchema.toModelClassName()
         if (it.schema.isInExternalDocument(apiDocUrl)) {
             it.schema.captureMissingExternalSchemas(apiDocUrl)
             emptySet()
         } else {
             when (it) {
                 is PropertyInfo.ObjectInlinedField -> {
-                    val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo)
+                    val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
                     val currentModel = standardDataClass(
                         it.name.toModelClassName(enclosingModelName),
                         it.name,
@@ -275,7 +274,7 @@ class JacksonModelGenerator(
                         it.schema.extensions,
                         oneOfInterfaces = emptySet(),
                     )
-                    val inlinedModels = buildInLinedModels(props, enclosingSchemaInfo, apiDocUrl)
+                    val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
                     inlinedModels + currentModel
                 }
 
@@ -289,7 +288,7 @@ class JacksonModelGenerator(
                             standardDataClass(
                                 modelName = if (it.schema.isInlinedTypedAdditionalProperties()) it.schema.toMapValueClassName() else it.schema.toModelClassName(),
                                 schemaName = it.name,
-                                properties = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo),
+                                properties = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema),
                                 extensions = it.schema.extensions,
                                 oneOfInterfaces = emptySet(),
                             ),
@@ -309,10 +308,10 @@ class JacksonModelGenerator(
                     it.schema.itemsSchema.let { items ->
                         when {
                             items.isInlinedObjectDefinition() ->
-                                items.topLevelProperties(HTTP_SETTINGS, enclosingSchemaInfo).let { props ->
+                                items.topLevelProperties(HTTP_SETTINGS, enclosingSchema).let { props ->
                                     buildInLinedModels(
                                         topLevelProperties = props,
-                                        enclosingSchemaInfo = enclosingSchemaInfo,
+                                        enclosingSchema = enclosingSchema,
                                         apiDocUrl = apiDocUrl,
                                     ) + standardDataClass(
                                         modelName = it.name.toModelClassName(enclosingModelName),

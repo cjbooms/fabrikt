@@ -25,7 +25,6 @@ import com.cjbooms.fabrikt.model.QueryParam
 import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
-import com.cjbooms.fabrikt.util.toUpperCase
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.javaparser.utils.CodeGenerationUtils
 import com.reprezen.kaizen.oasparser.model3.Operation
@@ -38,6 +37,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import java.nio.file.Path
+import com.cjbooms.fabrikt.util.toUpperCase
 
 class OkHttpSimpleClientGenerator(
     private val packages: Packages,
@@ -48,7 +48,7 @@ class OkHttpSimpleClientGenerator(
         return api.openApi3.routeToPaths().map { (resourceName, paths) ->
             val funcSpecs: List<FunSpec> = paths.flatMap { (resource, path) ->
                 path.operations.map { (verb, operation) ->
-                    val parameters = deriveClientParameters(path, resource, operation, verb, packages.base)
+                    val parameters = deriveClientParameters(path, operation, packages.base)
                     FunSpec
                         .builder(functionName(operation, resource, verb))
                         .addModifiers(KModifier.PUBLIC)

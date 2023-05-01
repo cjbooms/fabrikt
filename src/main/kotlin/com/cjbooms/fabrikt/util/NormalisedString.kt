@@ -22,7 +22,7 @@ object NormalisedString {
 
     fun String.camelCase(): String = this.pascalCase().decapitalized()
 
-    fun String.toModelClassName(parentModelName: String = ""): String = parentModelName.pascalCase() + this.pascalCase()
+    fun String.toModelClassName(parentModelName: String = ""): String = parentModelName + this.pascalCase()
 
     fun String.toMapValueClassName(): String = "${this.pascalCase()}Value"
 

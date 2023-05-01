@@ -48,7 +48,7 @@ class OkHttpEnhancedClientGenerator(
         return api.openApi3.routeToPaths().map { (resourceName, paths) ->
             val funSpecs: List<FunSpec> = paths.flatMap { (resource, path) ->
                 path.operations.map { (verb, operation) ->
-                    val parameters = deriveClientParameters(path, resource, operation, verb, packages.base)
+                    val parameters = deriveClientParameters(path, operation, packages.base)
                     FunSpec
                         .builder(functionName(operation, resource, verb))
                         .addModifiers(KModifier.PUBLIC)

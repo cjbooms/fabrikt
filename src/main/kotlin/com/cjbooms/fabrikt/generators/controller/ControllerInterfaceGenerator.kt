@@ -19,7 +19,7 @@ abstract class ControllerInterfaceGenerator(
     private val api: SourceApi
 ) {
     abstract fun generate(): KotlinTypes
-    abstract fun buildFunction(path: Path, resource: String, op: Operation, verb: String): FunSpec
+    abstract fun buildFunction(path: Path, op: Operation, verb: String): FunSpec
     abstract fun controllerBuilder(className: String, basePath: String): TypeSpec.Builder
     fun buildController(resourceName: String, paths: Collection<Path>): ControllerType {
         val typeBuilder: TypeSpec.Builder = controllerBuilder(
@@ -33,7 +33,6 @@ abstract class ControllerInterfaceGenerator(
                 .map { op ->
                     buildFunction(
                         path,
-                        path.pathString,
                         op.value,
                         op.key,
                     )
