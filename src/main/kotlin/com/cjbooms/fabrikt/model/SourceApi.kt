@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
 import com.cjbooms.fabrikt.util.NormalisedString.pascalCase
 import com.cjbooms.fabrikt.util.YamlUtils
 import com.cjbooms.fabrikt.validation.ValidationError
+import com.reprezen.jsonoverlay.Overlay
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
 import java.nio.file.Path
@@ -67,6 +68,9 @@ data class SourceApi(
         val operationParameters = operations.flatMap { it.parameters }.map { it.name to it.schema }
         val pathSchemaInfos = (pathParameters + operationsRequests + operationResponses + operationParameters).mapNotNull { (key, schema) ->
             if (schema == null)
+                return@mapNotNull null
+            // For backwards compatibility, only non-ref parameters get the name suffix.
+            if (!Overlay.of(schema).pathFromRoot.startsWith("/paths"))
                 return@mapNotNull null
             val typeInfo = KotlinTypeInfo.from(schema, nameSuffix = key.pascalCase())
             typeInfo.generatedModelClassName?.let { SchemaInfo(it, schema, typeInfo) }
