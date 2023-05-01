@@ -75,8 +75,7 @@ data class SourceApi(
             }
         }
         val pathSchemaInfos = (pathParameters + operationsRequests + operationResponses + operationParameters).map { (key, schema) ->
-            val typeInfo = KotlinTypeInfo.from(schema, key, key.pascalCase())
-            SchemaInfo(typeInfo.generatedModelClassName ?: key, schema, typeInfo)
+            SchemaInfo(KotlinTypeInfo.from(schema, "", "").generatedModelClassName ?: "", schema)
         }
 
         allSchemas = componentSchemaInfos + pathSchemaInfos

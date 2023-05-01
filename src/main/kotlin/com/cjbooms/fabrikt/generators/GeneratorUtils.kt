@@ -163,11 +163,7 @@ object GeneratorUtils {
         val bodies = requestBody.contentMediaTypes
             .map { (key, value) ->
                 val schema = value.schema
-                val typeInfo = if (schema.name == null) {
-                    KotlinTypeInfo.from(schema, enclosingName = "$pathName-$operationName-${key}")
-                } else {
-                    KotlinTypeInfo.from(schema)
-                }
+                val typeInfo = KotlinTypeInfo.from(schema)
                 BodyParameter(
                     schema.safeName().toKotlinParameterName().ifEmpty { schema.toVarName() },
                     requestBody.description,
@@ -177,11 +173,7 @@ object GeneratorUtils {
             }
 
         val pathParametersResult = pathParameters.filterOverrides(parameters).map {
-            val typeInfo = if (!it.schema.isSimpleType()) {
-                KotlinTypeInfo.from(it.schema, enclosingName = "$pathName-${it.name}")
-            } else {
-                KotlinTypeInfo.from(it.schema)
-            }
+            val typeInfo = KotlinTypeInfo.from(it.schema)
             RequestParameter(
                 it.name,
                 it.description,
@@ -192,11 +184,7 @@ object GeneratorUtils {
 
         val opParametersResult = parameters
             .map {
-                val typeInfo = if (!it.schema.isSimpleType()) {
-                    KotlinTypeInfo.from(it.schema, enclosingName = "$pathName-$operationName-${it.name}")
-                } else {
-                    KotlinTypeInfo.from(it.schema)
-                }
+                val typeInfo =                     KotlinTypeInfo.from(it.schema)
                 RequestParameter(
                     it.name,
                     it.description,
