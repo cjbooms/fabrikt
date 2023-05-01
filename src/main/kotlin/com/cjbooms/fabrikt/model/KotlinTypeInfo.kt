@@ -57,13 +57,13 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         }
 
     companion object {
-        fun from(schema: Schema, oasKey: String = "", enclosingName: String = ""): KotlinTypeInfo =
+        fun from(schema: Schema, oasKey: String = "", enclosingName: String = "", nameSuffix: String = ""): KotlinTypeInfo =
             when (schema.toOasType(oasKey)) {
                 OasType.Date -> Date
                 OasType.DateTime -> getOverridableDateTimeType()
                 OasType.Text -> Text
                 OasType.Enum ->
-                    Enum(schema.getEnumValues(), schema.toModelClassName(enclosingName.toModelClassName()))
+                    Enum(schema.getEnumValues(), schema.toModelClassName(enclosingName.toModelClassName()) + nameSuffix)
                 OasType.Uuid -> Uuid
                 OasType.Uri -> Uri
                 OasType.ByteArray -> ByteArray
@@ -77,10 +77,10 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Array ->
                     if (schema.itemsSchema.isNotDefined())
                         throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")
-                    else Array(from(schema.itemsSchema, oasKey, enclosingName))
-                OasType.Object -> Object(schema.toModelClassName(enclosingName.toModelClassName()))
+                    else Array(from(schema.itemsSchema, oasKey, enclosingName, nameSuffix))
+                OasType.Object -> Object(schema.toModelClassName(enclosingName.toModelClassName()) + nameSuffix)
                 OasType.Map ->
-                    Map(from(schema.additionalPropertiesSchema, "", enclosingName))
+                    Map(from(schema.additionalPropertiesSchema, "", enclosingName, nameSuffix))
                 OasType.TypedObjectAdditionalProperties -> GeneratedTypedAdditionalProperties(
                     if (schema.isInlinedTypedAdditionalProperties()) schema.toMapValueClassName()
                     else schema.toModelClassName()
@@ -90,7 +90,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.UnknownAdditionalProperties -> UnknownAdditionalProperties
                 OasType.TypedMapAdditionalProperties ->
                     MapTypeAdditionalProperties(
-                        from(schema.additionalPropertiesSchema, "", enclosingName)
+                        from(schema.additionalPropertiesSchema, "", enclosingName, nameSuffix)
                     )
                 OasType.Any -> AnyType
                 OasType.OneOfAny ->

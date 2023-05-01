@@ -16,14 +16,14 @@ import java.net.URI
 
 object KaizenParserExtensions {
 
-    private val invalidNames =
-        listOf(
+    private val unsafePathSegments =
+        setOf(
             "anyOf",
             "oneOf",
             "allOf",
             "items",
             "schema",
-            "application~1json",
+            "application/json",
             "content",
             "additionalProperties",
             "properties",
@@ -52,7 +52,7 @@ object KaizenParserExtensions {
     fun Schema.isInlinedArrayDefinition() =
         isArrayType() && !isSchemaLess() && this.itemsSchema.isInlinedObjectDefinition()
 
-    fun Schema.toModelClassName(enclosingClassName: String = "") = enclosingClassName + safeName().toModelClassName()
+    fun Schema.toModelClassName(enclosingClassName: String = "") = safeName().toModelClassName(enclosingClassName)
 
     fun Schema.toMapValueClassName() = safeName().toMapValueClassName()
 
@@ -186,14 +186,21 @@ object KaizenParserExtensions {
             return name
 
         val pathFromRoot = Overlay.of(this).pathFromRoot
+        val pathSegments = pathFromRoot
+            .splitToSequence("/")
+            .map { it.replace("~1", "/") }
         return if (pathFromRoot.startsWith("/paths")) {
-            // TODO: nicer name
-            return pathFromRoot.pascalCase()
+            pathSegments
+                .dropWhile { it.isBlank() }
+                .drop(1)
+                .filterNot { unsafePathSegments.contains(it) }
+                .filter { it.toIntOrNull() == null }
+                .joinToString { it.pascalCase() }
         } else {
-            pathFromRoot
-                .splitToSequence("/")
-                .filterNot { invalidNames.contains(it) }
-                .filter { it.toIntOrNull() == null } // Ignore numeric-identifiers path-parts in: allOf / oneOf / anyOf
+            pathSegments
+                .dropWhile { it.isBlank() }
+                .filterNot { unsafePathSegments.contains(it) }
+                .filter { it.toIntOrNull() == null }
                 .last()
         }
     }

@@ -7,7 +7,7 @@ import kotlin.Int
 import kotlin.String
 import kotlin.collections.Map
 
-enum class Paths1enumPostParameters0Schema(
+enum class EnumPostParametersP(
     @JsonValue
     val value: String
 ) {
@@ -16,14 +16,14 @@ enum class Paths1enumPostParameters0Schema(
     Y("Y");
 
     companion object {
-        private val mapping: Map<String, Paths1enumPostParameters0Schema> =
-            values().associateBy(Paths1enumPostParameters0Schema::value)
+        private val mapping: Map<String, EnumPostParametersP> =
+            values().associateBy(EnumPostParametersP::value)
 
-        fun fromValue(value: String): Paths1enumPostParameters0Schema? = mapping[value]
+        fun fromValue(value: String): EnumPostParametersP? = mapping[value]
     }
 }
 
-enum class Paths1enumPostRequestBodyContentApplication1jsonSchema(
+enum class EnumPostRequestBodyApplicationJson(
     @JsonValue
     val value: String
 ) {
@@ -32,54 +32,53 @@ enum class Paths1enumPostRequestBodyContentApplication1jsonSchema(
     B("B");
 
     companion object {
-        private val mapping: Map<String, Paths1enumPostRequestBodyContentApplication1jsonSchema> =
-            values().associateBy(Paths1enumPostRequestBodyContentApplication1jsonSchema::value)
+        private val mapping: Map<String, EnumPostRequestBodyApplicationJson> =
+            values().associateBy(EnumPostRequestBodyApplicationJson::value)
 
-        fun fromValue(value: String): Paths1enumPostRequestBodyContentApplication1jsonSchema? =
-            mapping[value]
+        fun fromValue(value: String): EnumPostRequestBodyApplicationJson? = mapping[value]
     }
 }
 
-data class Paths1objectPostParameters0Schema(
+data class ObjectPostParametersP(
     @param:JsonProperty("prop1")
     @get:JsonProperty("prop1")
     val prop1: Int? = null,
     @param:JsonProperty("prop2")
     @get:JsonProperty("prop2")
     @get:Valid
-    val prop2: Paths1objectPostParameters0SchemaProp2? = null
+    val prop2: ObjectPostParametersProp2? = null
 )
 
-data class Paths1objectPostParameters0SchemaProp2(
+data class ObjectPostParametersProp2(
     @param:JsonProperty("inner_prop")
     @get:JsonProperty("inner_prop")
     val innerProp: Int? = null
 )
 
-data class Paths1objectPostRequestBodyContentApplication1jsonSchema(
+data class ObjectPostRequestBodyApplicationJson(
     @param:JsonProperty("prop1")
     @get:JsonProperty("prop1")
     val prop1: Int? = null,
     @param:JsonProperty("prop2")
     @get:JsonProperty("prop2")
     @get:Valid
-    val prop2: Paths1objectPostRequestBodyContentApplication1jsonSchemaProp2? = null
+    val prop2: ObjectPostRequestBodyProp2? = null
 )
 
-data class Paths1objectPostRequestBodyContentApplication1jsonSchemaInnerProp(
+data class ObjectPostRequestBodyInnerProp(
     @param:JsonProperty("inner_inner_prop")
     @get:JsonProperty("inner_inner_prop")
     val innerInnerProp: Int? = null
 )
 
-data class Paths1objectPostRequestBodyContentApplication1jsonSchemaProp2(
+data class ObjectPostRequestBodyProp2(
     @param:JsonProperty("inner_prop")
     @get:JsonProperty("inner_prop")
     @get:Valid
-    val innerProp: Paths1objectPostRequestBodyContentApplication1jsonSchemaInnerProp? = null
+    val innerProp: ObjectPostRequestBodyInnerProp? = null
 )
 
-data class Paths1simpleParameters0Schema(
+data class SimpleParametersPathP(
     @param:JsonProperty("a")
     @get:JsonProperty("a")
     val a: String? = null

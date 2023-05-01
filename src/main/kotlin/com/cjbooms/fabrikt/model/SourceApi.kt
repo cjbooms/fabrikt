@@ -14,7 +14,7 @@ import java.util.logging.Logger
 data class SchemaInfo(
     val name: String,
     val schema: Schema,
-    val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, name, ""),
+    val typeInfo: KotlinTypeInfo = KotlinTypeInfo.from(schema, name),
 )
 
 data class SourceApi(
@@ -65,17 +65,18 @@ data class SourceApi(
         val operationResponses = mutableListOf<Pair<String, Schema>>()
         val operationParameters = mutableListOf<Pair<String, Schema>>()
         openApi3.paths.forEach { (pathName, path) ->
-            pathParameters += path.parameters.map { "$pathName-${it.name}" to it.schema }
+            pathParameters += path.parameters.map { it.name to it.schema }
             path.operations.forEach { (operationName, operation) ->
-                operationsRequests += operation.requestBody.contentMediaTypes.map { "$pathName-$operationName-${it.key}" to it.value.schema }
+                operationsRequests += operation.requestBody.contentMediaTypes.map { it.key to it.value.schema }
                 operation.responses.forEach { (responseName, response) ->
-                    operationResponses += response.contentMediaTypes.map { "$pathName-$operationName-$responseName-${it.key}" to it.value.schema }
+                    operationResponses += response.contentMediaTypes.map { it.key to it.value.schema }
                 }
-                operationParameters += operation.parameters.map { "$pathName-$operationName-${it.name}" to it.schema }
+                operationParameters += operation.parameters.map { it.name to it.schema }
             }
         }
         val pathSchemaInfos = (pathParameters + operationsRequests + operationResponses + operationParameters).map { (key, schema) ->
-            SchemaInfo(KotlinTypeInfo.from(schema, "", "").generatedModelClassName ?: "", schema)
+            val typeInfo = KotlinTypeInfo.from(schema, nameSuffix = key.pascalCase())
+            SchemaInfo(typeInfo.generatedModelClassName ?: "", schema, typeInfo)
         }
 
         allSchemas = componentSchemaInfos + pathSchemaInfos
