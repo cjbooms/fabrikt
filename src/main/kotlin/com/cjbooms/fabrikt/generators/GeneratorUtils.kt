@@ -12,8 +12,19 @@ import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
 import com.cjbooms.fabrikt.util.capitalized
 import com.cjbooms.fabrikt.util.decapitalized
 import com.reprezen.jsonoverlay.Overlay
-import com.reprezen.kaizen.oasparser.model3.*
-import com.squareup.kotlinpoet.*
+import com.reprezen.kaizen.oasparser.model3.MediaType
+import com.reprezen.kaizen.oasparser.model3.Operation
+import com.reprezen.kaizen.oasparser.model3.Parameter
+import com.reprezen.kaizen.oasparser.model3.RequestBody
+import com.reprezen.kaizen.oasparser.model3.Response
+import com.reprezen.kaizen.oasparser.model3.Schema
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asTypeName
 import java.util.function.Predicate
 
 object GeneratorUtils {
