@@ -2,6 +2,7 @@ package examples.okHttpClient.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import examples.okHttpClient.models.Content
+import examples.okHttpClient.models.FirstModel
 import examples.okHttpClient.models.QueryResult
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import okhttp3.OkHttpClient
@@ -98,13 +99,13 @@ class ExamplePath2Service(
 
     @Throws(ApiException::class)
     fun putExamplePath2PathParam(
-        putBody: String,
+        firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.putExamplePath2PathParam(putBody, pathParam, ifMatch, additionalHeaders)
+            apiClient.putExamplePath2PathParam(firstModel, pathParam, ifMatch, additionalHeaders)
         }
 }
 
@@ -133,13 +134,13 @@ class ExamplePath3SubresourceService(
 
     @Throws(ApiException::class)
     fun putExamplePath3PathParamSubresource(
-        putBody: String,
+        firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
         csvListQueryParam: List<String>? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.putExamplePath3PathParamSubresource(putBody, pathParam, ifMatch, csvListQueryParam, additionalHeaders)
+            apiClient.putExamplePath3PathParamSubresource(firstModel, pathParam, ifMatch, csvListQueryParam, additionalHeaders)
         }
 }

@@ -103,6 +103,31 @@ data class FirstModel(
     override val modelType: ContentModelType = ContentModelType.FIRST_MODEL
 }
 
+data class PutBody(
+    @param:JsonProperty("id")
+    @get:JsonProperty("id")
+    override val id: String? = null,
+    @param:JsonProperty("first_attr")
+    @get:JsonProperty("first_attr")
+    override val firstAttr: OffsetDateTime? = null,
+    @param:JsonProperty("second_attr")
+    @get:JsonProperty("second_attr")
+    override val secondAttr: String? = null,
+    @param:JsonProperty("third_attr")
+    @get:JsonProperty("third_attr")
+    override val thirdAttr: ContentThirdAttr? = null,
+    @param:JsonProperty("etag")
+    @get:JsonProperty("etag")
+    override val etag: String? = null,
+    @param:JsonProperty("extra_first_attr")
+    @get:JsonProperty("extra_first_attr")
+    val extraFirstAttr: List<String>? = null
+) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable {
+    @get:JsonProperty("model_type")
+    @get:NotNull
+    override val modelType: ContentModelType = ContentModelType.FIRST_MODEL
+}
+
 data class QueryResult(
     @param:JsonProperty("items")
     @get:JsonProperty("items")

@@ -3,6 +3,7 @@ package examples.okHttpClient.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import examples.okHttpClient.models.Content
+import examples.okHttpClient.models.FirstModel
 import examples.okHttpClient.models.QueryResult
 import okhttp3.Headers
 import okhttp3.HttpUrl
@@ -172,13 +173,13 @@ class ExamplePath2Client(
     /**
      * PUT example path 2
      *
-     * @param putBody
+     * @param firstModel
      * @param pathParam The resource id
      * @param ifMatch The RFC7232 If-Match header field
      */
     @Throws(ApiException::class)
     fun putExamplePath2PathParam(
-        putBody: String,
+        firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
         additionalHeaders: Map<String, String> = emptyMap()
@@ -197,7 +198,7 @@ class ExamplePath2Client(
         val request: Request = Request.Builder()
             .url(httpUrl)
             .headers(httpHeaders)
-            .put(objectMapper.writeValueAsString(putBody).toRequestBody("application/json".toMediaType()))
+            .put(objectMapper.writeValueAsString(firstModel).toRequestBody("application/json".toMediaType()))
             .build()
 
         return request.execute(client, objectMapper, jacksonTypeRef())
@@ -213,14 +214,14 @@ class ExamplePath3SubresourceClient(
     /**
      * PUT example path 3
      *
-     * @param putBody
+     * @param firstModel
      * @param pathParam The resource id
      * @param ifMatch The RFC7232 If-Match header field
      * @param csvListQueryParam
      */
     @Throws(ApiException::class)
     fun putExamplePath3PathParamSubresource(
-        putBody: String,
+        firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
         csvListQueryParam: List<String>? = null,
@@ -241,7 +242,7 @@ class ExamplePath3SubresourceClient(
         val request: Request = Request.Builder()
             .url(httpUrl)
             .headers(httpHeaders)
-            .put(objectMapper.writeValueAsString(putBody).toRequestBody("application/json".toMediaType()))
+            .put(objectMapper.writeValueAsString(firstModel).toRequestBody("application/json".toMediaType()))
             .build()
 
         return request.execute(client, objectMapper, jacksonTypeRef())
