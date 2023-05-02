@@ -29,6 +29,16 @@ data class ConcreteImplOneLegacy(
     override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE_ONLY
 }
 
+data class ConcreteImplOneRef(
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null
+) : PolymorphicEnumDiscriminator() {
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE_ONLY
+}
+
 class ConcreteImplThree() : PolymorphicEnumDiscriminator() {
     @get:JsonProperty("some_enum")
     @get:NotNull

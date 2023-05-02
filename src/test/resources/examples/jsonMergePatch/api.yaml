@@ -1,0 +1,76 @@
+openapi: 3.0.0
+paths: { }
+info:
+  title: ""
+  version: ""
+components:
+  schemas:
+    NoMergePatchInline:
+      type: object
+      properties:
+        inner:
+          type: object
+          properties:
+            p:
+              type: string
+    TopLevelLevelMergePatchInline:
+      type: object
+      x-json-merge-patch: true
+      properties:
+        inner:
+          type: object
+          properties:
+            p:
+              type: string
+    InnerOnlyMergePatchInline:
+      type: object
+      properties:
+        inner:
+          type: object
+          x-json-merge-patch: true
+          properties:
+            p:
+              type: string
+    NestedMergePatchInline:
+      type: object
+      x-json-merge-patch: true
+      properties:
+        inner:
+          type: object
+          x-json-merge-patch: true
+          properties:
+            p:
+              type: string
+    NoMergePatchRef:
+      type: object
+      properties:
+        inner:
+          $ref: '#/components/schemas/InnerNotMergePatch'
+    TopLevelLevelMergePatchRef:
+      type: object
+      x-json-merge-patch: true
+      properties:
+        inner:
+          $ref: '#/components/schemas/InnerNotMergePatch'
+    InnerOnlyMergePatchRef:
+      type: object
+      properties:
+        inner:
+          $ref: '#/components/schemas/InnerMergePatch'
+    NestedMergePatchRef:
+      type: object
+      x-json-merge-patch: true
+      properties:
+        inner:
+          $ref: '#/components/schemas/InnerMergePatch'
+    InnerMergePatch:
+      type: object
+      x-json-merge-patch: true
+      properties:
+        p:
+          type: string
+    InnerNotMergePatch:
+      type: object
+      properties:
+        p:
+          type: string

@@ -17,6 +17,8 @@ object SpringImports {
         const val VALIDATION_ANNOTATION = "$SPRING_BASE.validation.annotation"
 
         const val DATE_TIME_FORMAT = "org.springframework.format.annotation"
+
+        const val SPRING_AUTHENTICATION = "$SPRING_BASE.security.core"
     }
 
     val CONTROLLER = ClassName(Packages.STEREOTYPE, "Controller")
@@ -36,6 +38,8 @@ object SpringImports {
     val VALIDATED = ClassName(Packages.VALIDATION_ANNOTATION, "Validated")
 
     val DATE_TIME_FORMAT = ClassName(Packages.DATE_TIME_FORMAT, "DateTimeFormat")
+
+    val AUTHENTICATION = ClassName(Packages.SPRING_AUTHENTICATION, "Authentication")
 
     object DateTimeFormat {
         val ISO_DATE = "${DATE_TIME_FORMAT.simpleName}.ISO.DATE"

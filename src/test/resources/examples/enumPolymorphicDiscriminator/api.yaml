@@ -40,6 +40,9 @@ components:
         some_enum:
           $ref: '#/components/schemas/EnumDiscriminator'
 
+    ConcreteImplOneRef:
+      $ref: '#/components/schemas/ConcreteImplOne'
+
     ConcreteImplOne:
       allOf:
         - $ref: '#/components/schemas/polymorphicEnumDiscriminator'

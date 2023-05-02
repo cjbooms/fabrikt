@@ -33,13 +33,16 @@ enum class ModelCodeGenOptionType(val description: String) {
     QUARKUS_REFLECTION("This option adds @RegisterForReflection to the generated models. Requires dependency \"'io.quarkus:quarkus-core:+\""),
     MICRONAUT_INTROSPECTION("This option adds @Introspected to the generated models. Requires dependency \"'io.micronaut:micronaut-core:+\""),
     MICRONAUT_REFLECTION("This option adds @ReflectiveAccess to the generated models. Requires dependency \"'io.micronaut:micronaut-core:+\""),
-    INCLUDE_COMPANION_OBJECT("This option adds a companion object to the generated models.");
+    INCLUDE_COMPANION_OBJECT("This option adds a companion object to the generated models."),
+    SEALED_INTERFACES_FOR_ONE_OF("This option enables the generation of interfaces for discriminated oneOf types"),
+    ;
 
     override fun toString() = "`${super.toString()}` - $description"
 }
 
 enum class ControllerCodeGenOptionType(val description: String) {
-    SUSPEND_MODIFIER("This option adds the suspend modifier to the generated controller functions");
+    SUSPEND_MODIFIER("This option adds the suspend modifier to the generated controller functions"),
+    AUTHENTICATION("This option adds the authentication parameter to the generated controller functions");
 
     override fun toString() = "`${super.toString()}` - $description"
 }

@@ -11,17 +11,33 @@ object MicronautImports {
         const val MICRONAUT_HTTP = "$MICRONAUT_BASE.http"
 
         const val MICRONAUT_HTTP_ANNOTATION = "$MICRONAUT_HTTP.annotation"
+
+        const val MICRONAUT_SECURITY = "$MICRONAUT_BASE.security"
+
+        const val MICRONAUT_SECURITY_ANNOTATION = "$MICRONAUT_SECURITY.annotation"
+
+        const val MICRONAUT_AUTHENTICATION = "$MICRONAUT_SECURITY.authentication"
+
+        const val MICRONAUT_RULE= "$MICRONAUT_SECURITY.rules"
     }
 
     val CONSUMES = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Consumes")
     val PRODUCES = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Produces")
     val RESPONSE = ClassName(Packages.MICRONAUT_HTTP, "HttpResponse")
 
+    val SECURED = ClassName(Packages.MICRONAUT_SECURITY_ANNOTATION, "Secured")
+    val AUTHENTICATION = ClassName(Packages.MICRONAUT_AUTHENTICATION, "Authentication")
+    val SECURITY_RULE = Pair(Packages.MICRONAUT_RULE, "SecurityRule")
+
+    val SECURITY_RULE_IS_AUTHENTICATED = "SecurityRule.IS_AUTHENTICATED"
+    val SECURITY_RULE_IS_ANONYMOUS = "SecurityRule.IS_ANONYMOUS"
+
     val CONTROLLER = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Controller")
     val BODY = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Body")
     val HEADER = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Header")
     val QUERY_VALUE = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "QueryValue")
     val PATH_VARIABLE = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "PathVariable")
+
 
     object HttpMethods {
         val GET = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Get")

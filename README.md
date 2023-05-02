@@ -8,6 +8,7 @@ This library was built to take advantage of the complex modeling features availa
  - Polymorphism (`@JsonSubTypes`)
  - Maps of Maps of Maps
  - GraalVM Native Reflection Registration
+ - Json Merge Patch (via `JsonNullable`) (add `x-json-merge-patch: true` to schemas)
 
 More than just bootstrapping, this library can be permanently integrated into a gradle or maven build and will ensure contract and code always match, even as APIs evolve in complexity. 
 
@@ -134,6 +135,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |   `--http-controller-opts`   | Select the options for the controllers that you want to be generated. |
 |                              | CHOOSE ANY OF: |
 |                              |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions |
+|                              |   `AUTHENTICATION` - This option adds the authentication parameter to the generated controller functions |
 |   `--http-controller-target` | Optionally select the target framework for the controllers that you want to be generated. Defaults to Spring Controllers |
 |                              | CHOOSE ONE OF: |
 |                              |   `SPRING` - Generate for Spring framework. |

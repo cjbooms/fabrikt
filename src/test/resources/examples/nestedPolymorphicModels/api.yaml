@@ -1,0 +1,157 @@
+openapi: 3.0.0
+paths: {}
+info:
+  title: ""
+  version: ""
+components:
+  schemas:
+    RootDiscriminator:
+      type: string
+      enum:
+        - firstLevelChild
+
+    FirstLevelDiscriminator:
+      type: string
+      enum:
+        - secondLevelChild1
+        - secondLevelChild2
+
+    SecondLevelDiscriminator:
+      type: string
+      enum:
+        - thirdLevelChild1
+        - thirdLevelChild2
+
+    RootType:
+      type: object
+      required:
+        - rootField1
+      discriminator:
+        propertyName: rootDiscriminator
+        mapping:
+          firstLevelChild: '#/components/schemas/FirstLevelChild'
+      properties:
+        rootDiscriminator:
+          $ref: "#/components/schemas/RootDiscriminator"
+        rootField1:
+          type: string
+        rootField2:
+          type: boolean
+
+    FirstLevelChild:
+      allOf:
+        - $ref: '#/components/schemas/RootType'
+        - type: object
+          required:
+            - firstLevelField1
+          discriminator:
+            propertyName: firstLevelDiscriminator
+            mapping:
+              secondLevelChild1: '#/components/schemas/SecondLevelChild1'
+              secondLevelChild2: '#/components/schemas/SecondLevelChild2'
+          properties:
+            firstLevelDiscriminator:
+              $ref: '#/components/schemas/FirstLevelDiscriminator'
+            firstLevelField1:
+              type: string
+            firstLevelField2:
+              type: integer
+
+    SecondLevelChild1:
+      allOf:
+        - $ref: '#/components/schemas/FirstLevelChild'
+        - type: object
+          required:
+            - metadata
+          discriminator:
+            propertyName: secondLevelDiscriminator
+            mapping:
+              thirdLevelChild1: '#/components/schemas/ThirdLevelChild11'
+              thirdLevelChild2: '#/components/schemas/ThirdLevelChild12'
+          properties:
+            secondLevelDiscriminator:
+              $ref: '#/components/schemas/SecondLevelDiscriminator'
+            metadata:
+              $ref: '#/components/schemas/SecondLevelMetadata'
+
+    SecondLevelChild2:
+      allOf:
+        - $ref: '#/components/schemas/FirstLevelChild'
+        - type: object
+          required:
+            - metadata
+          discriminator:
+            propertyName: secondLevelDiscriminator
+            mapping:
+              thirdLevelChild1: '#/components/schemas/ThirdLevelChild21'
+              thirdLevelChild2: '#/components/schemas/ThirdLevelChild22'
+          properties:
+            secondLevelDiscriminator:
+              $ref: '#/components/schemas/SecondLevelDiscriminator'
+            metadata:
+              $ref: '#/components/schemas/SecondLevelMetadata'
+
+    SecondLevelMetadata:
+      type: object
+      required:
+        - obj
+      properties:
+        obj:
+          $ref: "#/components/schemas/CommonObject"
+
+    ThirdLevelChild11:
+      allOf:
+        - $ref: '#/components/schemas/SecondLevelChild1'
+        - type: object
+          required:
+            - creationDate
+          properties:
+            creationDate:
+              type: integer
+              description: timestamp
+
+    ThirdLevelChild12:
+      allOf:
+        - $ref: '#/components/schemas/SecondLevelChild1'
+        - type: object
+          required:
+            - isDeleted
+          properties:
+            isDeleted:
+              type: boolean
+
+    ThirdLevelChild21:
+      allOf:
+        - $ref: '#/components/schemas/SecondLevelChild2'
+        - type: object
+          required:
+            - creationDate
+          properties:
+            creationDate:
+              type: integer
+              description: timestamp
+
+    ThirdLevelChild22:
+      allOf:
+        - $ref: '#/components/schemas/SecondLevelChild2'
+        - type: object
+          required:
+            - isDeleted
+          properties:
+            isDeleted:
+              type: boolean
+
+    CommonObject:
+      type: object
+      required:
+        - filed1
+        - field2
+      properties:
+        filed1:
+          type: string
+          required: true
+          nullable: false
+        field2:
+          type: string
+          required: true
+          nullable: false

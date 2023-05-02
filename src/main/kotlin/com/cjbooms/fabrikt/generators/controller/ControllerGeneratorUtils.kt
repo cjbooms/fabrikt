@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Response
+import com.reprezen.kaizen.oasparser.model3.SecurityRequirement
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 
@@ -48,4 +49,56 @@ object ControllerGeneratorUtils {
 
     private fun httpVerbMethodName(verb: String, isSingleResource: Boolean) =
         if (isSingleResource) "${verb}ById" else verb
+
+    /**
+     * Enum definition for different cases of security checks for a given operation.
+     */
+    enum class SecuritySupport(val allowsAuthenticated: Boolean, val allowsAnonymous: Boolean) {
+        /**
+         * When the operation does not support any way of security checks.
+         */
+        NO_SECURITY(false, false),
+
+        /**
+         * When the operation requires security checks
+         */
+        AUTHENTICATION_REQUIRED(true, false),
+
+        /**
+         * When the operation does not allow any way of security checks
+         */
+        AUTHENTICATION_PROHIBITED(false, true),
+
+        /**
+         * When the operation can support security checks.
+         */
+        AUTHENTICATION_OPTIONAL(true, true),
+    }
+
+    /**
+     * Computes the [SecuritySupport] of a list of [SecurityRequirement]s.
+     */
+    fun List<SecurityRequirement>.securitySupport(): SecuritySupport {
+        val containsEmptyObject = this.any { it.requirements.isEmpty() }
+        val containsNonEmptyObject = this.any { it.requirements.isNotEmpty() }
+
+        return when {
+            containsEmptyObject && containsNonEmptyObject -> SecuritySupport.AUTHENTICATION_OPTIONAL
+            containsEmptyObject -> SecuritySupport.AUTHENTICATION_PROHIBITED
+            containsNonEmptyObject -> SecuritySupport.AUTHENTICATION_REQUIRED
+            else -> SecuritySupport.NO_SECURITY
+        }
+    }
+
+    /**
+     * Computes the [SecuritySupport] of a given operation.
+     * @param defaultSupport The "API-global" security support to use in case the operation itself does not define any.
+     */
+    fun Operation.securitySupport(defaultSupport: SecuritySupport? = null): SecuritySupport {
+        if (!this.hasSecurityRequirements() && defaultSupport != null) {
+            return defaultSupport
+        }
+
+        return this.securityRequirements.securitySupport()
+    }
 }
