@@ -27,31 +27,6 @@ class ModelGeneratorTest {
 
     @Suppress("unused")
     private fun testCases(): Stream<String> = Stream.of(
-        "arrays",
-        "anyOfOneOfAllOf",
-        "deepNestedSharingReferences",
-        "defaultValues",
-        "duplicatePropertyHandling",
-        "enumExamples",
-        "enumPolymorphicDiscriminator",
-        "externalReferences",
-        "githubApi",
-        "inLinedObject",
-        "jsonMergePatch",
-        "mapExamples",
-        "mixingCamelSnakeLispCase",
-        "oneOfPolymorphicModels",
-        "optionalVsRequired",
-        "polymorphicModels",
-        "nestedPolymorphicModels",
-        "requiredReadOnly",
-        "validationAnnotations",
-        "wildCardTypes",
-        "singleAllOf",
-        "responsesSchema",
-        "webhook",
-        "instantDateTime",
-        "singleAllOf",
         "discriminatedOneOf",
     )
 

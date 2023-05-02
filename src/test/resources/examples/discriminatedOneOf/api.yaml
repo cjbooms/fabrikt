@@ -32,9 +32,11 @@ components:
         status:
           $ref: '#/components/schemas/Status'
     StateB:
-      type: object
-      required:
-        - status
-      properties:
-        status:
-          $ref: '#/components/schemas/Status'
+      allOf:
+        - $ref: '#/components/schemas/State'
+        - type: object
+          required:
+            - status
+          properties:
+            status:
+              $ref: '#/components/schemas/Status'

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonValue
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
+import kotlin.Any
 import kotlin.String
 import kotlin.collections.Map
 
@@ -35,7 +36,15 @@ sealed interface State
 
 object StateA : State
 
-object StateB : State
+data class StateB(
+    @param:JsonProperty("oneOf")
+    @get:JsonProperty("oneOf")
+    val oneOf: Any? = null,
+    @param:JsonProperty("status")
+    @get:JsonProperty("status")
+    @get:NotNull
+    val status: Status
+) : State
 
 enum class Status(
     @JsonValue

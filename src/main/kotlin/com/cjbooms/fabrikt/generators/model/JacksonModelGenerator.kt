@@ -247,7 +247,7 @@ class JacksonModelGenerator(
             }
             .map { (_, parent) ->
                 val field = parent.schema.discriminator.propertyName!!
-                if (!schema.schema.properties.containsKey(field)) {
+                if (!schema.schema.topLevelProperties(HTTP_SETTINGS).any { it.name == field }) {
                     throw IllegalArgumentException("schema $schema did not have discriminator property")
                 }
                 parent
@@ -629,13 +629,14 @@ class JacksonModelGenerator(
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
             .addCompanionObject()
-            .superclass(
-                toModelType(packages.base, KotlinTypeInfo.from(superType.schema, superType.name)),
-            )
 
-        for (oneOfSuperInterface in oneOfSuperInterfaces) {
-            this.addSuperinterface(generatedType(packages.base, oneOfSuperInterface.name))
+        // Special case for legacy support: The "oneOf super interface" is an interface, not a class.
+        val superclass = toModelType(packages.base, KotlinTypeInfo.from(superType.schema, superType.name))
+        val superinterfaces = oneOfSuperInterfaces.map { generatedType(packages.base, it.name) }
+        if (superclass !in superinterfaces) {
+            this.superclass(superclass)
         }
+        this.addSuperinterfaces(superinterfaces)
 
         val properties = superType.schema.getDiscriminatorForInLinedObjectUnderAllOf()?.let { discriminator ->
             allProperties.filterNot {
