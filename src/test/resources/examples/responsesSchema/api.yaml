@@ -4,7 +4,7 @@ paths:
     post:
       responses:
         200:
-          $ref: '#/components/responses/SucccessResponse'
+          $ref: '#/components/responses/SuccessResponse'
         500:
           $ref: '#/components/responses/ErrorResponse'
 components:
@@ -23,7 +23,7 @@ components:
                 type: string
               code:
                 type: integer
-    SucccessResponse:
+    SuccessResponse:
       description: "Response on success"
       content:
         application/json:
