@@ -140,6 +140,8 @@ object KaizenParserExtensions {
             requiredFields.contains(prop.key) || isDiscriminatorProperty(prop) // A discriminator property should be required
         }
 
+    fun Schema.getSchemaRefName() = Overlay.of(this).jsonReference.split("/").last()
+
     fun Schema.isDiscriminatorProperty(prop: Map.Entry<String, Schema>): Boolean =
         discriminator?.propertyName == prop.key
 

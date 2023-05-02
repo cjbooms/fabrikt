@@ -26,7 +26,6 @@ data class ClassSettings(
 
 object PropertyUtils {
     fun PropertyInfo.addToClass(
-        modelName: String,
         schemaName: String,
         type: TypeName,
         parameterizedType: TypeName,
@@ -87,7 +86,7 @@ object PropertyUtils {
                 ClassSettings.PolymorphyType.SUB -> {
                     if (this is PropertyInfo.Field && isPolymorphicDiscriminator) {
                         property.addModifiers(KModifier.OVERRIDE)
-                        val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName, modelName)
+                        val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName)
                         if (discriminators.size == 1) {
                             when (val discriminator = discriminators.first()) {
                                 is PropertyInfo.DiscriminatorKey.EnumKey ->
@@ -120,7 +119,7 @@ object PropertyUtils {
             if (this !is PropertyInfo.Field ||
                 !isPolymorphicDiscriminator ||
                 isSubTypeDiscriminatorWithNoValue(classSettings) ||
-                isSubTypeDiscriminatorWithMultipleValues(classSettings, modelName, schemaName)
+                isSubTypeDiscriminatorWithMultipleValues(classSettings, schemaName)
             ) {
                 property.initializer(name)
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
@@ -145,11 +144,10 @@ object PropertyUtils {
     }
 
     private fun Map<String, PropertyInfo.DiscriminatorKey>?.getDiscriminatorMappings(
-        modelName: String,
         schemaName: String,
     ): List<PropertyInfo.DiscriminatorKey> =
         this?.filter {
-            it.value.stringValue == schemaName || it.value.modelName == modelName || it.value.modelName == schemaName
+            it.value.stringValue == schemaName || it.value.modelName == schemaName
         }?.map { it.value }.orEmpty()
 
     private fun PropertyInfo.Field.isSubTypeDiscriminatorWithNoValue(classType: ClassSettings) =
@@ -159,12 +157,11 @@ object PropertyUtils {
 
     private fun PropertyInfo.Field.isSubTypeDiscriminatorWithMultipleValues(
         classType: ClassSettings,
-        modelName: String,
         schemaName: String,
     ) =
         classType.polymorphyType == ClassSettings.PolymorphyType.SUB &&
             isPolymorphicDiscriminator &&
-            maybeDiscriminator.getDiscriminatorMappings(modelName, schemaName).size > 1
+            maybeDiscriminator.getDiscriminatorMappings(schemaName).size > 1
 
     private fun getDefaultValue(propTypeInfo: PropertyInfo, parameterizedType: TypeName): OasDefault? {
         return when (propTypeInfo) {
