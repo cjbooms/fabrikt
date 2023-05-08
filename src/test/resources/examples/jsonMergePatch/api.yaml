@@ -74,3 +74,43 @@ components:
       properties:
         p:
           type: string
+    NullabilityCheck:
+      type: object
+      x-json-merge-patch: true
+      properties:
+        not-null-no-default-not-required:
+          type: string
+          nullable: false
+          required: false
+        nullable-no-default-not-required:
+          type: string
+          nullable: true
+          required: false
+        not-null-with-default-not-required:
+          type: string
+          nullable: false
+          required: false
+          default: ""
+        nullable-with-default-not-required:
+          type: string
+          nullable: true
+          required: false
+          default: ""
+        not-null-no-default-required:
+          type: string
+          nullable: false
+          required: true
+        nullable-no-default-required:
+          type: string
+          nullable: true
+          required: true
+        not-null-with-default-required:
+          type: string
+          nullable: false
+          required: true
+          default: ""
+        nullable-with-default-required:
+          type: string
+          nullable: true
+          required: true
+          default: ""

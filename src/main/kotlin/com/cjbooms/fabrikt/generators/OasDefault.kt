@@ -2,49 +2,54 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.util.toUpperCase
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeName
 import java.net.URI
 import java.util.Base64
 
 sealed class OasDefault {
 
-    abstract fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder
+    abstract fun getDefault(): CodeBlock
 
     data class StringValue(val strValue: String) : OasDefault() {
-        override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
-            return paramSpecBuilder.defaultValue("%S", strValue)
-        }
+        override fun getDefault(): CodeBlock =
+            CodeBlock.of("%S", strValue)
     }
 
     data class NumericValue(val numericValue: Number) : OasDefault() {
-        override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
-            return paramSpecBuilder.defaultValue("%L", numericValue)
-        }
+        override fun getDefault(): CodeBlock =
+            CodeBlock.of("%L", numericValue)
     }
 
     data class UriValue(val strValue: String) : OasDefault() {
-        override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
-            return paramSpecBuilder.defaultValue("%T(\"$strValue\")", URI::class)
-        }
+        override fun getDefault(): CodeBlock =
+            CodeBlock.of("%T(\"$strValue\")", URI::class)
     }
+
     data class ByteValue(val base64String: String) : OasDefault() {
-        override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
-            return paramSpecBuilder.defaultValue(CodeBlock.of("%T.getDecoder().decode(\"$base64String\")", Base64::class))
-        }
+        override fun getDefault(): CodeBlock =
+            CodeBlock.of("%T.getDecoder().decode(\"$base64String\")", Base64::class)
     }
 
     data class BooleanValue(val boolValue: Boolean) : OasDefault() {
-        override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
-            return paramSpecBuilder.defaultValue("%L", boolValue)
-        }
+        override fun getDefault(): CodeBlock =
+            CodeBlock.of("%L", boolValue)
     }
 
     data class EnumValue(val type: TypeName, val enumValue: String) : OasDefault() {
-        override fun setDefault(paramSpecBuilder: ParameterSpec.Builder): ParameterSpec.Builder {
-            return paramSpecBuilder.defaultValue("%T.${enumValue.toUpperCase()}", type)
-        }
+        override fun getDefault(): CodeBlock =
+            CodeBlock.of("%T.${enumValue.toUpperCase()}", type)
+    }
+
+    data class JsonNullableValue(val inner: OasDefault) : OasDefault() {
+        override fun getDefault(): CodeBlock =
+            CodeBlock.of(
+                "%T.of(${inner.getDefault()})", ClassName(
+                    "org.openapitools.jackson.nullable",
+                    "JsonNullable",
+                )
+            )
     }
 
     companion object {
@@ -56,12 +61,14 @@ sealed class OasDefault {
                             if (type != null && typeInfo.entries.contains(default)) OasDefault.EnumValue(type, default)
                             else null
                         }
+
                         is KotlinTypeInfo.Text -> OasDefault.StringValue(default)
                         is KotlinTypeInfo.Uri -> OasDefault.UriValue(default)
                         is KotlinTypeInfo.ByteArray -> OasDefault.ByteValue(default)
                         else -> null
                     }
                 }
+
                 is Number -> OasDefault.NumericValue(default)
                 is Boolean -> OasDefault.BooleanValue(default)
                 else -> null

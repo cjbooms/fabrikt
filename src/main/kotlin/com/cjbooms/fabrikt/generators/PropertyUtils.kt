@@ -39,7 +39,7 @@ object PropertyUtils {
                 ClassName(
                     "org.openapitools.jackson.nullable",
                     "JsonNullable",
-                ).parameterizedBy(type.copy(nullable = false))
+                ).parameterizedBy(type.copy(nullable = type.isNullable))
             } else {
                 type
             }
@@ -124,9 +124,14 @@ object PropertyUtils {
                 property.initializer(name)
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
                 val oasDefault = getDefaultValue(this, parameterizedType)
+                val wrappedDefault =
+                    if (classSettings.isMergePatchPattern)
+                        oasDefault?.let { OasDefault.JsonNullableValue(it) }
+                    else
+                        oasDefault
                 if (!isRequired) {
-                    if (oasDefault != null) {
-                        oasDefault.setDefault(constructorParameter)
+                    if (wrappedDefault != null) {
+                        constructorParameter.defaultValue(wrappedDefault.getDefault())
                     } else {
                         val undefinedDefault = if (classSettings.isMergePatchPattern) {
                             "JsonNullable.undefined()"
