@@ -87,7 +87,8 @@ object ClientGeneratorUtils {
         val specs = parameters.map {
             val builder = it.toParameterSpecBuilder()
             if (it is RequestParameter) {
-                if (it.defaultValue != null) OasDefault.from(it.typeInfo, it.type, it.defaultValue)?.setDefault(builder)
+                if (it.defaultValue != null) OasDefault.from(it.typeInfo, it.type, it.defaultValue)
+                    ?.let { builder.defaultValue(it.getDefault()) }
                 else if (!it.isRequired) builder.defaultValue("null")
             }
             builder.build()
