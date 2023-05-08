@@ -30,7 +30,7 @@ components:
         enum_ref:
           $ref: '#/components/schemas/EnumObject'
         extensible_enum_ref:
-          $ref: '#/components/schemas/ExtensibleEnumObject'        
+          $ref: '#/components/schemas/ExtensibleEnumObject'
         list_enums:
           $ref: '#/components/schemas/ListEnums'
 
@@ -46,17 +46,41 @@ components:
       x-extensible-enum:
         - active
         - inactive
- 
+
     ContentType:
       type: string
       x-extensible-enum:
         - application/json
-        - application/x.some-type+json    
-        - application/x.some-other-type+json;version=2    
-          
+        - application/x.some-type+json
+        - application/x.some-other-type+json;version=2
+
     ListEnums:
       type: array
-      items: 
+      items:
         $ref: '#/components/schemas/ContentType'
+
+    FooBars:
+      type: object
+      properties:
+        prop_one:
+          $ref: '#/components/schemas/Foo'
+        prop_two:
+          $ref: '#/components/schemas/Bar'
+
+    Foo:
+      type: array
+      items:
+        type: string
+        enum:
+          - X
+          - Y
+    Bar:
+      type: array
+      items:
+        type: object
+        properties:
+          bar_prop:
+            type: string
+
 
 

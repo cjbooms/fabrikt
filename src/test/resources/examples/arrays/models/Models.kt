@@ -5,7 +5,22 @@ import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import kotlin.Int
 import kotlin.Long
+import kotlin.String
 import kotlin.collections.List
+
+data class ArrayComplexInLined(
+    @param:JsonProperty("quantities")
+    @get:JsonProperty("quantities")
+    @get:NotNull
+    @get:Valid
+    val quantities: List<ArrayComplexInLinedQuantities>
+)
+
+data class ArrayComplexInLinedQuantities(
+    @param:JsonProperty("prop_one")
+    @get:JsonProperty("prop_one")
+    val propOne: String? = null
+)
 
 data class ArrayRef(
     @param:JsonProperty("grams")

@@ -2,9 +2,16 @@ package examples.enumExamples.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import javax.validation.Valid
 import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
+
+data class BarBar(
+    @param:JsonProperty("bar_prop")
+    @get:JsonProperty("bar_prop")
+    val barProp: String? = null
+)
 
 enum class ContentType(
     @JsonValue
@@ -126,5 +133,51 @@ enum class ExtensibleEnumObject(
             values().associateBy(ExtensibleEnumObject::value)
 
         fun fromValue(value: String): ExtensibleEnumObject? = mapping[value]
+    }
+}
+
+data class FooBars(
+    @param:JsonProperty("prop_one")
+    @get:JsonProperty("prop_one")
+    val propOne: List<FooBarsFoo>? = null,
+    @param:JsonProperty("prop_two")
+    @get:JsonProperty("prop_two")
+    @get:Valid
+    val propTwo: List<FooBarsBar>? = null
+)
+
+data class FooBarsBar(
+    @param:JsonProperty("bar_prop")
+    @get:JsonProperty("bar_prop")
+    val barProp: String? = null
+)
+
+enum class FooBarsFoo(
+    @JsonValue
+    val value: String
+) {
+    X("X"),
+
+    Y("Y");
+
+    companion object {
+        private val mapping: Map<String, FooBarsFoo> = values().associateBy(FooBarsFoo::value)
+
+        fun fromValue(value: String): FooBarsFoo? = mapping[value]
+    }
+}
+
+enum class FooFoo(
+    @JsonValue
+    val value: String
+) {
+    X("X"),
+
+    Y("Y");
+
+    companion object {
+        private val mapping: Map<String, FooFoo> = values().associateBy(FooFoo::value)
+
+        fun fromValue(value: String): FooFoo? = mapping[value]
     }
 }
