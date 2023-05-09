@@ -42,8 +42,13 @@ data class SourceApi(
         val globalSchemas = openApi3.schemas.entries.map { it.key to it.value }
         val globalParameters = openApi3.parameters.entries.map { it.key to it.value.schema }
         val globalRequests = openApi3.requestBodies.entries.flatMap {  request ->
-            request.value.contentMediaTypes.entries.map { content ->
-                request.key to content.value.schema
+            val contentMediaTypes = request.value.contentMediaTypes.entries
+            if (contentMediaTypes.size == 1) {
+                contentMediaTypes.map { content -> request.key to content.value.schema }
+            } else {
+                contentMediaTypes.mapIndexed { i, content ->
+                    "${request.key}$i" to content.value.schema
+                }
             }
         }
         val globalResponses =

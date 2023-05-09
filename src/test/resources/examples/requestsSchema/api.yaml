@@ -20,3 +20,18 @@ components:
                 type: string
               age:
                 type: integer
+    MultiContent:
+      description: Request body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              a:
+                type: string
+        application/json2:
+          schema:
+            type: object
+            properties:
+              x:
+                type: integer

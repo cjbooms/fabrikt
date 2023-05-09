@@ -12,3 +12,15 @@ data class DummyRequest(
     @get:JsonProperty("age")
     val age: Int? = null
 )
+
+data class MultiContent0(
+    @param:JsonProperty("a")
+    @get:JsonProperty("a")
+    val a: String? = null
+)
+
+data class MultiContent1(
+    @param:JsonProperty("x")
+    @get:JsonProperty("x")
+    val x: Int? = null
+)
