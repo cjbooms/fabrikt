@@ -35,11 +35,11 @@ object PropertyUtils {
         validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations,
     ) {
         val wrappedType =
-            if (classSettings.isMergePatchPattern) {
+            if (classSettings.isMergePatchPattern && !this.isRequired) {
                 ClassName(
                     "org.openapitools.jackson.nullable",
                     "JsonNullable",
-                ).parameterizedBy(type.copy(nullable = type.isNullable))
+                ).parameterizedBy(type.copy(nullable = this.schema.isNullable))
             } else {
                 type
             }
@@ -124,13 +124,13 @@ object PropertyUtils {
                 property.initializer(name)
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
                 val oasDefault = getDefaultValue(this, parameterizedType)
-                val wrappedDefault =
-                    if (classSettings.isMergePatchPattern)
-                        oasDefault?.let { OasDefault.JsonNullableValue(it) }
-                    else
-                        oasDefault
                 if (!isRequired) {
-                    if (wrappedDefault != null) {
+                    if (oasDefault != null) {
+                        val wrappedDefault =
+                            if (classSettings.isMergePatchPattern)
+                                OasDefault.JsonNullableValue(oasDefault)
+                            else
+                                oasDefault
                         constructorParameter.defaultValue(wrappedDefault.getDefault())
                     } else {
                         val undefinedDefault = if (classSettings.isMergePatchPattern) {
