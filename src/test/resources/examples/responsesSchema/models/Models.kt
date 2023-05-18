@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull
 import kotlin.Int
 import kotlin.String
 
-data class ErrorResponse(
+data class ErrorResponseProblemJson(
     @param:JsonProperty("message")
     @get:JsonProperty("message")
     @get:NotNull
@@ -16,7 +16,7 @@ data class ErrorResponse(
     val code: Int
 )
 
-data class SuccessResponse(
+data class SuccessResponseJson(
     @param:JsonProperty("message")
     @get:JsonProperty("message")
     @get:NotNull

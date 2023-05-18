@@ -12,7 +12,7 @@ components:
     ErrorResponse:
       description: "Response on error"
       content:
-        application/json:
+        application/problem+json:
           schema:
             type: object
             required:

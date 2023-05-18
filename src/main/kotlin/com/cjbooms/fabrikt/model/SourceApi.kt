@@ -51,7 +51,7 @@ data class SourceApi(
         val globalResponses =
             openApi3.responses.entries.flatMap { response ->
                 response.value.contentMediaTypes.entries.map { content ->
-                    response.key to content.value.schema
+                    "${response.key}${content.key.contentTypeSuffix()}" to content.value.schema
                 }
             }
         allSchemas = (globalSchemas + globalParameters + globalRequests + globalResponses).map { (key, schema) ->
