@@ -29,7 +29,7 @@ components:
             properties:
               a:
                 type: string
-        application/json2:
+        application/my-custom+json:
           schema:
             type: object
             properties:

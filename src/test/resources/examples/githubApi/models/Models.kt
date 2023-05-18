@@ -43,7 +43,7 @@ data class BulkEntityDetails(
     }
 }
 
-data class BulkEventGenerationBody(
+data class BulkEventGenerationBodyJson(
     @param:JsonProperty("entities")
     @get:JsonProperty("entities")
     @get:NotNull
@@ -102,7 +102,7 @@ data class Contributor(
     val name: String? = null
 )
 
-data class ContributorBody(
+data class ContributorBodyJson(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     val id: String? = null,
@@ -276,7 +276,7 @@ data class Organisation(
     val hooks: List<Webhook>? = null
 )
 
-data class OrganisationBody(
+data class OrganisationBodyJson(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     val id: String? = null,
@@ -397,7 +397,7 @@ data class PullRequest(
     val author: Author? = null
 )
 
-data class PullRequestBody(
+data class PullRequestBodyJson(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     val id: String? = null,
@@ -521,7 +521,7 @@ data class Repository(
     val tags: List<String>? = null
 )
 
-data class RepositoryBody(
+data class RepositoryBodyJson(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     val id: String? = null,

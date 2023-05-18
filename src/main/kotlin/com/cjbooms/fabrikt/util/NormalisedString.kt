@@ -10,6 +10,9 @@ object NormalisedString {
             .split("_")
             .joinToString("") { it.capitalized() }
 
+    fun String.contentTypeSuffix(): String =
+        substringAfter("/").pascalCase()
+
     private fun String.replaceSpecialCharacters() =
         Regex("[^A-Za-z0-9øæåØÆÅ]").replace(this, "_")
 
@@ -38,8 +41,11 @@ object NormalisedString {
         return all { if (it.isLetter()) it.isLowerCase() else true } && pieces.all { SourceVersion.isIdentifier(it) }
     }
 }
+
 // Replace deprecated Kotlin String functions with concise equivalents
 fun String.toUpperCase() = uppercase(Locale.getDefault())
 fun String.toLowerCase() = lowercase(Locale.getDefault())
-fun String.capitalized() = replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+fun String.capitalized() =
+    replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+
 fun String.decapitalized() = replaceFirstChar { it.lowercase(Locale.getDefault()) }

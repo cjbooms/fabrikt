@@ -103,7 +103,7 @@ data class FirstModel(
     override val modelType: ContentModelType = ContentModelType.FIRST_MODEL
 }
 
-data class PutBody(
+data class PutBodyJson(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     override val id: String? = null,

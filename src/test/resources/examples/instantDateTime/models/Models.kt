@@ -16,7 +16,7 @@ data class FirstModel(
     val extraFirstAttr: List<Instant>? = null
 )
 
-data class PostBody(
+data class PostBodyJson(
     @param:JsonProperty("date")
     @get:JsonProperty("date")
     val date: Instant? = null,
@@ -25,7 +25,7 @@ data class PostBody(
     val extraFirstAttr: List<Instant>? = null
 )
 
-data class PutBody(
+data class PutBodyJson(
     @param:JsonProperty("date")
     @get:JsonProperty("date")
     val date: Instant? = null,

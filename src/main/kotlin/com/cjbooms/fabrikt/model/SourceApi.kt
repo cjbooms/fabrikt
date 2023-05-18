@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.model
 
 import com.beust.jcommander.ParameterException
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
+import com.cjbooms.fabrikt.util.NormalisedString.contentTypeSuffix
 import com.cjbooms.fabrikt.util.YamlUtils
 import com.cjbooms.fabrikt.validation.ValidationError
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
@@ -16,7 +17,7 @@ data class SchemaInfo(val name: String, val schema: Schema) {
 
 data class SourceApi(
     private val rawApiSpec: String,
-    val baseDir: Path = Paths.get("").toAbsolutePath()
+    val baseDir: Path = Paths.get("").toAbsolutePath(),
 ) {
     companion object {
         private val logger = Logger.getGlobal()
@@ -24,7 +25,7 @@ data class SourceApi(
         fun create(
             baseApi: String,
             apiFragments: Collection<String>,
-            baseDir: Path = Paths.get("").toAbsolutePath()
+            baseDir: Path = Paths.get("").toAbsolutePath(),
         ): SourceApi {
             val combinedApi =
                 apiFragments.fold(baseApi) { acc: String, fragment -> YamlUtils.mergeYamlTrees(acc, fragment) }
@@ -41,18 +42,14 @@ data class SourceApi(
         }
         val globalSchemas = openApi3.schemas.entries.map { it.key to it.value }
         val globalParameters = openApi3.parameters.entries.map { it.key to it.value.schema }
-        val globalRequests = openApi3.requestBodies.entries.flatMap {  request ->
+        val globalRequests = openApi3.requestBodies.entries.flatMap { request ->
             val contentMediaTypes = request.value.contentMediaTypes.entries
-            if (contentMediaTypes.size == 1) {
-                contentMediaTypes.map { content -> request.key to content.value.schema }
-            } else {
-                contentMediaTypes.mapIndexed { i, content ->
-                    "${request.key}$i" to content.value.schema
-                }
+            contentMediaTypes.map { content ->
+                "${request.key}${content.key.contentTypeSuffix()}" to content.value.schema
             }
         }
         val globalResponses =
-            openApi3.responses.entries.flatMap {  response ->
+            openApi3.responses.entries.flatMap { response ->
                 response.value.contentMediaTypes.entries.map { content ->
                     response.key to content.value.schema
                 }
@@ -67,25 +64,27 @@ data class SourceApi(
             val name = entry.key
             val schema = entry.value
             if (schema.type == OasType.Object.type && (
-                schema.oneOfSchemas?.isNotEmpty() == true ||
-                    schema.allOfSchemas?.isNotEmpty() == true ||
-                    schema.anyOfSchemas?.isNotEmpty() == true
-                )
-            )
+                    schema.oneOfSchemas?.isNotEmpty() == true ||
+                        schema.allOfSchemas?.isNotEmpty() == true ||
+                        schema.anyOfSchemas?.isNotEmpty() == true
+                    )
+            ) {
                 errors + listOf(
                     ValidationError(
                         "'$name' schema contains an invalid combination of properties and `oneOf | anyOf | allOf`. " +
-                            "Do not use properties and a combiner at the same level."
-                    )
+                            "Do not use properties and a combiner at the same level.",
+                    ),
                 )
-            else if (schema.type == OasType.Object.type && schema.oneOfSchemas?.isNotEmpty() == true)
+            } else if (schema.type == OasType.Object.type && schema.oneOfSchemas?.isNotEmpty() == true) {
                 errors + listOf(ValidationError("The $name object contains invalid use of both properties and `oneOf`."))
-            else if (schema.type == OasType.Object.type && schema.oneOfSchemas?.isNotEmpty() == true)
+            } else if (schema.type == OasType.Object.type && schema.oneOfSchemas?.isNotEmpty() == true) {
                 errors + listOf(ValidationError("The $name object contains invalid use of both properties and `oneOf`."))
-            else if (schema.type == null && schema.properties?.isNotEmpty() == true) {
+            } else if (schema.type == null && schema.properties?.isNotEmpty() == true) {
                 logger.warning("Schema '$name' has 'type: null' but defines properties. Assuming: 'type: object'")
                 errors
-            } else errors
+            } else {
+                errors
+            }
         }
 
         return api.schemas.map { it.value.properties }.flatMap { it.entries }

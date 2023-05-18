@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import kotlin.Int
 import kotlin.String
 
-data class DummyRequest(
+data class DummyRequestJson(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     val id: String? = null,
@@ -13,13 +13,13 @@ data class DummyRequest(
     val age: Int? = null
 )
 
-data class MultiContent0(
+data class MultiContentJson(
     @param:JsonProperty("a")
     @get:JsonProperty("a")
     val a: String? = null
 )
 
-data class MultiContent1(
+data class MultiContentMyCustomJson(
     @param:JsonProperty("x")
     @get:JsonProperty("x")
     val x: Int? = null
