@@ -1,6 +1,6 @@
 package examples.responsesSchema.controllers
 
-import examples.responsesSchema.models.SuccessResponse
+import examples.responsesSchema.models.SuccessResponseJson
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.annotation.Validated
@@ -19,5 +19,5 @@ interface FooController {
         produces = ["application/json"],
         method = [RequestMethod.POST]
     )
-    fun post(): ResponseEntity<SuccessResponse>
+    fun post(): ResponseEntity<SuccessResponseJson>
 }

@@ -1,6 +1,6 @@
 package examples.requestsSchema.controllers
 
-import examples.requestsSchema.models.DummyRequest
+import examples.requestsSchema.models.DummyRequestJson
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Consumes
@@ -20,6 +20,6 @@ interface FooController {
     @Consumes(value = ["application/json"])
     fun post(
         @Body @Valid
-        dummyRequest: DummyRequest
+        dummyRequest: DummyRequestJson
     ): HttpResponse<Unit>
 }

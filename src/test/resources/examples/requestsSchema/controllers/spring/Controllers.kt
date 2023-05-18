@@ -1,6 +1,6 @@
 package examples.requestsSchema.controllers
 
-import examples.requestsSchema.models.DummyRequest
+import examples.requestsSchema.models.DummyRequestJson
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.annotation.Validated
@@ -27,6 +27,6 @@ interface FooController {
     )
     fun post(
         @RequestBody @Valid
-        dummyRequest: DummyRequest
+        dummyRequest: DummyRequestJson
     ): ResponseEntity<Unit>
 }
