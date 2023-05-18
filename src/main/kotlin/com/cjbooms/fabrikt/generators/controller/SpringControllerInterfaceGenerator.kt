@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponseObject
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
@@ -84,6 +85,7 @@ class SpringControllerInterfaceGenerator(
                             .addAnnotation(SpringAnnotations.requestBodyBuilder().build())
                             .addAnnotation(JavaXAnnotations.validBuilder().build())
                             .build()
+
                     is RequestParameter ->
                         it
                             .toParameterSpecBuilder()
@@ -114,8 +116,8 @@ class SpringControllerInterfaceGenerator(
     }
 
     private fun FunSpec.Builder.addSpringFunAnnotation(op: Operation, verb: String, path: String): FunSpec.Builder {
-        val produces = op.responses
-            .flatMap { it.value.contentMediaTypes.keys }
+        val produces = op.happyPathResponseObject()
+            .contentMediaTypes.keys
             .toTypedArray()
 
         val consumes = op.requestBody

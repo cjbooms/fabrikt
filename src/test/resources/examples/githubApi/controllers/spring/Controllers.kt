@@ -41,7 +41,7 @@ interface InternalEventsController {
      */
     @RequestMapping(
         value = ["/internal/events"],
-        produces = ["application/json", "application/problem+json"],
+        produces = ["application/json"],
         method = [RequestMethod.POST],
         consumes = ["application/json"]
     )

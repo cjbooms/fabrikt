@@ -1,9 +1,11 @@
 package com.cjbooms.fabrikt.generators.controller
 
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
+import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.generatedType
 import com.cjbooms.fabrikt.model.ControllerType
-import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
+import com.cjbooms.fabrikt.util.NormalisedString.contentTypeSuffix
+import com.reprezen.jsonoverlay.Overlay
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Response
 import com.reprezen.kaizen.oasparser.model3.SecurityRequirement
@@ -20,15 +22,23 @@ object ControllerGeneratorUtils {
         // Map of response code to nullable name of schema
         val responseDetails = happyPathResponseObject()
         return responseDetails
-            .contentMediaTypes
-            .map { it.value?.schema }
-            .filterNotNull()
-            .firstOrNull()
-            ?.let { toModelType(basePackage, KotlinTypeInfo.from(it)) }
+            .contentMediaTypes.entries
+            .map {
+                val name = if (Overlay.of(it.value).pathFromRoot.contains("components/response")) {
+                    responseDetails.name + it.key.contentTypeSuffix()
+                } else {
+                    it.value.schema.safeName()
+                }
+                name to it.value?.schema
+            }
+            .firstOrNull { it.second != null }
+            ?.let {
+                generatedType(basePackage, it.first)
+            }
             ?: Unit::class.asTypeName()
     }
 
-    private fun Operation.happyPathResponseObject(): Response {
+    fun Operation.happyPathResponseObject(): Response {
         val toResponseMapping: Map<Int, Response> = responses
             .filter { it.key != "default" }
             .map { (code, body) ->

@@ -17,7 +17,7 @@ interface FooController {
     /**
      *
      *
-     * @param dummyRequest Request body
+     * @param dummyRequestJson Request body
      */
     @RequestMapping(
         value = ["/foo"],
@@ -27,6 +27,6 @@ interface FooController {
     )
     fun post(
         @RequestBody @Valid
-        dummyRequest: DummyRequestJson
+        dummyRequestJson: DummyRequestJson
     ): ResponseEntity<Unit>
 }

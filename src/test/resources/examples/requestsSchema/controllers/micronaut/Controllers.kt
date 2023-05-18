@@ -14,12 +14,12 @@ interface FooController {
     /**
      *
      *
-     * @param dummyRequest Request body
+     * @param dummyRequestJson Request body
      */
     @Post(uri = "/foo")
     @Consumes(value = ["application/json"])
     fun post(
         @Body @Valid
-        dummyRequest: DummyRequestJson
+        dummyRequestJson: DummyRequestJson
     ): HttpResponse<Unit>
 }

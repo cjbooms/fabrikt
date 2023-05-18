@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecuritySupport
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponseObject
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
 import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
@@ -133,8 +134,8 @@ class MicronautControllerInterfaceGenerator(
         val globalSecurity =
             api.openApi3.securityRequirements.securitySupport()
 
-        val produces = op.responses
-            .flatMap { it.value.contentMediaTypes.keys }
+        val produces = op.happyPathResponseObject()
+            .contentMediaTypes.keys
             .toTypedArray()
 
         val consumes = op.requestBody

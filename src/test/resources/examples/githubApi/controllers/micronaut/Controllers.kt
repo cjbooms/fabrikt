@@ -42,7 +42,7 @@ interface InternalEventsController {
      */
     @Post(uri = "/internal/events")
     @Consumes(value = ["application/json"])
-    @Produces(value = ["application/json", "application/problem+json"])
+    @Produces(value = ["application/json"])
     fun post(
         @Body @Valid
         bulkEntityDetails: BulkEntityDetails

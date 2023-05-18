@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.IncomingParameter
@@ -7,6 +8,7 @@ import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
+import com.cjbooms.fabrikt.util.NormalisedString.contentTypeSuffix
 import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
 import com.reprezen.kaizen.oasparser.model3.MediaType
 import com.reprezen.kaizen.oasparser.model3.Operation
@@ -23,6 +25,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import com.cjbooms.fabrikt.util.capitalized
 import com.cjbooms.fabrikt.util.decapitalized
+import com.reprezen.jsonoverlay.Overlay
 import java.util.function.Predicate
 
 object GeneratorUtils {
@@ -156,13 +159,18 @@ object GeneratorUtils {
         extraParameters: List<IncomingParameter>,
     ): List<IncomingParameter> {
 
-        val bodies = requestBody.contentMediaTypes.values
-            .map {
+        val bodies = requestBody.contentMediaTypes.entries
+            .map { (key, mediaType) ->
+                val name = if (Overlay.of(mediaType.schema).pathFromRoot.contains("components/requestBodies")) {
+                    mediaType.schema.safeName() + key.contentTypeSuffix()
+                } else {
+                    mediaType.schema.safeName()
+                }
                 BodyParameter(
-                    it.schema.safeName().toKotlinParameterName().ifEmpty { it.schema.toVarName() },
+                    name.toKotlinParameterName().ifEmpty { mediaType.schema.toVarName() },
                     requestBody.description,
-                    toModelType(basePackage, KotlinTypeInfo.from(it.schema)),
-                    it.schema
+                    JacksonModelGenerator.generatedType(basePackage, name),
+                    mediaType.schema
                 )
             }
 

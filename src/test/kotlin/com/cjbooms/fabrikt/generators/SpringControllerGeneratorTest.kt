@@ -47,8 +47,8 @@ class SpringControllerGeneratorTest {
         MutableSettings.updateSettings(genTypes = setOf(CodeGenerationType.CONTROLLERS))
     }
 
-    // @Test
-    // fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("singleAllOf")
+    @Test
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("responsesSchema")
 
     @ParameterizedTest
     @MethodSource("testCases")
