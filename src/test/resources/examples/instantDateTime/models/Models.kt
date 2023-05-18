@@ -16,6 +16,24 @@ data class FirstModel(
     val extraFirstAttr: List<Instant>? = null
 )
 
+data class PostBody(
+    @param:JsonProperty("date")
+    @get:JsonProperty("date")
+    val date: Instant? = null,
+    @param:JsonProperty("extra_first_attr")
+    @get:JsonProperty("extra_first_attr")
+    val extraFirstAttr: List<Instant>? = null
+)
+
+data class PutBody(
+    @param:JsonProperty("date")
+    @get:JsonProperty("date")
+    val date: Instant? = null,
+    @param:JsonProperty("extra_first_attr")
+    @get:JsonProperty("extra_first_attr")
+    val extraFirstAttr: List<Instant>? = null
+)
+
 data class QueryResult(
     @param:JsonProperty("items")
     @get:JsonProperty("items")

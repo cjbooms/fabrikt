@@ -53,19 +53,19 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.1.0")
     testImplementation("org.assertj:assertj-core:3.14.0")
-
-    // Below dependencies are solely present so code examples in the test resources dir compile
-    testImplementation("javax.validation:validation-api:2.0.1.Final")
-    testImplementation("jakarta.validation:jakarta.validation-api:3.0.2")
-    testImplementation("org.springframework:spring-webmvc:5.1.9.RELEASE")
-    testImplementation("org.springframework.security:spring-security-web:5.4.0")
-    testImplementation("io.micronaut:micronaut-core:3.8.4")
-    testImplementation("io.micronaut:micronaut-http:3.8.4")
-    testCompileOnly("io.micronaut.security:micronaut-security:3.8.3")
-    testImplementation("com.squareup.okhttp3:okhttp:4.9.1")
     testImplementation("com.pinterest.ktlint:ktlint-core:0.41.0")
     testImplementation("com.pinterest:ktlint:0.41.0")
-    testImplementation("org.openapitools:jackson-databind-nullable:0.2.6")
+
+    // Below dependencies are solely present so code examples in the test resources dir compile
+    testCompileOnly("javax.validation:validation-api:2.0.1.Final")
+    testCompileOnly("jakarta.validation:jakarta.validation-api:3.0.2")
+    testCompileOnly("org.springframework:spring-webmvc:5.1.9.RELEASE")
+    testCompileOnly("org.springframework.security:spring-security-web:5.4.0")
+    testCompileOnly("io.micronaut:micronaut-core:3.8.4")
+    testCompileOnly("io.micronaut:micronaut-http:3.8.4")
+    testCompileOnly("io.micronaut.security:micronaut-security:3.8.3")
+    testCompileOnly("com.squareup.okhttp3:okhttp:4.9.1")
+    testCompileOnly("org.openapitools:jackson-databind-nullable:0.2.6")
 }
 
 tasks {

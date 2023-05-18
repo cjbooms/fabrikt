@@ -16,7 +16,7 @@ data class ErrorResponse(
     val code: Int
 )
 
-data class SucccessResponse(
+data class SuccessResponse(
     @param:JsonProperty("message")
     @get:JsonProperty("message")
     @get:NotNull

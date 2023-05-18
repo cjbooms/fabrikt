@@ -1,4 +1,12 @@
 openapi: 3.0.0
+paths:
+  /foo:
+    post:
+      responses:
+        200:
+          $ref: '#/components/responses/SuccessResponse'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
 components:
   responses:
     ErrorResponse:
@@ -15,7 +23,7 @@ components:
                 type: string
               code:
                 type: integer
-    SucccessResponse:
+    SuccessResponse:
       description: "Response on success"
       content:
         application/json:

@@ -39,10 +39,27 @@ data class SourceApi(
         validateSchemaObjects(openApi3).let {
             if (it.isNotEmpty()) throw ParameterException("Invalid models or api file:\n${it.joinToString("\n\t")}")
         }
-        allSchemas = openApi3.schemas.entries.map { it.key to it.value }
-            .plus(openApi3.parameters.entries.map { it.key to it.value.schema })
-            .plus(openApi3.responses.entries.flatMap { it.value.contentMediaTypes.entries.map { content -> it.key to content.value.schema } })
-            .map { (key, schema) -> SchemaInfo(key, schema) }
+        val globalSchemas = openApi3.schemas.entries.map { it.key to it.value }
+        val globalParameters = openApi3.parameters.entries.map { it.key to it.value.schema }
+        val globalRequests = openApi3.requestBodies.entries.flatMap {  request ->
+            val contentMediaTypes = request.value.contentMediaTypes.entries
+            if (contentMediaTypes.size == 1) {
+                contentMediaTypes.map { content -> request.key to content.value.schema }
+            } else {
+                contentMediaTypes.mapIndexed { i, content ->
+                    "${request.key}$i" to content.value.schema
+                }
+            }
+        }
+        val globalResponses =
+            openApi3.responses.entries.flatMap {  response ->
+                response.value.contentMediaTypes.entries.map { content ->
+                    response.key to content.value.schema
+                }
+            }
+        allSchemas = (globalSchemas + globalParameters + globalRequests + globalResponses).map { (key, schema) ->
+            SchemaInfo(key, schema)
+        }
     }
 
     private fun validateSchemaObjects(api: OpenApi3): List<ValidationError> {

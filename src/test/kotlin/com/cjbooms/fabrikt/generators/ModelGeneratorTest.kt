@@ -49,6 +49,7 @@ class ModelGeneratorTest {
         "wildCardTypes",
         "singleAllOf",
         "responsesSchema",
+        "requestsSchema",
         "webhook",
         "instantDateTime",
         "singleAllOf",

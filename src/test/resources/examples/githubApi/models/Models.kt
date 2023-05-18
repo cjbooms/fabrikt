@@ -43,7 +43,66 @@ data class BulkEntityDetails(
     }
 }
 
+data class BulkEventGenerationBody(
+    @param:JsonProperty("entities")
+    @get:JsonProperty("entities")
+    @get:NotNull
+    @get:Valid
+    val entities: List<EntityDetails>,
+    @get:JsonIgnore
+    val properties: MutableMap<String, Any> = mutableMapOf()
+) {
+    @JsonAnyGetter
+    fun get(): Map<String, Any> = properties
+
+    @JsonAnySetter
+    fun set(name: String, value: Any) {
+        properties[name] = value
+    }
+}
+
 data class Contributor(
+    @param:JsonProperty("id")
+    @get:JsonProperty("id")
+    val id: String? = null,
+    @param:JsonProperty("audit_actor")
+    @get:JsonProperty("audit_actor")
+    val auditActor: String? = null,
+    @param:JsonProperty("created")
+    @get:JsonProperty("created")
+    val created: OffsetDateTime? = null,
+    @param:JsonProperty("created_by")
+    @get:JsonProperty("created_by")
+    val createdBy: String? = null,
+    @param:JsonProperty("created_by_uid")
+    @get:JsonProperty("created_by_uid")
+    val createdByUid: String? = null,
+    @param:JsonProperty("modified")
+    @get:JsonProperty("modified")
+    val modified: OffsetDateTime? = null,
+    @param:JsonProperty("modified_by")
+    @get:JsonProperty("modified_by")
+    val modifiedBy: String? = null,
+    @param:JsonProperty("modified_by_uid")
+    @get:JsonProperty("modified_by_uid")
+    val modifiedByUid: String? = null,
+    @param:JsonProperty("status")
+    @get:JsonProperty("status")
+    @get:NotNull
+    val status: ContributorStatus,
+    @param:JsonProperty("etag")
+    @get:JsonProperty("etag")
+    val etag: String? = null,
+    @param:JsonProperty("username")
+    @get:JsonProperty("username")
+    @get:NotNull
+    val username: String,
+    @param:JsonProperty("name")
+    @get:JsonProperty("name")
+    val name: String? = null
+)
+
+data class ContributorBody(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     val id: String? = null,
@@ -217,6 +276,51 @@ data class Organisation(
     val hooks: List<Webhook>? = null
 )
 
+data class OrganisationBody(
+    @param:JsonProperty("id")
+    @get:JsonProperty("id")
+    val id: String? = null,
+    @param:JsonProperty("audit_actor")
+    @get:JsonProperty("audit_actor")
+    val auditActor: String? = null,
+    @param:JsonProperty("created")
+    @get:JsonProperty("created")
+    val created: OffsetDateTime? = null,
+    @param:JsonProperty("created_by")
+    @get:JsonProperty("created_by")
+    val createdBy: String? = null,
+    @param:JsonProperty("created_by_uid")
+    @get:JsonProperty("created_by_uid")
+    val createdByUid: String? = null,
+    @param:JsonProperty("modified")
+    @get:JsonProperty("modified")
+    val modified: OffsetDateTime? = null,
+    @param:JsonProperty("modified_by")
+    @get:JsonProperty("modified_by")
+    val modifiedBy: String? = null,
+    @param:JsonProperty("modified_by_uid")
+    @get:JsonProperty("modified_by_uid")
+    val modifiedByUid: String? = null,
+    @param:JsonProperty("status")
+    @get:JsonProperty("status")
+    @get:NotNull
+    val status: OrganisationStatus,
+    @param:JsonProperty("etag")
+    @get:JsonProperty("etag")
+    val etag: String? = null,
+    @param:JsonProperty("name")
+    @get:JsonProperty("name")
+    @get:NotNull
+    val name: String,
+    @param:JsonProperty("icon")
+    @get:JsonProperty("icon")
+    val icon: String? = null,
+    @param:JsonProperty("hooks")
+    @get:JsonProperty("hooks")
+    @get:Valid
+    val hooks: List<Webhook>? = null
+)
+
 data class OrganisationQueryResult(
     @param:JsonProperty("prev")
     @get:JsonProperty("prev")
@@ -293,6 +397,51 @@ data class PullRequest(
     val author: Author? = null
 )
 
+data class PullRequestBody(
+    @param:JsonProperty("id")
+    @get:JsonProperty("id")
+    val id: String? = null,
+    @param:JsonProperty("audit_actor")
+    @get:JsonProperty("audit_actor")
+    val auditActor: String? = null,
+    @param:JsonProperty("created")
+    @get:JsonProperty("created")
+    val created: OffsetDateTime? = null,
+    @param:JsonProperty("created_by")
+    @get:JsonProperty("created_by")
+    val createdBy: String? = null,
+    @param:JsonProperty("created_by_uid")
+    @get:JsonProperty("created_by_uid")
+    val createdByUid: String? = null,
+    @param:JsonProperty("modified")
+    @get:JsonProperty("modified")
+    val modified: OffsetDateTime? = null,
+    @param:JsonProperty("modified_by")
+    @get:JsonProperty("modified_by")
+    val modifiedBy: String? = null,
+    @param:JsonProperty("modified_by_uid")
+    @get:JsonProperty("modified_by_uid")
+    val modifiedByUid: String? = null,
+    @param:JsonProperty("status")
+    @get:JsonProperty("status")
+    @get:NotNull
+    val status: PullRequestStatus,
+    @param:JsonProperty("etag")
+    @get:JsonProperty("etag")
+    val etag: String? = null,
+    @param:JsonProperty("title")
+    @get:JsonProperty("title")
+    @get:NotNull
+    val title: String,
+    @param:JsonProperty("description")
+    @get:JsonProperty("description")
+    val description: String? = null,
+    @param:JsonProperty("author")
+    @get:JsonProperty("author")
+    @get:Valid
+    val author: Author? = null
+)
+
 data class PullRequestQueryResult(
     @param:JsonProperty("prev")
     @get:JsonProperty("prev")
@@ -325,6 +474,54 @@ enum class PullRequestStatus(
 }
 
 data class Repository(
+    @param:JsonProperty("id")
+    @get:JsonProperty("id")
+    val id: String? = null,
+    @param:JsonProperty("audit_actor")
+    @get:JsonProperty("audit_actor")
+    val auditActor: String? = null,
+    @param:JsonProperty("created")
+    @get:JsonProperty("created")
+    val created: OffsetDateTime? = null,
+    @param:JsonProperty("created_by")
+    @get:JsonProperty("created_by")
+    val createdBy: String? = null,
+    @param:JsonProperty("created_by_uid")
+    @get:JsonProperty("created_by_uid")
+    val createdByUid: String? = null,
+    @param:JsonProperty("modified")
+    @get:JsonProperty("modified")
+    val modified: OffsetDateTime? = null,
+    @param:JsonProperty("modified_by")
+    @get:JsonProperty("modified_by")
+    val modifiedBy: String? = null,
+    @param:JsonProperty("modified_by_uid")
+    @get:JsonProperty("modified_by_uid")
+    val modifiedByUid: String? = null,
+    @param:JsonProperty("status")
+    @get:JsonProperty("status")
+    @get:NotNull
+    val status: RepositoryStatus,
+    @param:JsonProperty("etag")
+    @get:JsonProperty("etag")
+    val etag: String? = null,
+    @param:JsonProperty("slug")
+    @get:JsonProperty("slug")
+    @get:NotNull
+    val slug: String,
+    @param:JsonProperty("name")
+    @get:JsonProperty("name")
+    @get:NotNull
+    val name: String,
+    @param:JsonProperty("visibility")
+    @get:JsonProperty("visibility")
+    val visibility: RepositoryVisibility? = null,
+    @param:JsonProperty("tags")
+    @get:JsonProperty("tags")
+    val tags: List<String>? = null
+)
+
+data class RepositoryBody(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     val id: String? = null,
