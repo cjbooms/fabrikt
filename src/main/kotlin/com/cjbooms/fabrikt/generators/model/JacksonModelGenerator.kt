@@ -726,7 +726,16 @@ class JacksonModelGenerator(
                 KModifier.DATA,
             )
         }
+        sortConstructorParameters(constructorBuilder, classType)
         return classBuilder.primaryConstructor(constructorBuilder.build())
+    }
+
+    private fun sortConstructorParameters(constructorBuilder: FunSpec.Builder, classType: ClassSettings) {
+        if (classType.polymorphyType != ClassSettings.PolymorphyType.NONE) {
+            constructorBuilder.parameters.sortBy { it.defaultValue?.toString() != "null" && it.defaultValue != null }
+        } else {
+            println()
+        }
     }
 
     private fun Discriminator.getDiscriminatorMappings(schemaInfo: SchemaInfo): Map<String, TypeName> =

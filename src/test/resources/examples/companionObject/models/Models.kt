@@ -28,12 +28,11 @@ data class Cat(
     val hunts: Boolean? = null,
     @param:JsonProperty("age")
     @get:JsonProperty("age")
-    val age: Int? = null
-) : Pet(id, name, tag) {
+    val age: Int? = null,
     @get:JsonProperty("petType")
     @get:NotNull
     override val petType: String = "Cat"
-
+) : Pet(id, name, tag) {
     companion object
 }
 
@@ -54,12 +53,11 @@ data class Dog(
     val bark: Boolean? = null,
     @param:JsonProperty("breed")
     @get:JsonProperty("breed")
-    val breed: DogBreed? = null
-) : Pet(id, name, tag) {
+    val breed: DogBreed? = null,
     @get:JsonProperty("petType")
     @get:NotNull
     override val petType: String = "Dog"
-
+) : Pet(id, name, tag) {
     companion object
 }
 

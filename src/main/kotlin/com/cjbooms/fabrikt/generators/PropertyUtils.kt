@@ -84,21 +84,7 @@ object PropertyUtils {
                 }
 
                 ClassSettings.PolymorphyType.SUB -> {
-                    if (this is PropertyInfo.Field && isPolymorphicDiscriminator) {
-                        property.addModifiers(KModifier.OVERRIDE)
-                        val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName)
-                        if (discriminators.size == 1) {
-                            when (val discriminator = discriminators.first()) {
-                                is PropertyInfo.DiscriminatorKey.EnumKey ->
-                                    property.initializer("%T.%L", wrappedType, discriminator.enumKey)
-
-                                is PropertyInfo.DiscriminatorKey.StringKey ->
-                                    property.initializer("%S", discriminator.stringValue)
-                            }
-                        } else {
-                            property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
-                        }
-                    } else {
+                    if (this !is PropertyInfo.Field || !isPolymorphicDiscriminator) {
                         if (isInherited) {
                             property.addModifiers(KModifier.OVERRIDE)
                             classBuilder.addSuperclassConstructorParameter(name)
@@ -122,15 +108,19 @@ object PropertyUtils {
                 isSubTypeDiscriminatorWithMultipleValues(classSettings, schemaName)
             ) {
                 property.initializer(name)
+                if (this is PropertyInfo.Field && isPolymorphicDiscriminator) {
+                    property.addModifiers(KModifier.OVERRIDE)
+                }
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
                 val oasDefault = getDefaultValue(this, parameterizedType)
                 if (!isRequired) {
                     if (oasDefault != null) {
                         val wrappedDefault =
-                            if (classSettings.isMergePatchPattern)
+                            if (classSettings.isMergePatchPattern) {
                                 OasDefault.JsonNullableValue(oasDefault)
-                            else
+                            } else {
                                 oasDefault
+                            }
                         constructorParameter.defaultValue(wrappedDefault.getDefault())
                     } else {
                         val undefinedDefault = if (classSettings.isMergePatchPattern) {
@@ -140,6 +130,23 @@ object PropertyUtils {
                         }
                         constructorParameter.defaultValue(undefinedDefault)
                     }
+                }
+                constructorBuilder.addParameter(constructorParameter.build())
+            } else if (classSettings.polymorphyType == ClassSettings.PolymorphyType.SUB) {
+                property.initializer(name)
+                val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
+                property.addModifiers(KModifier.OVERRIDE)
+                val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName)
+                if (discriminators.size == 1) {
+                    when (val discriminator = discriminators.first()) {
+                        is PropertyInfo.DiscriminatorKey.EnumKey ->
+                            constructorParameter.defaultValue("%T.%L", wrappedType, discriminator.enumKey)
+
+                        is PropertyInfo.DiscriminatorKey.StringKey ->
+                            constructorParameter.defaultValue("%S", discriminator.stringValue)
+                    }
+                } else {
+                    property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
                 }
                 constructorBuilder.addParameter(constructorParameter.build())
             }
