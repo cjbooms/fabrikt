@@ -3,6 +3,7 @@ package examples.okHttpClient.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import examples.okHttpClient.models.Content
+import examples.okHttpClient.models.ContentJson
 import examples.okHttpClient.models.FirstModel
 import examples.okHttpClient.models.QueryResult
 import okhttp3.Headers
@@ -62,12 +63,12 @@ class ExamplePath1Client(
     /**
      * POST example path 1
      *
-     * @param content
+     * @param contentJson
      * @param explodeListQueryParam
      */
     @Throws(ApiException::class)
     fun postExamplePath1(
-        content: Content,
+        contentJson: ContentJson,
         explodeListQueryParam: List<String>? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): ApiResponse<Unit> {
@@ -84,7 +85,7 @@ class ExamplePath1Client(
         val request: Request = Request.Builder()
             .url(httpUrl)
             .headers(httpHeaders)
-            .post(objectMapper.writeValueAsString(content).toRequestBody("application/json".toMediaType()))
+            .post(objectMapper.writeValueAsString(contentJson).toRequestBody("application/json".toMediaType()))
             .build()
 
         return request.execute(client, objectMapper, jacksonTypeRef())
