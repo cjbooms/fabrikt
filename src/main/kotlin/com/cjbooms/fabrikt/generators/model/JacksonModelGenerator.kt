@@ -733,8 +733,6 @@ class JacksonModelGenerator(
     private fun sortConstructorParameters(constructorBuilder: FunSpec.Builder, classType: ClassSettings) {
         if (classType.polymorphyType != ClassSettings.PolymorphyType.NONE) {
             constructorBuilder.parameters.sortBy { it.defaultValue?.toString() != "null" && it.defaultValue != null }
-        } else {
-            println()
         }
     }
 
