@@ -84,7 +84,9 @@ object PropertyUtils {
                 }
 
                 ClassSettings.PolymorphyType.SUB -> {
-                    if (this !is PropertyInfo.Field || !isPolymorphicDiscriminator) {
+                    if (this is PropertyInfo.Field && isPolymorphicDiscriminator) {
+                        property.addModifiers(KModifier.OVERRIDE)
+                    } else {
                         if (isInherited) {
                             property.addModifiers(KModifier.OVERRIDE)
                             classBuilder.addSuperclassConstructorParameter(name)
@@ -108,9 +110,6 @@ object PropertyUtils {
                 isSubTypeDiscriminatorWithMultipleValues(classSettings, schemaName)
             ) {
                 property.initializer(name)
-                if (this is PropertyInfo.Field && isPolymorphicDiscriminator) {
-                    property.addModifiers(KModifier.OVERRIDE)
-                }
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
                 val oasDefault = getDefaultValue(this, parameterizedType)
                 if (!isRequired) {
@@ -135,7 +134,6 @@ object PropertyUtils {
             } else if (classSettings.polymorphyType == ClassSettings.PolymorphyType.SUB) {
                 property.initializer(name)
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
-                property.addModifiers(KModifier.OVERRIDE)
                 val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName)
                 if (discriminators.size == 1) {
                     when (val discriminator = discriminators.first()) {
