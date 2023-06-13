@@ -41,6 +41,9 @@ The following example shows how `allOf` can be used to generate polymorphic Kotl
  - A `ChildDefinition` schema defines both the discriminator mapping details and the schema for the discriminator property. In this case the discriminator property is an enumeration
  - In each child schema, `allOf` is used to merge the `ChildDefinition` with the child's custom schema. This guarantees that each child schema inherits the correct discriminator property. 
  - In the `Responses` schema a `oneOf` lists only child schemas. This will be detected by Fabrikt and it will generate the list of parent types: `List<ChildDefinition>`
+
+_NOTE: A new feature has been added that allows Polymorphism to be achieved using only a [discriminated oneOf](src/test/resources/examples/discriminatedOneOf). This feature makes use of Kotlin `sealed interface` and must be explicitly enabled via `--http-model-opts, SEALED_INTERFACES_FOR_ONE_OF`_
+
 ```yml
 openapi: 3.0.0
 components:
