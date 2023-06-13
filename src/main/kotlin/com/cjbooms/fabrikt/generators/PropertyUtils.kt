@@ -110,16 +110,12 @@ object PropertyUtils {
                     property.initializer(name)
                     val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
                     val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName)
-                    if (discriminators.size == 1) {
-                        when (val discriminator = discriminators.first()) {
-                            is PropertyInfo.DiscriminatorKey.EnumKey ->
-                                constructorParameter.defaultValue("%T.%L", wrappedType, discriminator.enumKey)
+                    when (val discriminator = discriminators.first()) {
+                        is PropertyInfo.DiscriminatorKey.EnumKey ->
+                            constructorParameter.defaultValue("%T.%L", wrappedType, discriminator.enumKey)
 
-                            is PropertyInfo.DiscriminatorKey.StringKey ->
-                                constructorParameter.defaultValue("%S", discriminator.stringValue)
-                        }
-                    } else {
-                        property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
+                        is PropertyInfo.DiscriminatorKey.StringKey ->
+                            constructorParameter.defaultValue("%S", discriminator.stringValue)
                     }
                     constructorBuilder.addParameter(constructorParameter.build())
                 }
