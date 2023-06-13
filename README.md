@@ -33,42 +33,69 @@ The library currently has support for generating:
 
 ### Example Generation
 
-The test directory forms a living documentation full of [code examples](src/test/resources/examples) generated from different OpenApi3 permutations. 
+Consult test directory for OAS code generation examples, it forms a living documentation full of [code examples](src/test/resources/examples) generated from different OpenApi3 permutations. 
 
-Below showcases one single example from this directory, which uses an enum discriminator to generate polymorphic sealed classes:
+#### Polymorphism via allOf
+
+The following example shows how `allOf` can be used to generate polymorphic Kotlin data classes. It does the following:
+ - A `ChildDefinition` schema defines both the discriminator mapping details and the schema for the discriminator property. In this case the discriminator property is an enumeration
+ - In each child schema, `allOf` is used to merge the `ChildDefinition` with the child's custom schema. This guarantees that each child schema inherits the correct discriminator property. 
+ - In the `Responses` schema a `oneOf` lists only child schemas. This will be detected by Fabrikt and it will generate the list of parent types: `List<ChildDefinition>`
 ```yml
 openapi: 3.0.0
 components:
   schemas:
-    PolymorphicEnumDiscriminator:
+    ChildDefinition:
       type: object
       discriminator:
         propertyName: some_enum
         mapping:
-          obj_one: '#/components/schemas/ConcreteImplOne'
-          obj_two: '#/components/schemas/ConcreteImplTwo'
+          obj_one_only: '#/components/schemas/DiscriminatedChild1'
+          obj_two_first: '#/components/schemas/DiscriminatedChild2'
+          obj_two_second: '#/components/schemas/DiscriminatedChild2'
+          obj_three: '#/components/schemas/discriminated_child_3'
       properties:
-        some_enum:
-          $ref: '#/components/schemas/EnumDiscriminator'
-    ConcreteImplOne:
-      allOf:
-        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
-        - type: object
-          properties:
-            some_prop:
-              type: string
-    ConcreteImplTwo:
-      allOf:
-        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
-        - type: object
-          properties:
-            some_prop:
-              type: string
-    EnumDiscriminator:
+        discriminating_property:
+          $ref: '#/components/schemas/ChildDiscriminator'
+
+    ChildDiscriminator:
       type: string
       enum:
-        - obj_one
-        - obj_two
+        - obj_one_only
+        - obj_two_first
+        - obj_two_second
+        - obj_three
+
+    DiscriminatedChild1:
+      allOf:
+        - $ref: '#/components/schemas/ChildDefinition'
+        - type: object
+          properties:
+            some_prop:
+              type: string
+
+    DiscriminatedChild2:
+      allOf:
+        - $ref: '#/components/schemas/ChildDefinition'
+        - type: object
+          properties:
+            some_prop:
+              type: string
+
+    discriminated_child_3:
+      allOf:
+        - $ref: '#/components/schemas/ChildDefinition'
+
+    Responses:
+      type: "object"
+      properties:
+        entries:
+          type: "array"
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/DiscriminatedChild2"
+              - $ref: "#/components/schemas/DiscriminatedChild2"
+              - $ref: "#/components/schemas/discriminated_child_3"
 ```
 ```kotlin
 @JsonTypeInfo(
@@ -79,44 +106,76 @@ components:
 )
 @JsonSubTypes(
     JsonSubTypes.Type(
-        value = ConcreteImplOne::class,
+        value = DiscriminatedChild1::class,
         name =
-            "obj_one"
+        "obj_one_only"
     ),
-    JsonSubTypes.Type(value = ConcreteImplTwo::class, name = "obj_two")
+    JsonSubTypes.Type(
+        value = DiscriminatedChild2::class,
+        name =
+        "obj_two_first"
+    ),
+    JsonSubTypes.Type(
+        value = DiscriminatedChild2::class,
+        name =
+        "obj_two_second"
+    ),
+    JsonSubTypes.Type(value = DiscriminatedChild3::class, name = "obj_three")
 )
-sealed class PolymorphicEnumDiscriminator() {
-    abstract val someEnum: EnumDiscriminator
+sealed class ChildDefinition() {
+    abstract val someEnum: ChildDiscriminator
 }
 
-enum class EnumDiscriminator(
+enum class ChildDiscriminator(
     @JsonValue
     val value: String
 ) {
-    OBJ_ONE("obj_one"),
+    OBJ_ONE_ONLY("obj_one_only"),
 
-    OBJ_TWO("obj_two");
+    OBJ_TWO_FIRST("obj_two_first"),
+
+    OBJ_TWO_SECOND("obj_two_second"),
+
+    OBJ_THREE("obj_three");
+
+    companion object {
+        private val mapping: Map<String, ChildDiscriminator> =
+            values().associateBy(ChildDiscriminator::value)
+
+        fun fromValue(value: String): ChildDiscriminator? = mapping[value]
+    }
 }
 
-data class ConcreteImplOne(
+data class DiscriminatedChild1(
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null,
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: ChildDiscriminator = ChildDiscriminator.OBJ_ONE_ONLY
+) : ChildDefinition()
+
+data class DiscriminatedChild2(
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: ChildDiscriminator,
     @param:JsonProperty("some_prop")
     @get:JsonProperty("some_prop")
     val someProp: String? = null
-) : PolymorphicEnumDiscriminator() {
-    @get:JsonProperty("some_enum")
-    @get:NotNull
-    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE
-}
+) : ChildDefinition()
 
-data class ConcreteImplTwo(
-    @param:JsonProperty("some_prop")
-    @get:JsonProperty("some_prop")
-    val someProp: String? = null
-) : PolymorphicEnumDiscriminator() {
+data class DiscriminatedChild3(
     @get:JsonProperty("some_enum")
     @get:NotNull
-    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_TWO
-}
+    override val someEnum: ChildDiscriminator = ChildDiscriminator.OBJ_THREE
+) : ChildDefinition()
+
+data class Responses(
+    @param:JsonProperty("entries")
+    @get:JsonProperty("entries")
+    @get:Valid
+    val entries: List<ChildDefinition>? = null
+)
 ```
 
 
@@ -148,6 +207,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                              |   `MICRONAUT_INTROSPECTION` - This option adds @Introspected to the generated models. Requires dependency "'io.micronaut:micronaut-core:+" |
 |                              |   `MICRONAUT_REFLECTION` - This option adds @ReflectiveAccess to the generated models. Requires dependency "'io.micronaut:micronaut-core:+" |
 |                              |   `INCLUDE_COMPANION_OBJECT` - This option adds a companion object to the generated models. |
+|                              |   `SEALED_INTERFACES_FOR_ONE_OF` - This option enables the generation of interfaces for discriminated oneOf types |
 |   `--output-directory`       | Allows the generation dir to be overridden. Defaults to current dir |
 |   `--resources-path`         | Allows the path for generated resources to be overridden. Defaults to `src/main/resources` |
 |   `--src-path`               | Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin` |
