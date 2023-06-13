@@ -15,23 +15,21 @@ data class ChildTypeA(
     @param:JsonProperty("some_string")
     @get:JsonProperty("some_string")
     @get:NotNull
-    val someString: String
-) : ParentSpec() {
+    val someString: String,
     @get:JsonProperty("type")
     @get:NotNull
     override val type: ParentType = ParentType.CHILD_TYPE_A
-}
+) : ParentSpec()
 
 data class ChildTypeB(
     @param:JsonProperty("some_int")
     @get:JsonProperty("some_int")
     @get:NotNull
-    val someInt: Int
-) : ParentSpec() {
+    val someInt: Int,
     @get:JsonProperty("type")
     @get:NotNull
     override val type: ParentType = ParentType.CHILD_TYPE_B
-}
+) : ParentSpec()
 
 data class ContainsOneOfPolymorphicTypes(
     @param:JsonProperty("one_one_of")
@@ -124,39 +122,35 @@ sealed class PolymorphicSuperTypeTwo() {
 data class PolymorphicTypeOneA(
     @param:JsonProperty("whateverA")
     @get:JsonProperty("whateverA")
-    val whateverA: String? = null
-) : PolymorphicSuperTypeOne() {
+    val whateverA: String? = null,
     @get:JsonProperty("shared")
     @get:NotNull
     override val shared: String = "PolymorphicTypeOneA"
-}
+) : PolymorphicSuperTypeOne()
 
 data class PolymorphicTypeOneB(
     @param:JsonProperty("whateverB")
     @get:JsonProperty("whateverB")
-    val whateverB: Int? = null
-) : PolymorphicSuperTypeOne() {
+    val whateverB: Int? = null,
     @get:JsonProperty("shared")
     @get:NotNull
     override val shared: String = "PolymorphicTypeOneB"
-}
+) : PolymorphicSuperTypeOne()
 
 data class PolymorphicTypeTwoA(
     @param:JsonProperty("whateverC")
     @get:JsonProperty("whateverC")
-    val whateverC: String? = null
-) : PolymorphicSuperTypeTwo() {
+    val whateverC: String? = null,
     @get:JsonProperty("shared")
     @get:NotNull
     override val shared: String = "PolymorphicTypeTwoA"
-}
+) : PolymorphicSuperTypeTwo()
 
 data class PolymorphicTypeTwoB(
     @param:JsonProperty("whateverD")
     @get:JsonProperty("whateverD")
-    val whateverD: Int? = null
-) : PolymorphicSuperTypeTwo() {
+    val whateverD: Int? = null,
     @get:JsonProperty("shared")
     @get:NotNull
     override val shared: String = "PolymorphicTypeTwoB"
-}
+) : PolymorphicSuperTypeTwo()

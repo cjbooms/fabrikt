@@ -86,18 +86,6 @@ object PropertyUtils {
                 ClassSettings.PolymorphyType.SUB -> {
                     if (this is PropertyInfo.Field && isPolymorphicDiscriminator) {
                         property.addModifiers(KModifier.OVERRIDE)
-                        val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName)
-                        if (discriminators.size == 1) {
-                            when (val discriminator = discriminators.first()) {
-                                is PropertyInfo.DiscriminatorKey.EnumKey ->
-                                    property.initializer("%T.%L", wrappedType, discriminator.enumKey)
-
-                                is PropertyInfo.DiscriminatorKey.StringKey ->
-                                    property.initializer("%S", discriminator.stringValue)
-                            }
-                        } else {
-                            property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
-                        }
                     } else {
                         if (isInherited) {
                             property.addModifiers(KModifier.OVERRIDE)
@@ -116,21 +104,33 @@ object PropertyUtils {
                 }
             }
 
-            if (this !is PropertyInfo.Field ||
-                !isPolymorphicDiscriminator ||
-                isSubTypeDiscriminatorWithNoValue(classSettings) ||
-                isSubTypeDiscriminatorWithMultipleValues(classSettings, schemaName)
-            ) {
+            if (isDiscriminatorFieldWithSingleKnownValue(classSettings, schemaName)) {
+                this as PropertyInfo.Field
+                if (classSettings.polymorphyType == ClassSettings.PolymorphyType.SUB) {
+                    property.initializer(name)
+                    val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
+                    val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName)
+                    when (val discriminator = discriminators.first()) {
+                        is PropertyInfo.DiscriminatorKey.EnumKey ->
+                            constructorParameter.defaultValue("%T.%L", wrappedType, discriminator.enumKey)
+
+                        is PropertyInfo.DiscriminatorKey.StringKey ->
+                            constructorParameter.defaultValue("%S", discriminator.stringValue)
+                    }
+                    constructorBuilder.addParameter(constructorParameter.build())
+                }
+            } else {
                 property.initializer(name)
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
                 val oasDefault = getDefaultValue(this, parameterizedType)
                 if (!isRequired) {
                     if (oasDefault != null) {
                         val wrappedDefault =
-                            if (classSettings.isMergePatchPattern)
+                            if (classSettings.isMergePatchPattern) {
                                 OasDefault.JsonNullableValue(oasDefault)
-                            else
+                            } else {
                                 oasDefault
+                            }
                         constructorParameter.defaultValue(wrappedDefault.getDefault())
                     } else {
                         val undefinedDefault = if (classSettings.isMergePatchPattern) {
@@ -147,6 +147,14 @@ object PropertyUtils {
 
         classBuilder.addProperty(property.build())
     }
+
+    private fun PropertyInfo.isDiscriminatorFieldWithSingleKnownValue(
+        classSettings: ClassSettings,
+        schemaName: String,
+    ) = this is PropertyInfo.Field &&
+        isPolymorphicDiscriminator &&
+        !isSubTypeDiscriminatorWithNoValue(classSettings) &&
+        !isSubTypeDiscriminatorWithMultipleValues(classSettings, schemaName)
 
     private fun Map<String, PropertyInfo.DiscriminatorKey>?.getDiscriminatorMappings(
         schemaName: String,

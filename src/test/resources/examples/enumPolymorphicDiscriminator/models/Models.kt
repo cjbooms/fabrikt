@@ -12,31 +12,28 @@ import kotlin.collections.Map
 data class ConcreteImplOne(
     @param:JsonProperty("some_prop")
     @get:JsonProperty("some_prop")
-    val someProp: String? = null
-) : PolymorphicEnumDiscriminator() {
+    val someProp: String? = null,
     @get:JsonProperty("some_enum")
     @get:NotNull
     override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE_ONLY
-}
+) : PolymorphicEnumDiscriminator()
 
 data class ConcreteImplOneRef(
     @param:JsonProperty("some_prop")
     @get:JsonProperty("some_prop")
-    val someProp: String? = null
-) : PolymorphicEnumDiscriminator() {
+    val someProp: String? = null,
     @get:JsonProperty("some_enum")
     @get:NotNull
     override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE_ONLY
-}
+) : PolymorphicEnumDiscriminator()
 
-class ConcreteImplThree() : PolymorphicEnumDiscriminator() {
+data class ConcreteImplThree(
     @get:JsonProperty("some_enum")
     @get:NotNull
     override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_THREE
-}
+) : PolymorphicEnumDiscriminator()
 
 data class ConcreteImplTwo(
-    @param:JsonProperty("some_enum")
     @get:JsonProperty("some_enum")
     @get:NotNull
     override val someEnum: EnumDiscriminator,
