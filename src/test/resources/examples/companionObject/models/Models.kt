@@ -31,6 +31,7 @@ data class Cat(
     val age: Int? = null,
     @get:JsonProperty("petType")
     @get:NotNull
+    @param:JsonProperty("petType")
     override val petType: String = "Cat"
 ) : Pet(id, name, tag) {
     companion object
@@ -56,6 +57,7 @@ data class Dog(
     val breed: DogBreed? = null,
     @get:JsonProperty("petType")
     @get:NotNull
+    @param:JsonProperty("petType")
     override val petType: String = "Dog"
 ) : Pet(id, name, tag) {
     companion object

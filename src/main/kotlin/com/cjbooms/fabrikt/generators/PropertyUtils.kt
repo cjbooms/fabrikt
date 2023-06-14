@@ -108,6 +108,7 @@ object PropertyUtils {
                 this as PropertyInfo.Field
                 if (classSettings.polymorphyType == ClassSettings.PolymorphyType.SUB) {
                     property.initializer(name)
+                    property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
                     val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
                     val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName)
                     when (val discriminator = discriminators.first()) {

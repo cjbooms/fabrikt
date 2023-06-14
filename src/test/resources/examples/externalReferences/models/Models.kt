@@ -90,6 +90,7 @@ data class OneOfOne(
     val oneOfOne: String? = null,
     @get:JsonProperty("discriminator")
     @get:NotNull
+    @param:JsonProperty("discriminator")
     override val discriminator: String = "OneOfOne"
 ) : ParentOneOf()
 
@@ -99,6 +100,7 @@ data class OneOfTwo(
     val oneOfTwo: String? = null,
     @get:JsonProperty("discriminator")
     @get:NotNull
+    @param:JsonProperty("discriminator")
     override val discriminator: String = "OneOfTwo"
 ) : ParentOneOf()
 

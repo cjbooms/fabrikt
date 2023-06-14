@@ -64,6 +64,7 @@ data class DiscriminatedChild1(
     val someProp: String? = null,
     @get:JsonProperty("some_enum")
     @get:NotNull
+    @param:JsonProperty("some_enum")
     override val someEnum: ChildDiscriminator = ChildDiscriminator.OBJ_ONE_ONLY
 ) : ChildDefinition()
 
@@ -79,6 +80,7 @@ data class DiscriminatedChild2(
 data class DiscriminatedChild3(
     @get:JsonProperty("some_enum")
     @get:NotNull
+    @param:JsonProperty("some_enum")
     override val someEnum: ChildDiscriminator = ChildDiscriminator.OBJ_THREE
 ) : ChildDefinition()
 

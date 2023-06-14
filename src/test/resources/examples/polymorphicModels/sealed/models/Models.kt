@@ -46,6 +46,7 @@ data class PolymorphicTypeOneRef(
     val childOneName: String? = null,
     @get:JsonProperty("generation")
     @get:NotNull
+    @param:JsonProperty("generation")
     override val generation: String = "PolymorphicTypeOne"
 ) : PolymorphicSuperType(firstName, lastName)
 
@@ -63,6 +64,7 @@ data class PolymorphicTypeOneAnotherRef(
     val childOneName: String? = null,
     @get:JsonProperty("generation")
     @get:NotNull
+    @param:JsonProperty("generation")
     override val generation: String = "PolymorphicTypeOne"
 ) : PolymorphicSuperType(firstName, lastName)
 
@@ -83,6 +85,7 @@ data class PolymorphicTypeTwoRef(
     val childTwoAge: Int? = null,
     @get:JsonProperty("generation")
     @get:NotNull
+    @param:JsonProperty("generation")
     override val generation: String = "polymorphic_type_two"
 ) : PolymorphicSuperType(firstName, lastName)
 
@@ -100,6 +103,7 @@ data class PolymorphicTypeOne(
     val childOneName: String? = null,
     @get:JsonProperty("generation")
     @get:NotNull
+    @param:JsonProperty("generation")
     override val generation: String = "PolymorphicTypeOne"
 ) : PolymorphicSuperType(firstName, lastName)
 
@@ -120,5 +124,6 @@ data class PolymorphicTypeTwo(
     val childTwoAge: Int? = null,
     @get:JsonProperty("generation")
     @get:NotNull
+    @param:JsonProperty("generation")
     override val generation: String = "polymorphic_type_two"
 ) : PolymorphicSuperType(firstName, lastName)
