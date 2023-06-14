@@ -52,6 +52,7 @@ sealed class FirstLevelChild(
     open val firstLevelField2: Int? = null,
     @get:JsonProperty("rootDiscriminator")
     @get:NotNull
+    @param:JsonProperty("rootDiscriminator")
     override val rootDiscriminator: RootDiscriminator = RootDiscriminator.FIRST_LEVEL_CHILD
 ) : RootType(rootField1, rootField2) {
     abstract val firstLevelDiscriminator: FirstLevelDiscriminator
@@ -137,6 +138,7 @@ sealed class SecondLevelChild1(
     open val metadata: SecondLevelMetadata,
     @get:JsonProperty("firstLevelDiscriminator")
     @get:NotNull
+    @param:JsonProperty("firstLevelDiscriminator")
     override val firstLevelDiscriminator: FirstLevelDiscriminator =
         FirstLevelDiscriminator.SECOND_LEVEL_CHILD1
 ) : FirstLevelChild(rootField1, rootField2, firstLevelField1, firstLevelField2) {
@@ -179,6 +181,7 @@ sealed class SecondLevelChild2(
     open val metadata: SecondLevelMetadata,
     @get:JsonProperty("firstLevelDiscriminator")
     @get:NotNull
+    @param:JsonProperty("firstLevelDiscriminator")
     override val firstLevelDiscriminator: FirstLevelDiscriminator =
         FirstLevelDiscriminator.SECOND_LEVEL_CHILD2
 ) : FirstLevelChild(rootField1, rootField2, firstLevelField1, firstLevelField2) {
@@ -235,6 +238,7 @@ data class ThirdLevelChild11(
     val creationDate: Int,
     @get:JsonProperty("secondLevelDiscriminator")
     @get:NotNull
+    @param:JsonProperty("secondLevelDiscriminator")
     override val secondLevelDiscriminator: SecondLevelDiscriminator =
         SecondLevelDiscriminator.THIRD_LEVEL_CHILD1
 ) : SecondLevelChild1(rootField1, rootField2, firstLevelField1, firstLevelField2, metadata)
@@ -265,6 +269,7 @@ data class ThirdLevelChild12(
     val isDeleted: Boolean,
     @get:JsonProperty("secondLevelDiscriminator")
     @get:NotNull
+    @param:JsonProperty("secondLevelDiscriminator")
     override val secondLevelDiscriminator: SecondLevelDiscriminator =
         SecondLevelDiscriminator.THIRD_LEVEL_CHILD2
 ) : SecondLevelChild1(rootField1, rootField2, firstLevelField1, firstLevelField2, metadata)
@@ -295,6 +300,7 @@ data class ThirdLevelChild21(
     val creationDate: Int,
     @get:JsonProperty("secondLevelDiscriminator")
     @get:NotNull
+    @param:JsonProperty("secondLevelDiscriminator")
     override val secondLevelDiscriminator: SecondLevelDiscriminator =
         SecondLevelDiscriminator.THIRD_LEVEL_CHILD1
 ) : SecondLevelChild2(rootField1, rootField2, firstLevelField1, firstLevelField2, metadata)
@@ -325,6 +331,7 @@ data class ThirdLevelChild22(
     val isDeleted: Boolean,
     @get:JsonProperty("secondLevelDiscriminator")
     @get:NotNull
+    @param:JsonProperty("secondLevelDiscriminator")
     override val secondLevelDiscriminator: SecondLevelDiscriminator =
         SecondLevelDiscriminator.THIRD_LEVEL_CHILD2
 ) : SecondLevelChild2(rootField1, rootField2, firstLevelField1, firstLevelField2, metadata)

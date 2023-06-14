@@ -99,6 +99,7 @@ data class FirstModel(
     val extraFirstAttr: List<String>? = null,
     @get:JsonProperty("model_type")
     @get:NotNull
+    @param:JsonProperty("model_type")
     override val modelType: ContentModelType = ContentModelType.FIRST_MODEL
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable
 
@@ -135,6 +136,7 @@ data class SecondModel(
     val extraSecondAttr: Boolean? = null,
     @get:JsonProperty("model_type")
     @get:NotNull
+    @param:JsonProperty("model_type")
     override val modelType: ContentModelType = ContentModelType.SECOND_MODEL
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable
 
@@ -162,5 +164,6 @@ data class ThirdModel(
     val extraSecondAttr: Int? = null,
     @get:JsonProperty("model_type")
     @get:NotNull
+    @param:JsonProperty("model_type")
     override val modelType: ContentModelType = ContentModelType.THIRD_MODEL
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable
