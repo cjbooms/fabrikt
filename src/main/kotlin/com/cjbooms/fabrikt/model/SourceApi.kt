@@ -61,10 +61,6 @@ data class SourceApi(
                             "Do not use properties and a combiner at the same level."
                     )
                 )
-            else if (schema.type == OasType.Object.type && schema.oneOfSchemas?.isNotEmpty() == true)
-                errors + listOf(ValidationError("The $name object contains invalid use of both properties and `oneOf`."))
-            else if (schema.type == OasType.Object.type && schema.oneOfSchemas?.isNotEmpty() == true)
-                errors + listOf(ValidationError("The $name object contains invalid use of both properties and `oneOf`."))
             else if (schema.type == null && schema.properties?.isNotEmpty() == true) {
                 logger.warning("Schema '$name' has 'type: null' but defines properties. Assuming: 'type: object'")
                 errors
