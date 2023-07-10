@@ -7,6 +7,7 @@ import com.cjbooms.fabrikt.cli.CodeGenerationType.QUARKUS_REFLECTION_CONFIG
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
+import com.cjbooms.fabrikt.generators.client.OpenFeignInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
@@ -45,8 +46,14 @@ class CodeGenerator(
         sourceSet(controllers().files).plus(sourceSet(models().files))
 
     private fun generateClient(): Collection<GeneratedFile> {
-        val lib = OkHttpClientGenerator(packages, sourceApi, srcPath).generateLibrary(MutableSettings.clientOptions())
-        return sourceSet(client().files).plus(lib).plus(sourceSet(models().files))
+        val clientGenerator = when (MutableSettings.clientTarget()) {
+            ClientCodeGenTargetType.OK_HTTP -> OkHttpClientGenerator(packages, sourceApi, srcPath)
+            ClientCodeGenTargetType.OPEN_FEIGN -> OpenFeignInterfaceGenerator(packages, sourceApi)
+        }
+        val options = MutableSettings.clientOptions()
+        val clientFiles = clientGenerator.generate(options).files
+        val libFiles = clientGenerator.generateLibrary(options)
+        return sourceSet(clientFiles).plus(libFiles).plus(sourceSet(models().files))
     }
 
     private fun generateQuarkusReflectionResource(): Collection<GeneratedFile> = resourceSet(resources(models()))
@@ -78,7 +85,4 @@ class CodeGenerator(
             }
         return generator.generate()
     }
-
-    private fun client(): Clients =
-        OkHttpClientGenerator(packages, sourceApi, srcPath).generate(MutableSettings.clientOptions())
 }
