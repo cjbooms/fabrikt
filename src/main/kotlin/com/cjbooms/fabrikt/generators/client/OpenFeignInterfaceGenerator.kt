@@ -258,7 +258,7 @@ class OpenFeignInterfaceGenerator(
     }
 
     /**
-     * Adds suspend as modified to the func spec for Coroutines support with async feign
+     * Adds suspend as modified to the func spec so that i can be used with CoroutineFeign
      */
     private fun FunSpec.Builder.addSuspendModifier(options: Set<ClientCodeGenOptionType>): FunSpec.Builder {
         if (options.contains(ClientCodeGenOptionType.SUSPEND_MODIFIER)) {
