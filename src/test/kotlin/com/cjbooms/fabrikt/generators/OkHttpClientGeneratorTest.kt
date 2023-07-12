@@ -32,7 +32,7 @@ class OkHttpClientGeneratorTest {
         "multiMediaType",
         "okHttpClientPostWithoutRequestBody",
         "pathLevelParameters",
-        "parameterNameClash"
+        "parameterNameClash",
     )
 
     @BeforeEach
