@@ -29,11 +29,10 @@ class OkHttpClientGeneratorTest {
     @Suppress("unused")
     private fun fullApiTestCases(): Stream<String> = Stream.of(
         "okHttpClient",
-        "okHttpClientMultiMediaType",
+        "multiMediaType",
         "okHttpClientPostWithoutRequestBody",
         "pathLevelParameters",
-        "parameterNameClash",
-        "differentErrorResponseBody"
+        "parameterNameClash"
     )
 
     @BeforeEach

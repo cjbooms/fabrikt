@@ -1,8 +1,9 @@
-package examples.openFeignClientMultiMediaType.client
+package examples.multiMediaType.client
 
 import com.fasterxml.jackson.databind.JsonNode
-import examples.openFeignClientMultiMediaType.models.ContentType
-import examples.openFeignClientMultiMediaType.models.QueryResult
+import examples.multiMediaType.models.ContentType
+import examples.multiMediaType.models.QueryResult
+import examples.multiMediaType.models.SuccessResponse
 import feign.HeaderMap
 import feign.Headers
 import feign.Param
@@ -65,4 +66,17 @@ interface MultipleResponseSchemasClient {
         @HeaderMap
         additionalHeaders: Map<String, String> = emptyMap()
     ): JsonNode
+}
+
+@Suppress("unused")
+interface DifferentSuccessAndErrorResponseSchemaClient {
+    /**
+     *
+     */
+    @RequestLine("GET /different-success-and-error-response-schema")
+    @Headers("Accept: application/json")
+    fun getDifferentSuccessAndErrorResponseSchema(
+        @HeaderMap additionalHeaders: Map<String, String> =
+            emptyMap()
+    ): SuccessResponse
 }

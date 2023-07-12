@@ -1,9 +1,10 @@
-package examples.okHttpClientMultiMediaType.client
+package examples.multiMediaType.client
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import examples.okHttpClientMultiMediaType.models.ContentType
-import examples.okHttpClientMultiMediaType.models.QueryResult
+import examples.multiMediaType.models.ContentType
+import examples.multiMediaType.models.QueryResult
+import examples.multiMediaType.models.SuccessResponse
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import okhttp3.OkHttpClient
 import kotlin.Int
@@ -106,5 +107,35 @@ class MultipleResponseSchemasService(
     ): ApiResponse<JsonNode> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getMultipleResponseSchemas(accept, additionalHeaders)
+        }
+}
+
+/**
+ * The circuit breaker registry should have the proper configuration to correctly action on circuit
+ * breaker transitions based on the client exceptions [ApiClientException], [ApiServerException] and
+ * [IOException].
+ *
+ * @see ApiClientException
+ * @see ApiServerException
+ */
+@Suppress("unused")
+class DifferentSuccessAndErrorResponseSchemaService(
+    private val circuitBreakerRegistry: CircuitBreakerRegistry,
+    objectMapper: ObjectMapper,
+    baseUrl: String,
+    client: OkHttpClient
+) {
+    var circuitBreakerName: String = "differentSuccessAndErrorResponseSchemaClient"
+
+    private val apiClient: DifferentSuccessAndErrorResponseSchemaClient =
+        DifferentSuccessAndErrorResponseSchemaClient(objectMapper, baseUrl, client)
+
+    @Throws(ApiException::class)
+    fun getDifferentSuccessAndErrorResponseSchema(
+        additionalHeaders: Map<String, String> =
+            emptyMap()
+    ): ApiResponse<SuccessResponse> =
+        withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
+            apiClient.getDifferentSuccessAndErrorResponseSchema(additionalHeaders)
         }
 }

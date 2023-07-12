@@ -27,10 +27,9 @@ class OpenFeignClientGeneratorTest {
     @Suppress("unused")
     private fun fullApiTestCases(): Stream<String> = Stream.of(
         "openFeignClient",
-        "openFeignClientMultiMediaType",
+        "multiMediaType",
         "pathLevelParameters",
         "parameterNameClash",
-        "differentErrorResponseBody",
     )
 
     @BeforeEach
