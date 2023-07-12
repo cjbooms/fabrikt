@@ -107,6 +107,13 @@ class CodeGenArgs {
     var clientOptions: Set<ClientCodeGenOptionType> = emptySet()
 
     @Parameter(
+        names = ["--http-client-target"],
+        description = "Optionally select the target client that you want to be generated. Defaults to OK_HTTP",
+        converter = ClientCodeGenTargetConverter::class
+    )
+    var clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.OK_HTTP
+
+    @Parameter(
         names = ["--src-path"],
         description = "Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin`",
         converter = PathConverter::class
@@ -155,6 +162,10 @@ class ModelCodeGenOptionConverter : IStringConverter<ModelCodeGenOptionType> {
 class ClientCodeGenOptionConverter : IStringConverter<ClientCodeGenOptionType> {
     override fun convert(value: String): ClientCodeGenOptionType =
         convertToEnumValue(value)
+}
+
+class ClientCodeGenTargetConverter : IStringConverter<ClientCodeGenTargetType> {
+    override fun convert(value: String): ClientCodeGenTargetType = convertToEnumValue(value)
 }
 
 class ValidationLibraryOptionConverter : IStringConverter<ValidationLibrary> {

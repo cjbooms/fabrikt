@@ -193,7 +193,12 @@ This section documents the available CLI parameters for controlling what gets ge
 | * `--base-package`           | The base package which all code will be generated under. |
 |   `--http-client-opts`       | Select the options for the http client code that you want to be generated. |
 |                              | CHOOSE ANY OF: |
-|                              |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+" |
+|                              |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+" (only for OkHttp clients) |
+|                              |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated client functions (only for OpenFeign clients) |
+|   `--http-client-target`     | Optionally select the target client that you want to be generated. Defaults to OK_HTTP |
+|                              | CHOOSE ONE OF: |
+|                              |   `OK_HTTP` - Generate OkHttp client. |
+|                              |   `OPEN_FEIGN` - Generate OpenFeign client. |
 |   `--http-controller-opts`   | Select the options for the controllers that you want to be generated. |
 |                              | CHOOSE ANY OF: |
 |                              |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions |

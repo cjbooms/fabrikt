@@ -69,6 +69,21 @@ paths:
             application/vnd.custom.media+json:
               schema:
                 $ref: '#/components/schemas/OtherQueryResult'
+  /different-success-and-error-response-schema:
+    get:
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        400:
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   parameters:
@@ -240,3 +255,13 @@ components:
           description: "The attribute 2 for model 3"
           type: integer
           readOnly: true
+    SuccessResponse:
+      type: object
+      properties:
+        successMessage:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        errorMessage:
+          type: string

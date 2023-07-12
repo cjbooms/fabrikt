@@ -1,4 +1,4 @@
-package examples.okHttpClientMultiMediaType.client
+package examples.multiMediaType.client
 
 import okhttp3.Authenticator
 import okhttp3.Interceptor

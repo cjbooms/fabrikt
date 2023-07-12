@@ -1,4 +1,4 @@
-package examples.okHttpClientMultiMediaType.models
+package examples.multiMediaType.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -101,6 +101,12 @@ enum class ContentType(
     }
 }
 
+data class ErrorResponse(
+    @param:JsonProperty("errorMessage")
+    @get:JsonProperty("errorMessage")
+    val errorMessage: String? = null
+)
+
 data class FirstModel(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
@@ -171,6 +177,12 @@ data class SecondModel(
     @param:JsonProperty("model_type")
     override val modelType: ContentModelType = ContentModelType.SECOND_MODEL
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag)
+
+data class SuccessResponse(
+    @param:JsonProperty("successMessage")
+    @get:JsonProperty("successMessage")
+    val successMessage: String? = null
+)
 
 data class ThirdModel(
     @param:JsonProperty("id")

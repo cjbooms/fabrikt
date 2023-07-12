@@ -1,10 +1,11 @@
-package examples.okHttpClientMultiMediaType.client
+package examples.multiMediaType.client
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import examples.okHttpClientMultiMediaType.models.ContentType
-import examples.okHttpClientMultiMediaType.models.QueryResult
+import examples.multiMediaType.models.ContentType
+import examples.multiMediaType.models.QueryResult
+import examples.multiMediaType.models.SuccessResponse
 import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -125,6 +126,39 @@ class MultipleResponseSchemasClient(
 
         val headerBuilder = Headers.Builder()
             .header("Accept", accept?.value)
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
+
+        val request: Request = Request.Builder()
+            .url(httpUrl)
+            .headers(httpHeaders)
+            .get()
+            .build()
+
+        return request.execute(client, objectMapper, jacksonTypeRef())
+    }
+}
+
+@Suppress("unused")
+class DifferentSuccessAndErrorResponseSchemaClient(
+    private val objectMapper: ObjectMapper,
+    private val baseUrl: String,
+    private val client: OkHttpClient
+) {
+    /**
+     *
+     */
+    @Throws(ApiException::class)
+    fun getDifferentSuccessAndErrorResponseSchema(
+        additionalHeaders: Map<String, String> =
+            emptyMap()
+    ): ApiResponse<SuccessResponse> {
+        val httpUrl: HttpUrl = "$baseUrl/different-success-and-error-response-schema"
+            .toHttpUrl()
+            .newBuilder()
+            .build()
+
+        val headerBuilder = Headers.Builder()
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 

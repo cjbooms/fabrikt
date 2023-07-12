@@ -22,7 +22,15 @@ enum class CodeGenerationType(val description: String) {
 }
 
 enum class ClientCodeGenOptionType(private val description: String) {
-    RESILIENCE4J("Generates a fault tolerance service for the client using the following library \"io.github.resilience4j:resilience4j-all:+\"");
+    RESILIENCE4J("Generates a fault tolerance service for the client using the following library \"io.github.resilience4j:resilience4j-all:+\" (only for OkHttp clients)"),
+    SUSPEND_MODIFIER("This option adds the suspend modifier to the generated client functions (only for OpenFeign clients)");
+
+    override fun toString() = "`${super.toString()}` - $description"
+}
+
+enum class ClientCodeGenTargetType(val description: String) {
+    OK_HTTP("Generate OkHttp client."),
+    OPEN_FEIGN("Generate OpenFeign client.");
 
     override fun toString() = "`${super.toString()}` - $description"
 }

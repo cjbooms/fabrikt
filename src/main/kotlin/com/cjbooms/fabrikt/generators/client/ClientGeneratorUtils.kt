@@ -5,7 +5,7 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaTypeKey
 import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
-import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleResponseSchemas
+import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleSuccessResponseSchemas
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.OasDefault
@@ -18,6 +18,7 @@ import com.cjbooms.fabrikt.model.RequestParameter
 import com.fasterxml.jackson.databind.JsonNode
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Path
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
@@ -34,20 +35,21 @@ object ClientGeneratorUtils {
      * If there are several possible response schemas, then the return type is JsonNode, so they are all covered.
      * If no response body is found, Unit is returned.
      */
-    fun Operation.toClientReturnType(packages: Packages): TypeName {
-        val returnType =
-                if (hasMultipleResponseSchemas()) {
-                    JsonNode::class.asTypeName()
-                } else {
-                    this.getPrimaryContentMediaType()?.let {
-                        toModelType(
-                                packages.base,
-                                KotlinTypeInfo.from(it.value.schema)
-                        )
-                    } ?: Unit::class.asTypeName()
-                }
+    fun Operation.getReturnType(packages: Packages): TypeName {
+        return if (hasMultipleSuccessResponseSchemas()) {
+                JsonNode::class.asTypeName()
+            } else {
+                this.getPrimaryContentMediaType()?.let {
+                    toModelType(
+                        packages.base,
+                        KotlinTypeInfo.from(it.value.schema)
+                    )
+                } ?: Unit::class.asTypeName()
+            }
+    }
 
-        return "ApiResponse".toClassName(packages.client).parameterizedBy(returnType)
+    fun Operation.toClientReturnType(packages: Packages): TypeName {
+        return "ApiResponse".toClassName(packages.client).parameterizedBy(getReturnType(packages))
     }
 
     fun simpleClientName(resourceName: String) = "$resourceName${ClientType.SIMPLE_CLIENT_SUFFIX}"
@@ -83,13 +85,19 @@ object ClientGeneratorUtils {
         )
     }
 
-    fun FunSpec.Builder.addIncomingParameters(parameters: List<IncomingParameter>): FunSpec.Builder {
+    fun FunSpec.Builder.addIncomingParameters(
+        parameters: List<IncomingParameter>,
+        annotateRequestParameterWith: ((parameter: RequestParameter) -> AnnotationSpec?)? = null
+    ): FunSpec.Builder {
         val specs = parameters.map {
             val builder = it.toParameterSpecBuilder()
             if (it is RequestParameter) {
                 if (it.defaultValue != null) OasDefault.from(it.typeInfo, it.type, it.defaultValue)
                     ?.let { builder.defaultValue(it.getDefault()) }
                 else if (!it.isRequired) builder.defaultValue("null")
+                annotateRequestParameterWith?.invoke(it)?.let { annotationSpec ->
+                    builder.addAnnotation(annotationSpec)
+                }
             }
             builder.build()
         }
