@@ -108,7 +108,7 @@ class CodeGenArgs {
 
     @Parameter(
         names = ["--http-client-target"],
-        description = "Optionally select the target client that you want to be generated. Defaults to Spring Controllers",
+        description = "Optionally select the target client that you want to be generated. Defaults to OK_HTTP",
         converter = ClientCodeGenTargetConverter::class
     )
     var clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.OK_HTTP
