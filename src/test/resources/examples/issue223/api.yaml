@@ -77,6 +77,9 @@ components:
       description: Mammal Creation Parent Object.
       discriminator:
         propertyName: mammalType
+        mapping:
+          DOG: '#/components/schemas/CreateDog'
+          COW: '#/components/schemas/CreateCow'
     CreateMammalRequest:
       required:
         - createMammal

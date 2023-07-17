@@ -63,7 +63,7 @@ class ModelGeneratorTest {
     }
 
     @Test
-    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("issue-223")
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("issue223")
 
     @ParameterizedTest
     @MethodSource("testCases")

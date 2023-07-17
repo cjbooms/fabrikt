@@ -49,7 +49,7 @@ data class SourceApi(
         val schemaErrors = api.schemas.entries.fold(emptyList<ValidationError>()) { errors, entry ->
             val name = entry.key
             val schema = entry.value
-            if (schema.type == OasType.Object.type && (
+            if (schema.type == OasType.Object.type && schema.properties?.isNotEmpty() == true && (
                     schema.oneOfSchemas?.isNotEmpty() == true ||
                         schema.allOfSchemas?.isNotEmpty() == true ||
                         schema.anyOfSchemas?.isNotEmpty() == true
