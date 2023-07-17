@@ -16,7 +16,7 @@ data class SchemaInfo(val name: String, val schema: Schema) {
 
 data class SourceApi(
     private val rawApiSpec: String,
-    val baseDir: Path = Paths.get("").toAbsolutePath()
+    val baseDir: Path = Paths.get("").toAbsolutePath(),
 ) {
     companion object {
         private val logger = Logger.getGlobal()
@@ -24,7 +24,7 @@ data class SourceApi(
         fun create(
             baseApi: String,
             apiFragments: Collection<String>,
-            baseDir: Path = Paths.get("").toAbsolutePath()
+            baseDir: Path = Paths.get("").toAbsolutePath(),
         ): SourceApi {
             val combinedApi =
                 apiFragments.fold(baseApi) { acc: String, fragment -> YamlUtils.mergeYamlTrees(acc, fragment) }
@@ -50,21 +50,23 @@ data class SourceApi(
             val name = entry.key
             val schema = entry.value
             if (schema.type == OasType.Object.type && (
-                schema.oneOfSchemas?.isNotEmpty() == true ||
-                    schema.allOfSchemas?.isNotEmpty() == true ||
-                    schema.anyOfSchemas?.isNotEmpty() == true
-                )
-            )
+                    schema.oneOfSchemas?.isNotEmpty() == true ||
+                        schema.allOfSchemas?.isNotEmpty() == true ||
+                        schema.anyOfSchemas?.isNotEmpty() == true
+                    )
+            ) {
                 errors + listOf(
                     ValidationError(
                         "'$name' schema contains an invalid combination of properties and `oneOf | anyOf | allOf`. " +
-                            "Do not use properties and a combiner at the same level."
-                    )
+                            "Do not use properties and a combiner at the same level.",
+                    ),
                 )
-            else if (schema.type == null && schema.properties?.isNotEmpty() == true) {
+            } else if (schema.type == null && schema.properties?.isNotEmpty() == true) {
                 logger.warning("Schema '$name' has 'type: null' but defines properties. Assuming: 'type: object'")
                 errors
-            } else errors
+            } else {
+                errors
+            }
         }
 
         return api.schemas.map { it.value.properties }.flatMap { it.entries }
