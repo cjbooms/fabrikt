@@ -61,7 +61,11 @@ object KaizenParserExtensions {
 
     fun Schema.toMapValueClassName() = safeName().toMapValueClassName()
 
-    fun Schema.isSchemaLess() = isObjectType() && properties?.isEmpty() == true
+    fun Schema.isSchemaLess() = isObjectType() && properties?.isEmpty() == true && (
+        oneOfSchemas?.isNotEmpty() != true &&
+            allOfSchemas?.isNotEmpty() != true &&
+            anyOfSchemas?.isNotEmpty() != true
+        )
 
     fun Schema.isSimpleMapDefinition() = hasAdditionalProperties() && properties?.isEmpty() == true
 
