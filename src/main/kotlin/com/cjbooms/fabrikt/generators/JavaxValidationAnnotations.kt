@@ -23,6 +23,10 @@ abstract class ValidationAnnotations(packageName: String) {
         .useSiteTarget(AnnotationSpec.UseSiteTarget.GET)
         .build()
 
+    fun parameterValid() = AnnotationSpec
+        .builder(validClass)
+        .build()
+
     fun min(value: Int) = AnnotationSpec
         .builder(minClass)
         .addMember("%L", value)

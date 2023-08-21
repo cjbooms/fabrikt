@@ -30,7 +30,12 @@ class MicronautAuthenticationTest {
 
     private fun setupTest(testPath: String): Collection<FileSpec> {
         val api = SourceApi(readTextResource("/authenticationTest/$testPath"))
-        return MicronautControllerInterfaceGenerator(Packages(basePackage), api, setOf(ControllerCodeGenOptionType.AUTHENTICATION)).generate().files
+        return MicronautControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            JavaxValidationAnnotations,
+            setOf(ControllerCodeGenOptionType.AUTHENTICATION)
+        ).generate().files
     }
 
     @BeforeEach

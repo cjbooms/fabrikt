@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.generators
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
+import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllers
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
@@ -36,9 +38,9 @@ class MicronautControllerGeneratorTest {
         "parameterNameClash",
     )
 
-    private fun setupGithubApiTestEnv() {
+    private fun setupGithubApiTestEnv(validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations) {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        generated = MicronautControllerInterfaceGenerator(Packages(basePackage), api).generate().files
+        generated = MicronautControllerInterfaceGenerator(Packages(basePackage), api, validationAnnotations).generate().files
     }
 
     @BeforeEach
@@ -62,6 +64,7 @@ class MicronautControllerGeneratorTest {
         val controllers = MicronautControllerInterfaceGenerator(
             Packages(basePackage),
             api,
+            JavaxValidationAnnotations,
         ).generate().toSingleFile()
 
         assertThat(controllers).isEqualTo(expectedControllers)
@@ -76,6 +79,7 @@ class MicronautControllerGeneratorTest {
         val controllers = MicronautControllerInterfaceGenerator(
             Packages(basePackage),
             api,
+            JavaxValidationAnnotations,
             setOf(ControllerCodeGenOptionType.AUTHENTICATION),
         ).generate().toSingleFile()
 
@@ -121,10 +125,30 @@ class MicronautControllerGeneratorTest {
         )
     }
 
+    @ParameterizedTest
+    @EnumSource(ValidationLibrary::class)
+    fun `ensure controller method parameters have correct validation annotations`(library: ValidationLibrary) {
+        setupGithubApiTestEnv(library.annotations)
+        val desiredPackagePrefix = when (library) {
+            ValidationLibrary.JAVAX_VALIDATION -> "javax.validation."
+            ValidationLibrary.JAKARTA_VALIDATION -> "jakarta.validation."
+        }
+        val parameterValidationAnnotations = generated
+            .flatMap { it.members }
+            .filterIsInstance<TypeSpec>()
+            .flatMap { it.funSpecs }
+            .flatMap { it.parameters }
+            .flatMap { it.annotations }
+            .map { it.className.canonicalName }
+            .filter { ".validation." in it }
+            .distinct()
+        assertThat(parameterValidationAnnotations).allMatch { it.startsWith(desiredPackagePrefix) }
+    }
+
     @Test
     fun `ensure that subresource specific controllers are created`() {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val controllers = MicronautControllerInterfaceGenerator(Packages(basePackage), api).generate()
+        val controllers = MicronautControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate()
 
         assertThat(controllers.files).size().isEqualTo(6)
         assertThat(controllers.files.map { it.name }).containsAll(
@@ -165,6 +189,7 @@ class MicronautControllerGeneratorTest {
         val controllers = MicronautControllerInterfaceGenerator(
             Packages(basePackage),
             api,
+            JavaxValidationAnnotations,
             setOf(ControllerCodeGenOptionType.SUSPEND_MODIFIER),
         ).generate()
 
