@@ -4,11 +4,11 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
+import com.cjbooms.fabrikt.generators.ValidationAnnotations
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecuritySupport
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
-import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports.SECURITY_RULE_IS_ANONYMOUS
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports.SECURITY_RULE_IS_AUTHENTICATED
@@ -35,8 +35,9 @@ import com.squareup.kotlinpoet.TypeSpec
 class MicronautControllerInterfaceGenerator(
     private val packages: Packages,
     private val api: SourceApi,
+    private val validationAnnotations: ValidationAnnotations,
     private val options: Set<ControllerCodeGenOptionType> = emptySet(),
-) : ControllerInterfaceGenerator(packages, api) {
+) : ControllerInterfaceGenerator(packages, api, validationAnnotations) {
 
     private val useSuspendModifier: Boolean
         get() = options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER }
@@ -97,7 +98,7 @@ class MicronautControllerInterfaceGenerator(
                                 AnnotationSpec
                                     .builder(MicronautImports.BODY).build(),
                             )
-                            .addAnnotation(JavaXAnnotations.validBuilder().build())
+                            .addAnnotation(validationAnnotations.parameterValid())
                             .build()
 
                     is RequestParameter ->

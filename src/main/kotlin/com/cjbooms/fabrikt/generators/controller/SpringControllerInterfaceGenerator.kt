@@ -4,10 +4,10 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
+import com.cjbooms.fabrikt.generators.ValidationAnnotations
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
-import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.BodyParameter
@@ -34,8 +34,9 @@ import com.squareup.kotlinpoet.TypeSpec
 class SpringControllerInterfaceGenerator(
     private val packages: Packages,
     private val api: SourceApi,
+    private val validationAnnotations: ValidationAnnotations,
     private val options: Set<ControllerCodeGenOptionType> = emptySet(),
-) : ControllerInterfaceGenerator(packages, api) {
+) : ControllerInterfaceGenerator(packages, api, validationAnnotations) {
 
     private val addAuthenticationParameter: Boolean
         get() = options.any { it == ControllerCodeGenOptionType.AUTHENTICATION }
@@ -82,7 +83,7 @@ class SpringControllerInterfaceGenerator(
                         it
                             .toParameterSpecBuilder()
                             .addAnnotation(SpringAnnotations.requestBodyBuilder().build())
-                            .addAnnotation(JavaXAnnotations.validBuilder().build())
+                            .addAnnotation(validationAnnotations.parameterValid())
                             .build()
                     is RequestParameter ->
                         it

@@ -74,12 +74,14 @@ class CodeGenerator(
                 ControllerCodeGenTargetType.SPRING -> SpringControllerInterfaceGenerator(
                     packages,
                     sourceApi,
+                    MutableSettings.validationLibrary().annotations,
                     MutableSettings.controllerOptions()
                 )
 
                 ControllerCodeGenTargetType.MICRONAUT -> MicronautControllerInterfaceGenerator(
                     packages,
                     sourceApi,
+                    MutableSettings.validationLibrary().annotations,
                     MutableSettings.controllerOptions()
                 )
             }

@@ -29,7 +29,12 @@ class SpringAuthenticationTest {
 
     private fun setupTest(testPath: String): Collection<FileSpec> {
         val api = SourceApi(readTextResource("/authenticationTest/$testPath"))
-        return SpringControllerInterfaceGenerator(Packages(basePackage), api, setOf(ControllerCodeGenOptionType.AUTHENTICATION)).generate().files
+        return SpringControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            JavaxValidationAnnotations,
+            setOf(ControllerCodeGenOptionType.AUTHENTICATION)
+        ).generate().files
     }
 
     @BeforeEach

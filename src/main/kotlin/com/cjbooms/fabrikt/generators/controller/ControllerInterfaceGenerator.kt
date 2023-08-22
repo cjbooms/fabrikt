@@ -1,7 +1,7 @@
 package com.cjbooms.fabrikt.generators.controller
 
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
+import com.cjbooms.fabrikt.generators.ValidationAnnotations
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.KotlinTypes
 import com.cjbooms.fabrikt.model.RequestParameter
@@ -16,7 +16,8 @@ import com.squareup.kotlinpoet.TypeSpec
 
 abstract class ControllerInterfaceGenerator(
     private val packages: Packages,
-    private val api: SourceApi
+    private val api: SourceApi,
+    private val validationAnnotations: ValidationAnnotations,
 ) {
     abstract fun generate(): KotlinTypes
     abstract fun buildFunction(path: Path, op: Operation, verb: String): FunSpec
@@ -45,9 +46,9 @@ abstract class ControllerInterfaceGenerator(
         )
     }
     fun ParameterSpec.Builder.addValidationAnnotations(parameter: RequestParameter): ParameterSpec.Builder {
-        if (parameter.minimum != null) this.addAnnotation(JavaXAnnotations.min(parameter.minimum.toInt()))
-        if (parameter.maximum != null) this.addAnnotation(JavaXAnnotations.max(parameter.maximum.toInt()))
-        if (parameter.typeInfo.isComplexType) this.addAnnotation(JavaXAnnotations.validBuilder().build())
+        if (parameter.minimum != null) this.addAnnotation(validationAnnotations.min(parameter.minimum.toInt()))
+        if (parameter.maximum != null) this.addAnnotation(validationAnnotations.max(parameter.maximum.toInt()))
+        if (parameter.typeInfo.isComplexType) this.addAnnotation(validationAnnotations.parameterValid())
         return this
     }
 }
