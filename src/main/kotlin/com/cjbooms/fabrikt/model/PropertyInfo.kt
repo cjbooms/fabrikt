@@ -11,6 +11,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isRequired
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleMapDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
@@ -44,6 +45,7 @@ sealed class PropertyInfo {
                     it.topLevelProperties(
                         maybeMarkInherited(
                             settings,
+                            enclosingSchema,
                             it
                         ),
                         this
@@ -55,8 +57,15 @@ sealed class PropertyInfo {
             return results.distinctBy { it.oasKey }
         }
 
-        private fun maybeMarkInherited(settings: Settings, it: Schema) =
-            settings.copy(markAsInherited = if (it.isInLinedObjectUnderAllOf() || it.hasNoDiscriminator()) settings.markAsInherited else true)
+        private fun maybeMarkInherited(settings: Settings, enclosingSchema: Schema?, it: Schema): Settings {
+            val isInherited = when {
+                it.safeName() == enclosingSchema?.name -> false
+                it.hasNoDiscriminator() -> settings.markAsInherited
+                it.isInLinedObjectUnderAllOf() && it.hasNoDiscriminator() -> settings.markAsInherited
+                else -> true
+            }
+            return settings.copy(markAsInherited = isInherited)
+        }
 
         private fun Schema.getInLinedProperties(
             settings: Settings,
@@ -135,9 +144,9 @@ sealed class PropertyInfo {
         }
     }
 
-    sealed class DiscriminatorKey(val stringValue: String) {
-        class StringKey(value: String) : DiscriminatorKey(value)
-        class EnumKey(value: String) : DiscriminatorKey(value) {
+    sealed class DiscriminatorKey(val stringValue: String, val modelName: String) {
+        class StringKey(value: String, modelName: String) : DiscriminatorKey(value, modelName)
+        class EnumKey(value: String, modelName: String) : DiscriminatorKey(value, modelName) {
             val enumKey = value.toEnumName()
         }
     }
@@ -148,7 +157,7 @@ sealed class PropertyInfo {
         override val schema: Schema,
         override val isInherited: Boolean,
         val isPolymorphicDiscriminator: Boolean,
-        val maybeDiscriminator: DiscriminatorKey?,
+        val maybeDiscriminator: Map<String, DiscriminatorKey>?,
         val enclosingSchema: Schema? = null
     ) : PropertyInfo() {
         override val typeInfo: KotlinTypeInfo =

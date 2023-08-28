@@ -7,13 +7,15 @@ import com.cjbooms.fabrikt.cli.CodeGenerationType.QUARKUS_REFLECTION_CONFIG
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
+import com.cjbooms.fabrikt.generators.client.OpenFeignInterfaceGenerator
+import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
 import com.cjbooms.fabrikt.model.Clients
-import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.KotlinSourceSet
+import com.cjbooms.fabrikt.model.KotlinTypes
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.ResourceFile
 import com.cjbooms.fabrikt.model.ResourceSourceSet
@@ -44,8 +46,14 @@ class CodeGenerator(
         sourceSet(controllers().files).plus(sourceSet(models().files))
 
     private fun generateClient(): Collection<GeneratedFile> {
-        val lib = OkHttpClientGenerator(packages, sourceApi, srcPath).generateLibrary(MutableSettings.clientOptions())
-        return sourceSet(client().files).plus(lib).plus(sourceSet(models().files))
+        val clientGenerator = when (MutableSettings.clientTarget()) {
+            ClientCodeGenTargetType.OK_HTTP -> OkHttpClientGenerator(packages, sourceApi, srcPath)
+            ClientCodeGenTargetType.OPEN_FEIGN -> OpenFeignInterfaceGenerator(packages, sourceApi)
+        }
+        val options = MutableSettings.clientOptions()
+        val clientFiles = clientGenerator.generate(options).files
+        val libFiles = clientGenerator.generateLibrary(options)
+        return sourceSet(clientFiles).plus(libFiles).plus(sourceSet(models().files))
     }
 
     private fun generateQuarkusReflectionResource(): Collection<GeneratedFile> = resourceSet(resources(models()))
@@ -55,14 +63,28 @@ class CodeGenerator(
     private fun resourceSet(resFiles: Collection<ResourceFile>) = setOf(ResourceSourceSet(resFiles, resourcesPath))
 
     private fun models(): Models =
-        JacksonModelGenerator(packages, sourceApi, MutableSettings.modelOptions()).generate()
+        JacksonModelGenerator(packages, sourceApi, MutableSettings.modelOptions(), MutableSettings.validationLibrary().annotations).generate()
 
     private fun resources(models: Models): List<ResourceFile> =
         listOfNotNull(QuarkusReflectionModelGenerator(models, MutableSettings.generationTypes()).generate())
 
-    private fun controllers(): Controllers =
-        SpringControllerInterfaceGenerator(packages, sourceApi, MutableSettings.controllerOptions()).generate()
+    private fun controllers(): KotlinTypes {
+        val generator =
+            when (MutableSettings.controllerTarget()) {
+                ControllerCodeGenTargetType.SPRING -> SpringControllerInterfaceGenerator(
+                    packages,
+                    sourceApi,
+                    MutableSettings.validationLibrary().annotations,
+                    MutableSettings.controllerOptions()
+                )
 
-    private fun client(): Clients =
-        OkHttpClientGenerator(packages, sourceApi, srcPath).generate(MutableSettings.clientOptions())
+                ControllerCodeGenTargetType.MICRONAUT -> MicronautControllerInterfaceGenerator(
+                    packages,
+                    sourceApi,
+                    MutableSettings.validationLibrary().annotations,
+                    MutableSettings.controllerOptions()
+                )
+            }
+        return generator.generate()
+    }
 }

@@ -12,6 +12,7 @@ import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.system.exitProcess
+import com.cjbooms.fabrikt.util.toUpperCase
 
 class CodeGenArgs {
 
@@ -85,6 +86,13 @@ class CodeGenArgs {
     var controllerOptions: Set<ControllerCodeGenOptionType> = emptySet()
 
     @Parameter(
+        names = ["--http-controller-target"],
+        description = "Optionally select the target framework for the controllers that you want to be generated. Defaults to Spring Controllers",
+        converter = ControllerCodeGenTargetConverter::class
+    )
+    var controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.SPRING
+
+    @Parameter(
         names = ["--http-model-opts"],
         description = "Select the options for the http models that you want to be generated.",
         converter = ModelCodeGenOptionConverter::class
@@ -99,6 +107,13 @@ class CodeGenArgs {
     var clientOptions: Set<ClientCodeGenOptionType> = emptySet()
 
     @Parameter(
+        names = ["--http-client-target"],
+        description = "Optionally select the target client that you want to be generated. Defaults to OK_HTTP",
+        converter = ClientCodeGenTargetConverter::class
+    )
+    var clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.OK_HTTP
+
+    @Parameter(
         names = ["--src-path"],
         description = "Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin`",
         converter = PathConverter::class
@@ -111,6 +126,20 @@ class CodeGenArgs {
         converter = PathConverter::class
     )
     var resourcesPath: Path = Destinations.MAIN_RESOURCES
+
+    @Parameter(
+        names = ["--type-overrides"],
+        description = "Specify non-default kotlin types for certain OAS types. For example, generate `Instant` instead of `OffsetDateTime`",
+        converter = TypeCodeGenOptionsConverter::class
+    )
+    var typeOverrides: Set<CodeGenTypeOverride> = emptySet()
+
+    @Parameter(
+        names = ["--validation-library"],
+        description = "Specify which validation library to use for annotations in generated model classes. Default: JAVAX_VALIDATION",
+        converter = ValidationLibraryOptionConverter::class
+    )
+    var validationLibrary: ValidationLibrary = ValidationLibrary.JAVAX_VALIDATION
 }
 
 class CodeGenerationTypesConverter : IStringConverter<CodeGenerationType> {
@@ -122,6 +151,10 @@ class ControllerCodeGenOptionConverter : IStringConverter<ControllerCodeGenOptio
     override fun convert(value: String): ControllerCodeGenOptionType = convertToEnumValue(value)
 }
 
+class ControllerCodeGenTargetConverter : IStringConverter<ControllerCodeGenTargetType> {
+    override fun convert(value: String): ControllerCodeGenTargetType = convertToEnumValue(value)
+}
+
 class ModelCodeGenOptionConverter : IStringConverter<ModelCodeGenOptionType> {
     override fun convert(value: String): ModelCodeGenOptionType = convertToEnumValue(value)
 }
@@ -129,6 +162,18 @@ class ModelCodeGenOptionConverter : IStringConverter<ModelCodeGenOptionType> {
 class ClientCodeGenOptionConverter : IStringConverter<ClientCodeGenOptionType> {
     override fun convert(value: String): ClientCodeGenOptionType =
         convertToEnumValue(value)
+}
+
+class ClientCodeGenTargetConverter : IStringConverter<ClientCodeGenTargetType> {
+    override fun convert(value: String): ClientCodeGenTargetType = convertToEnumValue(value)
+}
+
+class ValidationLibraryOptionConverter : IStringConverter<ValidationLibrary> {
+    override fun convert(value: String): ValidationLibrary = convertToEnumValue(value)
+}
+
+class TypeCodeGenOptionsConverter: IStringConverter<CodeGenTypeOverride> {
+    override fun convert(value: String): CodeGenTypeOverride = convertToEnumValue(value)
 }
 
 class PackageNameValidator : IValueValidator<String> {

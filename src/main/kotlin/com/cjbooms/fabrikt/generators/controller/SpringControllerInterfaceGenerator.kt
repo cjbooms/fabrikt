@@ -4,82 +4,60 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
-import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.controllerName
+import com.cjbooms.fabrikt.generators.ValidationAnnotations
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.methodName
-import com.cjbooms.fabrikt.generators.controller.metadata.JavaXAnnotations
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.ControllerType
-import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.HeaderParam
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.model.KotlinTypes
 import com.cjbooms.fabrikt.model.PathParam
 import com.cjbooms.fabrikt.model.QueryParam
 import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.model.SourceApi
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.basePath
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSingleResource
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
+import com.cjbooms.fabrikt.util.toUpperCase
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Path
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
-import java.time.LocalDate
-import java.time.OffsetDateTime
 
 class SpringControllerInterfaceGenerator(
     private val packages: Packages,
     private val api: SourceApi,
-    private val options: Set<ControllerCodeGenOptionType> = emptySet()
-) {
+    private val validationAnnotations: ValidationAnnotations,
+    private val options: Set<ControllerCodeGenOptionType> = emptySet(),
+) : ControllerInterfaceGenerator(packages, api, validationAnnotations) {
 
-    fun generate(): Controllers =
-        Controllers(
+    private val addAuthenticationParameter: Boolean
+        get() = options.any { it == ControllerCodeGenOptionType.AUTHENTICATION }
+
+    override fun generate(): SpringControllers =
+        SpringControllers(
             api.openApi3.routeToPaths().map { (resourceName, paths) ->
                 buildController(resourceName, paths.values)
-            }.toSet()
+            }.toSet(),
         )
 
-    private fun buildController(resourceName: String, paths: Collection<Path>): ControllerType {
-        val typeBuilder: TypeSpec.Builder = controllerBuilder(
-            className = controllerName(resourceName),
-            basePath = api.openApi3.basePath()
-        )
-
-        paths.flatMap { path ->
-            path.operations
-                .filter { it.key.toUpperCase() != "HEAD" }
-                .map { op ->
-                    buildFunction(
-                        path,
-                        op.value,
-                        op.key,
-                    )
-                }
-        }.forEach { typeBuilder.addFunction(it) }
-
-        return ControllerType(
-            typeBuilder.build(),
-            packages.base
-        )
-    }
-
-    private fun controllerBuilder(
+    override fun controllerBuilder(
         className: String,
-        basePath: String
+        basePath: String,
     ) =
         TypeSpec.interfaceBuilder(className)
             .addAnnotation(SpringAnnotations.CONTROLLER)
             .addAnnotation(SpringAnnotations.VALIDATED)
             .addAnnotation(SpringAnnotations.requestMappingBuilder().addMember("%S", basePath).build())
 
-    private fun buildFunction(
+    override fun buildFunction(
         path: Path,
         op: Operation,
         verb: String,
@@ -87,6 +65,7 @@ class SpringControllerInterfaceGenerator(
         val methodName = methodName(op, verb, path.pathString.isSingleResource())
         val returnType = op.happyPathResponse(packages.base)
         val parameters = op.toIncomingParameters(packages.base, path.parameters, emptyList())
+        val globalSecurity = api.openApi3.securityRequirements.securitySupport()
 
         // Main method builder
         val funcSpec = FunSpec
@@ -104,7 +83,7 @@ class SpringControllerInterfaceGenerator(
                         it
                             .toParameterSpecBuilder()
                             .addAnnotation(SpringAnnotations.requestBodyBuilder().build())
-                            .addAnnotation(JavaXAnnotations.validBuilder().build())
+                            .addAnnotation(validationAnnotations.parameterValid())
                             .build()
                     is RequestParameter ->
                         it
@@ -115,6 +94,22 @@ class SpringControllerInterfaceGenerator(
                 }
             }
             .forEach { funcSpec.addParameter(it) }
+
+        // Add authentication
+        if (addAuthenticationParameter) {
+            val securityOption = op.securitySupport(globalSecurity)
+
+            if (securityOption.allowsAuthenticated) {
+                val typeName =
+                    SpringImports.AUTHENTICATION
+                        .copy(nullable = securityOption == ControllerGeneratorUtils.SecuritySupport.AUTHENTICATION_OPTIONAL)
+                funcSpec.addParameter(
+                    ParameterSpec
+                        .builder("authentication", typeName)
+                        .build(),
+                )
+            }
+        }
 
         return funcSpec.build()
     }
@@ -134,25 +129,18 @@ class SpringControllerInterfaceGenerator(
                 .addMember("value = [%S]", path)
                 .addMember(
                     "produces = %L",
-                    produces.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" })
+                    produces.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" }),
                 )
                 .addMember("method = [RequestMethod.%L]", verb.toUpperCase())
 
         if (consumes.isNotEmpty()) {
             funcAnnotation.addMember(
                 "consumes = %L",
-                consumes.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" })
+                consumes.joinToString(prefix = "[", postfix = "]", separator = ", ", transform = { "\"$it\"" }),
             )
         }
 
         this.addAnnotation(funcAnnotation.build())
-        return this
-    }
-
-    private fun ParameterSpec.Builder.addValidationAnnotations(parameter: RequestParameter): ParameterSpec.Builder {
-        if (parameter.minimum != null) this.addAnnotation(JavaXAnnotations.min(parameter.minimum.toInt()))
-        if (parameter.maximum != null) this.addAnnotation(JavaXAnnotations.max(parameter.maximum.toInt()))
-        if (parameter.typeInfo.isComplexType) this.addAnnotation(JavaXAnnotations.validBuilder().build())
         return this
     }
 
@@ -165,20 +153,35 @@ class SpringControllerInterfaceGenerator(
             it.addMember("value = %S", parameter.oasName)
             it.addMember("required = %L", parameter.isRequired)
 
-            if (parameter.defaultValue != null)
+            if (parameter.defaultValue != null) {
                 it.addMember("defaultValue = %S", parameter.defaultValue)
+            }
 
-            if ( parameter.typeInfo is KotlinTypeInfo.Date )
-                this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE ) )
-            else if (parameter.typeInfo is KotlinTypeInfo.DateTime )
-                this.addAnnotation( SpringAnnotations.dateTimeFormat( SpringImports.DateTimeFormat.ISO_DATE_TIME ) )
+            if (parameter.typeInfo is KotlinTypeInfo.Date) {
+                this.addAnnotation(SpringAnnotations.dateTimeFormat(SpringImports.DateTimeFormat.ISO_DATE))
+            } else if (parameter.typeInfo is KotlinTypeInfo.DateTime) {
+                this.addAnnotation(SpringAnnotations.dateTimeFormat(SpringImports.DateTimeFormat.ISO_DATE_TIME))
+            }
 
             this.addAnnotation(it.build())
         }
 
     private fun FunSpec.Builder.addSuspendModifier(): FunSpec.Builder {
-        if (options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER })
+        if (options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER }) {
             this.addModifiers(KModifier.SUSPEND)
+        }
         return this
+    }
+}
+
+data class SpringControllers(val controllers: Collection<ControllerType>) : KotlinTypes(controllers) {
+    override val files: Collection<FileSpec> = super.files.map {
+        it.toBuilder()
+            .addImport(SpringImports.Static.REQUEST_METHOD.first, SpringImports.Static.REQUEST_METHOD.second)
+            .addImport(
+                SpringImports.Static.RESPONSE_STATUS.first,
+                SpringImports.Static.RESPONSE_STATUS.second,
+            )
+            .build()
     }
 }

@@ -14,7 +14,9 @@ class MarkdownUsageFormatter(commander: JCommander) : DefaultUsageFormatter(comm
         const val SECOND_COL_HEADER = "Description"
         const val MULTI_VALUE_HEADER = "CHOOSE ANY OF:"
         const val SINGLE_VALUE_HEADER = "CHOOSE ONE OF:"
+        const val START = "| "
         const val BORDER = " | "
+        const val END = " |"
         const val SEPARATOR = "-"
         const val NEW_LINE = "\n"
     }
@@ -29,30 +31,30 @@ class MarkdownUsageFormatter(commander: JCommander) : DefaultUsageFormatter(comm
 
         val firstColumnWidth = getFirstColumnWidth(sortedParameters)
 
-        out.append(BORDER).append(FIRST_COL_HEADER).append(" ".repeat(firstColumnWidth - FIRST_COL_HEADER.length))
-            .append(BORDER).append(SECOND_COL_HEADER).append(NEW_LINE)
+        out.append(START).append(FIRST_COL_HEADER).append(" ".repeat(firstColumnWidth - FIRST_COL_HEADER.length))
+            .append(BORDER).append(SECOND_COL_HEADER).append(END).append(NEW_LINE)
 
         val titleSeparator = SEPARATOR.repeat(firstColumnWidth)
-        out.append(BORDER).append(titleSeparator).append(" ".repeat(firstColumnWidth - titleSeparator.length))
-            .append(BORDER).append(titleSeparator).append(NEW_LINE)
+        out.append(START).append(titleSeparator).append(" ".repeat(firstColumnWidth - titleSeparator.length))
+            .append(BORDER).append(titleSeparator).append(END).append(NEW_LINE)
 
         sortedParameters
             .filter { !it.isHelp }
             .forEach { param ->
 
                 val parameterKey = param.getParameterKey()
-                out.append(BORDER).append(parameterKey).append(" ".repeat(firstColumnWidth - parameterKey.length))
-                    .append(BORDER).append(param.description).append(NEW_LINE)
+                out.append(START).append(parameterKey).append(" ".repeat(firstColumnWidth - parameterKey.length))
+                    .append(BORDER).append(param.description).append(END).append(NEW_LINE)
 
                 val options = getEnumValues(param.parameterized)
                 if (options.isNotEmpty()) {
                     val valueHeader = if (param.parameterized.isSingleEnum()) SINGLE_VALUE_HEADER else MULTI_VALUE_HEADER
-                    out.append(BORDER).append(" ".repeat(firstColumnWidth))
-                        .append(BORDER).append(valueHeader).append(NEW_LINE)
+                    out.append(START).append(" ".repeat(firstColumnWidth))
+                        .append(BORDER).append(valueHeader).append(END).append(NEW_LINE)
 
                     options.forEach { option ->
-                        out.append(BORDER).append(" ".repeat(firstColumnWidth))
-                            .append(BORDER).append("  $option").append(NEW_LINE)
+                        out.append(START).append(" ".repeat(firstColumnWidth))
+                            .append(BORDER).append("  $option").append(END).append(NEW_LINE)
                     }
                 }
             }

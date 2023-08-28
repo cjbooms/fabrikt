@@ -87,22 +87,22 @@ data class ExternalObjectTwo(
 data class OneOfOne(
     @param:JsonProperty("oneOfOne")
     @get:JsonProperty("oneOfOne")
-    val oneOfOne: String? = null
-) : ParentOneOf() {
+    val oneOfOne: String? = null,
     @get:JsonProperty("discriminator")
     @get:NotNull
+    @param:JsonProperty("discriminator")
     override val discriminator: String = "OneOfOne"
-}
+) : ParentOneOf()
 
 data class OneOfTwo(
     @param:JsonProperty("oneOfTwo")
     @get:JsonProperty("oneOfTwo")
-    val oneOfTwo: String? = null
-) : ParentOneOf() {
+    val oneOfTwo: String? = null,
     @get:JsonProperty("discriminator")
     @get:NotNull
+    @param:JsonProperty("discriminator")
     override val discriminator: String = "OneOfTwo"
-}
+) : ParentOneOf()
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

@@ -1,6 +1,5 @@
 package com.cjbooms.fabrikt.model
 
-import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.Destinations.clientPackage
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
@@ -50,18 +49,6 @@ data class Clients(val clients: Collection<ClientType>) : KotlinTypes(clients) {
     override val files: Collection<FileSpec> = super.files.map {
         it.toBuilder()
             .addImport(JacksonMetadata.TYPE_REFERENCE_IMPORT.first, JacksonMetadata.TYPE_REFERENCE_IMPORT.second)
-            .build()
-    }
-}
-
-data class Controllers(val controllers: Collection<ControllerType>) : KotlinTypes(controllers) {
-    override val files: Collection<FileSpec> = super.files.map {
-        it.toBuilder()
-            .addImport(SpringImports.Static.REQUEST_METHOD.first, SpringImports.Static.REQUEST_METHOD.second)
-            .addImport(
-                SpringImports.Static.RESPONSE_STATUS.first,
-                SpringImports.Static.RESPONSE_STATUS.second
-            )
             .build()
     }
 }

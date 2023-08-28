@@ -21,6 +21,8 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
+import com.cjbooms.fabrikt.util.capitalized
+import com.cjbooms.fabrikt.util.decapitalized
 import java.util.function.Predicate
 
 object GeneratorUtils {
@@ -63,9 +65,9 @@ object GeneratorUtils {
     fun String.toKCodeName(): String {
         val delimiters = this.partition(Char::isLetterOrDigit).second.toCharArray().map(Char::toString).toTypedArray()
         return this.splitToSequence(*delimiters)
-            .mapNotNull(String::capitalize)
+            .mapNotNull(String::capitalized)
             .joinToString("")
-            .decapitalize()
+            .decapitalized()
     }
 
     /**
@@ -129,8 +131,8 @@ object GeneratorUtils {
 
     fun Operation.hasMultipleContentMediaTypes(): Boolean? = this.firstResponse()?.hasMultipleContentMediaTypes()
 
-    fun Operation.hasMultipleResponseSchemas(): Boolean =
-            getBodyResponses().flatMap { it.contentMediaTypes.values }.map { it.schema.name }.distinct().size > 1
+    fun Operation.hasMultipleSuccessResponseSchemas(): Boolean =
+            getBodySuccessResponses().flatMap { it.contentMediaTypes.values }.map { it.schema.name }.distinct().size > 1
 
     fun Operation.getPathParams(): List<Parameter> = this.filterParams("path")
 
@@ -140,6 +142,12 @@ object GeneratorUtils {
 
     private fun Operation.getBodyResponses(): List<Response> =
         this.responses.filter { it.key != "default" }.values.filter(Response::hasContentMediaTypes)
+
+    private fun Operation.getBodySuccessResponses(): List<Response> =
+        getSuccessResponses().values.filter(Response::hasContentMediaTypes)
+
+    private fun Operation.getSuccessResponses(): Map<String, Response> =
+        this.responses.filter { it.key.toIntOrNull()?.let { status -> status in 200..399 } ?: false }
 
     private fun Operation.filterParams(paramType: String): List<Parameter> = this.parameters.filter { it.`in` == paramType }
 

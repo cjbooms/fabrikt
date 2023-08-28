@@ -1,0 +1,99 @@
+openapi: "3.0.0"
+info:
+  title: "API Example"
+  version: "1.0"
+paths:
+  /example-path-1:
+    get:
+      summary: "GET example path 1"
+      parameters:
+        - $ref: "#/components/parameters/ListQueryParamExploded"
+        - $ref: "#/components/parameters/QueryParam"
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
+          content:
+            application/vnd.custom.media+json:
+              schema:
+                $ref: "#/components/schemas/QueryResult"
+
+components:
+  parameters:
+    ListQueryParamExploded:
+      name: "explode_list_query_param"
+      in: "query"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+          format: "date-time"
+          example: "2016-01-27T10:52:46.406Z"
+      required: false
+      allowEmptyValue: false
+
+
+    QueryParam:
+      name: "query_param2"
+      in: "query"
+      schema:
+        type: "string"
+        format: "date-time"
+        example: "2016-01-27T10:52:46.406Z"
+      required: false
+
+
+  headers:
+    Location:
+      description: "The Location header indicates the URL of a newly created resource"
+      schema:
+        type: "string"
+
+    CacheControl:
+      description: "The RFC7234 Cache Control header"
+      schema:
+        type: "string"
+      example: "must-revalidate, max-age=5"
+
+  requestBodies:
+    PostBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FirstModel"
+    PutBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FirstModel"
+
+  schemas:
+    QueryResult:
+      type: "object"
+      required:
+        - "items"
+      properties:
+        items:
+          type: "array"
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/FirstModel"
+    FirstModel:
+      type: "object"
+      properties:
+        date:
+          type: "string"
+          format: "date-time"
+          example: "2016-01-27T10:52:46.406Z"
+        extra_first_attr:
+          description: "The attribute 1 for model 1"
+          type: array
+          items:
+            type: "string"
+            format: "date-time"
+            example: "2016-01-27T10:52:46.406Z"
+          readOnly: true

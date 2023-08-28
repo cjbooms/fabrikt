@@ -1,6 +1,12 @@
 openapi: 3.0.0
 components:
   schemas:
+    PolymorphicTypeOneRef:
+      $ref: "#/components/schemas/PolymorphicTypeOne"
+    PolymorphicTypeOneAnotherRef:
+      $ref: "#/components/schemas/PolymorphicTypeOne"
+    PolymorphicTypeTwoRef:
+      $ref: "#/components/schemas/polymorphic_type_two"
     PolymorphicSuperType:
       type: object
       discriminator:
@@ -23,7 +29,7 @@ components:
           properties:
             child_one_name:
               type: string
-    PolymorphicTypeTwo:
+    polymorphic_type_two:
       allOf:
         - $ref: "#/components/schemas/PolymorphicSuperType"
         - $ref: "#/components/schemas/AnotherObject"
@@ -32,7 +38,7 @@ components:
             child_two_age:
               type: integer
               format: int32
-              
+
     AnotherObject:
       type: object
       properties:

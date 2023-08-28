@@ -8,6 +8,7 @@ This library was built to take advantage of the complex modeling features availa
  - Polymorphism (`@JsonSubTypes`)
  - Maps of Maps of Maps
  - GraalVM Native Reflection Registration
+ - Json Merge Patch (via `JsonNullable`) (add `x-json-merge-patch: true` to schemas)
 
 More than just bootstrapping, this library can be permanently integrated into a gradle or maven build and will ensure contract and code always match, even as APIs evolve in complexity. 
 
@@ -32,42 +33,72 @@ The library currently has support for generating:
 
 ### Example Generation
 
-The test directory forms a living documentation full of [code examples](src/test/resources/examples) generated from different OpenApi3 permutations. 
+Consult test directory for OAS code generation examples, it forms a living documentation full of [code examples](src/test/resources/examples) generated from different OpenApi3 permutations. 
 
-Below showcases one single example from this directory, which uses an enum discriminator to generate polymorphic sealed classes:
+#### Polymorphism via allOf
+
+The following example shows how `allOf` can be used to generate polymorphic Kotlin data classes. It does the following:
+ - A `ChildDefinition` schema defines both the discriminator mapping details and the schema for the discriminator property. In this case the discriminator property is an enumeration
+ - In each child schema, `allOf` is used to merge the `ChildDefinition` with the child's custom schema. This guarantees that each child schema inherits the correct discriminator property. 
+ - In the `Responses` schema a `oneOf` lists only child schemas. This will be detected by Fabrikt and it will generate the list of parent types: `List<ChildDefinition>`
+
+_NOTE: A new feature has been added that allows Polymorphism to be achieved using only a [discriminated oneOf](src/test/resources/examples/discriminatedOneOf). This feature makes use of Kotlin `sealed interface` and must be explicitly enabled via `--http-model-opts, SEALED_INTERFACES_FOR_ONE_OF`_
+
 ```yml
 openapi: 3.0.0
 components:
   schemas:
-    PolymorphicEnumDiscriminator:
+    ChildDefinition:
       type: object
       discriminator:
         propertyName: some_enum
         mapping:
-          obj_one: '#/components/schemas/ConcreteImplOne'
-          obj_two: '#/components/schemas/ConcreteImplTwo'
+          obj_one_only: '#/components/schemas/DiscriminatedChild1'
+          obj_two_first: '#/components/schemas/DiscriminatedChild2'
+          obj_two_second: '#/components/schemas/DiscriminatedChild2'
+          obj_three: '#/components/schemas/discriminated_child_3'
       properties:
-        some_enum:
-          $ref: '#/components/schemas/EnumDiscriminator'
-    ConcreteImplOne:
-      allOf:
-        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
-        - type: object
-          properties:
-            some_prop:
-              type: string
-    ConcreteImplTwo:
-      allOf:
-        - $ref: '#/components/schemas/PolymorphicEnumDiscriminator'
-        - type: object
-          properties:
-            some_prop:
-              type: string
-    EnumDiscriminator:
+        discriminating_property:
+          $ref: '#/components/schemas/ChildDiscriminator'
+
+    ChildDiscriminator:
       type: string
       enum:
-        - obj_one
-        - obj_two
+        - obj_one_only
+        - obj_two_first
+        - obj_two_second
+        - obj_three
+
+    DiscriminatedChild1:
+      allOf:
+        - $ref: '#/components/schemas/ChildDefinition'
+        - type: object
+          properties:
+            some_prop:
+              type: string
+
+    DiscriminatedChild2:
+      allOf:
+        - $ref: '#/components/schemas/ChildDefinition'
+        - type: object
+          properties:
+            some_prop:
+              type: string
+
+    discriminated_child_3:
+      allOf:
+        - $ref: '#/components/schemas/ChildDefinition'
+
+    Responses:
+      type: "object"
+      properties:
+        entries:
+          type: "array"
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/DiscriminatedChild2"
+              - $ref: "#/components/schemas/DiscriminatedChild2"
+              - $ref: "#/components/schemas/discriminated_child_3"
 ```
 ```kotlin
 @JsonTypeInfo(
@@ -78,44 +109,76 @@ components:
 )
 @JsonSubTypes(
     JsonSubTypes.Type(
-        value = ConcreteImplOne::class,
+        value = DiscriminatedChild1::class,
         name =
-            "obj_one"
+        "obj_one_only"
     ),
-    JsonSubTypes.Type(value = ConcreteImplTwo::class, name = "obj_two")
+    JsonSubTypes.Type(
+        value = DiscriminatedChild2::class,
+        name =
+        "obj_two_first"
+    ),
+    JsonSubTypes.Type(
+        value = DiscriminatedChild2::class,
+        name =
+        "obj_two_second"
+    ),
+    JsonSubTypes.Type(value = DiscriminatedChild3::class, name = "obj_three")
 )
-sealed class PolymorphicEnumDiscriminator() {
-    abstract val someEnum: EnumDiscriminator
+sealed class ChildDefinition() {
+    abstract val someEnum: ChildDiscriminator
 }
 
-enum class EnumDiscriminator(
+enum class ChildDiscriminator(
     @JsonValue
     val value: String
 ) {
-    OBJ_ONE("obj_one"),
+    OBJ_ONE_ONLY("obj_one_only"),
 
-    OBJ_TWO("obj_two");
+    OBJ_TWO_FIRST("obj_two_first"),
+
+    OBJ_TWO_SECOND("obj_two_second"),
+
+    OBJ_THREE("obj_three");
+
+    companion object {
+        private val mapping: Map<String, ChildDiscriminator> =
+            values().associateBy(ChildDiscriminator::value)
+
+        fun fromValue(value: String): ChildDiscriminator? = mapping[value]
+    }
 }
 
-data class ConcreteImplOne(
+data class DiscriminatedChild1(
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null,
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: ChildDiscriminator = ChildDiscriminator.OBJ_ONE_ONLY
+) : ChildDefinition()
+
+data class DiscriminatedChild2(
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: ChildDiscriminator,
     @param:JsonProperty("some_prop")
     @get:JsonProperty("some_prop")
     val someProp: String? = null
-) : PolymorphicEnumDiscriminator() {
-    @get:JsonProperty("some_enum")
-    @get:NotNull
-    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE
-}
+) : ChildDefinition()
 
-data class ConcreteImplTwo(
-    @param:JsonProperty("some_prop")
-    @get:JsonProperty("some_prop")
-    val someProp: String? = null
-) : PolymorphicEnumDiscriminator() {
+data class DiscriminatedChild3(
     @get:JsonProperty("some_enum")
     @get:NotNull
-    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_TWO
-}
+    override val someEnum: ChildDiscriminator = ChildDiscriminator.OBJ_THREE
+) : ChildDefinition()
+
+data class Responses(
+    @param:JsonProperty("entries")
+    @get:JsonProperty("entries")
+    @get:Valid
+    val entries: List<ChildDefinition>? = null
+)
 ```
 
 
@@ -123,33 +186,53 @@ data class ConcreteImplTwo(
 
 This section documents the available CLI parameters for controlling what gets generated. This documentation is generated using: `./gradlew printCodeGenUsage`
 
-| Parameter                  | Description
-| -------------------------- | --------------------------
-|   `--api-file`             | This must be a valid Open API v3 spec. All code generation will be based off this input.
-|   `--api-fragment`         | A partial Open API v3 fragment, to be combined with the primary API for code generation purposes.
-| * `--base-package`         | The base package which all code will be generated under.
-|   `--http-client-opts`     | Select the options for the http client code that you want to be generated.
-|                            | CHOOSE ANY OF:
-|                            |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+"
-|   `--http-controller-opts` | Select the options for the controllers that you want to be generated.
-|                            | CHOOSE ANY OF:
-|                            |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions
-|   `--http-model-opts`      | Select the options for the http models that you want to be generated.
-|                            | CHOOSE ANY OF:
-|                            |   `X_EXTENSIBLE_ENUMS` - This option treats x-extensible-enums as enums
-|                            |   `JAVA_SERIALIZATION` - This option adds Java Serializable interface to the generated models
-|                            |   `QUARKUS_REFLECTION` - This option adds @RegisterForReflection to the generated models. Requires dependency "'io.quarkus:quarkus-core:+"
-|                            |   `MICRONAUT_INTROSPECTION` - This option adds @Introspected to the generated models. Requires dependency "'io.micronaut:micronaut-core:+"
-|                            |   `MICRONAUT_REFLECTION` - This option adds @ReflectiveAccess to the generated models. Requires dependency "'io.micronaut:micronaut-core:+"
-|   `--output-directory`     | Allows the generation dir to be overridden. Defaults to current dir
-|   `--resources-path`       | Allows the path for generated resources to be overridden. Defaults to `src/main/resources`
-|   `--src-path`             | Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin`
-|   `--targets`              | Targets are the parts of the application that you want to be generated.
-|                            | CHOOSE ANY OF:
-|                            |   `HTTP_MODELS` - Jackson annotated data classes to represent the schema objects defined in the input.
-|                            |   `CONTROLLERS` - Spring annotated HTTP controllers for each of the endpoints defined in the input.
-|                            |   `CLIENT` - Simple http rest client.
-|                            |   `QUARKUS_REFLECTION_CONFIG` - This options generates the reflection-config.json file for quarkus integration projects
+| Parameter                    | Description |
+| ---------------------------- | ---------------------------- |
+|   `--api-file`               | This must be a valid Open API v3 spec. All code generation will be based off this input. |
+|   `--api-fragment`           | A partial Open API v3 fragment, to be combined with the primary API for code generation purposes. |
+| * `--base-package`           | The base package which all code will be generated under. |
+|   `--http-client-opts`       | Select the options for the http client code that you want to be generated. |
+|                              | CHOOSE ANY OF: |
+|                              |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+" (only for OkHttp clients) |
+|                              |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated client functions (only for OpenFeign clients) |
+|   `--http-client-target`     | Optionally select the target client that you want to be generated. Defaults to OK_HTTP |
+|                              | CHOOSE ONE OF: |
+|                              |   `OK_HTTP` - Generate OkHttp client. |
+|                              |   `OPEN_FEIGN` - Generate OpenFeign client. |
+|   `--http-controller-opts`   | Select the options for the controllers that you want to be generated. |
+|                              | CHOOSE ANY OF: |
+|                              |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions |
+|                              |   `AUTHENTICATION` - This option adds the authentication parameter to the generated controller functions |
+|   `--http-controller-target` | Optionally select the target framework for the controllers that you want to be generated. Defaults to Spring Controllers |
+|                              | CHOOSE ONE OF: |
+|                              |   `SPRING` - Generate for Spring framework. |
+|                              |   `MICRONAUT` - Generate for Micronaut framework. |
+|   `--http-model-opts`        | Select the options for the http models that you want to be generated. |
+|                              | CHOOSE ANY OF: |
+|                              |   `X_EXTENSIBLE_ENUMS` - This option treats x-extensible-enums as enums |
+|                              |   `JAVA_SERIALIZATION` - This option adds Java Serializable interface to the generated models |
+|                              |   `QUARKUS_REFLECTION` - This option adds @RegisterForReflection to the generated models. Requires dependency "'io.quarkus:quarkus-core:+" |
+|                              |   `MICRONAUT_INTROSPECTION` - This option adds @Introspected to the generated models. Requires dependency "'io.micronaut:micronaut-core:+" |
+|                              |   `MICRONAUT_REFLECTION` - This option adds @ReflectiveAccess to the generated models. Requires dependency "'io.micronaut:micronaut-core:+" |
+|                              |   `INCLUDE_COMPANION_OBJECT` - This option adds a companion object to the generated models. |
+|                              |   `SEALED_INTERFACES_FOR_ONE_OF` - This option enables the generation of interfaces for discriminated oneOf types |
+|   `--output-directory`       | Allows the generation dir to be overridden. Defaults to current dir |
+|   `--resources-path`         | Allows the path for generated resources to be overridden. Defaults to `src/main/resources` |
+|   `--src-path`               | Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin` |
+|   `--targets`                | Targets are the parts of the application that you want to be generated. |
+|                              | CHOOSE ANY OF: |
+|                              |   `HTTP_MODELS` - Jackson annotated data classes to represent the schema objects defined in the input. |
+|                              |   `CONTROLLERS` - Spring / Micronaut annotated HTTP controllers for each of the endpoints defined in the input. |
+|                              |   `CLIENT` - Simple http rest client. |
+|                              |   `QUARKUS_REFLECTION_CONFIG` - This options generates the reflection-config.json file for quarkus integration projects |
+|   `--type-overrides`         | Specify non-default kotlin types for certain OAS types. For example, generate `Instant` instead of `OffsetDateTime` |
+|                              | CHOOSE ANY OF: |
+|                              |   `DATETIME_AS_INSTANT` - Use `Instant` as the datetime type. Defaults to `OffsetDateTime` |
+|                              |   `DATETIME_AS_LOCALDATETIME` - Use `LocalDateTime` as the datetime type. Defaults to `OffsetDateTime` |
+|   `--validation-library`     | Specify which validation library to use for annotations in generated model classes. Default: JAVAX_VALIDATION |
+|                              | CHOOSE ONE OF: |
+|                              |   `JAVAX_VALIDATION` - Use `javax.validation` annotations in generated model classes (default) |
+|                              |   `JAKARTA_VALIDATION` - Use `jakarta.validation` annotations in generated model classes |
 
 ### Command Line
 Fabrikt is packaged as an executable jar, allowing it to be integrated into any build tool. The CLI can be invoked as follows:
@@ -186,7 +269,7 @@ tasks {
         outputs.dir(generationDir)
         outputs.cacheIf { true }
         classpath(fabrikt)
-        main = "com.cjbooms.fabrikt.cli.CodeGen"
+        mainClass.set("com.cjbooms.fabrikt.cli.CodeGen")
         args = listOf(
             "--output-directory", generationDir,
             "--base-package", "com.example",
@@ -196,7 +279,7 @@ tasks {
             "--http-client-opts", "resilience4j"
         )
     }
-    withType<KotlinCompile> {
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "11"
         dependsOn(generateCode)
     }

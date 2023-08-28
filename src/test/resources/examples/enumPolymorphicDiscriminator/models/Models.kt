@@ -7,35 +7,38 @@ import com.fasterxml.jackson.annotation.JsonValue
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import kotlin.String
+import kotlin.collections.List
 import kotlin.collections.Map
 
-data class ConcreteImplOne(
-    @param:JsonProperty("some_prop")
-    @get:JsonProperty("some_prop")
-    val someProp: String? = null
-) : PolymorphicEnumDiscriminator() {
-    @get:JsonProperty("some_enum")
-    @get:NotNull
-    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_ONE_ONLY
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "some_enum",
+    visible = true
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(
+        value = DiscriminatedChild1::class,
+        name =
+        "obj_one_only"
+    ),
+    JsonSubTypes.Type(
+        value = DiscriminatedChild2::class,
+        name =
+        "obj_two_first"
+    ),
+    JsonSubTypes.Type(
+        value = DiscriminatedChild2::class,
+        name =
+        "obj_two_second"
+    ),
+    JsonSubTypes.Type(value = DiscriminatedChild3::class, name = "obj_three")
+)
+sealed class ChildDefinition() {
+    abstract val someEnum: ChildDiscriminator
 }
 
-class ConcreteImplThree() : PolymorphicEnumDiscriminator() {
-    @get:JsonProperty("some_enum")
-    @get:NotNull
-    override val someEnum: EnumDiscriminator = EnumDiscriminator.OBJ_THREE
-}
-
-data class ConcreteImplTwo(
-    @param:JsonProperty("some_enum")
-    @get:JsonProperty("some_enum")
-    @get:NotNull
-    override val someEnum: EnumDiscriminator,
-    @param:JsonProperty("some_prop")
-    @get:JsonProperty("some_prop")
-    val someProp: String? = null
-) : PolymorphicEnumDiscriminator()
-
-enum class EnumDiscriminator(
+enum class ChildDiscriminator(
     @JsonValue
     val value: String
 ) {
@@ -48,44 +51,42 @@ enum class EnumDiscriminator(
     OBJ_THREE("obj_three");
 
     companion object {
-        private val mapping: Map<String, EnumDiscriminator> =
-            values().associateBy(EnumDiscriminator::value)
+        private val mapping: Map<String, ChildDiscriminator> =
+            values().associateBy(ChildDiscriminator::value)
 
-        fun fromValue(value: String): EnumDiscriminator? = mapping[value]
+        fun fromValue(value: String): ChildDiscriminator? = mapping[value]
     }
 }
 
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "some_enum",
-    visible = true
-)
-@JsonSubTypes(
-    JsonSubTypes.Type(
-        value = ConcreteImplOne::class,
-        name =
-        "obj_one_only"
-    ),
-    JsonSubTypes.Type(
-        value = ConcreteImplTwo::class,
-        name =
-        "obj_two_first"
-    ),
-    JsonSubTypes.Type(
-        value = ConcreteImplTwo::class,
-        name =
-        "obj_two_second"
-    ),
-    JsonSubTypes.Type(value = ConcreteImplThree::class, name = "obj_three")
-)
-sealed class PolymorphicEnumDiscriminator() {
-    abstract val someEnum: EnumDiscriminator
-}
+data class DiscriminatedChild1(
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null,
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    @param:JsonProperty("some_enum")
+    override val someEnum: ChildDiscriminator = ChildDiscriminator.OBJ_ONE_ONLY
+) : ChildDefinition()
 
-data class Wrapper(
-    @param:JsonProperty("polymorph")
-    @get:JsonProperty("polymorph")
+data class DiscriminatedChild2(
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    override val someEnum: ChildDiscriminator,
+    @param:JsonProperty("some_prop")
+    @get:JsonProperty("some_prop")
+    val someProp: String? = null
+) : ChildDefinition()
+
+data class DiscriminatedChild3(
+    @get:JsonProperty("some_enum")
+    @get:NotNull
+    @param:JsonProperty("some_enum")
+    override val someEnum: ChildDiscriminator = ChildDiscriminator.OBJ_THREE
+) : ChildDefinition()
+
+data class Responses(
+    @param:JsonProperty("entries")
+    @get:JsonProperty("entries")
     @get:Valid
-    val polymorph: PolymorphicEnumDiscriminator? = null
+    val entries: List<ChildDefinition>? = null
 )

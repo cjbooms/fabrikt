@@ -1,8 +1,10 @@
 package com.cjbooms.fabrikt.generators
 
 import com.beust.jcommander.ParameterException
+import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.Models
@@ -35,20 +37,29 @@ class ModelGeneratorTest {
         "externalReferences",
         "githubApi",
         "inLinedObject",
+        "jsonMergePatch",
         "mapExamples",
         "mixingCamelSnakeLispCase",
         "oneOfPolymorphicModels",
         "optionalVsRequired",
         "polymorphicModels",
+        "nestedPolymorphicModels",
         "requiredReadOnly",
         "validationAnnotations",
         "wildCardTypes",
-        "singleAllOf"
+        "singleAllOf",
+        "responsesSchema",
+        "webhook",
+        "instantDateTime",
+        "singleAllOf",
+        "discriminatedOneOf",
     )
 
     @BeforeEach
     fun init() {
-        MutableSettings.updateSettings(setOf(CodeGenerationType.HTTP_MODELS), emptySet(), emptySet(), emptySet())
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.HTTP_MODELS),
+        )
     }
 
     // @Test
@@ -59,6 +70,9 @@ class ModelGeneratorTest {
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         print("Testcase: $testCaseName")
         MutableSettings.addOption(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS)
+        if (testCaseName == "instantDateTime") {
+            MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
+        }
         val basePackage = "examples.$testCaseName"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
@@ -66,10 +80,29 @@ class ModelGeneratorTest {
 
         val models = JacksonModelGenerator(
             Packages(basePackage),
-            sourceApi
+            sourceApi,
+            setOf(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF),
         ).generate().toSingleFile()
 
         assertThat(models).isEqualTo(expectedModels)
+    }
+
+    @Test
+    fun `generate models using jakarta validation`() {
+        val basePackage = "examples.jakartaValidationAnnotations"
+        val spec = readTextResource("/examples/jakartaValidationAnnotations/api.yaml")
+        val expectedJakartaModel = readTextResource("/examples/jakartaValidationAnnotations/models/Models.kt")
+        MutableSettings.updateSettings(genTypes = setOf(CodeGenerationType.HTTP_MODELS))
+        val models = JacksonModelGenerator(
+            Packages(basePackage),
+            SourceApi(spec),
+            validationAnnotations = ValidationLibrary.JAKARTA_VALIDATION.annotations,
+        ).generate()
+
+        assertThat(models.files.size).isEqualTo(4)
+        val validationAnnotationsModel = models.files.first { it.name == "ValidationAnnotations" }
+        assertThat(validationAnnotationsModel).isNotNull
+        assertThat(Linter.lintString(validationAnnotationsModel.toString())).isEqualTo(expectedJakartaModel)
     }
 
     @Test
@@ -80,7 +113,7 @@ class ModelGeneratorTest {
 
         val models = JacksonModelGenerator(
             Packages(basePackage),
-            SourceApi(spec)
+            SourceApi(spec),
         ).generate()
 
         assertThat(Linter.lintString(models.files.first().toString())).isEqualTo(expectedModels)
@@ -95,7 +128,7 @@ class ModelGeneratorTest {
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION)
+            setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION),
         )
             .generate()
             .toSingleFile()
@@ -106,31 +139,31 @@ class ModelGeneratorTest {
     @Test
     fun `missing array reference throws constructive message`() = assertExceptionWithMessage(
         "/badInput/ErrorMissingRefArray.yaml",
-        "Array type 'hooks' cannot be parsed to a Schema. Check your input"
+        "Array type 'hooks' cannot be parsed to a Schema. Check your input",
     )
 
     @Test
     fun `missing object reference throws constructive message`() = assertExceptionWithMessage(
         "/badInput/ErrorMissingRefObject.yaml",
-        "Property 'propB' cannot be parsed to a Schema. Check your input"
+        "Property 'propB' cannot be parsed to a Schema. Check your input",
     )
 
     @Test
     fun `mixing oneOf with object type throws constructive error`() = assertExceptionWithMessage(
         "/badInput/ErrorMixingOneOfWithObject.yaml",
-        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`"
+        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`",
     )
 
     @Test
     fun `mixing anyOf with object type throws constructive error`() = assertExceptionWithMessage(
         "/badInput/ErrorMixingAnyOfWithObject.yaml",
-        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`"
+        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`",
     )
 
     @Test
     fun `mixing allOf with object type throws constructive error`() = assertExceptionWithMessage(
         "/badInput/ErrorMixingAllOfWithObject.yaml",
-        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`"
+        "schema contains an invalid combination of properties and `oneOf | anyOf | allOf`",
     )
 
     private fun assertExceptionWithMessage(path: String, expectedMessage: String) {
@@ -152,7 +185,7 @@ class ModelGeneratorTest {
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION)
+            setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION),
         )
             .generate()
             .toSingleFile()
@@ -169,7 +202,7 @@ class ModelGeneratorTest {
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.MICRONAUT_INTROSPECTION)
+            setOf(ModelCodeGenOptionType.MICRONAUT_INTROSPECTION),
         )
             .generate()
             .toSingleFile()
@@ -186,7 +219,24 @@ class ModelGeneratorTest {
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.MICRONAUT_REFLECTION)
+            setOf(ModelCodeGenOptionType.MICRONAUT_REFLECTION),
+        )
+            .generate()
+            .toSingleFile()
+
+        assertThat(models).isEqualTo(expectedModels)
+    }
+
+    @Test
+    fun `companion object is added to models when generated from a full API definition when the companion object option is set`() {
+        val basePackage = "examples.companionObject"
+        val spec = readTextResource("/examples/companionObject/api.yaml")
+        val expectedModels = readTextResource("/examples/companionObject/models/Models.kt")
+
+        val models = JacksonModelGenerator(
+            Packages(basePackage),
+            SourceApi(spec),
+            setOf(ModelCodeGenOptionType.INCLUDE_COMPANION_OBJECT),
         )
             .generate()
             .toSingleFile()

@@ -37,6 +37,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import java.nio.file.Path
+import com.cjbooms.fabrikt.util.toUpperCase
 
 class OkHttpSimpleClientGenerator(
     private val packages: Packages,

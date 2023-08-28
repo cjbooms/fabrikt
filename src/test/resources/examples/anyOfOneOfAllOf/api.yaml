@@ -21,6 +21,9 @@ components:
           type: integer
 
     ComplexParent:
+      required:
+        - top_level_prop
+      type: object
       allOf:
         - $ref: '#/components/schemas/ContainsNestedOneOf'
         - $ref: '#/components/schemas/ContainsNestedAnyOf'

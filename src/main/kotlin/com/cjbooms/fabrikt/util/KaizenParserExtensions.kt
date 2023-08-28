@@ -25,27 +25,34 @@ object KaizenParserExtensions {
             "application~1json",
             "content",
             "additionalProperties",
-            "properties"
+            "properties",
         )
     private val simpleTypes = listOf(
         OasType.Text.type,
         OasType.Number.type,
         OasType.Integer.type,
-        OasType.Boolean.type
+        OasType.Boolean.type,
     )
 
     private const val EXTENSIBLE_ENUM_KEY = "x-extensible-enum"
 
-    fun Schema.isPolymorphicSuperType(): Boolean = discriminator?.propertyName != null
+    fun Schema.isPolymorphicSuperType(): Boolean = discriminator?.propertyName != null ||
+        getDiscriminatorForInLinedObjectUnderAllOf()?.propertyName != null
 
     fun Schema.isInlinedObjectDefinition() =
-        isObjectType() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("properties")
+        isObjectType() && !isSchemaLess() && (
+            Overlay.of(this).pathFromRoot.contains("properties") ||
+                Overlay.of(this).pathFromRoot.contains("items")
+            )
 
     fun Schema.isInlinedTypedAdditionalProperties() =
         isObjectType() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("additionalProperties")
 
     fun Schema.isInlinedEnumDefinition() =
-        isEnumDefinition() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("properties")
+        isEnumDefinition() && !isSchemaLess() && (
+            Overlay.of(this).pathFromRoot.contains("properties") ||
+                Overlay.of(this).pathFromRoot.contains("items")
+            )
 
     fun Schema.isInlinedArrayDefinition() =
         isArrayType() && !isSchemaLess() && this.itemsSchema.isInlinedObjectDefinition()
@@ -54,7 +61,11 @@ object KaizenParserExtensions {
 
     fun Schema.toMapValueClassName() = safeName().toMapValueClassName()
 
-    fun Schema.isSchemaLess() = isObjectType() && properties?.isEmpty() == true
+    fun Schema.isSchemaLess() = isObjectType() && properties?.isEmpty() == true && (
+        oneOfSchemas?.isNotEmpty() != true &&
+            allOfSchemas?.isNotEmpty() != true &&
+            anyOfSchemas?.isNotEmpty() != true
+        )
 
     fun Schema.isSimpleMapDefinition() = hasAdditionalProperties() && properties?.isEmpty() == true
 
@@ -101,7 +112,7 @@ object KaizenParserExtensions {
         "additionalProperties" && properties?.isEmpty() != true && !isSimpleType()
 
     fun Schema.isSimpleType(): Boolean =
-        (simpleTypes.contains(type) && !isEnumDefinition()) || isSimpleMapDefinition() || isSimpleOneOfAnyDefinition()
+        !isOneOfSuperInterface() && ((simpleTypes.contains(type) && !isEnumDefinition()) || isSimpleMapDefinition() || isSimpleOneOfAnyDefinition())
 
     private fun Schema.isObjectType() = OasType.Object.type == type
 
@@ -113,10 +124,17 @@ object KaizenParserExtensions {
     private fun Schema.getSchemaNameInParent(): String? = Overlay.of(this).pathInParent
 
     fun Schema.isPolymorphicSubType(api: OpenApi3): Boolean =
-        getEnclosingSchema(api)?.let { it.allOfSchemas.any { it.discriminator.propertyName != null } } ?: false
+        getEnclosingSchema(api)?.let { schema ->
+            schema.allOfSchemas.any { it.isPolymorphicSuperType() }
+        } ?: false
 
     fun Schema.getSuperType(api: OpenApi3): Schema? =
-        getEnclosingSchema(api)?.let { it.allOfSchemas.firstOrNull { it.discriminator.propertyName != null } }
+        getEnclosingSchema(api)?.let { schema ->
+            schema.allOfSchemas.firstOrNull { it.isPolymorphicSuperType() }
+        }
+
+    fun Schema.getDiscriminatorForInLinedObjectUnderAllOf(): Discriminator? =
+        this.allOfSchemas.firstOrNull { it.isInLinedObjectUnderAllOf() }?.discriminator
 
     private fun Schema.getEnclosingSchema(api: OpenApi3): Schema? =
         api.schemas.values.firstOrNull { it.name == safeName() }
@@ -124,31 +142,42 @@ object KaizenParserExtensions {
     fun Schema.isRequired(
         prop: Map.Entry<String, Schema>,
         markReadWriteOnlyOptional: Boolean,
-        markAllOptional: Boolean
+        markAllOptional: Boolean,
     ): Boolean =
-        if (markAllOptional || (prop.value.isReadOnly && markReadWriteOnlyOptional) || (prop.value.isWriteOnly && markReadWriteOnlyOptional))
+        if (markAllOptional || (prop.value.isReadOnly && markReadWriteOnlyOptional) || (prop.value.isWriteOnly && markReadWriteOnlyOptional)) {
             false
-        else requiredFields.contains(prop.key) || isDiscriminatorProperty(prop) // A discriminator property should be required
+        } else {
+            requiredFields.contains(prop.key) || isDiscriminatorProperty(prop) // A discriminator property should be required
+        }
+
+    fun Schema.getSchemaRefName() = Overlay.of(this).jsonReference.split("/").last()
 
     fun Schema.isDiscriminatorProperty(prop: Map.Entry<String, Schema>): Boolean =
         discriminator?.propertyName == prop.key
 
     fun Schema.getKeyIfSingleDiscriminatorValue(
         prop: Map.Entry<String, Schema>,
-        enclosingSchema: Schema
-    ): PropertyInfo.DiscriminatorKey? =
-        if (isDiscriminatorProperty(prop) && discriminator.mappingKeys(enclosingSchema).size == 1) {
-            discriminator.mappingKeys(enclosingSchema).first().let {
-                if (prop.value.isEnumDefinition()) PropertyInfo.DiscriminatorKey.EnumKey(it)
-                else PropertyInfo.DiscriminatorKey.StringKey(it)
-            }
-        } else null
+        enclosingSchema: Schema,
+    ): Map<String, PropertyInfo.DiscriminatorKey>? =
+        if (isDiscriminatorProperty(prop) && discriminator.mappingKeys(enclosingSchema).isNotEmpty()) {
+            discriminator.mappingKeys(enclosingSchema).map {
+                if (prop.value.isEnumDefinition()) {
+                    it.key to PropertyInfo.DiscriminatorKey.EnumKey(it.key, it.value)
+                } else {
+                    it.key to PropertyInfo.DiscriminatorKey.StringKey(it.key, it.value)
+                }
+            }.toMap()
+        } else {
+            null
+        }
 
-    fun Discriminator.mappingKeys(enclosingSchema: Schema): List<String> {
-        val keys = mappings?.entries?.filter {
-            it.value.toString().contains(enclosingSchema.name)
-        }?.map { it.key }
-        return if (keys.isNullOrEmpty()) listOf(enclosingSchema.safeName().toModelClassName()) else keys
+    fun Discriminator.mappingKeys(enclosingSchema: Schema): Map<String, String> {
+        val discriminatorMappings = mappings?.map { it.key to it.value.split("/").last() }?.toMap()
+        return if (discriminatorMappings.isNullOrEmpty()) {
+            mapOf(enclosingSchema.name to enclosingSchema.safeName().toModelClassName())
+        } else {
+            discriminatorMappings
+        }
     }
 
     fun Schema.isInLinedObjectUnderAllOf(): Boolean =
@@ -192,6 +221,9 @@ object KaizenParserExtensions {
 
     fun Schema.isOneOfPolymorphicTypes() =
         this.oneOfSchemas?.firstOrNull()?.allOfSchemas?.firstOrNull() != null
+
+    fun Schema.isOneOfSuperInterface() =
+        discriminator != null && discriminator.propertyName != null && oneOfSchemas.isNotEmpty()
 
     fun OpenApi3.basePath(): String =
         servers

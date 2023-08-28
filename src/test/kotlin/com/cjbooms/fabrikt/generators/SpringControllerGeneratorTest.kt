@@ -2,10 +2,11 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
+import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
+import com.cjbooms.fabrikt.generators.controller.SpringControllers
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
-import com.cjbooms.fabrikt.model.Controllers
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
@@ -35,14 +37,14 @@ class SpringControllerGeneratorTest {
         "parameterNameClash",
     )
 
-    private fun setupGithubApiTestEnv() {
+    private fun setupGithubApiTestEnv(annotations: ValidationAnnotations = JavaxValidationAnnotations) {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        generated = SpringControllerInterfaceGenerator(Packages(basePackage), api).generate().files
+        generated = SpringControllerInterfaceGenerator(Packages(basePackage), api, annotations).generate().files
     }
 
     @BeforeEach
     fun init() {
-        MutableSettings.updateSettings(setOf(CodeGenerationType.CONTROLLERS), emptySet(), emptySet(), emptySet())
+        MutableSettings.updateSettings(genTypes = setOf(CodeGenerationType.CONTROLLERS))
     }
 
     // @Test
@@ -53,11 +55,28 @@ class SpringControllerGeneratorTest {
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         val basePackage = "examples.$testCaseName"
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
-        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/Controllers.kt")
+        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/spring/Controllers.kt")
 
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
-            api
+            api,
+            JavaxValidationAnnotations,
+        ).generate().toSingleFile()
+
+        assertThat(controllers).isEqualTo(expectedControllers)
+    }
+
+    @Test
+    fun `correct models are generated for ControllerCodeGenOptionType_AUTHENTICATION`() {
+        val basePackage = "examples.authentication"
+        val api = SourceApi(readTextResource("/examples/authentication/api.yaml"))
+        val expectedControllers = readTextResource("/examples/authentication/controllers/spring/Controllers.kt")
+
+        val controllers = SpringControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            JavaxValidationAnnotations,
+            setOf(ControllerCodeGenOptionType.AUTHENTICATION),
         ).generate().toSingleFile()
 
         assertThat(controllers).isEqualTo(expectedControllers)
@@ -79,7 +98,7 @@ class SpringControllerGeneratorTest {
                 "OrganisationsController",
                 "OrganisationsContributorsController",
                 "RepositoriesController",
-                "RepositoriesPullRequestsController"
+                "RepositoriesPullRequestsController",
             )
     }
 
@@ -100,14 +119,34 @@ class SpringControllerGeneratorTest {
         assertThat(controllerAnnotations).containsOnly(
             "org.springframework.stereotype.Controller",
             "org.springframework.validation.annotation.Validated",
-            "org.springframework.web.bind.annotation.RequestMapping"
+            "org.springframework.web.bind.annotation.RequestMapping",
         )
+    }
+
+    @ParameterizedTest
+    @EnumSource(ValidationLibrary::class)
+    fun `ensure controller method parameters have correct validation annotations`(library: ValidationLibrary) {
+        setupGithubApiTestEnv(library.annotations)
+        val desiredPackagePrefix = when (library) {
+            ValidationLibrary.JAVAX_VALIDATION -> "javax.validation."
+            ValidationLibrary.JAKARTA_VALIDATION -> "jakarta.validation."
+        }
+        val parameterValidationAnnotations = generated
+            .flatMap { it.members }
+            .filterIsInstance<TypeSpec>()
+            .flatMap { it.funSpecs }
+            .flatMap { it.parameters }
+            .flatMap { it.annotations }
+            .map { it.className.canonicalName }
+            .filter { ".validation." in it }
+            .distinct()
+        assertThat(parameterValidationAnnotations).allMatch { it.startsWith(desiredPackagePrefix) }
     }
 
     @Test
     fun `ensure that subresource specific controllers are created`() {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api).generate()
+        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate()
 
         assertThat(controllers.files).size().isEqualTo(6)
         assertThat(controllers.files.map { it.name }).containsAll(
@@ -116,8 +155,8 @@ class SpringControllerGeneratorTest {
                 "OrganisationsController",
                 "OrganisationsContributorsController",
                 "RepositoriesController",
-                "RepositoriesPullRequestsController"
-            )
+                "RepositoriesPullRequestsController",
+            ),
         )
 
         val linkedFunctionNames = controllers.files
@@ -132,13 +171,13 @@ class SpringControllerGeneratorTest {
             "get",
             "getById",
             "putById",
-            "deleteById"
+            "deleteById",
         )
         assertThat(ownedFunctionNames).containsExactlyInAnyOrder(
             "get",
             "getById",
             "post",
-            "putById"
+            "putById",
         )
     }
 
@@ -148,7 +187,8 @@ class SpringControllerGeneratorTest {
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
             api,
-            setOf(ControllerCodeGenOptionType.SUSPEND_MODIFIER)
+            JavaxValidationAnnotations,
+            setOf(ControllerCodeGenOptionType.SUSPEND_MODIFIER),
         ).generate()
 
         assertThat(controllers.files).size().isEqualTo(6)
@@ -156,11 +196,11 @@ class SpringControllerGeneratorTest {
             controllers.files
                 .flatMap { file -> file.members }
                 .flatMap { (it as TypeSpec).funSpecs.map(FunSpec::modifiers) }
-                .all { it.contains(KModifier.SUSPEND) }
+                .all { it.contains(KModifier.SUSPEND) },
         ).isTrue()
     }
 
-    private fun Controllers.toSingleFile(): String {
+    private fun SpringControllers.toSingleFile(): String {
         val destPackage = if (controllers.isNotEmpty()) controllers.first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
         controllers.forEach {
@@ -168,7 +208,7 @@ class SpringControllerGeneratorTest {
                 .addImport(SpringImports.Static.REQUEST_METHOD.first, SpringImports.Static.REQUEST_METHOD.second)
                 .addImport(
                     SpringImports.Static.RESPONSE_STATUS.first,
-                    SpringImports.Static.RESPONSE_STATUS.second
+                    SpringImports.Static.RESPONSE_STATUS.second,
                 )
                 .addType(it.spec)
             builder.build()
@@ -179,7 +219,7 @@ class SpringControllerGeneratorTest {
     @Test
     fun `controller parameters should have spring DateTimeFormat annotations`() {
         val api = SourceApi(readTextResource("/examples/springFormatDateAndDateTime/api.yaml"))
-        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api).generate().toSingleFile()
+        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate().toSingleFile()
         val expectedControllers = readTextResource("/examples/springFormatDateAndDateTime/controllers/Controllers.kt")
 
         assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())

@@ -5,45 +5,20 @@ info:
   version: ""
 components:
   schemas:
-    Wrapper:
-      type: object
-      properties:
-        polymorph:
-          $ref: '#/components/schemas/polymorphicEnumDiscriminator'
-    polymorphicEnumDiscriminator:
+    ChildDefinition:
       type: object
       discriminator:
         propertyName: some_enum
         mapping:
-          obj_one_only: '#/components/schemas/ConcreteImplOne'
-          obj_two_first: '#/components/schemas/ConcreteImplTwo'
-          obj_two_second: '#/components/schemas/ConcreteImplTwo'
-          obj_three: '#/components/schemas/ConcreteImplThree'
+          obj_one_only: '#/components/schemas/DiscriminatedChild1'
+          obj_two_first: '#/components/schemas/DiscriminatedChild2'
+          obj_two_second: '#/components/schemas/DiscriminatedChild2'
+          obj_three: '#/components/schemas/discriminated_child_3'
       properties:
         some_enum:
-          $ref: '#/components/schemas/EnumDiscriminator'
+          $ref: '#/components/schemas/ChildDiscriminator'
 
-    ConcreteImplOne:
-      allOf:
-        - $ref: '#/components/schemas/polymorphicEnumDiscriminator'
-        - type: object
-          properties:
-            some_prop:
-              type: string
-
-    ConcreteImplTwo:
-      allOf:
-        - $ref: '#/components/schemas/polymorphicEnumDiscriminator'
-        - type: object
-          properties:
-            some_prop:
-              type: string
-              
-    ConcreteImplThree:
-      allOf:
-        - $ref: '#/components/schemas/polymorphicEnumDiscriminator'
-
-    EnumDiscriminator:
+    ChildDiscriminator:
       type: string
       enum:
         - obj_one_only
@@ -51,5 +26,33 @@ components:
         - obj_two_second
         - obj_three
 
+    DiscriminatedChild1:
+      allOf:
+        - $ref: '#/components/schemas/ChildDefinition'
+        - type: object
+          properties:
+            some_prop:
+              type: string
 
+    DiscriminatedChild2:
+      allOf:
+        - $ref: '#/components/schemas/ChildDefinition'
+        - type: object
+          properties:
+            some_prop:
+              type: string
 
+    discriminated_child_3:
+      allOf:
+        - $ref: '#/components/schemas/ChildDefinition'
+
+    Responses:
+      type: "object"
+      properties:
+        entries:
+          type: "array"
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/DiscriminatedChild2"
+              - $ref: "#/components/schemas/DiscriminatedChild2"
+              - $ref: "#/components/schemas/discriminated_child_3"

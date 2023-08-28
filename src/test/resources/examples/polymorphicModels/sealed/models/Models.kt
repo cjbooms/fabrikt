@@ -22,7 +22,7 @@ import kotlin.String
     JsonSubTypes.Type(
         value = PolymorphicTypeTwo::class,
         name =
-        "PolymorphicTypeTwo"
+        "polymorphic_type_two"
     )
 )
 sealed class PolymorphicSuperType(
@@ -31,6 +31,63 @@ sealed class PolymorphicSuperType(
 ) {
     abstract val generation: String
 }
+
+data class PolymorphicTypeOneRef(
+    @param:JsonProperty("first_name")
+    @get:JsonProperty("first_name")
+    @get:NotNull
+    override val firstName: String,
+    @param:JsonProperty("last_name")
+    @get:JsonProperty("last_name")
+    @get:NotNull
+    override val lastName: String,
+    @param:JsonProperty("child_one_name")
+    @get:JsonProperty("child_one_name")
+    val childOneName: String? = null,
+    @get:JsonProperty("generation")
+    @get:NotNull
+    @param:JsonProperty("generation")
+    override val generation: String = "PolymorphicTypeOne"
+) : PolymorphicSuperType(firstName, lastName)
+
+data class PolymorphicTypeOneAnotherRef(
+    @param:JsonProperty("first_name")
+    @get:JsonProperty("first_name")
+    @get:NotNull
+    override val firstName: String,
+    @param:JsonProperty("last_name")
+    @get:JsonProperty("last_name")
+    @get:NotNull
+    override val lastName: String,
+    @param:JsonProperty("child_one_name")
+    @get:JsonProperty("child_one_name")
+    val childOneName: String? = null,
+    @get:JsonProperty("generation")
+    @get:NotNull
+    @param:JsonProperty("generation")
+    override val generation: String = "PolymorphicTypeOne"
+) : PolymorphicSuperType(firstName, lastName)
+
+data class PolymorphicTypeTwoRef(
+    @param:JsonProperty("first_name")
+    @get:JsonProperty("first_name")
+    @get:NotNull
+    override val firstName: String,
+    @param:JsonProperty("last_name")
+    @get:JsonProperty("last_name")
+    @get:NotNull
+    override val lastName: String,
+    @param:JsonProperty("some_integer_propery")
+    @get:JsonProperty("some_integer_propery")
+    val someIntegerPropery: Int? = null,
+    @param:JsonProperty("child_two_age")
+    @get:JsonProperty("child_two_age")
+    val childTwoAge: Int? = null,
+    @get:JsonProperty("generation")
+    @get:NotNull
+    @param:JsonProperty("generation")
+    override val generation: String = "polymorphic_type_two"
+) : PolymorphicSuperType(firstName, lastName)
 
 data class PolymorphicTypeOne(
     @param:JsonProperty("first_name")
@@ -43,12 +100,12 @@ data class PolymorphicTypeOne(
     override val lastName: String,
     @param:JsonProperty("child_one_name")
     @get:JsonProperty("child_one_name")
-    val childOneName: String? = null
-) : PolymorphicSuperType(firstName, lastName) {
+    val childOneName: String? = null,
     @get:JsonProperty("generation")
     @get:NotNull
+    @param:JsonProperty("generation")
     override val generation: String = "PolymorphicTypeOne"
-}
+) : PolymorphicSuperType(firstName, lastName)
 
 data class PolymorphicTypeTwo(
     @param:JsonProperty("first_name")
@@ -64,9 +121,9 @@ data class PolymorphicTypeTwo(
     val someIntegerPropery: Int? = null,
     @param:JsonProperty("child_two_age")
     @get:JsonProperty("child_two_age")
-    val childTwoAge: Int? = null
-) : PolymorphicSuperType(firstName, lastName) {
+    val childTwoAge: Int? = null,
     @get:JsonProperty("generation")
     @get:NotNull
-    override val generation: String = "PolymorphicTypeTwo"
-}
+    @param:JsonProperty("generation")
+    override val generation: String = "polymorphic_type_two"
+) : PolymorphicSuperType(firstName, lastName)

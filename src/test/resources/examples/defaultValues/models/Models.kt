@@ -3,8 +3,10 @@ package examples.defaultValues.models
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import java.net.URI
+import java.util.Base64
 import javax.validation.constraints.NotNull
 import kotlin.Boolean
+import kotlin.ByteArray
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.Map
@@ -33,7 +35,11 @@ data class PersonWithDefaults(
     @param:JsonProperty("uri_type")
     @get:JsonProperty("uri_type")
     @get:NotNull
-    val uriType: URI = URI("about:blank")
+    val uriType: URI = URI("about:blank"),
+    @param:JsonProperty("byte_type")
+    @get:JsonProperty("byte_type")
+    @get:NotNull
+    val byteType: ByteArray = Base64.getDecoder().decode("U3dhZ2dlciByb2Nrcw==")
 )
 
 enum class PersonWithDefaultsEnumDefault(
