@@ -67,6 +67,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Uuid -> Uuid
                 OasType.Uri -> Uri
                 OasType.Base64String -> ByteArray
+                OasType.Binary -> ByteArray
                 OasType.Double -> Double
                 OasType.Float -> Float
                 OasType.Number -> Numeric

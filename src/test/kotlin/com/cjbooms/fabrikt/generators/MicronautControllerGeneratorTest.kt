@@ -212,4 +212,13 @@ class MicronautControllerGeneratorTest {
         }
         return Linter.lintString(singleFileBuilder.build().toString())
     }
+
+    @Test
+    fun `ensure generates ByteArray body parameter and response for string with format binary`() {
+        val api = SourceApi(readTextResource("/examples/binary/api.yaml"))
+        val controllers = MicronautControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate().toSingleFile()
+        val expectedControllers = readTextResource("/examples/binary/controllers/micronaut/Controllers.kt")
+
+        assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
+    }
 }
