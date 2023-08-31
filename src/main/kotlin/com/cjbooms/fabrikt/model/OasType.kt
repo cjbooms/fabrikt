@@ -37,7 +37,7 @@ sealed class OasType(
     object Enum : OasType("string", specialization = Specialization.ENUM)
     object Uuid : OasType("string", specialization = Specialization.UUID)
     object Uri : OasType("string", specialization = Specialization.URI)
-    object ByteArray : OasType("string", specialization = Specialization.BYTE)
+    object Base64String : OasType("string", specialization = Specialization.BYTE)
     object Map : OasType("object", specialization = Specialization.MAP)
     object UnknownAdditionalProperties :
         OasType("object", specialization = Specialization.UNKNOWN_ADDITIONAL_PROPERTIES)
