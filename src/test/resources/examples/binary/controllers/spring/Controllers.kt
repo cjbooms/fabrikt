@@ -16,7 +16,7 @@ interface BinaryDataController {
     /**
      *
      *
-     * @param application1octetStream
+     * @param applicationOctetStream
      */
     @RequestMapping(
         value = ["/binary-data"],
@@ -26,7 +26,7 @@ interface BinaryDataController {
     )
     fun postBinaryData(
         @RequestBody @Valid
-        application1octetStream: ByteArray
+        applicationOctetStream: ByteArray
     ):
         ResponseEntity<ByteArray>
 }

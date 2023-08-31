@@ -199,6 +199,7 @@ object KaizenParserExtensions {
                 .filterNot { invalidNames.contains(it) }
                 .filter { it.toIntOrNull() == null } // Ignore numeric-identifiers path-parts in: allOf / oneOf / anyOf
                 .last()
+                .replace("~1", "-") // so application~1octet-stream becomes application-octet-stream
         }
 
     fun Schema.safeType(): String? =

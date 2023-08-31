@@ -14,13 +14,13 @@ interface BinaryDataController {
     /**
      *
      *
-     * @param application1octetStream
+     * @param applicationOctetStream
      */
     @Post(uri = "/binary-data")
     @Consumes(value = ["application/octet-stream"])
     @Produces(value = ["application/octet-stream"])
     fun postBinaryData(
         @Body @Valid
-        application1octetStream: ByteArray
+        applicationOctetStream: ByteArray
     ): HttpResponse<ByteArray>
 }
