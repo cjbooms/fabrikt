@@ -1,0 +1,24 @@
+openapi: 3.0.1
+info:
+  description: Testing binary body and binary response
+  title: Test
+  version: '0.0'
+paths:
+  /binary-data:
+    post:
+      operationId: postBinaryData
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        200:
+          description: Success
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary

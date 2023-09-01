@@ -37,7 +37,8 @@ sealed class OasType(
     object Enum : OasType("string", specialization = Specialization.ENUM)
     object Uuid : OasType("string", specialization = Specialization.UUID)
     object Uri : OasType("string", specialization = Specialization.URI)
-    object ByteArray : OasType("string", specialization = Specialization.BYTE)
+    object Base64String : OasType("string", specialization = Specialization.BYTE)
+    object Binary : OasType("string", specialization = Specialization.BINARY)
     object Map : OasType("object", specialization = Specialization.MAP)
     object UnknownAdditionalProperties :
         OasType("object", specialization = Specialization.UNKNOWN_ADDITIONAL_PROPERTIES)
@@ -77,6 +78,7 @@ sealed class OasType(
                 isStringDefinitionWithFormat("uuid") -> Specialization.UUID
                 isStringDefinitionWithFormat("uri") -> Specialization.URI
                 isStringDefinitionWithFormat("byte") -> Specialization.BYTE
+                isStringDefinitionWithFormat("binary") -> Specialization.BINARY
                 isEnumDefinition() -> Specialization.ENUM
                 isMapTypeAdditionalProperties(oasKey) -> Specialization.TYPED_MAP_ADDITIONAL_PROPERTIES
                 isSimpleMapDefinition() -> Specialization.MAP
@@ -101,6 +103,7 @@ sealed class OasType(
         URI,
         NONE,
         ONE_OF_ANY,
-        BYTE
+        BYTE,
+        BINARY
     }
 }

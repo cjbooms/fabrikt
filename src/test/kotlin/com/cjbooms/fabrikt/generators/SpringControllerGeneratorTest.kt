@@ -224,4 +224,13 @@ class SpringControllerGeneratorTest {
 
         assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
     }
+
+    @Test
+    fun `ensure generates ByteArray body parameter and response for string with format binary`() {
+        val api = SourceApi(readTextResource("/examples/binary/api.yaml"))
+        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate().toSingleFile()
+        val expectedControllers = readTextResource("/examples/binary/controllers/spring/Controllers.kt")
+
+        assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
+    }
 }
