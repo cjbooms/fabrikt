@@ -21,20 +21,20 @@ interface ExamplePath1Client {
      *
      * @param explodeListQueryParam
      * @param queryParam2
-     * @param queryParam4
-     * @param queryParam5
+     * @param headerParam1
+     * @param headerParam2
      */
     @RequestLine("GET /example-path-1?explode_list_query_param={explodeListQueryParam}&query_param2={queryParam2}")
     @Headers(
-        "query_param4: {queryParam4}",
-        "query_param5: {queryParam5}",
+        "header_param1: {headerParam1}",
+        "header_param2: {headerParam2}",
         "Accept: application/vnd.custom.media+json"
     )
     fun getExamplePath1(
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
         @Param("queryParam2") queryParam2: Int? = null,
-        @Param("queryParam4") queryParam4: String? = null,
-        @Param("queryParam5") queryParam5: String? = null,
+        @Param("headerParam1") headerParam1: String? = null,
+        @Param("headerParam2") headerParam2: String? = null,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
     ): QueryResult
 
