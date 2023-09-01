@@ -21,12 +21,20 @@ interface ExamplePath1Client {
      *
      * @param explodeListQueryParam
      * @param queryParam2
+     * @param queryParam4
+     * @param queryParam5
      */
     @RequestLine("GET /example-path-1?explode_list_query_param={explodeListQueryParam}&query_param2={queryParam2}")
-    @Headers("Accept: application/vnd.custom.media+json")
+    @Headers(
+        "query_param4: {queryParam4}",
+        "query_param5: {queryParam5}",
+        "Accept: application/vnd.custom.media+json"
+    )
     fun getExamplePath1(
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
         @Param("queryParam2") queryParam2: Int? = null,
+        @Param("queryParam4") queryParam4: String? = null,
+        @Param("queryParam5") queryParam5: String? = null,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
     ): QueryResult
 
@@ -55,7 +63,10 @@ interface ExamplePath2Client {
      * @param ifNoneMatch The RFC7232 If-None-Match header field
      */
     @RequestLine("GET /example-path-2/{pathParam}?limit={limit}&query_param2={queryParam2}")
-    @Headers(value = ["If-None-Match: {ifNoneMatch}", "Accept: application/json"])
+    @Headers(
+        "If-None-Match: {ifNoneMatch}",
+        "Accept: application/json"
+    )
     fun getExamplePath2PathParam(
         @Param("pathParam") pathParam: String,
         @Param("limit") limit: Int = 500,

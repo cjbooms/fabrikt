@@ -211,10 +211,9 @@ class OpenFeignInterfaceGenerator(
             }
 
             return if (headersValueParts.isNotEmpty()) {
-                val format = if (headersValueParts.size == 1) "%L" else "value = [%L]"
-                OpenFeignAnnotations.headersBuilder()
-                    .addMember(format, headersValueParts.joinToString(", "))
-                    .build()
+                val headersBuilder = OpenFeignAnnotations.headersBuilder()
+                headersValueParts.forEach { headersBuilder.addMember("%S", it) }
+                return headersBuilder.build()
             } else {
                 null
             }
@@ -241,7 +240,7 @@ class OpenFeignInterfaceGenerator(
                     "{${parameter.name}}"
                 }
             return buildCodeBlock {
-                add("%S", "${parameter.originalName}: $parameterValue")
+                add("%L", "${parameter.originalName}: $parameterValue")
             }.toString()
         }
 
@@ -249,7 +248,7 @@ class OpenFeignInterfaceGenerator(
             return operation.getPrimaryContentMediaType()?.key?.let { mediaType ->
                 buildCodeBlock {
                     add(
-                        "%S",
+                        "%L",
                         "${ClientGeneratorUtils.ACCEPT_HEADER_NAME}: $mediaType",
                     )
                 }.toString()

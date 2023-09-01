@@ -9,6 +9,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/ListQueryParamExploded"
         - $ref: "#/components/parameters/QueryParam2"
+        - $ref: "#/components/parameters/QueryParam4"
+        - $ref: "#/components/parameters/QueryParam5"
       responses:
         200:
           description: "successful operation"
@@ -169,6 +171,19 @@ components:
       schema:
         type: boolean
       required: false
+    QueryParam4:
+      name: "query_param4"
+      in: "header"
+      schema:
+        type: string
+      required: false
+    QueryParam5:
+      name: "query_param5"
+      in: "header"
+      schema:
+        type: string
+      required: false
+
 
   headers:
     Location:
