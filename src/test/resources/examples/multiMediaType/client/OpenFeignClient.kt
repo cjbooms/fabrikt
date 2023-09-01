@@ -24,7 +24,10 @@ interface ExamplePath1Client {
      * @param acceptHeader
      */
     @RequestLine("GET /example-path-1?explode_list_query_param={explodeListQueryParam}&query_param2={queryParam2}")
-    @Headers(value = ["Accept: {acceptHeader}", "Accept: application/vnd.custom.media+xml"])
+    @Headers(
+        "Accept: {acceptHeader}",
+        "Accept: application/vnd.custom.media+xml"
+    )
     fun getExamplePath1(
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
         @Param("queryParam2") queryParam2: Int? = null,
@@ -43,7 +46,10 @@ interface ExamplePath2Client {
      * @param accept the content type accepted by the client
      */
     @RequestLine("GET /example-path-2?explode_list_query_param={explodeListQueryParam}&query_param2={queryParam2}")
-    @Headers(value = ["Accept: {accept}", "Accept: application/vnd.custom.media+xml"])
+    @Headers(
+        "Accept: {accept}",
+        "Accept: application/vnd.custom.media+xml"
+    )
     fun getExamplePath2(
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
         @Param("queryParam2") queryParam2: Int? = null,
@@ -60,7 +66,10 @@ interface MultipleResponseSchemasClient {
      * @param accept the content type accepted by the client
      */
     @RequestLine("GET /multiple-response-schemas")
-    @Headers(value = ["Accept: {accept}", "Accept: application/json"])
+    @Headers(
+        "Accept: {accept}",
+        "Accept: application/json"
+    )
     fun getMultipleResponseSchemas(
         @Param("accept") accept: ContentType? = null,
         @HeaderMap
