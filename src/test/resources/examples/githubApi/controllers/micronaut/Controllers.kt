@@ -12,17 +12,17 @@ import examples.githubApi.models.Repository
 import examples.githubApi.models.RepositoryQueryResult
 import examples.githubApi.models.StatusQueryParam
 import io.micronaut.http.HttpResponse
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Delete
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.Header
-import io.micronaut.http.annotation.PathVariable
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.annotation.Produces
-import io.micronaut.http.annotation.Put
-import io.micronaut.http.annotation.QueryValue
+import io.micronaut.http.`annotation`.Body
+import io.micronaut.http.`annotation`.Consumes
+import io.micronaut.http.`annotation`.Controller
+import io.micronaut.http.`annotation`.Delete
+import io.micronaut.http.`annotation`.Get
+import io.micronaut.http.`annotation`.Header
+import io.micronaut.http.`annotation`.PathVariable
+import io.micronaut.http.`annotation`.Post
+import io.micronaut.http.`annotation`.Produces
+import io.micronaut.http.`annotation`.Put
+import io.micronaut.http.`annotation`.QueryValue
 import java.util.UUID
 import javax.validation.Valid
 import javax.validation.constraints.Max
@@ -34,7 +34,7 @@ import kotlin.Unit
 import kotlin.collections.List
 
 @Controller
-interface InternalEventsController {
+public interface InternalEventsController {
     /**
      * Generate change events for a list of entities
      *
@@ -43,14 +43,14 @@ interface InternalEventsController {
     @Post(uri = "/internal/events")
     @Consumes(value = ["application/json"])
     @Produces(value = ["application/json", "application/problem+json"])
-    fun post(
+    public fun post(
         @Body @Valid
         bulkEntityDetails: BulkEntityDetails,
     ): HttpResponse<EventResults>
 }
 
 @Controller
-interface ContributorsController {
+public interface ContributorsController {
     /**
      * Page through all the Contributor resources matching the query filters
      *
@@ -68,7 +68,7 @@ interface ContributorsController {
      */
     @Get(uri = "/contributors")
     @Produces(value = ["application/json"])
-    fun searchContributors(
+    public fun searchContributors(
         @Min(1)
         @Max(100)
         @QueryValue(value = "limit", defaultValue = "10")
@@ -96,7 +96,7 @@ interface ContributorsController {
      */
     @Post(uri = "/contributors")
     @Consumes(value = ["application/json"])
-    fun createContributor(
+    public fun createContributor(
         @Body @Valid
         contributor: Contributor,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -120,7 +120,7 @@ interface ContributorsController {
      */
     @Get(uri = "/contributors/{id}")
     @Produces(value = ["application/json"])
-    fun getContributor(
+    public fun getContributor(
         @PathVariable(value = "id") id: String,
         @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParam,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -151,7 +151,7 @@ interface ContributorsController {
      */
     @Put(uri = "/contributors/{id}")
     @Consumes(value = ["application/json"])
-    fun putById(
+    public fun putById(
         @Body @Valid
         contributor: Contributor,
         @PathVariable(value = "id") id: String,
@@ -162,7 +162,7 @@ interface ContributorsController {
 }
 
 @Controller
-interface OrganisationsController {
+public interface OrganisationsController {
     /**
      * Page through all the Organisation resources matching the query filters
      *
@@ -180,7 +180,7 @@ interface OrganisationsController {
      */
     @Get(uri = "/organisations")
     @Produces(value = ["application/json"])
-    fun get(
+    public fun `get`(
         @Min(1)
         @Max(100)
         @QueryValue(value = "limit", defaultValue = "10")
@@ -208,7 +208,7 @@ interface OrganisationsController {
      */
     @Post(uri = "/organisations")
     @Consumes(value = ["application/json"])
-    fun post(
+    public fun post(
         @Body @Valid
         organisation: Organisation,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -232,7 +232,7 @@ interface OrganisationsController {
      */
     @Get(uri = "/organisations/{id}")
     @Produces(value = ["application/json"])
-    fun getById(
+    public fun getById(
         @PathVariable(value = "id") id: String,
         @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParam,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -263,7 +263,7 @@ interface OrganisationsController {
      */
     @Put(uri = "/organisations/{id}")
     @Consumes(value = ["application/json"])
-    fun putById(
+    public fun putById(
         @Body @Valid
         organisation: Organisation,
         @PathVariable(value = "id") id: String,
@@ -274,7 +274,7 @@ interface OrganisationsController {
 }
 
 @Controller
-interface OrganisationsContributorsController {
+public interface OrganisationsContributorsController {
     /**
      * Page through all the Contributor resources for this parent Organisation matching the query
      * filters
@@ -294,7 +294,7 @@ interface OrganisationsContributorsController {
      */
     @Get(uri = "/organisations/{parent-id}/contributors")
     @Produces(value = ["application/json"])
-    fun get(
+    public fun `get`(
         @PathVariable(value = "parent-id") parentId: String,
         @Min(1)
         @Max(100)
@@ -320,7 +320,7 @@ interface OrganisationsContributorsController {
      */
     @Get(uri = "/organisations/{parent-id}/contributors/{id}")
     @Produces(value = ["application/json"])
-    fun getById(
+    public fun getById(
         @PathVariable(value = "parent-id") parentId: String,
         @PathVariable(value = "id") id: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -350,7 +350,7 @@ interface OrganisationsContributorsController {
      *
      */
     @Put(uri = "/organisations/{parent-id}/contributors/{id}")
-    fun putById(
+    public fun putById(
         @PathVariable(value = "parent-id") parentId: String,
         @PathVariable(value = "id") id: String,
         @Header(value = "If-Match") ifMatch: String,
@@ -368,7 +368,7 @@ interface OrganisationsContributorsController {
      *
      */
     @Delete(uri = "/organisations/{parent-id}/contributors/{id}")
-    fun deleteById(
+    public fun deleteById(
         @PathVariable(value = "parent-id") parentId: String,
         @PathVariable(value = "id") id: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -376,7 +376,7 @@ interface OrganisationsContributorsController {
 }
 
 @Controller
-interface RepositoriesController {
+public interface RepositoriesController {
     /**
      * Page through all the Repository resources matching the query filters
      *
@@ -398,7 +398,7 @@ interface RepositoriesController {
      */
     @Get(uri = "/repositories")
     @Produces(value = ["application/json"])
-    fun get(
+    public fun `get`(
         @Min(1)
         @Max(100)
         @QueryValue(value = "limit", defaultValue = "10")
@@ -432,7 +432,7 @@ interface RepositoriesController {
      */
     @Post(uri = "/repositories")
     @Consumes(value = ["application/json"])
-    fun post(
+    public fun post(
         @Body @Valid
         repository: Repository,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -456,7 +456,7 @@ interface RepositoriesController {
      */
     @Get(uri = "/repositories/{id}")
     @Produces(value = ["application/json"])
-    fun getById(
+    public fun getById(
         @PathVariable(value = "id") id: String,
         @QueryValue(value = "status", defaultValue = "all") status: StatusQueryParam,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -487,7 +487,7 @@ interface RepositoriesController {
      */
     @Put(uri = "/repositories/{id}")
     @Consumes(value = ["application/json"])
-    fun putById(
+    public fun putById(
         @Body @Valid
         repository: Repository,
         @PathVariable(value = "id") id: String,
@@ -498,7 +498,7 @@ interface RepositoriesController {
 }
 
 @Controller
-interface RepositoriesPullRequestsController {
+public interface RepositoriesPullRequestsController {
     /**
      * Page through all the PullRequest resources for this parent Repository matching the query
      * filters
@@ -518,7 +518,7 @@ interface RepositoriesPullRequestsController {
      */
     @Get(uri = "/repositories/{parent-id}/pull-requests")
     @Produces(value = ["application/json"])
-    fun get(
+    public fun `get`(
         @PathVariable(value = "parent-id") parentId: String,
         @Min(1)
         @Max(100)
@@ -548,7 +548,7 @@ interface RepositoriesPullRequestsController {
      */
     @Post(uri = "/repositories/{parent-id}/pull-requests")
     @Consumes(value = ["application/json"])
-    fun post(
+    public fun post(
         @Body @Valid
         pullRequest: PullRequest,
         @PathVariable(value = "parent-id") parentId: String,
@@ -571,7 +571,7 @@ interface RepositoriesPullRequestsController {
      */
     @Get(uri = "/repositories/{parent-id}/pull-requests/{id}")
     @Produces(value = ["application/json"])
-    fun getById(
+    public fun getById(
         @PathVariable(value = "parent-id") parentId: String,
         @PathVariable(value = "id") id: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -603,7 +603,7 @@ interface RepositoriesPullRequestsController {
      */
     @Put(uri = "/repositories/{parent-id}/pull-requests/{id}")
     @Consumes(value = ["application/json"])
-    fun putById(
+    public fun putById(
         @Body @Valid
         pullRequest: PullRequest,
         @PathVariable(value = "parent-id") parentId: String,

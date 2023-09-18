@@ -18,18 +18,18 @@ import kotlin.jvm.Throws
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExampleService(
+public class ExampleService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
     client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "exampleClient"
+    public var circuitBreakerName: String = "exampleClient"
 
     private val apiClient: ExampleClient = ExampleClient(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun getExample(
+    public fun getExample(
         a: String,
         b: String,
         additionalHeaders: Map<String, String> = emptyMap(),

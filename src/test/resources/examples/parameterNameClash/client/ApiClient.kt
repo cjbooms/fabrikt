@@ -17,7 +17,7 @@ import kotlin.collections.Map
 import kotlin.jvm.Throws
 
 @Suppress("unused")
-class ExampleClient(
+public class ExampleClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
     private val client: OkHttpClient,
@@ -29,7 +29,7 @@ class ExampleClient(
      * @param queryB
      */
     @Throws(ApiException::class)
-    fun getExampleB(
+    public fun getExampleB(
         pathB: String,
         queryB: String,
         additionalHeaders: Map<String, String> = emptyMap(),
@@ -61,7 +61,7 @@ class ExampleClient(
      * @param querySomeObject
      */
     @Throws(ApiException::class)
-    fun postExample(
+    public fun postExample(
         bodySomeObject: SomeObject,
         querySomeObject: String,
         additionalHeaders: Map<String, String> = emptyMap(),

@@ -23,18 +23,18 @@ import kotlin.jvm.Throws
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExamplePath1Service(
+public class ExamplePath1Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
     client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "examplePath1Client"
+    public var circuitBreakerName: String = "examplePath1Client"
 
     private val apiClient: ExamplePath1Client = ExamplePath1Client(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun getExamplePath1(
+    public fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         acceptHeader: String = "application/vnd.custom.media+xml",
@@ -54,18 +54,18 @@ class ExamplePath1Service(
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExamplePath2Service(
+public class ExamplePath2Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
     client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "examplePath2Client"
+    public var circuitBreakerName: String = "examplePath2Client"
 
     private val apiClient: ExamplePath2Client = ExamplePath2Client(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun getExamplePath2(
+    public fun getExamplePath2(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         accept: ContentType? = null,
@@ -85,13 +85,13 @@ class ExamplePath2Service(
  * @see ApiServerException
  */
 @Suppress("unused")
-class MultipleResponseSchemasService(
+public class MultipleResponseSchemasService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
     client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "multipleResponseSchemasClient"
+    public var circuitBreakerName: String = "multipleResponseSchemasClient"
 
     private val apiClient: MultipleResponseSchemasClient = MultipleResponseSchemasClient(
         objectMapper,
@@ -100,10 +100,9 @@ class MultipleResponseSchemasService(
     )
 
     @Throws(ApiException::class)
-    fun getMultipleResponseSchemas(
+    public fun getMultipleResponseSchemas(
         accept: ContentType? = null,
-        additionalHeaders: Map<String, String> =
-            emptyMap(),
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<JsonNode> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getMultipleResponseSchemas(accept, additionalHeaders)
@@ -119,21 +118,21 @@ class MultipleResponseSchemasService(
  * @see ApiServerException
  */
 @Suppress("unused")
-class DifferentSuccessAndErrorResponseSchemaService(
+public class DifferentSuccessAndErrorResponseSchemaService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "differentSuccessAndErrorResponseSchemaClient"
+    public var circuitBreakerName: String = "differentSuccessAndErrorResponseSchemaClient"
 
     private val apiClient: DifferentSuccessAndErrorResponseSchemaClient =
         DifferentSuccessAndErrorResponseSchemaClient(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun getDifferentSuccessAndErrorResponseSchema(
+    public fun getDifferentSuccessAndErrorResponseSchema(
         additionalHeaders: Map<String, String> =
-            emptyMap()
+            emptyMap(),
     ): ApiResponse<SuccessResponse> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getDifferentSuccessAndErrorResponseSchema(additionalHeaders)

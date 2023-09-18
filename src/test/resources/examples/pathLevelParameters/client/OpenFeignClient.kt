@@ -5,10 +5,11 @@ import feign.Param
 import feign.RequestLine
 import kotlin.String
 import kotlin.Suppress
+import kotlin.Unit
 import kotlin.collections.Map
 
 @Suppress("unused")
-interface ExampleClient {
+public interface ExampleClient {
     /**
      *
      *
@@ -16,9 +17,9 @@ interface ExampleClient {
      * @param b
      */
     @RequestLine("GET /example?a={a}&b={b}")
-    fun getExample(
+    public fun getExample(
         @Param("a") a: String,
         @Param("b") b: String,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
-    )
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+    ): Unit
 }

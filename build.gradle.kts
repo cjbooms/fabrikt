@@ -65,7 +65,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-web:6.0.0")
     testImplementation("io.micronaut:micronaut-core:3.8.7")
     testImplementation("io.micronaut:micronaut-http:3.8.7")
-    testCompileOnly("io.micronaut.security:micronaut-security:3.8.7")
+    //testCompileOnly("io.micronaut.security:micronaut-security:3.8.7")
     testImplementation("com.squareup.okhttp3:okhttp:4.10.0")
     testImplementation("com.pinterest.ktlint:ktlint-core:0.48.2")
     testImplementation("com.pinterest.ktlint:ktlint-ruleset-standard:0.48.2")

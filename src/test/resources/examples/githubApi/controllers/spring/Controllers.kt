@@ -13,13 +13,13 @@ import examples.githubApi.models.RepositoryQueryResult
 import examples.githubApi.models.StatusQueryParam
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.validation.`annotation`.Validated
+import org.springframework.web.bind.`annotation`.PathVariable
+import org.springframework.web.bind.`annotation`.RequestBody
+import org.springframework.web.bind.`annotation`.RequestHeader
+import org.springframework.web.bind.`annotation`.RequestMapping
+import org.springframework.web.bind.`annotation`.RequestMethod
+import org.springframework.web.bind.`annotation`.RequestParam
 import java.util.UUID
 import javax.validation.Valid
 import javax.validation.constraints.Max
@@ -33,7 +33,7 @@ import kotlin.collections.List
 @Controller
 @Validated
 @RequestMapping("")
-interface InternalEventsController {
+public interface InternalEventsController {
     /**
      * Generate change events for a list of entities
      *
@@ -45,16 +45,17 @@ interface InternalEventsController {
         method = [RequestMethod.POST],
         consumes = ["application/json"],
     )
-    fun post(
+    public fun post(
         @RequestBody @Valid
         bulkEntityDetails: BulkEntityDetails,
-    ): ResponseEntity<EventResults>
+    ):
+        ResponseEntity<EventResults>
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-interface ContributorsController {
+public interface ContributorsController {
     /**
      * Page through all the Contributor resources matching the query filters
      *
@@ -75,7 +76,7 @@ interface ContributorsController {
         produces = ["application/json"],
         method = [RequestMethod.GET],
     )
-    fun searchContributors(
+    public fun searchContributors(
         @Min(1)
         @Max(100)
         @RequestParam(value = "limit", required = false, defaultValue = "10")
@@ -107,7 +108,7 @@ interface ContributorsController {
         method = [RequestMethod.POST],
         consumes = ["application/json"],
     )
-    fun createContributor(
+    public fun createContributor(
         @RequestBody @Valid
         contributor: Contributor,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
@@ -134,7 +135,7 @@ interface ContributorsController {
         produces = ["application/json"],
         method = [RequestMethod.GET],
     )
-    fun getContributor(
+    public fun getContributor(
         @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
         status: StatusQueryParam,
@@ -170,7 +171,7 @@ interface ContributorsController {
         method = [RequestMethod.PUT],
         consumes = ["application/json"],
     )
-    fun putById(
+    public fun putById(
         @RequestBody @Valid
         contributor: Contributor,
         @PathVariable(value = "id", required = true) id: String,
@@ -183,7 +184,7 @@ interface ContributorsController {
 @Controller
 @Validated
 @RequestMapping("")
-interface OrganisationsController {
+public interface OrganisationsController {
     /**
      * Page through all the Organisation resources matching the query filters
      *
@@ -204,7 +205,7 @@ interface OrganisationsController {
         produces = ["application/json"],
         method = [RequestMethod.GET],
     )
-    fun get(
+    public fun `get`(
         @Min(1)
         @Max(100)
         @RequestParam(value = "limit", required = false, defaultValue = "10")
@@ -236,7 +237,7 @@ interface OrganisationsController {
         method = [RequestMethod.POST],
         consumes = ["application/json"],
     )
-    fun post(
+    public fun post(
         @RequestBody @Valid
         organisation: Organisation,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
@@ -263,7 +264,7 @@ interface OrganisationsController {
         produces = ["application/json"],
         method = [RequestMethod.GET],
     )
-    fun getById(
+    public fun getById(
         @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
         status: StatusQueryParam,
@@ -299,7 +300,7 @@ interface OrganisationsController {
         method = [RequestMethod.PUT],
         consumes = ["application/json"],
     )
-    fun putById(
+    public fun putById(
         @RequestBody @Valid
         organisation: Organisation,
         @PathVariable(value = "id", required = true) id: String,
@@ -312,7 +313,7 @@ interface OrganisationsController {
 @Controller
 @Validated
 @RequestMapping("")
-interface OrganisationsContributorsController {
+public interface OrganisationsContributorsController {
     /**
      * Page through all the Contributor resources for this parent Organisation matching the query
      * filters
@@ -335,7 +336,7 @@ interface OrganisationsContributorsController {
         produces = ["application/json"],
         method = [RequestMethod.GET],
     )
-    fun get(
+    public fun `get`(
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @Min(1)
         @Max(100)
@@ -364,7 +365,7 @@ interface OrganisationsContributorsController {
         produces = ["application/json"],
         method = [RequestMethod.GET],
     )
-    fun getById(
+    public fun getById(
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
@@ -398,7 +399,7 @@ interface OrganisationsContributorsController {
         produces = [],
         method = [RequestMethod.PUT],
     )
-    fun putById(
+    public fun putById(
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "If-Match", required = true) ifMatch: String,
@@ -420,7 +421,7 @@ interface OrganisationsContributorsController {
         produces = [],
         method = [RequestMethod.DELETE],
     )
-    fun deleteById(
+    public fun deleteById(
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
@@ -430,7 +431,7 @@ interface OrganisationsContributorsController {
 @Controller
 @Validated
 @RequestMapping("")
-interface RepositoriesController {
+public interface RepositoriesController {
     /**
      * Page through all the Repository resources matching the query filters
      *
@@ -455,7 +456,7 @@ interface RepositoriesController {
         produces = ["application/json"],
         method = [RequestMethod.GET],
     )
-    fun get(
+    public fun `get`(
         @Min(1)
         @Max(100)
         @RequestParam(value = "limit", required = false, defaultValue = "10")
@@ -493,7 +494,7 @@ interface RepositoriesController {
         method = [RequestMethod.POST],
         consumes = ["application/json"],
     )
-    fun post(
+    public fun post(
         @RequestBody @Valid
         repository: Repository,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
@@ -520,7 +521,7 @@ interface RepositoriesController {
         produces = ["application/json"],
         method = [RequestMethod.GET],
     )
-    fun getById(
+    public fun getById(
         @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
         status: StatusQueryParam,
@@ -556,7 +557,7 @@ interface RepositoriesController {
         method = [RequestMethod.PUT],
         consumes = ["application/json"],
     )
-    fun putById(
+    public fun putById(
         @RequestBody @Valid
         repository: Repository,
         @PathVariable(value = "id", required = true) id: String,
@@ -569,7 +570,7 @@ interface RepositoriesController {
 @Controller
 @Validated
 @RequestMapping("")
-interface RepositoriesPullRequestsController {
+public interface RepositoriesPullRequestsController {
     /**
      * Page through all the PullRequest resources for this parent Repository matching the query
      * filters
@@ -592,7 +593,7 @@ interface RepositoriesPullRequestsController {
         produces = ["application/json"],
         method = [RequestMethod.GET],
     )
-    fun get(
+    public fun `get`(
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @Min(1)
         @Max(100)
@@ -626,7 +627,7 @@ interface RepositoriesPullRequestsController {
         method = [RequestMethod.POST],
         consumes = ["application/json"],
     )
-    fun post(
+    public fun post(
         @RequestBody @Valid
         pullRequest: PullRequest,
         @PathVariable(value = "parent-id", required = true) parentId: String,
@@ -652,7 +653,7 @@ interface RepositoriesPullRequestsController {
         produces = ["application/json"],
         method = [RequestMethod.GET],
     )
-    fun getById(
+    public fun getById(
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
@@ -688,7 +689,7 @@ interface RepositoriesPullRequestsController {
         method = [RequestMethod.PUT],
         consumes = ["application/json"],
     )
-    fun putById(
+    public fun putById(
         @RequestBody @Valid
         pullRequest: PullRequest,
         @PathVariable(value = "parent-id", required = true) parentId: String,

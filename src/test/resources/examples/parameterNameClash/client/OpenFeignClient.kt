@@ -6,10 +6,11 @@ import feign.Param
 import feign.RequestLine
 import kotlin.String
 import kotlin.Suppress
+import kotlin.Unit
 import kotlin.collections.Map
 
 @Suppress("unused")
-interface ExampleClient {
+public interface ExampleClient {
     /**
      *
      *
@@ -17,11 +18,11 @@ interface ExampleClient {
      * @param queryB
      */
     @RequestLine("GET /example/{pathB}?b={queryB}")
-    fun getExampleB(
+    public fun getExampleB(
         @Param("pathB") pathB: String,
         @Param("queryB") queryB: String,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
-    )
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+    ): Unit
 
     /**
      *
@@ -30,9 +31,9 @@ interface ExampleClient {
      * @param querySomeObject
      */
     @RequestLine("POST /example?someObject={querySomeObject}")
-    fun postExample(
+    public fun postExample(
         bodySomeObject: SomeObject,
         @Param("querySomeObject") querySomeObject: String,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
-    )
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+    ): Unit
 }

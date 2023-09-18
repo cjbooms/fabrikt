@@ -1,9 +1,9 @@
 package examples.javaSerializableModels.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonValue
+import com.fasterxml.jackson.`annotation`.JsonProperty
+import com.fasterxml.jackson.`annotation`.JsonSubTypes
+import com.fasterxml.jackson.`annotation`.JsonTypeInfo
+import com.fasterxml.jackson.`annotation`.JsonValue
 import java.io.Serializable
 import java.time.OffsetDateTime
 import javax.validation.Valid
@@ -34,138 +34,135 @@ import kotlin.collections.Map
     ),
     JsonSubTypes.Type(value = ThirdModel::class, name = "third_model"),
 )
-sealed class Content(
-    open val id: String? = null,
-    open val firstAttr: OffsetDateTime? = null,
-    open val secondAttr: String? = null,
-    open val thirdAttr: ContentThirdAttr? = null,
-    open val etag: String? = null,
+public sealed class Content(
+    public open val id: String? = null,
+    public open val firstAttr: OffsetDateTime? = null,
+    public open val secondAttr: String? = null,
+    public open val thirdAttr: ContentThirdAttr? = null,
+    public open val etag: String? = null,
 ) {
-    abstract val modelType: ContentModelType
+    public abstract val modelType: ContentModelType
 }
 
-enum class ContentModelType(
+public enum class ContentModelType(
     @JsonValue
-    val value: String,
+    public val `value`: String,
 ) {
     FIRST_MODEL("first_model"),
-
     SECOND_MODEL("second_model"),
-
     THIRD_MODEL("third_model"),
     ;
 
-    companion object {
+    public companion object {
         private val mapping: Map<String, ContentModelType> =
             values().associateBy(ContentModelType::value)
 
-        fun fromValue(value: String): ContentModelType? = mapping[value]
+        public fun fromValue(`value`: String): ContentModelType? = mapping[value]
     }
 }
 
-enum class ContentThirdAttr(
+public enum class ContentThirdAttr(
     @JsonValue
-    val value: String,
+    public val `value`: String,
 ) {
     ENUM_TYPE_1("enum_type_1"),
-
     ENUM_TYPE_2("enum_type_2"),
     ;
 
-    companion object {
+    public companion object {
         private val mapping: Map<String, ContentThirdAttr> =
             values().associateBy(ContentThirdAttr::value)
 
-        fun fromValue(value: String): ContentThirdAttr? = mapping[value]
+        public fun fromValue(`value`: String): ContentThirdAttr? = mapping[value]
     }
 }
 
-data class FirstModel(
+public data class FirstModel(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
-    override val id: String? = null,
+    public override val id: String? = null,
     @param:JsonProperty("first_attr")
     @get:JsonProperty("first_attr")
-    override val firstAttr: OffsetDateTime? = null,
+    public override val firstAttr: OffsetDateTime? = null,
     @param:JsonProperty("second_attr")
     @get:JsonProperty("second_attr")
-    override val secondAttr: String? = null,
+    public override val secondAttr: String? = null,
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
-    override val thirdAttr: ContentThirdAttr? = null,
+    public override val thirdAttr: ContentThirdAttr? = null,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
-    override val etag: String? = null,
+    public override val etag: String? = null,
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
-    val extraFirstAttr: List<String>? = null,
-) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable {
+    public val extraFirstAttr: List<String>? = null,
     @get:JsonProperty("model_type")
     @get:NotNull
-    override val modelType: ContentModelType = ContentModelType.FIRST_MODEL
-}
+    @param:JsonProperty("model_type")
+    public override val modelType: ContentModelType = ContentModelType.FIRST_MODEL,
+) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable
 
-data class QueryResult(
+public data class QueryResult(
     @param:JsonProperty("items")
     @get:JsonProperty("items")
     @get:NotNull
     @get:Size(min = 0)
     @get:Valid
-    val items: List<Content>,
+    public val items: List<Content>,
 ) : Serializable
 
-data class SecondModel(
+public data class SecondModel(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
-    override val id: String? = null,
+    public override val id: String? = null,
     @param:JsonProperty("first_attr")
     @get:JsonProperty("first_attr")
-    override val firstAttr: OffsetDateTime? = null,
+    public override val firstAttr: OffsetDateTime? = null,
     @param:JsonProperty("second_attr")
     @get:JsonProperty("second_attr")
-    override val secondAttr: String? = null,
+    public override val secondAttr: String? = null,
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
-    override val thirdAttr: ContentThirdAttr? = null,
+    public override val thirdAttr: ContentThirdAttr? = null,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
-    override val etag: String? = null,
+    public override val etag: String? = null,
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
-    val extraFirstAttr: String? = null,
+    public val extraFirstAttr: String? = null,
     @param:JsonProperty("extra_second_attr")
     @get:JsonProperty("extra_second_attr")
-    val extraSecondAttr: Boolean? = null,
-) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable {
+    public val extraSecondAttr: Boolean? = null,
     @get:JsonProperty("model_type")
     @get:NotNull
-    override val modelType: ContentModelType = ContentModelType.SECOND_MODEL
-}
+    @param:JsonProperty("model_type")
+    public override val modelType: ContentModelType = ContentModelType.SECOND_MODEL,
+) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable
 
-data class ThirdModel(
+public data class ThirdModel(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
-    override val id: String? = null,
+    public override val id: String? = null,
     @param:JsonProperty("first_attr")
     @get:JsonProperty("first_attr")
-    override val firstAttr: OffsetDateTime? = null,
+    public override val firstAttr: OffsetDateTime? = null,
     @param:JsonProperty("second_attr")
     @get:JsonProperty("second_attr")
-    override val secondAttr: String? = null,
+    public override val secondAttr: String? = null,
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
-    override val thirdAttr: ContentThirdAttr? = null,
+    public override val thirdAttr: ContentThirdAttr? = null,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
-    override val etag: String? = null,
+    public override val etag: String? = null,
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
-    val extraFirstAttr: OffsetDateTime? = null,
+    public val extraFirstAttr: OffsetDateTime? = null,
     @param:JsonProperty("extra_second_attr")
     @get:JsonProperty("extra_second_attr")
-    val extraSecondAttr: Int? = null,
-) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable {
+    public val extraSecondAttr: Int? = null,
     @get:JsonProperty("model_type")
     @get:NotNull
-    override val modelType: ContentModelType = ContentModelType.THIRD_MODEL
-}
+    @param:JsonProperty("model_type")
+    public override val modelType: ContentModelType = ContentModelType.THIRD_MODEL,
+) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable

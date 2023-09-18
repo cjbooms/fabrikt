@@ -15,7 +15,7 @@ import kotlin.collections.List
 import kotlin.collections.Map
 
 @Suppress("unused")
-interface ExamplePath1Client {
+public interface ExamplePath1Client {
     /**
      * GET example path 1
      *
@@ -26,18 +26,18 @@ interface ExamplePath1Client {
     @RequestLine("GET /example-path-1?explode_list_query_param={explodeListQueryParam}&query_param2={queryParam2}")
     @Headers(
         "Accept: {acceptHeader}",
-        "Accept: application/vnd.custom.media+xml"
+        "Accept: application/vnd.custom.media+xml",
     )
-    fun getExamplePath1(
+    public fun getExamplePath1(
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
         @Param("queryParam2") queryParam2: Int? = null,
         @Param("acceptHeader") acceptHeader: String = "application/vnd.custom.media+xml",
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
     ): QueryResult
 }
 
 @Suppress("unused")
-interface ExamplePath2Client {
+public interface ExamplePath2Client {
     /**
      * GET example path 1
      *
@@ -48,18 +48,18 @@ interface ExamplePath2Client {
     @RequestLine("GET /example-path-2?explode_list_query_param={explodeListQueryParam}&query_param2={queryParam2}")
     @Headers(
         "Accept: {accept}",
-        "Accept: application/vnd.custom.media+xml"
+        "Accept: application/vnd.custom.media+xml",
     )
-    fun getExamplePath2(
+    public fun getExamplePath2(
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
         @Param("queryParam2") queryParam2: Int? = null,
         @Param("accept") accept: ContentType? = null,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
     ): QueryResult
 }
 
 @Suppress("unused")
-interface MultipleResponseSchemasClient {
+public interface MultipleResponseSchemasClient {
     /**
      * GET with multiple response content schemas
      *
@@ -68,24 +68,24 @@ interface MultipleResponseSchemasClient {
     @RequestLine("GET /multiple-response-schemas")
     @Headers(
         "Accept: {accept}",
-        "Accept: application/json"
+        "Accept: application/json",
     )
-    fun getMultipleResponseSchemas(
+    public fun getMultipleResponseSchemas(
         @Param("accept") accept: ContentType? = null,
         @HeaderMap
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): JsonNode
 }
 
 @Suppress("unused")
-interface DifferentSuccessAndErrorResponseSchemaClient {
+public interface DifferentSuccessAndErrorResponseSchemaClient {
     /**
      *
      */
     @RequestLine("GET /different-success-and-error-response-schema")
     @Headers("Accept: application/json")
-    fun getDifferentSuccessAndErrorResponseSchema(
-        @HeaderMap additionalHeaders: Map<String, String> =
-            emptyMap()
+    public fun getDifferentSuccessAndErrorResponseSchema(
+        @HeaderMap
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): SuccessResponse
 }

@@ -2,19 +2,19 @@ package examples.parameterNameClash.controllers
 
 import examples.parameterNameClash.models.SomeObject
 import io.micronaut.http.HttpResponse
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.PathVariable
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.annotation.QueryValue
+import io.micronaut.http.`annotation`.Body
+import io.micronaut.http.`annotation`.Consumes
+import io.micronaut.http.`annotation`.Controller
+import io.micronaut.http.`annotation`.Get
+import io.micronaut.http.`annotation`.PathVariable
+import io.micronaut.http.`annotation`.Post
+import io.micronaut.http.`annotation`.QueryValue
 import javax.validation.Valid
 import kotlin.String
 import kotlin.Unit
 
 @Controller
-interface ExampleController {
+public interface ExampleController {
     /**
      *
      *
@@ -22,7 +22,7 @@ interface ExampleController {
      * @param queryB
      */
     @Get(uri = "/example/{b}")
-    fun getById(
+    public fun getById(
         @PathVariable(value = "pathB") pathB: String,
         @QueryValue(value = "queryB")
         queryB: String,
@@ -36,7 +36,7 @@ interface ExampleController {
      */
     @Post(uri = "/example")
     @Consumes(value = ["application/json"])
-    fun post(
+    public fun post(
         @Body @Valid
         bodySomeObject: SomeObject,
         @QueryValue(value = "querySomeObject")

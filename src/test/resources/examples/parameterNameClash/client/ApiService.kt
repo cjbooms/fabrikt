@@ -19,18 +19,18 @@ import kotlin.jvm.Throws
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExampleService(
+public class ExampleService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
     client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "exampleClient"
+    public var circuitBreakerName: String = "exampleClient"
 
     private val apiClient: ExampleClient = ExampleClient(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun getExampleB(
+    public fun getExampleB(
         pathB: String,
         queryB: String,
         additionalHeaders: Map<String, String> = emptyMap(),
@@ -40,7 +40,7 @@ class ExampleService(
         }
 
     @Throws(ApiException::class)
-    fun postExample(
+    public fun postExample(
         bodySomeObject: SomeObject,
         querySomeObject: String,
         additionalHeaders: Map<String, String> = emptyMap(),

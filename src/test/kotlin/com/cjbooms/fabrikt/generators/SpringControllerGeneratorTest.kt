@@ -118,8 +118,8 @@ class SpringControllerGeneratorTest {
 
         assertThat(controllerAnnotations).containsOnly(
             "org.springframework.stereotype.Controller",
-            "org.springframework.validation.annotation.Validated",
-            "org.springframework.web.bind.annotation.RequestMapping",
+            "org.springframework.validation.`annotation`.Validated",
+            "org.springframework.web.bind.`annotation`.RequestMapping",
         )
     }
 

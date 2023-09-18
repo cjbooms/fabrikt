@@ -121,7 +121,7 @@ class MicronautControllerGeneratorTest {
                 .distinct()
 
         assertThat(controllerAnnotations).containsOnly(
-            "io.micronaut.http.annotation.Controller",
+            "io.micronaut.http.`annotation`.Controller",
         )
     }
 

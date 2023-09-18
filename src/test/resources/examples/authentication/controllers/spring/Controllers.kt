@@ -3,17 +3,17 @@ package examples.authentication.controllers
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Controller
-import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.validation.`annotation`.Validated
+import org.springframework.web.bind.`annotation`.RequestMapping
+import org.springframework.web.bind.`annotation`.RequestMethod
+import org.springframework.web.bind.`annotation`.RequestParam
 import kotlin.String
 import kotlin.Unit
 
 @Controller
 @Validated
 @RequestMapping("")
-interface RequiredController {
+public interface RequiredController {
     /**
      *
      *
@@ -22,18 +22,18 @@ interface RequiredController {
     @RequestMapping(
         value = ["/required"],
         produces = [],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun testPath(
+    public fun testPath(
         @RequestParam(value = "testString", required = true) testString: String,
-        authentication: Authentication
+        authentication: Authentication,
     ): ResponseEntity<Unit>
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-interface ProhibitedController {
+public interface ProhibitedController {
     /**
      *
      *
@@ -42,16 +42,16 @@ interface ProhibitedController {
     @RequestMapping(
         value = ["/prohibited"],
         produces = [],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun testPath(@RequestParam(value = "testString", required = true) testString: String):
+    public fun testPath(@RequestParam(value = "testString", required = true) testString: String):
         ResponseEntity<Unit>
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-interface OptionalController {
+public interface OptionalController {
     /**
      *
      *
@@ -60,18 +60,18 @@ interface OptionalController {
     @RequestMapping(
         value = ["/optional"],
         produces = [],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun testPath(
+    public fun testPath(
         @RequestParam(value = "testString", required = true) testString: String,
-        authentication: Authentication?
+        authentication: Authentication?,
     ): ResponseEntity<Unit>
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-interface NoneController {
+public interface NoneController {
     /**
      *
      *
@@ -80,16 +80,16 @@ interface NoneController {
     @RequestMapping(
         value = ["/none"],
         produces = [],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun testPath(@RequestParam(value = "testString", required = true) testString: String):
+    public fun testPath(@RequestParam(value = "testString", required = true) testString: String):
         ResponseEntity<Unit>
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-interface DefaultController {
+public interface DefaultController {
     /**
      *
      *
@@ -98,10 +98,10 @@ interface DefaultController {
     @RequestMapping(
         value = ["/default"],
         produces = [],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun testPath(
+    public fun testPath(
         @RequestParam(value = "testString", required = true) testString: String,
-        authentication: Authentication
+        authentication: Authentication,
     ): ResponseEntity<Unit>
 }

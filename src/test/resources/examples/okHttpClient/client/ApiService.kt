@@ -24,18 +24,18 @@ import kotlin.jvm.Throws
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExamplePath1Service(
+public class ExamplePath1Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
     client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "examplePath1Client"
+    public var circuitBreakerName: String = "examplePath1Client"
 
     private val apiClient: ExamplePath1Client = ExamplePath1Client(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun getExamplePath1(
+    public fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
@@ -45,7 +45,7 @@ class ExamplePath1Service(
         }
 
     @Throws(ApiException::class)
-    fun postExamplePath1(
+    public fun postExamplePath1(
         content: Content,
         explodeListQueryParam: List<String>? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
@@ -64,18 +64,18 @@ class ExamplePath1Service(
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExamplePath2Service(
+public class ExamplePath2Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
     client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "examplePath2Client"
+    public var circuitBreakerName: String = "examplePath2Client"
 
     private val apiClient: ExamplePath2Client = ExamplePath2Client(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun getExamplePath2PathParam(
+    public fun getExamplePath2PathParam(
         pathParam: String,
         limit: Int = 500,
         queryParam2: Int? = null,
@@ -87,7 +87,7 @@ class ExamplePath2Service(
         }
 
     @Throws(ApiException::class)
-    fun headOperationIdExample(
+    public fun headOperationIdExample(
         pathParam: String,
         queryParam3: Boolean? = null,
         ifNoneMatch: String? = null,
@@ -98,7 +98,7 @@ class ExamplePath2Service(
         }
 
     @Throws(ApiException::class)
-    fun putExamplePath2PathParam(
+    public fun putExamplePath2PathParam(
         firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
@@ -118,13 +118,13 @@ class ExamplePath2Service(
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExamplePath3SubresourceService(
+public class ExamplePath3SubresourceService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
     client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "examplePath3SubresourceClient"
+    public var circuitBreakerName: String = "examplePath3SubresourceClient"
 
     private val apiClient: ExamplePath3SubresourceClient = ExamplePath3SubresourceClient(
         objectMapper,
@@ -133,7 +133,7 @@ class ExamplePath3SubresourceService(
     )
 
     @Throws(ApiException::class)
-    fun putExamplePath3PathParamSubresource(
+    public fun putExamplePath3PathParamSubresource(
         firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
@@ -141,12 +141,6 @@ class ExamplePath3SubresourceService(
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.putExamplePath3PathParamSubresource(
-                firstModel,
-                pathParam,
-                ifMatch,
-                csvListQueryParam,
-                additionalHeaders,
-            )
+            apiClient.putExamplePath3PathParamSubresource(firstModel, pathParam, ifMatch, csvListQueryParam, additionalHeaders)
         }
 }
