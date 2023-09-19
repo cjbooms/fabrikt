@@ -18,30 +18,30 @@ import kotlin.jvm.Throws
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExampleService(
+public class ExampleService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "exampleClient"
+    public var circuitBreakerName: String = "exampleClient"
 
     private val apiClient: ExampleClient = ExampleClient(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun putExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> =
+    public fun putExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.putExample(additionalHeaders)
         }
 
     @Throws(ApiException::class)
-    fun postExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> =
+    public fun postExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.postExample(additionalHeaders)
         }
 
     @Throws(ApiException::class)
-    fun patchExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> =
+    public fun patchExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.patchExample(additionalHeaders)
         }

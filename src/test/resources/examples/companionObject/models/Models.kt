@@ -1,9 +1,9 @@
 package examples.companionObject.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonValue
+import com.fasterxml.jackson.`annotation`.JsonProperty
+import com.fasterxml.jackson.`annotation`.JsonSubTypes
+import com.fasterxml.jackson.`annotation`.JsonTypeInfo
+import com.fasterxml.jackson.`annotation`.JsonValue
 import javax.validation.constraints.NotNull
 import kotlin.Boolean
 import kotlin.Int
@@ -11,7 +11,7 @@ import kotlin.Long
 import kotlin.String
 import kotlin.collections.Map
 
-data class Cat(
+public data class Cat(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     @get:NotNull
@@ -25,19 +25,19 @@ data class Cat(
     override val tag: String? = null,
     @param:JsonProperty("hunts")
     @get:JsonProperty("hunts")
-    val hunts: Boolean? = null,
+    public val hunts: Boolean? = null,
     @param:JsonProperty("age")
     @get:JsonProperty("age")
-    val age: Int? = null,
+    public val age: Int? = null,
     @get:JsonProperty("petType")
     @get:NotNull
     @param:JsonProperty("petType")
-    override val petType: String = "Cat"
+    override val petType: String = "Cat",
 ) : Pet(id, name, tag) {
-    companion object
+    public companion object
 }
 
-data class Dog(
+public data class Dog(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     @get:NotNull
@@ -51,68 +51,66 @@ data class Dog(
     override val tag: String? = null,
     @param:JsonProperty("bark")
     @get:JsonProperty("bark")
-    val bark: Boolean? = null,
+    public val bark: Boolean? = null,
     @param:JsonProperty("breed")
     @get:JsonProperty("breed")
-    val breed: DogBreed? = null,
+    public val breed: DogBreed? = null,
     @get:JsonProperty("petType")
     @get:NotNull
     @param:JsonProperty("petType")
-    override val petType: String = "Dog"
+    override val petType: String = "Dog",
 ) : Pet(id, name, tag) {
-    companion object
+    public companion object
 }
 
-enum class DogBreed(
+public enum class DogBreed(
     @JsonValue
-    val value: String
+    public val `value`: String,
 ) {
     DINGO("Dingo"),
-
     HUSKY("Husky"),
-
     RETRIEVER("Retriever"),
+    SHEPHERD("Shepherd"),
+    ;
 
-    SHEPHERD("Shepherd");
-
-    companion object {
+    public companion object {
         private val mapping: Map<String, DogBreed> = values().associateBy(DogBreed::value)
 
-        fun fromValue(value: String): DogBreed? = mapping[value]
+        public fun fromValue(`value`: String): DogBreed? = mapping[value]
     }
 }
 
-data class Error(
+public data class Error(
     @param:JsonProperty("code")
     @get:JsonProperty("code")
     @get:NotNull
-    val code: Int,
+    public val code: Int,
     @param:JsonProperty("message")
     @get:JsonProperty("message")
     @get:NotNull
-    val message: String
+    public val message: String,
 ) {
-    companion object
+    public companion object
 }
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "petType",
-    visible = true
+    visible = true,
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = Cat::class, name = "Cat"),
     JsonSubTypes.Type(
         value =
         Dog::class,
-        name = "Dog"
-    )
+        name = "Dog",
+    ),
 )
-sealed class Pet(
-    open val id: Long,
-    open val name: String,
-    open val tag: String? = null
+public sealed class Pet(
+    public open val id: Long,
+    public open val name: String,
+    public open val tag: String? = null,
 ) {
-    abstract val petType: String
+    public abstract val petType: String
 }

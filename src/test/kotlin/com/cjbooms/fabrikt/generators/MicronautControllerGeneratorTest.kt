@@ -117,11 +117,11 @@ class MicronautControllerGeneratorTest {
     fun `ensure controller has correct annotations`() {
         setupGithubApiTestEnv()
         val controllerAnnotations =
-            generated.flatMap { it.members.flatMap { (it as TypeSpec).annotationSpecs.map { it.className.toString() } } }
+            generated.flatMap { it.members.flatMap { (it as TypeSpec).annotations.map { it.typeName.toString() } } }
                 .distinct()
 
         assertThat(controllerAnnotations).containsOnly(
-            "io.micronaut.http.annotation.Controller",
+            "io.micronaut.http.`annotation`.Controller",
         )
     }
 

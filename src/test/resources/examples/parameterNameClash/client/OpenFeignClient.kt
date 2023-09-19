@@ -9,7 +9,7 @@ import kotlin.Suppress
 import kotlin.collections.Map
 
 @Suppress("unused")
-interface ExampleClient {
+public interface ExampleClient {
     /**
      *
      *
@@ -17,10 +17,10 @@ interface ExampleClient {
      * @param queryB
      */
     @RequestLine("GET /example/{pathB}?b={queryB}")
-    fun getExampleB(
+    public fun getExampleB(
         @Param("pathB") pathB: String,
         @Param("queryB") queryB: String,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
     )
 
     /**
@@ -30,9 +30,9 @@ interface ExampleClient {
      * @param querySomeObject
      */
     @RequestLine("POST /example?someObject={querySomeObject}")
-    fun postExample(
+    public fun postExample(
         bodySomeObject: SomeObject,
         @Param("querySomeObject") querySomeObject: String,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
     )
 }

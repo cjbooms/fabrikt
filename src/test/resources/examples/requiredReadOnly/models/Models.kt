@@ -1,16 +1,16 @@
 package examples.requiredReadOnly.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.`annotation`.JsonProperty
 import java.time.OffsetDateTime
 import javax.validation.constraints.NotNull
 import kotlin.String
 
-data class RequiredReadOnly(
+public data class RequiredReadOnly(
     @param:JsonProperty("user_name")
     @get:JsonProperty("user_name")
     @get:NotNull
-    val userName: String,
+    public val userName: String,
     @param:JsonProperty("created")
     @get:JsonProperty("created")
-    val created: OffsetDateTime? = null
+    public val created: OffsetDateTime? = null,
 )

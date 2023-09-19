@@ -24,31 +24,31 @@ import kotlin.jvm.Throws
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExamplePath1Service(
+public class ExamplePath1Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "examplePath1Client"
+    public var circuitBreakerName: String = "examplePath1Client"
 
     private val apiClient: ExamplePath1Client = ExamplePath1Client(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun getExamplePath1(
+    public fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath1(explodeListQueryParam, queryParam2, additionalHeaders)
         }
 
     @Throws(ApiException::class)
-    fun postExamplePath1(
+    public fun postExamplePath1(
         content: Content,
         explodeListQueryParam: List<String>? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.postExamplePath1(content, explodeListQueryParam, additionalHeaders)
@@ -64,45 +64,45 @@ class ExamplePath1Service(
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExamplePath2Service(
+public class ExamplePath2Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "examplePath2Client"
+    public var circuitBreakerName: String = "examplePath2Client"
 
     private val apiClient: ExamplePath2Client = ExamplePath2Client(objectMapper, baseUrl, client)
 
     @Throws(ApiException::class)
-    fun getExamplePath2PathParam(
+    public fun getExamplePath2PathParam(
         pathParam: String,
         limit: Int = 500,
         queryParam2: Int? = null,
         ifNoneMatch: String? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Content> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.getExamplePath2PathParam(pathParam, limit, queryParam2, ifNoneMatch, additionalHeaders)
         }
 
     @Throws(ApiException::class)
-    fun headOperationIdExample(
+    public fun headOperationIdExample(
         pathParam: String,
         queryParam3: Boolean? = null,
         ifNoneMatch: String? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.headOperationIdExample(pathParam, queryParam3, ifNoneMatch, additionalHeaders)
         }
 
     @Throws(ApiException::class)
-    fun putExamplePath2PathParam(
+    public fun putExamplePath2PathParam(
         firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.putExamplePath2PathParam(firstModel, pathParam, ifMatch, additionalHeaders)
@@ -118,27 +118,27 @@ class ExamplePath2Service(
  * @see ApiServerException
  */
 @Suppress("unused")
-class ExamplePath3SubresourceService(
+public class ExamplePath3SubresourceService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient
+    client: OkHttpClient,
 ) {
-    var circuitBreakerName: String = "examplePath3SubresourceClient"
+    public var circuitBreakerName: String = "examplePath3SubresourceClient"
 
     private val apiClient: ExamplePath3SubresourceClient = ExamplePath3SubresourceClient(
         objectMapper,
         baseUrl,
-        client
+        client,
     )
 
     @Throws(ApiException::class)
-    fun putExamplePath3PathParamSubresource(
+    public fun putExamplePath3PathParamSubresource(
         firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
         csvListQueryParam: List<String>? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.putExamplePath3PathParamSubresource(firstModel, pathParam, ifMatch, csvListQueryParam, additionalHeaders)

@@ -15,16 +15,16 @@ import kotlin.collections.Map
 import kotlin.jvm.Throws
 
 @Suppress("unused")
-class ExampleClient(
+public class ExampleClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      *
      */
     @Throws(ApiException::class)
-    fun putExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
+    public fun putExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()
@@ -47,7 +47,7 @@ class ExampleClient(
      *
      */
     @Throws(ApiException::class)
-    fun postExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
+    public fun postExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()
@@ -70,7 +70,7 @@ class ExampleClient(
      *
      */
     @Throws(ApiException::class)
-    fun patchExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
+    public fun patchExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()

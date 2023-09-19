@@ -1,16 +1,16 @@
 package examples.optionalVsRequired.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.`annotation`.JsonProperty
 import java.util.UUID
 import javax.validation.constraints.NotNull
 import kotlin.String
 
-data class OptionalVsRequired(
+public data class OptionalVsRequired(
     @param:JsonProperty("name")
     @get:JsonProperty("name")
     @get:NotNull
-    val name: String,
+    public val name: String,
     @param:JsonProperty("gender")
     @get:JsonProperty("gender")
-    val gender: UUID? = null
+    public val gender: UUID? = null,
 )

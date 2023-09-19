@@ -1,6 +1,6 @@
 package examples.jakartaValidationAnnotations.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.`annotation`.JsonProperty
 import jakarta.validation.Valid
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
@@ -12,47 +12,47 @@ import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
 
-data class ValidationAnnotations(
+public data class ValidationAnnotations(
     @param:JsonProperty("user_name")
     @get:JsonProperty("user_name")
     @get:NotNull
     @get:Pattern(regexp = "[a-zA-Z]")
-    val userName: String,
+    public val userName: String,
     @param:JsonProperty("age")
     @get:JsonProperty("age")
     @get:NotNull
     @get:DecimalMin(
         value = "0",
-        inclusive = false
+        inclusive = false,
     )
     @get:DecimalMax(
         value = "100",
-        inclusive = true
+        inclusive = true,
     )
-    val age: Int,
+    public val age: Int,
     @param:JsonProperty("bio")
     @get:JsonProperty("bio")
     @get:NotNull
     @get:Size(
         min = 20,
-        max = 200
+        max = 200,
     )
-    val bio: String,
+    public val bio: String,
     @param:JsonProperty("friends")
     @get:JsonProperty("friends")
     @get:NotNull
     @get:Size(
         min = 0,
-        max = 10
+        max = 10,
     )
     @get:Valid
-    val friends: List<ValidationAnnotationsFriends>,
+    public val friends: List<ValidationAnnotationsFriends>,
     @param:JsonProperty("address")
     @get:JsonProperty("address")
     @get:Valid
-    val address: ValidationAnnotationsAddress? = null,
+    public val address: ValidationAnnotationsAddress? = null,
     @param:JsonProperty("qualities")
     @get:JsonProperty("qualities")
     @get:Valid
-    val qualities: Map<String, QualitiesValue>? = null
+    public val qualities: Map<String, QualitiesValue>? = null,
 )

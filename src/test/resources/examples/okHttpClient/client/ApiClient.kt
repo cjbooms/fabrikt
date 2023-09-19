@@ -22,10 +22,10 @@ import kotlin.collections.Map
 import kotlin.jvm.Throws
 
 @Suppress("unused")
-class ExamplePath1Client(
+public class ExamplePath1Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      * GET example path 1
@@ -34,10 +34,10 @@ class ExamplePath1Client(
      * @param queryParam2
      */
     @Throws(ApiException::class)
-    fun getExamplePath1(
+    public fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
@@ -66,10 +66,10 @@ class ExamplePath1Client(
      * @param explodeListQueryParam
      */
     @Throws(ApiException::class)
-    fun postExamplePath1(
+    public fun postExamplePath1(
         content: Content,
         explodeListQueryParam: List<String>? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
@@ -92,10 +92,10 @@ class ExamplePath1Client(
 }
 
 @Suppress("unused")
-class ExamplePath2Client(
+public class ExamplePath2Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      * GET example path 2
@@ -106,12 +106,12 @@ class ExamplePath2Client(
      * @param ifNoneMatch The RFC7232 If-None-Match header field
      */
     @Throws(ApiException::class)
-    fun getExamplePath2PathParam(
+    public fun getExamplePath2PathParam(
         pathParam: String,
         limit: Int = 500,
         queryParam2: Int? = null,
         ifNoneMatch: String? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Content> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
@@ -122,7 +122,7 @@ class ExamplePath2Client(
             .build()
 
         val headerBuilder = Headers.Builder()
-            .header("If-None-Match", ifNoneMatch)
+            .`header`("If-None-Match", ifNoneMatch)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
@@ -143,11 +143,11 @@ class ExamplePath2Client(
      * @param ifNoneMatch The RFC7232 If-None-Match header field
      */
     @Throws(ApiException::class)
-    fun headOperationIdExample(
+    public fun headOperationIdExample(
         pathParam: String,
         queryParam3: Boolean? = null,
         ifNoneMatch: String? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
@@ -157,7 +157,7 @@ class ExamplePath2Client(
             .build()
 
         val headerBuilder = Headers.Builder()
-            .header("If-None-Match", ifNoneMatch)
+            .`header`("If-None-Match", ifNoneMatch)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
@@ -178,11 +178,11 @@ class ExamplePath2Client(
      * @param ifMatch The RFC7232 If-Match header field
      */
     @Throws(ApiException::class)
-    fun putExamplePath2PathParam(
+    public fun putExamplePath2PathParam(
         firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
@@ -191,7 +191,7 @@ class ExamplePath2Client(
             .build()
 
         val headerBuilder = Headers.Builder()
-            .header("If-Match", ifMatch)
+            .`header`("If-Match", ifMatch)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
@@ -206,10 +206,10 @@ class ExamplePath2Client(
 }
 
 @Suppress("unused")
-class ExamplePath3SubresourceClient(
+public class ExamplePath3SubresourceClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      * PUT example path 3
@@ -220,12 +220,12 @@ class ExamplePath3SubresourceClient(
      * @param csvListQueryParam
      */
     @Throws(ApiException::class)
-    fun putExamplePath3PathParamSubresource(
+    public fun putExamplePath3PathParamSubresource(
         firstModel: FirstModel,
         pathParam: String,
         ifMatch: String,
         csvListQueryParam: List<String>? = null,
-        additionalHeaders: Map<String, String> = emptyMap()
+        additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-3/{path_param}/subresource"
             .pathParam("{path_param}" to pathParam)
@@ -235,7 +235,7 @@ class ExamplePath3SubresourceClient(
             .build()
 
         val headerBuilder = Headers.Builder()
-            .header("If-Match", ifMatch)
+            .`header`("If-Match", ifMatch)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 

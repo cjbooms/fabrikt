@@ -1,10 +1,10 @@
 package examples.parameterNameClash.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.`annotation`.JsonProperty
 import kotlin.String
 
-data class SomeObject(
+public data class SomeObject(
     @param:JsonProperty("test")
     @get:JsonProperty("test")
-    val test: String? = null
+    public val test: String? = null,
 )

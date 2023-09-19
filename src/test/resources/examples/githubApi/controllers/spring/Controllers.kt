@@ -13,13 +13,13 @@ import examples.githubApi.models.RepositoryQueryResult
 import examples.githubApi.models.StatusQueryParam
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.validation.`annotation`.Validated
+import org.springframework.web.bind.`annotation`.PathVariable
+import org.springframework.web.bind.`annotation`.RequestBody
+import org.springframework.web.bind.`annotation`.RequestHeader
+import org.springframework.web.bind.`annotation`.RequestMapping
+import org.springframework.web.bind.`annotation`.RequestMethod
+import org.springframework.web.bind.`annotation`.RequestParam
 import java.util.UUID
 import javax.validation.Valid
 import javax.validation.constraints.Max
@@ -33,7 +33,7 @@ import kotlin.collections.List
 @Controller
 @Validated
 @RequestMapping("")
-interface InternalEventsController {
+public interface InternalEventsController {
     /**
      * Generate change events for a list of entities
      *
@@ -43,18 +43,19 @@ interface InternalEventsController {
         value = ["/internal/events"],
         produces = ["application/json", "application/problem+json"],
         method = [RequestMethod.POST],
-        consumes = ["application/json"]
+        consumes = ["application/json"],
     )
-    fun post(
+    public fun post(
         @RequestBody @Valid
-        bulkEntityDetails: BulkEntityDetails
-    ): ResponseEntity<EventResults>
+        bulkEntityDetails: BulkEntityDetails,
+    ):
+        ResponseEntity<EventResults>
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-interface ContributorsController {
+public interface ContributorsController {
     /**
      * Page through all the Contributor resources matching the query filters
      *
@@ -73,14 +74,16 @@ interface ContributorsController {
     @RequestMapping(
         value = ["/contributors"],
         produces = ["application/json"],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun searchContributors(
-        @Min(1) @Max(100) @RequestParam(value = "limit", required = false, defaultValue = "10")
+    public fun searchContributors(
+        @Min(1)
+        @Max(100)
+        @RequestParam(value = "limit", required = false, defaultValue = "10")
         limit: Int,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
         @RequestParam(value = "include_inactive", required = false) includeInactive: Boolean?,
-        @RequestParam(value = "cursor", required = false) cursor: String?
+        @RequestParam(value = "cursor", required = false) cursor: String?,
     ): ResponseEntity<ContributorQueryResult>
 
     /**
@@ -103,13 +106,13 @@ interface ContributorsController {
         value = ["/contributors"],
         produces = [],
         method = [RequestMethod.POST],
-        consumes = ["application/json"]
+        consumes = ["application/json"],
     )
-    fun createContributor(
+    public fun createContributor(
         @RequestBody @Valid
         contributor: Contributor,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?,
     ): ResponseEntity<Unit>
 
     /**
@@ -130,14 +133,14 @@ interface ContributorsController {
     @RequestMapping(
         value = ["/contributors/{id}"],
         produces = ["application/json"],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun getContributor(
+    public fun getContributor(
         @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
         status: StatusQueryParam,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
+        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?,
     ): ResponseEntity<Contributor>
 
     /**
@@ -166,22 +169,22 @@ interface ContributorsController {
         value = ["/contributors/{id}"],
         produces = [],
         method = [RequestMethod.PUT],
-        consumes = ["application/json"]
+        consumes = ["application/json"],
     )
-    fun putById(
+    public fun putById(
         @RequestBody @Valid
         contributor: Contributor,
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "If-Match", required = true) ifMatch: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?,
     ): ResponseEntity<Unit>
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-interface OrganisationsController {
+public interface OrganisationsController {
     /**
      * Page through all the Organisation resources matching the query filters
      *
@@ -200,14 +203,16 @@ interface OrganisationsController {
     @RequestMapping(
         value = ["/organisations"],
         produces = ["application/json"],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun get(
-        @Min(1) @Max(100) @RequestParam(value = "limit", required = false, defaultValue = "10")
+    public fun `get`(
+        @Min(1)
+        @Max(100)
+        @RequestParam(value = "limit", required = false, defaultValue = "10")
         limit: Int,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
         @RequestParam(value = "include_inactive", required = false) includeInactive: Boolean?,
-        @RequestParam(value = "cursor", required = false) cursor: String?
+        @RequestParam(value = "cursor", required = false) cursor: String?,
     ): ResponseEntity<OrganisationQueryResult>
 
     /**
@@ -230,13 +235,13 @@ interface OrganisationsController {
         value = ["/organisations"],
         produces = [],
         method = [RequestMethod.POST],
-        consumes = ["application/json"]
+        consumes = ["application/json"],
     )
-    fun post(
+    public fun post(
         @RequestBody @Valid
         organisation: Organisation,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?,
     ): ResponseEntity<Unit>
 
     /**
@@ -257,14 +262,14 @@ interface OrganisationsController {
     @RequestMapping(
         value = ["/organisations/{id}"],
         produces = ["application/json"],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun getById(
+    public fun getById(
         @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
         status: StatusQueryParam,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
+        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?,
     ): ResponseEntity<Organisation>
 
     /**
@@ -293,22 +298,22 @@ interface OrganisationsController {
         value = ["/organisations/{id}"],
         produces = [],
         method = [RequestMethod.PUT],
-        consumes = ["application/json"]
+        consumes = ["application/json"],
     )
-    fun putById(
+    public fun putById(
         @RequestBody @Valid
         organisation: Organisation,
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "If-Match", required = true) ifMatch: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?,
     ): ResponseEntity<Unit>
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-interface OrganisationsContributorsController {
+public interface OrganisationsContributorsController {
     /**
      * Page through all the Contributor resources for this parent Organisation matching the query
      * filters
@@ -329,15 +334,17 @@ interface OrganisationsContributorsController {
     @RequestMapping(
         value = ["/organisations/{parent-id}/contributors"],
         produces = ["application/json"],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun get(
+    public fun `get`(
         @PathVariable(value = "parent-id", required = true) parentId: String,
-        @Min(1) @Max(100) @RequestParam(value = "limit", required = false, defaultValue = "10")
+        @Min(1)
+        @Max(100)
+        @RequestParam(value = "limit", required = false, defaultValue = "10")
         limit: Int,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
         @RequestParam(value = "include_inactive", required = false) includeInactive: Boolean?,
-        @RequestParam(value = "cursor", required = false) cursor: String?
+        @RequestParam(value = "cursor", required = false) cursor: String?,
     ): ResponseEntity<ContributorQueryResult>
 
     /**
@@ -356,13 +363,13 @@ interface OrganisationsContributorsController {
     @RequestMapping(
         value = ["/organisations/{parent-id}/contributors/{id}"],
         produces = ["application/json"],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun getById(
+    public fun getById(
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
+        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?,
     ): ResponseEntity<Contributor>
 
     /**
@@ -390,14 +397,14 @@ interface OrganisationsContributorsController {
     @RequestMapping(
         value = ["/organisations/{parent-id}/contributors/{id}"],
         produces = [],
-        method = [RequestMethod.PUT]
+        method = [RequestMethod.PUT],
     )
-    fun putById(
+    public fun putById(
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "If-Match", required = true) ifMatch: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?,
     ): ResponseEntity<Unit>
 
     /**
@@ -412,19 +419,19 @@ interface OrganisationsContributorsController {
     @RequestMapping(
         value = ["/organisations/{parent-id}/contributors/{id}"],
         produces = [],
-        method = [RequestMethod.DELETE]
+        method = [RequestMethod.DELETE],
     )
-    fun deleteById(
+    public fun deleteById(
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @PathVariable(value = "id", required = true) id: String,
-        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?
+        @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
     ): ResponseEntity<Unit>
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-interface RepositoriesController {
+public interface RepositoriesController {
     /**
      * Page through all the Repository resources matching the query filters
      *
@@ -447,18 +454,22 @@ interface RepositoriesController {
     @RequestMapping(
         value = ["/repositories"],
         produces = ["application/json"],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun get(
-        @Min(1) @Max(100) @RequestParam(value = "limit", required = false, defaultValue = "10")
+    public fun `get`(
+        @Min(1)
+        @Max(100)
+        @RequestParam(value = "limit", required = false, defaultValue = "10")
         limit: Int,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @Valid @RequestParam(value = "slug", required = false)
+        @Valid
+        @RequestParam(value = "slug", required = false)
         slug: List<String>?,
-        @Valid @RequestParam(value = "name", required = false)
+        @Valid
+        @RequestParam(value = "name", required = false)
         name: List<String>?,
         @RequestParam(value = "include_inactive", required = false) includeInactive: Boolean?,
-        @RequestParam(value = "cursor", required = false) cursor: String?
+        @RequestParam(value = "cursor", required = false) cursor: String?,
     ): ResponseEntity<RepositoryQueryResult>
 
     /**
@@ -481,13 +492,13 @@ interface RepositoriesController {
         value = ["/repositories"],
         produces = [],
         method = [RequestMethod.POST],
-        consumes = ["application/json"]
+        consumes = ["application/json"],
     )
-    fun post(
+    public fun post(
         @RequestBody @Valid
         repository: Repository,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?,
     ): ResponseEntity<Unit>
 
     /**
@@ -508,14 +519,14 @@ interface RepositoriesController {
     @RequestMapping(
         value = ["/repositories/{id}"],
         produces = ["application/json"],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun getById(
+    public fun getById(
         @PathVariable(value = "id", required = true) id: String,
         @RequestParam(value = "status", required = false, defaultValue = "all")
         status: StatusQueryParam,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
+        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?,
     ): ResponseEntity<Repository>
 
     /**
@@ -544,22 +555,22 @@ interface RepositoriesController {
         value = ["/repositories/{id}"],
         produces = [],
         method = [RequestMethod.PUT],
-        consumes = ["application/json"]
+        consumes = ["application/json"],
     )
-    fun putById(
+    public fun putById(
         @RequestBody @Valid
         repository: Repository,
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "If-Match", required = true) ifMatch: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?,
     ): ResponseEntity<Unit>
 }
 
 @Controller
 @Validated
 @RequestMapping("")
-interface RepositoriesPullRequestsController {
+public interface RepositoriesPullRequestsController {
     /**
      * Page through all the PullRequest resources for this parent Repository matching the query
      * filters
@@ -580,15 +591,17 @@ interface RepositoriesPullRequestsController {
     @RequestMapping(
         value = ["/repositories/{parent-id}/pull-requests"],
         produces = ["application/json"],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun get(
+    public fun `get`(
         @PathVariable(value = "parent-id", required = true) parentId: String,
-        @Min(1) @Max(100) @RequestParam(value = "limit", required = false, defaultValue = "10")
+        @Min(1)
+        @Max(100)
+        @RequestParam(value = "limit", required = false, defaultValue = "10")
         limit: Int,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
         @RequestParam(value = "include_inactive", required = false) includeInactive: Boolean?,
-        @RequestParam(value = "cursor", required = false) cursor: String?
+        @RequestParam(value = "cursor", required = false) cursor: String?,
     ): ResponseEntity<PullRequestQueryResult>
 
     /**
@@ -612,14 +625,14 @@ interface RepositoriesPullRequestsController {
         value = ["/repositories/{parent-id}/pull-requests"],
         produces = [],
         method = [RequestMethod.POST],
-        consumes = ["application/json"]
+        consumes = ["application/json"],
     )
-    fun post(
+    public fun post(
         @RequestBody @Valid
         pullRequest: PullRequest,
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?,
     ): ResponseEntity<Unit>
 
     /**
@@ -638,13 +651,13 @@ interface RepositoriesPullRequestsController {
     @RequestMapping(
         value = ["/repositories/{parent-id}/pull-requests/{id}"],
         produces = ["application/json"],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
-    fun getById(
+    public fun getById(
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?
+        @RequestHeader(value = "If-None-Match", required = false) ifNoneMatch: String?,
     ): ResponseEntity<PullRequest>
 
     /**
@@ -674,15 +687,15 @@ interface RepositoriesPullRequestsController {
         value = ["/repositories/{parent-id}/pull-requests/{id}"],
         produces = [],
         method = [RequestMethod.PUT],
-        consumes = ["application/json"]
+        consumes = ["application/json"],
     )
-    fun putById(
+    public fun putById(
         @RequestBody @Valid
         pullRequest: PullRequest,
         @PathVariable(value = "parent-id", required = true) parentId: String,
         @PathVariable(value = "id", required = true) id: String,
         @RequestHeader(value = "If-Match", required = true) ifMatch: String,
         @RequestHeader(value = "X-Flow-Id", required = false) xFlowId: String?,
-        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?
+        @RequestHeader(value = "Idempotency-Key", required = false) idempotencyKey: UUID?,
     ): ResponseEntity<Unit>
 }

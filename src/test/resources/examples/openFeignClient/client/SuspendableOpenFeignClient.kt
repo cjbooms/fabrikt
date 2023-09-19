@@ -15,7 +15,7 @@ import kotlin.collections.List
 import kotlin.collections.Map
 
 @Suppress("unused")
-interface ExamplePath1Client {
+public interface ExamplePath1Client {
     /**
      * GET example path 1
      *
@@ -28,14 +28,14 @@ interface ExamplePath1Client {
     @Headers(
         "header_param1: {headerParam1}",
         "header_param2: {headerParam2}",
-        "Accept: application/vnd.custom.media+json"
+        "Accept: application/vnd.custom.media+json",
     )
-    suspend fun getExamplePath1(
+    public suspend fun getExamplePath1(
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
         @Param("queryParam2") queryParam2: Int? = null,
         @Param("headerParam1") headerParam1: String? = null,
         @Param("headerParam2") headerParam2: String? = null,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
     ): QueryResult
 
     /**
@@ -45,15 +45,15 @@ interface ExamplePath1Client {
      * @param explodeListQueryParam
      */
     @RequestLine("POST /example-path-1?explode_list_query_param={explodeListQueryParam}")
-    suspend fun postExamplePath1(
+    public suspend fun postExamplePath1(
         content: Content,
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
     )
 }
 
 @Suppress("unused")
-interface ExamplePath2Client {
+public interface ExamplePath2Client {
     /**
      * GET example path 2
      *
@@ -65,14 +65,14 @@ interface ExamplePath2Client {
     @RequestLine("GET /example-path-2/{pathParam}?limit={limit}&query_param2={queryParam2}")
     @Headers(
         "If-None-Match: {ifNoneMatch}",
-        "Accept: application/json"
+        "Accept: application/json",
     )
-    suspend fun getExamplePath2PathParam(
+    public suspend fun getExamplePath2PathParam(
         @Param("pathParam") pathParam: String,
         @Param("limit") limit: Int = 500,
         @Param("queryParam2") queryParam2: Int? = null,
         @Param("ifNoneMatch") ifNoneMatch: String? = null,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
     ): Content
 
     /**
@@ -84,11 +84,11 @@ interface ExamplePath2Client {
      */
     @RequestLine("HEAD /example-path-2/{pathParam}?query_param3={queryParam3}")
     @Headers("If-None-Match: {ifNoneMatch}")
-    suspend fun headOperationIdExample(
+    public suspend fun headOperationIdExample(
         @Param("pathParam") pathParam: String,
         @Param("queryParam3") queryParam3: Boolean? = null,
         @Param("ifNoneMatch") ifNoneMatch: String? = null,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
     )
 
     /**
@@ -100,16 +100,16 @@ interface ExamplePath2Client {
      */
     @RequestLine("PUT /example-path-2/{pathParam}")
     @Headers("If-Match: {ifMatch}")
-    suspend fun putExamplePath2PathParam(
+    public suspend fun putExamplePath2PathParam(
         firstModel: FirstModel,
         @Param("pathParam") pathParam: String,
         @Param("ifMatch") ifMatch: String,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
     )
 }
 
 @Suppress("unused")
-interface ExamplePath3SubresourceClient {
+public interface ExamplePath3SubresourceClient {
     /**
      * PUT example path 3
      *
@@ -120,11 +120,11 @@ interface ExamplePath3SubresourceClient {
      */
     @RequestLine("PUT /example-path-3/{pathParam}/subresource?csv_list_query_param={csvListQueryParam}")
     @Headers("If-Match: {ifMatch}")
-    suspend fun putExamplePath3PathParamSubresource(
+    public suspend fun putExamplePath3PathParamSubresource(
         firstModel: FirstModel,
         @Param("pathParam") pathParam: String,
         @Param("ifMatch") ifMatch: String,
         @Param("csvListQueryParam") csvListQueryParam: List<String>? = null,
-        @HeaderMap additionalHeaders: Map<String, String> = emptyMap()
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
     )
 }
