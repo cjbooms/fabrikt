@@ -84,26 +84,26 @@ public enum class ContentThirdAttr(
 public data class FirstModel(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
-    public override val id: String? = null,
+    override val id: String? = null,
     @param:JsonProperty("first_attr")
     @get:JsonProperty("first_attr")
-    public override val firstAttr: OffsetDateTime? = null,
+    override val firstAttr: OffsetDateTime? = null,
     @param:JsonProperty("second_attr")
     @get:JsonProperty("second_attr")
-    public override val secondAttr: String? = null,
+    override val secondAttr: String? = null,
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
-    public override val thirdAttr: ContentThirdAttr? = null,
+    override val thirdAttr: ContentThirdAttr? = null,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
-    public override val etag: String? = null,
+    override val etag: String? = null,
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
     public val extraFirstAttr: List<String>? = null,
     @get:JsonProperty("model_type")
     @get:NotNull
     @param:JsonProperty("model_type")
-    public override val modelType: ContentModelType = ContentModelType.FIRST_MODEL,
+    override val modelType: ContentModelType = ContentModelType.FIRST_MODEL,
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag)
 
 @RegisterForReflection
@@ -120,19 +120,19 @@ public data class QueryResult(
 public data class SecondModel(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
-    public override val id: String? = null,
+    override val id: String? = null,
     @param:JsonProperty("first_attr")
     @get:JsonProperty("first_attr")
-    public override val firstAttr: OffsetDateTime? = null,
+    override val firstAttr: OffsetDateTime? = null,
     @param:JsonProperty("second_attr")
     @get:JsonProperty("second_attr")
-    public override val secondAttr: String? = null,
+    override val secondAttr: String? = null,
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
-    public override val thirdAttr: ContentThirdAttr? = null,
+    override val thirdAttr: ContentThirdAttr? = null,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
-    public override val etag: String? = null,
+    override val etag: String? = null,
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
     public val extraFirstAttr: String? = null,
@@ -142,26 +142,26 @@ public data class SecondModel(
     @get:JsonProperty("model_type")
     @get:NotNull
     @param:JsonProperty("model_type")
-    public override val modelType: ContentModelType = ContentModelType.SECOND_MODEL,
+    override val modelType: ContentModelType = ContentModelType.SECOND_MODEL,
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag)
 
 @RegisterForReflection
 public data class ThirdModel(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
-    public override val id: String? = null,
+    override val id: String? = null,
     @param:JsonProperty("first_attr")
     @get:JsonProperty("first_attr")
-    public override val firstAttr: OffsetDateTime? = null,
+    override val firstAttr: OffsetDateTime? = null,
     @param:JsonProperty("second_attr")
     @get:JsonProperty("second_attr")
-    public override val secondAttr: String? = null,
+    override val secondAttr: String? = null,
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
-    public override val thirdAttr: ContentThirdAttr? = null,
+    override val thirdAttr: ContentThirdAttr? = null,
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
-    public override val etag: String? = null,
+    override val etag: String? = null,
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
     public val extraFirstAttr: OffsetDateTime? = null,
@@ -171,5 +171,5 @@ public data class ThirdModel(
     @get:JsonProperty("model_type")
     @get:NotNull
     @param:JsonProperty("model_type")
-    public override val modelType: ContentModelType = ContentModelType.THIRD_MODEL,
+    override val modelType: ContentModelType = ContentModelType.THIRD_MODEL,
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag)

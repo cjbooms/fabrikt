@@ -19,7 +19,7 @@ public data class ChildTypeA(
     @get:JsonProperty("type")
     @get:NotNull
     @param:JsonProperty("type")
-    public override val type: ParentType = ParentType.CHILD_TYPE_A,
+    override val type: ParentType = ParentType.CHILD_TYPE_A,
 ) : ParentSpec()
 
 public data class ChildTypeB(
@@ -30,7 +30,7 @@ public data class ChildTypeB(
     @get:JsonProperty("type")
     @get:NotNull
     @param:JsonProperty("type")
-    public override val type: ParentType = ParentType.CHILD_TYPE_B,
+    override val type: ParentType = ParentType.CHILD_TYPE_B,
 ) : ParentSpec()
 
 public data class ContainsOneOfPolymorphicTypes(
@@ -128,7 +128,7 @@ public data class PolymorphicTypeOneA(
     @get:JsonProperty("shared")
     @get:NotNull
     @param:JsonProperty("shared")
-    public override val shared: String = "PolymorphicTypeOneA",
+    override val shared: String = "PolymorphicTypeOneA",
 ) : PolymorphicSuperTypeOne()
 
 public data class PolymorphicTypeOneB(
@@ -138,7 +138,7 @@ public data class PolymorphicTypeOneB(
     @get:JsonProperty("shared")
     @get:NotNull
     @param:JsonProperty("shared")
-    public override val shared: String = "PolymorphicTypeOneB",
+    override val shared: String = "PolymorphicTypeOneB",
 ) : PolymorphicSuperTypeOne()
 
 public data class PolymorphicTypeTwoA(
@@ -148,7 +148,7 @@ public data class PolymorphicTypeTwoA(
     @get:JsonProperty("shared")
     @get:NotNull
     @param:JsonProperty("shared")
-    public override val shared: String = "PolymorphicTypeTwoA",
+    override val shared: String = "PolymorphicTypeTwoA",
 ) : PolymorphicSuperTypeTwo()
 
 public data class PolymorphicTypeTwoB(
@@ -158,5 +158,5 @@ public data class PolymorphicTypeTwoB(
     @get:JsonProperty("shared")
     @get:NotNull
     @param:JsonProperty("shared")
-    public override val shared: String = "PolymorphicTypeTwoB",
+    override val shared: String = "PolymorphicTypeTwoB",
 ) : PolymorphicSuperTypeTwo()

@@ -5,7 +5,6 @@ import feign.Param
 import feign.RequestLine
 import kotlin.String
 import kotlin.Suppress
-import kotlin.Unit
 import kotlin.collections.Map
 
 @Suppress("unused")
@@ -21,5 +20,5 @@ public interface ExampleClient {
         @Param("a") a: String,
         @Param("b") b: String,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
-    ): Unit
+    )
 }

@@ -15,14 +15,14 @@ public data class Cat(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     @get:NotNull
-    public override val id: Long,
+    override val id: Long,
     @param:JsonProperty("name")
     @get:JsonProperty("name")
     @get:NotNull
-    public override val name: String,
+    override val name: String,
     @param:JsonProperty("tag")
     @get:JsonProperty("tag")
-    public override val tag: String? = null,
+    override val tag: String? = null,
     @param:JsonProperty("hunts")
     @get:JsonProperty("hunts")
     public val hunts: Boolean? = null,
@@ -32,7 +32,7 @@ public data class Cat(
     @get:JsonProperty("petType")
     @get:NotNull
     @param:JsonProperty("petType")
-    public override val petType: String = "Cat",
+    override val petType: String = "Cat",
 ) : Pet(id, name, tag) {
     public companion object
 }
@@ -41,14 +41,14 @@ public data class Dog(
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     @get:NotNull
-    public override val id: Long,
+    override val id: Long,
     @param:JsonProperty("name")
     @get:JsonProperty("name")
     @get:NotNull
-    public override val name: String,
+    override val name: String,
     @param:JsonProperty("tag")
     @get:JsonProperty("tag")
-    public override val tag: String? = null,
+    override val tag: String? = null,
     @param:JsonProperty("bark")
     @get:JsonProperty("bark")
     public val bark: Boolean? = null,
@@ -58,7 +58,7 @@ public data class Dog(
     @get:JsonProperty("petType")
     @get:NotNull
     @param:JsonProperty("petType")
-    public override val petType: String = "Dog",
+    override val petType: String = "Dog",
 ) : Pet(id, name, tag) {
     public companion object
 }

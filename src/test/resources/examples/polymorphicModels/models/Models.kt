@@ -42,65 +42,65 @@ public data class PolymorphicTypeOne(
     @param:JsonProperty("first_name")
     @get:JsonProperty("first_name")
     @get:NotNull
-    public override val firstName: String,
+    override val firstName: String,
     @param:JsonProperty("last_name")
     @get:JsonProperty("last_name")
     @get:NotNull
-    public override val lastName: String,
+    override val lastName: String,
     @param:JsonProperty("child_one_name")
     @get:JsonProperty("child_one_name")
     public val childOneName: String? = null,
     @get:JsonProperty("generation")
     @get:NotNull
     @param:JsonProperty("generation")
-    public override val generation: String = "PolymorphicTypeOne",
+    override val generation: String = "PolymorphicTypeOne",
 ) : PolymorphicSuperType(firstName, lastName)
 
 public data class PolymorphicTypeOneAnotherRef(
     @param:JsonProperty("first_name")
     @get:JsonProperty("first_name")
     @get:NotNull
-    public override val firstName: String,
+    override val firstName: String,
     @param:JsonProperty("last_name")
     @get:JsonProperty("last_name")
     @get:NotNull
-    public override val lastName: String,
+    override val lastName: String,
     @param:JsonProperty("child_one_name")
     @get:JsonProperty("child_one_name")
     public val childOneName: String? = null,
     @get:JsonProperty("generation")
     @get:NotNull
     @param:JsonProperty("generation")
-    public override val generation: String = "PolymorphicTypeOne",
+    override val generation: String = "PolymorphicTypeOne",
 ) : PolymorphicSuperType(firstName, lastName)
 
 public data class PolymorphicTypeOneRef(
     @param:JsonProperty("first_name")
     @get:JsonProperty("first_name")
     @get:NotNull
-    public override val firstName: String,
+    override val firstName: String,
     @param:JsonProperty("last_name")
     @get:JsonProperty("last_name")
     @get:NotNull
-    public override val lastName: String,
+    override val lastName: String,
     @param:JsonProperty("child_one_name")
     @get:JsonProperty("child_one_name")
     public val childOneName: String? = null,
     @get:JsonProperty("generation")
     @get:NotNull
     @param:JsonProperty("generation")
-    public override val generation: String = "PolymorphicTypeOne",
+    override val generation: String = "PolymorphicTypeOne",
 ) : PolymorphicSuperType(firstName, lastName)
 
 public data class PolymorphicTypeTwo(
     @param:JsonProperty("first_name")
     @get:JsonProperty("first_name")
     @get:NotNull
-    public override val firstName: String,
+    override val firstName: String,
     @param:JsonProperty("last_name")
     @get:JsonProperty("last_name")
     @get:NotNull
-    public override val lastName: String,
+    override val lastName: String,
     @param:JsonProperty("some_integer_propery")
     @get:JsonProperty("some_integer_propery")
     public val someIntegerPropery: Int? = null,
@@ -110,18 +110,18 @@ public data class PolymorphicTypeTwo(
     @get:JsonProperty("generation")
     @get:NotNull
     @param:JsonProperty("generation")
-    public override val generation: String = "polymorphic_type_two",
+    override val generation: String = "polymorphic_type_two",
 ) : PolymorphicSuperType(firstName, lastName)
 
 public data class PolymorphicTypeTwoRef(
     @param:JsonProperty("first_name")
     @get:JsonProperty("first_name")
     @get:NotNull
-    public override val firstName: String,
+    override val firstName: String,
     @param:JsonProperty("last_name")
     @get:JsonProperty("last_name")
     @get:NotNull
-    public override val lastName: String,
+    override val lastName: String,
     @param:JsonProperty("some_integer_propery")
     @get:JsonProperty("some_integer_propery")
     public val someIntegerPropery: Int? = null,
@@ -131,5 +131,5 @@ public data class PolymorphicTypeTwoRef(
     @get:JsonProperty("generation")
     @get:NotNull
     @param:JsonProperty("generation")
-    public override val generation: String = "polymorphic_type_two",
+    override val generation: String = "polymorphic_type_two",
 ) : PolymorphicSuperType(firstName, lastName)

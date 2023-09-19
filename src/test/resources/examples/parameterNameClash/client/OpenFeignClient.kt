@@ -6,7 +6,6 @@ import feign.Param
 import feign.RequestLine
 import kotlin.String
 import kotlin.Suppress
-import kotlin.Unit
 import kotlin.collections.Map
 
 @Suppress("unused")
@@ -22,7 +21,7 @@ public interface ExampleClient {
         @Param("pathB") pathB: String,
         @Param("queryB") queryB: String,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
-    ): Unit
+    )
 
     /**
      *
@@ -35,5 +34,5 @@ public interface ExampleClient {
         bodySomeObject: SomeObject,
         @Param("querySomeObject") querySomeObject: String,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
-    ): Unit
+    )
 }

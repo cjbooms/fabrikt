@@ -90,7 +90,7 @@ public data class OneOfOne(
     @get:JsonProperty("discriminator")
     @get:NotNull
     @param:JsonProperty("discriminator")
-    public override val discriminator: String = "OneOfOne",
+    override val discriminator: String = "OneOfOne",
 ) : ParentOneOf()
 
 public data class OneOfTwo(
@@ -100,7 +100,7 @@ public data class OneOfTwo(
     @get:JsonProperty("discriminator")
     @get:NotNull
     @param:JsonProperty("discriminator")
-    public override val discriminator: String = "OneOfTwo",
+    override val discriminator: String = "OneOfTwo",
 ) : ParentOneOf()
 
 @JsonTypeInfo(

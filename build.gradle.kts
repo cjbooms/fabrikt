@@ -50,7 +50,7 @@ dependencies {
     implementation("com.beust:jcommander:1.82")
     implementation("com.reprezen.kaizen:openapi-parser:4.0.4") { exclude(group = "junit") }
     implementation("com.reprezen.jsonoverlay:jsonoverlay:4.0.4")
-    implementation("com.squareup:kotlinpoet:1.13.0") { exclude(module = "kotlin-stdlib-jre7") }
+    implementation("com.squareup:kotlinpoet:1.14.2") { exclude(module = "kotlin-stdlib-jre7") }
     implementation("com.google.flogger:flogger:0.7.4")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.1.0")

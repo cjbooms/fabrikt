@@ -11,7 +11,6 @@ import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
-import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 
@@ -50,7 +49,7 @@ public interface ExamplePath1Client {
         content: Content,
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
-    ): Unit
+    )
 }
 
 @Suppress("unused")
@@ -90,7 +89,7 @@ public interface ExamplePath2Client {
         @Param("queryParam3") queryParam3: Boolean? = null,
         @Param("ifNoneMatch") ifNoneMatch: String? = null,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
-    ): Unit
+    )
 
     /**
      * PUT example path 2
@@ -106,7 +105,7 @@ public interface ExamplePath2Client {
         @Param("pathParam") pathParam: String,
         @Param("ifMatch") ifMatch: String,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
-    ): Unit
+    )
 }
 
 @Suppress("unused")
@@ -127,5 +126,5 @@ public interface ExamplePath3SubresourceClient {
         @Param("ifMatch") ifMatch: String,
         @Param("csvListQueryParam") csvListQueryParam: List<String>? = null,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
-    ): Unit
+    )
 }
