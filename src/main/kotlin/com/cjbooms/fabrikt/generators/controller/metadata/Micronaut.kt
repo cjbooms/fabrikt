@@ -29,8 +29,8 @@ object MicronautImports {
     val AUTHENTICATION = ClassName(Packages.MICRONAUT_AUTHENTICATION, "Authentication")
     val SECURITY_RULE = Pair(Packages.MICRONAUT_RULE, "SecurityRule")
 
-    val SECURITY_RULE_IS_AUTHENTICATED = "SecurityRule.IS_AUTHENTICATED"
-    val SECURITY_RULE_IS_ANONYMOUS = "SecurityRule.IS_ANONYMOUS"
+    const val SECURITY_RULE_IS_AUTHENTICATED = "SecurityRule.IS_AUTHENTICATED"
+    const val SECURITY_RULE_IS_ANONYMOUS = "SecurityRule.IS_ANONYMOUS"
 
     val CONTROLLER = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Controller")
     val BODY = ClassName(Packages.MICRONAUT_HTTP_ANNOTATION, "Body")

@@ -93,7 +93,7 @@ object ClientGeneratorUtils {
             val builder = it.toParameterSpecBuilder()
             if (it is RequestParameter) {
                 if (it.defaultValue != null) OasDefault.from(it.typeInfo, it.type, it.defaultValue)
-                    ?.let { builder.defaultValue(it.getDefault()) }
+                    ?.let { t -> builder.defaultValue(t.getDefault()) }
                 else if (!it.isRequired) builder.defaultValue("null")
                 annotateRequestParameterWith?.invoke(it)?.let { annotationSpec ->
                     builder.addAnnotation(annotationSpec)
