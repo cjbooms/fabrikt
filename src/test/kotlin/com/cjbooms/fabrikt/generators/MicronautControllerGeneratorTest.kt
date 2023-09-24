@@ -117,7 +117,7 @@ class MicronautControllerGeneratorTest {
     fun `ensure controller has correct annotations`() {
         setupGithubApiTestEnv()
         val controllerAnnotations =
-            generated.flatMap { it.members.flatMap { (it as TypeSpec).annotations.map { it.typeName.toString() } } }
+            generated.flatMap { it.members.flatMap { ts -> (ts as TypeSpec).annotations.map { t -> t.typeName.toString() } } }
                 .distinct()
 
         assertThat(controllerAnnotations).containsOnly(
@@ -139,9 +139,10 @@ class MicronautControllerGeneratorTest {
             .flatMap { it.funSpecs }
             .flatMap { it.parameters }
             .flatMap { it.annotations }
-            .map { it.className.canonicalName }
+            .map { it.typeName.toString() }
             .filter { ".validation." in it }
             .distinct()
+        assertThat(parameterValidationAnnotations).isNotEmpty
         assertThat(parameterValidationAnnotations).allMatch { it.startsWith(desiredPackagePrefix) }
     }
 
@@ -164,11 +165,11 @@ class MicronautControllerGeneratorTest {
         val linkedFunctionNames = controllers.files
             .filter { it.name == "OrganisationsContributorsController" }
             .flatMap { it.members }
-            .flatMap { (it as TypeSpec).funSpecs.map { it.name } }
+            .flatMap { (it as TypeSpec).funSpecs.map { t -> t.name } }
         val ownedFunctionNames = controllers.files
             .filter { it.name == "RepositoriesPullRequestsController" }
             .flatMap { it.members }
-            .flatMap { (it as TypeSpec).funSpecs.map { it.name } }
+            .flatMap { (it as TypeSpec).funSpecs.map { t -> t.name } }
         assertThat(linkedFunctionNames).containsExactlyInAnyOrder(
             "get",
             "getById",

@@ -51,7 +51,7 @@ class SpringAuthenticationTest {
         val controllers = setupTest("global_authentication_required.yml")
 
         val functionParameters = controllers.flatMap { it.members }
-            .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }
+            .flatMap { (it as TypeSpec).funSpecs.flatMap { t -> t.parameters } }
 
         assertThat(functionParameters).anySatisfy { parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
@@ -63,7 +63,7 @@ class SpringAuthenticationTest {
         val controllers = setupTest("global_authentication_optional.yml")
 
         val functionParameters = controllers.flatMap { it.members }
-            .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }
+            .flatMap { (it as TypeSpec).funSpecs.flatMap { t -> t.parameters } }
 
         assertThat(functionParameters).anySatisfy { parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
@@ -77,7 +77,7 @@ class SpringAuthenticationTest {
         val controllers = setupTest(testCasePath)
 
         val functionParameters = controllers.flatMap { it.members }
-            .flatMap { (it as TypeSpec).funSpecs.flatMap { it.parameters } }
+            .flatMap { (it as TypeSpec).funSpecs.flatMap { t -> t.parameters } }
 
         assertThat(functionParameters).noneSatisfy { parameter ->
             assertThat(parameter.name).isEqualTo("authentication")
