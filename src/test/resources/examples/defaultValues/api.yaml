@@ -18,6 +18,12 @@ components:
             - tall
             - short
           default: tall
+        enum_quoted_default:
+          type: string
+          enum:
+            - 1x
+            - 2x
+          default: 2x
         boolean_default:
           type: boolean
           default: true

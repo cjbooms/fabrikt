@@ -24,6 +24,11 @@ public data class PersonWithDefaults(
     @get:JsonProperty("enum_default")
     @get:NotNull
     public val enumDefault: PersonWithDefaultsEnumDefault = PersonWithDefaultsEnumDefault.TALL,
+    @param:JsonProperty("enum_quoted_default")
+    @get:JsonProperty("enum_quoted_default")
+    @get:NotNull
+    public val enumQuotedDefault: PersonWithDefaultsEnumQuotedDefault =
+        PersonWithDefaultsEnumQuotedDefault.`2X`,
     @param:JsonProperty("boolean_default")
     @get:JsonProperty("boolean_default")
     @get:NotNull
@@ -55,5 +60,21 @@ public enum class PersonWithDefaultsEnumDefault(
             values().associateBy(PersonWithDefaultsEnumDefault::value)
 
         public fun fromValue(`value`: String): PersonWithDefaultsEnumDefault? = mapping[value]
+    }
+}
+
+public enum class PersonWithDefaultsEnumQuotedDefault(
+    @JsonValue
+    public val `value`: String,
+) {
+    `1X`("1x"),
+    `2X`("2x"),
+    ;
+
+    public companion object {
+        private val mapping: Map<String, PersonWithDefaultsEnumQuotedDefault> =
+            values().associateBy(PersonWithDefaultsEnumQuotedDefault::value)
+
+        public fun fromValue(`value`: String): PersonWithDefaultsEnumQuotedDefault? = mapping[value]
     }
 }

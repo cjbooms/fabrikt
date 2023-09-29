@@ -30,6 +30,7 @@ object NormalisedString {
         replaceSpecialCharacters()
             .camelToSnake()
             .toUpperCase()
+            .quoteIfNotValidIdentifier()
 
     fun String.toKotlinParameterName(): String = this.camelCase()
 
@@ -43,3 +44,4 @@ fun String.toUpperCase() = uppercase(Locale.getDefault())
 fun String.toLowerCase() = lowercase(Locale.getDefault())
 fun String.capitalized() = replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 fun String.decapitalized() = replaceFirstChar { it.lowercase(Locale.getDefault()) }
+fun String.quoteIfNotValidIdentifier() = if (first().isLetter() || first() == '_') this else "`$this`"

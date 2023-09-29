@@ -1,7 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
-import com.cjbooms.fabrikt.util.toUpperCase
+import com.cjbooms.fabrikt.util.NormalisedString.toEnumName
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeName
@@ -39,7 +39,7 @@ sealed class OasDefault {
 
     data class EnumValue(val type: TypeName, val enumValue: String) : OasDefault() {
         override fun getDefault(): CodeBlock =
-            CodeBlock.of("%T.${enumValue.toUpperCase()}", type)
+            CodeBlock.of("%T.${enumValue.toEnumName()}", type)
     }
 
     data class JsonNullableValue(val inner: OasDefault) : OasDefault() {
