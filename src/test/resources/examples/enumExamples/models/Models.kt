@@ -107,6 +107,9 @@ public enum class EnumObject(
     ONE("one"),
     TWO("two"),
     THREE("three"),
+    `4`("4"),
+    _5("-5"),
+    _6("_6"),
     ;
 
     public companion object {

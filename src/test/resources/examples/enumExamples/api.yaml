@@ -40,6 +40,9 @@ components:
         - one
         - two
         - three
+        - 4
+        - -5
+        - _6
 
     ExtensibleEnumObject:
       type: string

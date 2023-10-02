@@ -49,4 +49,14 @@ class NormalisedStringTest {
         assertThat("PascalCase_åØÆÅ_enumWith-special/characters.json".toEnumName())
             .isEqualTo("PASCAL_CASE_Å_ØÆÅ_ENUM_WITH_SPECIAL_CHARACTERS_JSON")
     }
+
+    @Test
+    fun `toEnumName should backtick enum if it starts with non-letter character`() {
+        assertThat("42".toEnumName()).isEqualTo("`42`")
+    }
+
+    @Test
+    fun `toEnumName should not backtick enum if it starts with underscore character`() {
+        assertThat("_42".toEnumName()).isEqualTo("_42")
+    }
 }
