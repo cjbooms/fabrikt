@@ -42,6 +42,30 @@ paths:
         - $ref: "#/components/parameters/IfNoneMatch"
         - $ref: "#/components/parameters/PaginationLimitParam"
       responses:
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Failure'
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Failure'
+        423:
+          description: Locked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Failure'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Failure'
         200:
           description: "successful operation"
           headers:
@@ -134,7 +158,7 @@ components:
           type: "string"
       required: false
       allowEmptyValue: false
-      
+
     ListQueryParamCsv:
       name: "csv_list_query_param"
       in: "query"
@@ -145,7 +169,7 @@ components:
           type: "string"
       required: false
       allowEmptyValue: false
-      
+
     PaginationLimitParam:
       name: limit
       in: query
@@ -308,3 +332,20 @@ components:
               description: "The attribute 2 for model 3"
               type: integer
               readOnly: true
+
+    Failure:
+      required:
+        - error
+        - errorCode
+        - traceId
+      type: object
+      properties:
+        traceId:
+          type: string
+          format: uuid
+        errorCode:
+          type: string
+        error:
+          type: string
+        subType:
+          type: string

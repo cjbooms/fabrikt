@@ -124,8 +124,10 @@ object GeneratorUtils {
 
     fun Operation.firstResponse(): Response? = this.getBodyResponses().firstOrNull()
 
-    fun Operation.getPrimaryContentMediaType(): Map.Entry<String, MediaType>? =
-        this.getBodyResponses().map { response -> response.getPrimaryContentMediaType() }.firstOrNull()
+    fun Operation.getPrimaryContentMediaType(): Map.Entry<String, MediaType>? {
+        val responses = getBodySuccessResponses().ifEmpty { getBodyResponses() }
+        return responses.map { response -> response.getPrimaryContentMediaType() }.firstOrNull()
+    }
 
     fun Operation.getPrimaryContentMediaTypeKey(): String? = this.firstResponse()?.getPrimaryContentMediaType()?.key
 

@@ -43,10 +43,7 @@ public interface InternalEventsController {
     @Post(uri = "/internal/events")
     @Consumes(value = ["application/json"])
     @Produces(value = ["application/json", "application/problem+json"])
-    public fun post(
-        @Body @Valid
-        bulkEntityDetails: BulkEntityDetails,
-    ): HttpResponse<EventResults>
+    public fun post(@Body @Valid bulkEntityDetails: BulkEntityDetails): HttpResponse<EventResults>
 }
 
 @Controller
@@ -69,10 +66,7 @@ public interface ContributorsController {
     @Get(uri = "/contributors")
     @Produces(value = ["application/json"])
     public fun searchContributors(
-        @Min(1)
-        @Max(100)
-        @QueryValue(value = "limit", defaultValue = "10")
-        limit: Int,
+        @Min(1) @Max(100) @QueryValue(value = "limit", defaultValue = "10") limit: Int,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @QueryValue(value = "include_inactive") includeInactive: Boolean?,
         @QueryValue(value = "cursor") cursor: String?,
@@ -97,8 +91,7 @@ public interface ContributorsController {
     @Post(uri = "/contributors")
     @Consumes(value = ["application/json"])
     public fun createContributor(
-        @Body @Valid
-        contributor: Contributor,
+        @Body @Valid contributor: Contributor,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
@@ -152,8 +145,7 @@ public interface ContributorsController {
     @Put(uri = "/contributors/{id}")
     @Consumes(value = ["application/json"])
     public fun putById(
-        @Body @Valid
-        contributor: Contributor,
+        @Body @Valid contributor: Contributor,
         @PathVariable(value = "id") id: String,
         @Header(value = "If-Match") ifMatch: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -181,10 +173,7 @@ public interface OrganisationsController {
     @Get(uri = "/organisations")
     @Produces(value = ["application/json"])
     public fun `get`(
-        @Min(1)
-        @Max(100)
-        @QueryValue(value = "limit", defaultValue = "10")
-        limit: Int,
+        @Min(1) @Max(100) @QueryValue(value = "limit", defaultValue = "10") limit: Int,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @QueryValue(value = "include_inactive") includeInactive: Boolean?,
         @QueryValue(value = "cursor") cursor: String?,
@@ -209,8 +198,7 @@ public interface OrganisationsController {
     @Post(uri = "/organisations")
     @Consumes(value = ["application/json"])
     public fun post(
-        @Body @Valid
-        organisation: Organisation,
+        @Body @Valid organisation: Organisation,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
@@ -264,8 +252,7 @@ public interface OrganisationsController {
     @Put(uri = "/organisations/{id}")
     @Consumes(value = ["application/json"])
     public fun putById(
-        @Body @Valid
-        organisation: Organisation,
+        @Body @Valid organisation: Organisation,
         @PathVariable(value = "id") id: String,
         @Header(value = "If-Match") ifMatch: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -296,10 +283,7 @@ public interface OrganisationsContributorsController {
     @Produces(value = ["application/json"])
     public fun `get`(
         @PathVariable(value = "parent-id") parentId: String,
-        @Min(1)
-        @Max(100)
-        @QueryValue(value = "limit", defaultValue = "10")
-        limit: Int,
+        @Min(1) @Max(100) @QueryValue(value = "limit", defaultValue = "10") limit: Int,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @QueryValue(value = "include_inactive") includeInactive: Boolean?,
         @QueryValue(value = "cursor") cursor: String?,
@@ -399,17 +383,10 @@ public interface RepositoriesController {
     @Get(uri = "/repositories")
     @Produces(value = ["application/json"])
     public fun `get`(
-        @Min(1)
-        @Max(100)
-        @QueryValue(value = "limit", defaultValue = "10")
-        limit: Int,
+        @Min(1) @Max(100) @QueryValue(value = "limit", defaultValue = "10") limit: Int,
         @Header(value = "X-Flow-Id") xFlowId: String?,
-        @Valid
-        @QueryValue(value = "slug")
-        slug: List<String>?,
-        @Valid
-        @QueryValue(value = "name")
-        name: List<String>?,
+        @Valid @QueryValue(value = "slug") slug: List<String>?,
+        @Valid @QueryValue(value = "name") name: List<String>?,
         @QueryValue(value = "include_inactive") includeInactive: Boolean?,
         @QueryValue(value = "cursor") cursor: String?,
     ): HttpResponse<RepositoryQueryResult>
@@ -433,8 +410,7 @@ public interface RepositoriesController {
     @Post(uri = "/repositories")
     @Consumes(value = ["application/json"])
     public fun post(
-        @Body @Valid
-        repository: Repository,
+        @Body @Valid repository: Repository,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
     ): HttpResponse<Unit>
@@ -488,8 +464,7 @@ public interface RepositoriesController {
     @Put(uri = "/repositories/{id}")
     @Consumes(value = ["application/json"])
     public fun putById(
-        @Body @Valid
-        repository: Repository,
+        @Body @Valid repository: Repository,
         @PathVariable(value = "id") id: String,
         @Header(value = "If-Match") ifMatch: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
@@ -520,10 +495,7 @@ public interface RepositoriesPullRequestsController {
     @Produces(value = ["application/json"])
     public fun `get`(
         @PathVariable(value = "parent-id") parentId: String,
-        @Min(1)
-        @Max(100)
-        @QueryValue(value = "limit", defaultValue = "10")
-        limit: Int,
+        @Min(1) @Max(100) @QueryValue(value = "limit", defaultValue = "10") limit: Int,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @QueryValue(value = "include_inactive") includeInactive: Boolean?,
         @QueryValue(value = "cursor") cursor: String?,
@@ -549,8 +521,7 @@ public interface RepositoriesPullRequestsController {
     @Post(uri = "/repositories/{parent-id}/pull-requests")
     @Consumes(value = ["application/json"])
     public fun post(
-        @Body @Valid
-        pullRequest: PullRequest,
+        @Body @Valid pullRequest: PullRequest,
         @PathVariable(value = "parent-id") parentId: String,
         @Header(value = "X-Flow-Id") xFlowId: String?,
         @Header(value = "Idempotency-Key") idempotencyKey: UUID?,
@@ -604,8 +575,7 @@ public interface RepositoriesPullRequestsController {
     @Put(uri = "/repositories/{parent-id}/pull-requests/{id}")
     @Consumes(value = ["application/json"])
     public fun putById(
-        @Body @Valid
-        pullRequest: PullRequest,
+        @Body @Valid pullRequest: PullRequest,
         @PathVariable(value = "parent-id") parentId: String,
         @PathVariable(value = "id") id: String,
         @Header(value = "If-Match") ifMatch: String,

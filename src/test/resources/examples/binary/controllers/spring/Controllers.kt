@@ -24,9 +24,5 @@ public interface BinaryDataController {
         method = [RequestMethod.POST],
         consumes = ["application/octet-stream"],
     )
-    public fun postBinaryData(
-        @RequestBody @Valid
-        applicationOctetStream: ByteArray,
-    ):
-        ResponseEntity<ByteArray>
+    public fun postBinaryData(@RequestBody @Valid applicationOctetStream: ByteArray): ResponseEntity<ByteArray>
 }
