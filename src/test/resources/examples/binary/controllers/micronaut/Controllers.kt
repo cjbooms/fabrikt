@@ -19,8 +19,5 @@ public interface BinaryDataController {
     @Post(uri = "/binary-data")
     @Consumes(value = ["application/octet-stream"])
     @Produces(value = ["application/octet-stream"])
-    public fun postBinaryData(
-        @Body @Valid
-        applicationOctetStream: ByteArray,
-    ): HttpResponse<ByteArray>
+    public fun postBinaryData(@Body @Valid applicationOctetStream: ByteArray): HttpResponse<ByteArray>
 }

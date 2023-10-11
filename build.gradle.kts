@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    val jacksonVersion = "2.14.2"
+    val jacksonVersion = "2.15.1"
 
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -53,24 +53,27 @@ dependencies {
     implementation("com.squareup:kotlinpoet:1.14.2") { exclude(module = "kotlin-stdlib-jre7") }
     implementation("com.google.flogger:flogger:0.7.4")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.1.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.1.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.1.0")
-    testImplementation("org.assertj:assertj-core:3.14.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
+    testImplementation("org.assertj:assertj-core:3.24.2")
 
     // Below dependencies are solely present so code examples in the test resources dir compile
     testImplementation("javax.validation:validation-api:2.0.1.Final")
     testImplementation("jakarta.validation:jakarta.validation-api:3.0.2")
-    testImplementation("org.springframework:spring-webmvc:6.0.0")
-    testImplementation("org.springframework.security:spring-security-web:6.0.0")
+    testImplementation("org.springframework:spring-webmvc:6.0.9")
+    testImplementation("org.springframework.security:spring-security-web:6.1.0")
     testImplementation("io.micronaut:micronaut-core:3.8.7")
     testImplementation("io.micronaut:micronaut-http:3.8.7")
     //testCompileOnly("io.micronaut.security:micronaut-security:3.8.7")
     testImplementation("com.squareup.okhttp3:okhttp:4.10.0")
-    testImplementation("com.pinterest.ktlint:ktlint-core:0.48.2")
-    testImplementation("com.pinterest.ktlint:ktlint-ruleset-standard:0.48.2")
-    testImplementation("com.pinterest:ktlint:0.48.2")
     testImplementation("org.openapitools:jackson-databind-nullable:0.2.6")
+
+    testImplementation(platform("com.pinterest.ktlint:ktlint-bom:0.49.0"))
+    testImplementation("com.pinterest:ktlint")
+    testImplementation("com.pinterest.ktlint:ktlint-core")
+    testImplementation("com.pinterest.ktlint:ktlint-rule-engine")
+    testImplementation("com.pinterest.ktlint:ktlint-ruleset-standard")
 }
 
 tasks {

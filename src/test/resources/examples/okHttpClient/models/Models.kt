@@ -5,6 +5,7 @@ import com.fasterxml.jackson.`annotation`.JsonSubTypes
 import com.fasterxml.jackson.`annotation`.JsonTypeInfo
 import com.fasterxml.jackson.`annotation`.JsonValue
 import java.time.OffsetDateTime
+import java.util.UUID
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -75,6 +76,24 @@ public enum class ContentThirdAttr(
         public fun fromValue(`value`: String): ContentThirdAttr? = mapping[value]
     }
 }
+
+public data class Failure(
+    @param:JsonProperty("traceId")
+    @get:JsonProperty("traceId")
+    @get:NotNull
+    public val traceId: UUID,
+    @param:JsonProperty("errorCode")
+    @get:JsonProperty("errorCode")
+    @get:NotNull
+    public val errorCode: String,
+    @param:JsonProperty("error")
+    @get:JsonProperty("error")
+    @get:NotNull
+    public val error: String,
+    @param:JsonProperty("subType")
+    @get:JsonProperty("subType")
+    public val subType: String? = null,
+)
 
 public data class FirstModel(
     @param:JsonProperty("id")

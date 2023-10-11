@@ -16,6 +16,5 @@ public interface ExampleController {
      * @param b
      */
     @Get(uri = "/example")
-    public fun `get`(@QueryValue(value = "a") a: String, @QueryValue(value = "b") b: String):
-        HttpResponse<Unit>
+    public fun `get`(@QueryValue(value = "a") a: String, @QueryValue(value = "b") b: String): HttpResponse<Unit>
 }

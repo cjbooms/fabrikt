@@ -72,18 +72,18 @@ paths:
   /different-success-and-error-response-schema:
     get:
       responses:
-        200:
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
         400:
           description: bad request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
 
 components:
   parameters:
@@ -103,7 +103,7 @@ components:
       schema:
         type: integer
       required: false
-      
+
     Accept:
       name: Accept
       in: header

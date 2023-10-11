@@ -44,8 +44,7 @@ public interface ProhibitedController {
         produces = [],
         method = [RequestMethod.GET],
     )
-    public fun testPath(@RequestParam(value = "testString", required = true) testString: String):
-        ResponseEntity<Unit>
+    public fun testPath(@RequestParam(value = "testString", required = true) testString: String): ResponseEntity<Unit>
 }
 
 @Controller
@@ -82,8 +81,7 @@ public interface NoneController {
         produces = [],
         method = [RequestMethod.GET],
     )
-    public fun testPath(@RequestParam(value = "testString", required = true) testString: String):
-        ResponseEntity<Unit>
+    public fun testPath(@RequestParam(value = "testString", required = true) testString: String): ResponseEntity<Unit>
 }
 
 @Controller
