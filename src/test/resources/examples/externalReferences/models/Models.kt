@@ -14,12 +14,77 @@ import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableMap
 
+public data class Answer(
+    @param:JsonProperty("content")
+    @get:JsonProperty("content")
+    @get:NotNull
+    @get:Valid
+    public val content: Content,
+)
+
 public data class ContainingExternalReference(
     @param:JsonProperty("some-external-reference")
     @get:JsonProperty("some-external-reference")
     @get:Valid
     public val someExternalReference: ExternalObject? = null,
 )
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "contentType",
+    visible = true,
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(value = ContentHTML::class, name = "HTML"),
+    JsonSubTypes.Type(
+        value =
+        ContentMD::class,
+        name = "MD",
+    ),
+)
+public sealed class Content() {
+    public abstract val contentType: ContentContentType
+}
+
+public enum class ContentContentType(
+    @JsonValue
+    public val `value`: String,
+) {
+    HTML("HTML"),
+    MD("MD"),
+    ;
+
+    public companion object {
+        private val mapping: Map<String, ContentContentType> =
+            values().associateBy(ContentContentType::value)
+
+        public fun fromValue(`value`: String): ContentContentType? = mapping[value]
+    }
+}
+
+public data class ContentHTML(
+    @param:JsonProperty("header")
+    @get:JsonProperty("header")
+    public val `header`: String? = null,
+    @param:JsonProperty("body")
+    @get:JsonProperty("body")
+    public val body: String? = null,
+    @get:JsonProperty("contentType")
+    @get:NotNull
+    @param:JsonProperty("contentType")
+    override val contentType: ContentContentType = ContentContentType.HTML,
+) : Content()
+
+public data class ContentMD(
+    @param:JsonProperty("richText")
+    @get:JsonProperty("richText")
+    public val richText: String? = null,
+    @get:JsonProperty("contentType")
+    @get:NotNull
+    @param:JsonProperty("contentType")
+    override val contentType: ContentContentType = ContentContentType.MD,
+) : Content()
 
 public data class ExternalObject(
     @param:JsonProperty("another")
@@ -80,6 +145,28 @@ public data class ExternalObjectTwo(
     @JsonAnySetter
     public fun `set`(name: String, `value`: Map<String, ExternalObjectFour>) {
         properties[name] = value
+    }
+}
+
+public data class IgnoredExternalObjectFive(
+    @param:JsonProperty("blah")
+    @get:JsonProperty("blah")
+    public val blah: String? = null,
+)
+
+public enum class Language(
+    @JsonValue
+    public val `value`: String,
+) {
+    ENGLISH("ENGLISH"),
+    DUTCH("DUTCH"),
+    GERMAN("GERMAN"),
+    ;
+
+    public companion object {
+        private val mapping: Map<String, Language> = values().associateBy(Language::value)
+
+        public fun fromValue(`value`: String): Language? = mapping[value]
     }
 }
 

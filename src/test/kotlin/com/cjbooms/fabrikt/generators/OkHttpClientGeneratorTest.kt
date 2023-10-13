@@ -16,6 +16,7 @@ import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
+import java.nio.file.Paths
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
@@ -33,6 +34,7 @@ class OkHttpClientGeneratorTest {
         "okHttpClientPostWithoutRequestBody",
         "pathLevelParameters",
         "parameterNameClash",
+        "externalReferences"
     )
 
     @BeforeEach
@@ -48,7 +50,8 @@ class OkHttpClientGeneratorTest {
     @MethodSource("fullApiTestCases")
     fun `correct api simple client is generated from a full API definition`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
-        val sourceApi = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
+        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
         val expectedModel = readTextResource("/examples/$testCaseName/models/Models.kt")
         val expectedClient = readTextResource("/examples/$testCaseName/client/ApiClient.kt")

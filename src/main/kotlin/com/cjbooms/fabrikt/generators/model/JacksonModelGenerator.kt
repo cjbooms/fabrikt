@@ -150,7 +150,6 @@ class JacksonModelGenerator(
             val api = OpenApi3Parser().parse(externalReferences.key)
             val schemas = api.schemas.entries.map { it.key to it.value }
                 .map { (key, schema) -> SchemaInfo(key, schema) }
-                .filter { apiSchema -> externalReferences.value.contains(apiSchema.name) }
             val externalModels = createModels(api, schemas)
             externalModels.forEach { additionalModel ->
                 if (models.none { it.name == additionalModel.name }) models.add(additionalModel)

@@ -1,8 +1,24 @@
 openapi: 3.0.0
-paths: {}
 info:
   title: ""
   version: ""
+paths:
+  /hello:
+    get:
+      operationId: helloWorld
+      parameters:
+        - name: language
+          in: path
+          required: true
+          schema:
+            $ref: './external-models.yaml#/components/schemas/Language'
+      responses:
+        200:
+          description: "world"
+          content:
+            application/json:
+              schema:
+                $ref: './external-models.yaml#/components/schemas/Content'
 components:
   schemas:
     ContainingExternalReference:
@@ -10,5 +26,12 @@ components:
       properties:
         some-external-reference:
           $ref: './external-models.yaml#/components/schemas/ExternalObject'
+    Answer:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          $ref: './external-models.yaml#/components/schemas/Content'
 
 
