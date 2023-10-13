@@ -15,10 +15,10 @@ import kotlin.collections.Map
 import kotlin.jvm.Throws
 
 @Suppress("unused")
-class HelloClient(
+public class HelloClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
 ) {
     /**
      *
@@ -26,8 +26,7 @@ class HelloClient(
      * @param language
      */
     @Throws(ApiException::class)
-    fun helloWorld(language: Language, additionalHeaders: Map<String, String> = emptyMap()):
-        ApiResponse<Content> {
+    public fun helloWorld(language: Language, additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Content> {
         val httpUrl: HttpUrl = "$baseUrl/hello"
             .pathParam("{language}" to language)
             .toHttpUrl()

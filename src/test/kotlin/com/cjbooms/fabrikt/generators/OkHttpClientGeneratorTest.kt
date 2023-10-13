@@ -75,7 +75,8 @@ class OkHttpClientGeneratorTest {
     @MethodSource("fullApiTestCases")
     fun `correct api fault-tolerant service client is generated when the resilience4j option is set`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
-        val sourceApi = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
+        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
         val expectedLibUtil = readTextResource("/examples/$testCaseName/client/HttpResilience4jUtil.kt")
         val expectedClientCode = readTextResource("/examples/$testCaseName/client/ApiService.kt")
@@ -95,7 +96,8 @@ class OkHttpClientGeneratorTest {
     @MethodSource("fullApiTestCases")
     fun `the enhanced client is not generated when no specific options are provided`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
-        val sourceApi = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
+        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
         val enhancedClientCode = OkHttpEnhancedClientGenerator(
             packages,
@@ -110,7 +112,8 @@ class OkHttpClientGeneratorTest {
     @MethodSource("fullApiTestCases")
     fun `correct http utility libraries are generated`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
-        val sourceApi = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
+        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
         val expectedHttpUtils = readTextResource("/examples/$testCaseName/client/HttpUtil.kt")
 
