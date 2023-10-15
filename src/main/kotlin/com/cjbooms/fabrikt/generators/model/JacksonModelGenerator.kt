@@ -333,7 +333,7 @@ class JacksonModelGenerator(
         enclosingSchemaInfoName: String? = null,
     ): Collection<TypeSpec> =
         schema.itemsSchema.let { items ->
-            val typedEnclosingSchema = enclosingSchemaInfoName?.toEnclosingSchemaInfo()
+            val enclosingSchemaInfo = enclosingSchemaInfoName?.toEnclosingSchemaInfo()
                 ?: enclosingSchema.toEnclosingSchemaInfo()
             when {
                 items.isInlinedObjectDefinition() ->
@@ -343,7 +343,7 @@ class JacksonModelGenerator(
                             enclosingSchema = enclosingSchema,
                             apiDocUrl = apiDocUrl,
                         ) + standardDataClass(
-                            modelName = ModelNameRegistry.getOrRegister(schema, typedEnclosingSchema),
+                            modelName = ModelNameRegistry.getOrRegister(schema, enclosingSchemaInfo),
                             schemaName = schemaName,
                             properties = props,
                             extensions = schema.extensions,
@@ -354,7 +354,7 @@ class JacksonModelGenerator(
                 items.isInlinedEnumDefinition() ->
                     setOf(
                         buildEnumClass(
-                            KotlinTypeInfo.from(items, "items", typedEnclosingSchema) as KotlinTypeInfo.Enum,
+                            KotlinTypeInfo.from(items, "items", enclosingSchemaInfo) as KotlinTypeInfo.Enum,
                         ),
                     )
 

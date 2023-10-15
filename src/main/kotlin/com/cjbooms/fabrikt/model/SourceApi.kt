@@ -84,16 +84,16 @@ data class SourceApi(
     }
 }
 
-enum class EnclosingSchemaInfoType {
-    NAME,
-    OAS_MODEL,
-}
-
 /**
  * Enclosing schema can either be provided as:
  * - a schema from Kaizen as OAS3 model.
  * - provided as schema name based on names provided in spec file from SchemaInfo
  */
+enum class EnclosingSchemaInfoType {
+    NAME,
+    OAS_MODEL,
+}
+
 interface EnclosingSchemaInfo {
     val type: EnclosingSchemaInfoType
 }
