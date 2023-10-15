@@ -26,10 +26,10 @@ object ModelNameRegistry {
     private fun register(
         schema: Schema,
         enclosingSchema: EnclosingSchemaInfo? = null,
-        valueClassName: Boolean = false,
+        valueSuffix: Boolean = false,
         schemaInfoName: String? = null,
     ): String {
-        val modelClassName = schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueClassName)
+        val modelClassName = schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueSuffix)
         var suggestion = modelClassName
         while (allocatedNames.contains(suggestion)) {
             suggestion += SUFFIX
@@ -49,14 +49,14 @@ object ModelNameRegistry {
     private fun Schema.toModelClassName(
         schemaInfoName: String? = null,
         enclosingClassName: String? = null,
-        valueClassName: Boolean = false,
+        valueSuffix: Boolean = false,
     ): String = buildString {
         if (enclosingClassName != null) {
             append(enclosingClassName)
         }
         val modelClassName = schemaInfoName?.toModelClassName() ?: safeName().toModelClassName()
         append(modelClassName)
-        if (valueClassName) {
+        if (valueSuffix) {
             append("Value")
         }
     }
@@ -71,10 +71,10 @@ object ModelNameRegistry {
     private fun resolveTag(
         schema: Schema,
         enclosingSchema: EnclosingSchemaInfo? = null,
-        valueClassName: Boolean = false,
+        valueSuffix: Boolean = false,
         schemaInfoName: String? = null,
     ): String =
-        resolveTag(schema, schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueClassName))
+        resolveTag(schema, schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueSuffix))
 
     private fun resolveTag(schema: Schema, modelClassName: String): String {
         val overlay = Overlay.of(schema)
@@ -90,9 +90,9 @@ object ModelNameRegistry {
     fun getOrRegister(
         schema: Schema,
         enclosingSchema: EnclosingSchemaInfo? = null,
-        valueClassName: Boolean = false,
-    ) = this[resolveTag(schema, enclosingSchema, valueClassName)]
-        .getOrElse { register(schema, enclosingSchema, valueClassName) }
+        valueSuffix: Boolean = false,
+    ) = this[resolveTag(schema, enclosingSchema, valueSuffix)]
+        .getOrElse { register(schema, enclosingSchema, valueSuffix) }
 
     fun getOrRegister(
         schemaInfo: SchemaInfo,

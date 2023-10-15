@@ -299,7 +299,7 @@ class JacksonModelGenerator(
                     if (it.schema.isComplexTypedAdditionalProperties("additionalProperties")) {
                         setOf(
                             standardDataClass(
-                                modelName = ModelNameRegistry.getOrRegister(it.schema, valueClassName = it.schema.isInlinedTypedAdditionalProperties()),
+                                modelName = ModelNameRegistry.getOrRegister(it.schema, valueSuffix = it.schema.isInlinedTypedAdditionalProperties()),
                                 schemaName = it.name,
                                 properties = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema),
                                 extensions = it.schema.extensions,
@@ -442,7 +442,7 @@ class JacksonModelGenerator(
         if (mapField.schema.additionalPropertiesSchema.isComplexTypedAdditionalProperties("additionalProperties")) {
             val schema = mapField.schema.additionalPropertiesSchema
             standardDataClass(
-                modelName = ModelNameRegistry.getOrRegister(schema, valueClassName = schema.isInlinedTypedAdditionalProperties()),
+                modelName = ModelNameRegistry.getOrRegister(schema, valueSuffix = schema.isInlinedTypedAdditionalProperties()),
                 schemaName = schema.safeName(),
                 properties = mapField.schema.additionalPropertiesSchema.topLevelProperties(HTTP_SETTINGS),
                 extensions = mapField.schema.extensions,
