@@ -29,13 +29,14 @@ object ModelNameRegistry {
         valueClassName: Boolean = false,
         schemaInfoName: String? = null,
     ): String {
-        var suggestion = schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueClassName)
+        val modelClassName = schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueClassName)
+        var suggestion = modelClassName
         while (allocatedNames.contains(suggestion)) {
             suggestion += SUFFIX
         }
         allocatedNames.add(suggestion)
 
-        val tag = resolveTag(schema, enclosingSchema, valueClassName, schemaInfoName)
+        val tag = resolveTag(schema, modelClassName)
         val replaced = tagToName.put(tag, suggestion)
         if (replaced != null) {
             // Only allow unique tags to be registered
@@ -72,12 +73,13 @@ object ModelNameRegistry {
         enclosingSchema: EnclosingSchemaInfo? = null,
         valueClassName: Boolean = false,
         schemaInfoName: String? = null,
-    ): String {
+    ): String =
+        resolveTag(schema, schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueClassName))
+
+    private fun resolveTag(schema: Schema, modelClassName: String): String {
         val overlay = Overlay.of(schema)
         val uri = URL(overlay.jsonReference)
-        val typeName = schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueClassName)
-
-        return "file:${uri.file}#${enclosingSchema?.toModelClassName() ?: ""}$typeName"
+        return "file:${uri.file}#$modelClassName"
     }
 
     /** Retrieve a model class name created with [ModelNameRegistry.register]. */
