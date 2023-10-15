@@ -57,10 +57,6 @@ object KaizenParserExtensions {
     fun Schema.isInlinedArrayDefinition() =
         isArrayType() && !isSchemaLess() && this.itemsSchema.isInlinedObjectDefinition()
 
-    fun Schema.toModelClassName(enclosingClassName: String = "") = enclosingClassName + safeName().toModelClassName()
-
-    fun Schema.toMapValueClassName() = safeName().toMapValueClassName()
-
     fun Schema.isSchemaLess() = isObjectType() && properties?.isEmpty() == true && (
         oneOfSchemas?.isNotEmpty() != true &&
             allOfSchemas?.isNotEmpty() != true &&

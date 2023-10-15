@@ -12,6 +12,10 @@ components:
           $ref: "#/components/schemas/ExternalObjectTwo"
         one_of:
           $ref: "#/components/schemas/ExternalOneOf"
+        anotherExternal:
+          $ref: './external-models-2.yaml#/components/schemas/ReferencedFromOtherExternalFile'
+        conflicting:
+          $ref: '#/components/schemas/ConflictingSchemaName'
 
     ExternalObjectTwo:
       type: object
@@ -49,7 +53,7 @@ components:
         blah:
           type: string
 
-    IgnoredExternalObjectFive:
+    UnreferencedExternalObjectFive:
       type: object
       properties:
         blah:
@@ -84,39 +88,18 @@ components:
             oneOfTwo:
               type: string
 
-    Language:
+    ExternalParameter:
       type: string
       enum:
-        - ENGLISH
-        - DUTCH
-        - GERMAN
-    Content:
+        - ONE
+        - TWO
+        - THREE
+
+    ConflictingSchemaName:
       type: object
+      required:
+        - conflictsInExternalSpecFile
       properties:
-        contentType:
+        conflictsInExternalSpecFile:
           type: string
-          enum:
-            - HTML
-            - MD
-      discriminator:
-        propertyName:
-          contentType
-        mapping:
-          HTML: '#/components/schemas/ContentHTML'
-          MD: '#/components/schemas/ContentMD'
-    ContentHTML:
-      allOf:
-        - $ref: '#/components/schemas/Content'
-        - type: object
-          properties:
-            header:
-              type: string
-            body:
-              type: string
-    ContentMD:
-      allOf:
-        - $ref: '#/components/schemas/Content'
-        - type: object
-          properties:
-            richText:
-              type: string
+

@@ -10,6 +10,7 @@ import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
+import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
 import org.assertj.core.api.Assertions.assertThat
@@ -60,6 +61,7 @@ class ModelGeneratorTest {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
         )
+        ModelNameRegistry.clear()
     }
 
     // @Test

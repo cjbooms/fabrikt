@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
 import com.cjbooms.fabrikt.model.ResourceFile
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.ModelNameRegistry
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
@@ -26,6 +27,7 @@ class ResourceGeneratorTest {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
         )
+        ModelNameRegistry.clear()
     }
 
     @ParameterizedTest

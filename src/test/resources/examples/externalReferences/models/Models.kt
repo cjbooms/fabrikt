@@ -14,12 +14,18 @@ import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableMap
 
-public data class Answer(
-    @param:JsonProperty("content")
-    @get:JsonProperty("content")
+public data class ConflictingSchemaName(
+    @param:JsonProperty("conflictsInMainSpecFile")
+    @get:JsonProperty("conflictsInMainSpecFile")
     @get:NotNull
-    @get:Valid
-    public val content: Content,
+    public val conflictsInMainSpecFile: String,
+)
+
+public data class ConflictingSchemaNameExtra(
+    @param:JsonProperty("conflictsInExternalSpecFile")
+    @get:JsonProperty("conflictsInExternalSpecFile")
+    @get:NotNull
+    public val conflictsInExternalSpecFile: String,
 )
 
 public data class ContainingExternalReference(
@@ -28,63 +34,6 @@ public data class ContainingExternalReference(
     @get:Valid
     public val someExternalReference: ExternalObject? = null,
 )
-
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "contentType",
-    visible = true,
-)
-@JsonSubTypes(
-    JsonSubTypes.Type(value = ContentHTML::class, name = "HTML"),
-    JsonSubTypes.Type(
-        value =
-        ContentMD::class,
-        name = "MD",
-    ),
-)
-public sealed class Content() {
-    public abstract val contentType: ContentContentType
-}
-
-public enum class ContentContentType(
-    @JsonValue
-    public val `value`: String,
-) {
-    HTML("HTML"),
-    MD("MD"),
-    ;
-
-    public companion object {
-        private val mapping: Map<String, ContentContentType> =
-            values().associateBy(ContentContentType::value)
-
-        public fun fromValue(`value`: String): ContentContentType? = mapping[value]
-    }
-}
-
-public data class ContentHTML(
-    @param:JsonProperty("header")
-    @get:JsonProperty("header")
-    public val `header`: String? = null,
-    @param:JsonProperty("body")
-    @get:JsonProperty("body")
-    public val body: String? = null,
-    @get:JsonProperty("contentType")
-    @get:NotNull
-    @param:JsonProperty("contentType")
-    override val contentType: ContentContentType = ContentContentType.HTML,
-) : Content()
-
-public data class ContentMD(
-    @param:JsonProperty("richText")
-    @get:JsonProperty("richText")
-    public val richText: String? = null,
-    @get:JsonProperty("contentType")
-    @get:NotNull
-    @param:JsonProperty("contentType")
-    override val contentType: ContentContentType = ContentContentType.MD,
-) : Content()
 
 public data class ExternalObject(
     @param:JsonProperty("another")
@@ -95,6 +44,14 @@ public data class ExternalObject(
     @get:JsonProperty("one_of")
     @get:Valid
     public val oneOf: ParentOneOf? = null,
+    @param:JsonProperty("anotherExternal")
+    @get:JsonProperty("anotherExternal")
+    @get:Valid
+    public val anotherExternal: ReferencedFromOtherExternalFile? = null,
+    @param:JsonProperty("conflicting")
+    @get:JsonProperty("conflicting")
+    @get:Valid
+    public val conflicting: ConflictingSchemaNameExtra? = null,
 )
 
 public data class ExternalObjectFour(
@@ -148,25 +105,20 @@ public data class ExternalObjectTwo(
     }
 }
 
-public data class IgnoredExternalObjectFive(
-    @param:JsonProperty("blah")
-    @get:JsonProperty("blah")
-    public val blah: String? = null,
-)
-
-public enum class Language(
+public enum class ExternalParameter(
     @JsonValue
     public val `value`: String,
 ) {
-    ENGLISH("ENGLISH"),
-    DUTCH("DUTCH"),
-    GERMAN("GERMAN"),
+    ONE("ONE"),
+    TWO("TWO"),
+    THREE("THREE"),
     ;
 
     public companion object {
-        private val mapping: Map<String, Language> = values().associateBy(Language::value)
+        private val mapping: Map<String, ExternalParameter> =
+            values().associateBy(ExternalParameter::value)
 
-        public fun fromValue(`value`: String): Language? = mapping[value]
+        public fun fromValue(`value`: String): ExternalParameter? = mapping[value]
     }
 }
 
@@ -207,3 +159,15 @@ public data class OneOfTwo(
 public sealed class ParentOneOf() {
     public abstract val discriminator: String
 }
+
+public data class ReferencedFromOtherExternalFile(
+    @param:JsonProperty("another")
+    @get:JsonProperty("another")
+    public val another: String? = null,
+)
+
+public data class UnreferencedExternalObjectFive(
+    @param:JsonProperty("blah")
+    @get:JsonProperty("blah")
+    public val blah: String? = null,
+)

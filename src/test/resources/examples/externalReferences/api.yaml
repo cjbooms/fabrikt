@@ -11,14 +11,14 @@ paths:
           in: path
           required: true
           schema:
-            $ref: './external-models.yaml#/components/schemas/Language'
+            $ref: './external-models.yaml#/components/schemas/ExternalParameter'
       responses:
         200:
           description: "world"
           content:
             application/json:
               schema:
-                $ref: './external-models.yaml#/components/schemas/Content'
+                $ref: './external-models.yaml#/components/schemas/ContainingExternalReference'
 components:
   schemas:
     ContainingExternalReference:
@@ -26,12 +26,12 @@ components:
       properties:
         some-external-reference:
           $ref: './external-models.yaml#/components/schemas/ExternalObject'
-    Answer:
+    ConflictingSchemaName:
       type: object
       required:
-        - content
+        - conflictsInMainSpecFile
       properties:
-        content:
-          $ref: './external-models.yaml#/components/schemas/Content'
+        conflictsInMainSpecFile:
+          type: string
 
 

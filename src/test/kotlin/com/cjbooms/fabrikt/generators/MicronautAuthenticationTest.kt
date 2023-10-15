@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -45,6 +46,7 @@ class MicronautAuthenticationTest {
             controllerTarget = ControllerCodeGenTargetType.MICRONAUT,
             controllerOptions = setOf(ControllerCodeGenOptionType.AUTHENTICATION),
         )
+        ModelNameRegistry.clear()
     }
 
     // global authentication tests

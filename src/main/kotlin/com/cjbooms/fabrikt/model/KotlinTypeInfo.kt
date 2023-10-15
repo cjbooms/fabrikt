@@ -7,9 +7,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.getEnumValues
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterface
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
-import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
+import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.reprezen.kaizen.oasparser.model3.Schema
 import java.math.BigDecimal
 import java.net.URI
@@ -57,13 +55,13 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         }
 
     companion object {
-        fun from(schema: Schema, oasKey: String = "", enclosingName: String = ""): KotlinTypeInfo =
+        fun from(schema: Schema, oasKey: String = "", enclosingSchema: ModelNameRegistry.EnclosingSchema? = null): KotlinTypeInfo =
             when (schema.toOasType(oasKey)) {
                 OasType.Date -> Date
                 OasType.DateTime -> getOverridableDateTimeType()
                 OasType.Text -> Text
                 OasType.Enum ->
-                    Enum(schema.getEnumValues(), schema.toModelClassName(enclosingName.toModelClassName()))
+                    Enum(schema.getEnumValues(), ModelNameRegistry.getOrRegister(schema, enclosingSchema))
                 OasType.Uuid -> Uuid
                 OasType.Uri -> Uri
                 OasType.Base64String -> ByteArray
@@ -78,24 +76,23 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Array ->
                     if (schema.itemsSchema.isNotDefined())
                         throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")
-                    else Array(from(schema.itemsSchema, oasKey, enclosingName))
-                OasType.Object -> Object(schema.toModelClassName(enclosingName.toModelClassName()))
+                    else Array(from(schema.itemsSchema, oasKey, enclosingSchema))
+                OasType.Object -> Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
                 OasType.Map ->
-                    Map(from(schema.additionalPropertiesSchema, "", enclosingName))
+                    Map(from(schema.additionalPropertiesSchema, "", enclosingSchema))
                 OasType.TypedObjectAdditionalProperties -> GeneratedTypedAdditionalProperties(
-                    if (schema.isInlinedTypedAdditionalProperties()) schema.toMapValueClassName()
-                    else schema.toModelClassName()
+                    ModelNameRegistry.getOrRegister(schema, valueClassName = schema.isInlinedTypedAdditionalProperties())
                 )
                 OasType.UntypedObjectAdditionalProperties -> UntypedObjectAdditionalProperties
                 OasType.UntypedObject -> UntypedObject
                 OasType.UnknownAdditionalProperties -> UnknownAdditionalProperties
                 OasType.TypedMapAdditionalProperties ->
                     MapTypeAdditionalProperties(
-                        from(schema.additionalPropertiesSchema, "", enclosingName)
+                        from(schema.additionalPropertiesSchema, "", enclosingSchema)
                     )
                 OasType.Any -> AnyType
                 OasType.OneOfAny ->
-                    if (schema.isOneOfSuperInterface()) Object(schema.toModelClassName(enclosingName.toModelClassName()))
+                    if (schema.isOneOfSuperInterface()) Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
                     else AnyType
             }
 
