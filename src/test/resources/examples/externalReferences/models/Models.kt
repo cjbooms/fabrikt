@@ -33,6 +33,10 @@ public data class ContainingExternalReference(
     @get:JsonProperty("some-external-reference")
     @get:Valid
     public val someExternalReference: ExternalObject? = null,
+    @param:JsonProperty("inlineObject")
+    @get:JsonProperty("inlineObject")
+    @get:Valid
+    public val inlineObject: FirstInlineObject? = null,
 )
 
 public data class ExternalObject(
@@ -122,6 +126,45 @@ public enum class ExternalParameter(
     }
 }
 
+public data class FirstInlineObject(
+    @param:JsonProperty("generation")
+    @get:JsonProperty("generation")
+    @get:Valid
+    public val generation: FirstInlineObjectGeneration? = null,
+)
+
+public data class FirstInlineObjectCallHome(
+    @param:JsonProperty("url")
+    @get:JsonProperty("url")
+    @get:NotNull
+    public val url: String,
+)
+
+public data class FirstInlineObjectDatabaseView(
+    @param:JsonProperty("view_name")
+    @get:JsonProperty("view_name")
+    @get:NotNull
+    public val viewName: String,
+)
+
+public data class FirstInlineObjectGeneration(
+    @param:JsonProperty("call_home")
+    @get:JsonProperty("call_home")
+    @get:Valid
+    public val callHome: FirstInlineObjectCallHome? = null,
+    @param:JsonProperty("database_view")
+    @get:JsonProperty("database_view")
+    @get:Valid
+    public val databaseView: FirstInlineObjectDatabaseView? = null,
+    @param:JsonProperty("direct")
+    @get:JsonProperty("direct")
+    public val direct: String? = null,
+    @param:JsonProperty("externalInlineObject")
+    @get:JsonProperty("externalInlineObject")
+    @get:Valid
+    public val externalInlineObject: SecondInlineObject? = null,
+)
+
 public data class OneOfOne(
     @param:JsonProperty("oneOfOne")
     @get:JsonProperty("oneOfOne")
@@ -164,6 +207,41 @@ public data class ReferencedFromOtherExternalFile(
     @param:JsonProperty("another")
     @get:JsonProperty("another")
     public val another: String? = null,
+)
+
+public data class SecondInlineObject(
+    @param:JsonProperty("generation")
+    @get:JsonProperty("generation")
+    @get:Valid
+    public val generation: SecondInlineObjectGeneration? = null,
+)
+
+public data class SecondInlineObjectCallHome(
+    @param:JsonProperty("url")
+    @get:JsonProperty("url")
+    @get:NotNull
+    public val url: String,
+)
+
+public data class SecondInlineObjectDatabaseView(
+    @param:JsonProperty("view_name")
+    @get:JsonProperty("view_name")
+    @get:NotNull
+    public val viewName: String,
+)
+
+public data class SecondInlineObjectGeneration(
+    @param:JsonProperty("call_home")
+    @get:JsonProperty("call_home")
+    @get:Valid
+    public val callHome: SecondInlineObjectCallHome? = null,
+    @param:JsonProperty("database_view")
+    @get:JsonProperty("database_view")
+    @get:Valid
+    public val databaseView: SecondInlineObjectDatabaseView? = null,
+    @param:JsonProperty("direct")
+    @get:JsonProperty("direct")
+    public val direct: String? = null,
 )
 
 public data class UnreferencedExternalObjectFive(

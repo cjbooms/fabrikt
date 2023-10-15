@@ -26,6 +26,8 @@ components:
       properties:
         some-external-reference:
           $ref: './external-models.yaml#/components/schemas/ExternalObject'
+        inlineObject:
+          $ref: '#/components/schemas/FirstInlineObject'
     ConflictingSchemaName:
       type: object
       required:
@@ -33,5 +35,28 @@ components:
       properties:
         conflictsInMainSpecFile:
           type: string
-
+    FirstInlineObject:
+      type: object
+      properties:
+        generation:
+          type: object
+          properties:
+            call_home:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+            database_view:
+              type: object
+              required:
+                - view_name
+              properties:
+                view_name:
+                  type: string
+            direct:
+              type: string
+            externalInlineObject:
+              $ref: './external-models.yaml#/components/schemas/SecondInlineObject'
 
