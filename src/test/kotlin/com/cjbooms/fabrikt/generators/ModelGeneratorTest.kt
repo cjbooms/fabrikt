@@ -35,7 +35,6 @@ class ModelGeneratorTest {
         "duplicatePropertyHandling",
         "enumExamples",
         "enumPolymorphicDiscriminator",
-        "externalReferences",
         "githubApi",
         "inLinedObject",
         "jsonMergePatch",
