@@ -1,10 +1,10 @@
 package examples.externalReferences.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import examples.externalReferences.models.ContainingExternalReference
 import examples.externalReferences.models.ExternalParameter
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import okhttp3.OkHttpClient
-import kotlin.Any
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Map
@@ -31,11 +31,11 @@ public class HelloService(
 
     @Throws(ApiException::class)
     public fun helloWorld(
-        language: ExternalParameter,
+        parameter: ExternalParameter,
         additionalHeaders: Map<String, String> =
             emptyMap(),
-    ): ApiResponse<Any> =
+    ): ApiResponse<ContainingExternalReference> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.helloWorld(language, additionalHeaders)
+            apiClient.helloWorld(parameter, additionalHeaders)
         }
 }

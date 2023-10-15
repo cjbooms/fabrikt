@@ -2,13 +2,13 @@ package examples.externalReferences.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import examples.externalReferences.models.ContainingExternalReference
 import examples.externalReferences.models.ExternalParameter
 import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import kotlin.Any
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Map
@@ -23,16 +23,16 @@ public class HelloClient(
     /**
      *
      *
-     * @param language
+     * @param parameter
      */
     @Throws(ApiException::class)
     public fun helloWorld(
-        language: ExternalParameter,
+        parameter: ExternalParameter,
         additionalHeaders: Map<String, String> =
             emptyMap(),
-    ): ApiResponse<Any> {
+    ): ApiResponse<ContainingExternalReference> {
         val httpUrl: HttpUrl = "$baseUrl/hello"
-            .pathParam("{language}" to language)
+            .pathParam("{parameter}" to parameter)
             .toHttpUrl()
             .newBuilder()
             .build()
