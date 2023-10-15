@@ -27,6 +27,7 @@ import com.cjbooms.fabrikt.model.PropertyInfo.Companion.HTTP_SETTINGS
 import com.cjbooms.fabrikt.model.PropertyInfo.Companion.topLevelProperties
 import com.cjbooms.fabrikt.model.SchemaInfo
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.model.toEnclosingSchemaInfo
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getDiscriminatorForInLinedObjectUnderAllOf
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSchemaRefName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
@@ -42,7 +43,6 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeys
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.ModelNameRegistry
-import com.cjbooms.fabrikt.util.ModelNameRegistry.toEnclosingSchemaType
 import com.cjbooms.fabrikt.util.NormalisedString.toEnumName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.jsonoverlay.Overlay
@@ -281,7 +281,7 @@ class JacksonModelGenerator(
                 is PropertyInfo.ObjectInlinedField -> {
                     val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
                     val currentModel = standardDataClass(
-                        ModelNameRegistry.getOrRegister(it.schema, enclosingSchema.toEnclosingSchemaType()),
+                        ModelNameRegistry.getOrRegister(it.schema, enclosingSchema.toEnclosingSchemaInfo()),
                         it.name,
                         props,
                         it.schema.extensions,
@@ -333,8 +333,8 @@ class JacksonModelGenerator(
         enclosingSchemaInfoName: String? = null,
     ): Collection<TypeSpec> =
         schema.itemsSchema.let { items ->
-            val typedEnclosingSchema = enclosingSchemaInfoName?.toEnclosingSchemaType()
-                ?: enclosingSchema.toEnclosingSchemaType()
+            val typedEnclosingSchema = enclosingSchemaInfoName?.toEnclosingSchemaInfo()
+                ?: enclosingSchema.toEnclosingSchemaInfo()
             when {
                 items.isInlinedObjectDefinition() ->
                     items.topLevelProperties(HTTP_SETTINGS, enclosingSchema).let { props ->

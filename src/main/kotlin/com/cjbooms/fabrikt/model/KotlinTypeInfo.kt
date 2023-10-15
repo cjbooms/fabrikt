@@ -55,7 +55,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         }
 
     companion object {
-        fun from(schema: Schema, oasKey: String = "", enclosingSchema: ModelNameRegistry.EnclosingSchema? = null): KotlinTypeInfo =
+        fun from(schema: Schema, oasKey: String = "", enclosingSchema: EnclosingSchemaInfo? = null): KotlinTypeInfo =
             when (schema.toOasType(oasKey)) {
                 OasType.Date -> Date
                 OasType.DateTime -> getOverridableDateTimeType()

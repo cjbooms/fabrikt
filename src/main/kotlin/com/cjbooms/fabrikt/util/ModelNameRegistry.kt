@@ -1,5 +1,8 @@
 package com.cjbooms.fabrikt.util
 
+import com.cjbooms.fabrikt.model.EnclosingSchemaInfo
+import com.cjbooms.fabrikt.model.EnclosingSchemaInfoName
+import com.cjbooms.fabrikt.model.EnclosingSchemaInfoOasModel
 import com.cjbooms.fabrikt.model.SchemaInfo
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
@@ -22,12 +25,11 @@ object ModelNameRegistry {
      */
     private fun register(
         schema: Schema,
-        enclosingSchema: EnclosingSchema? = null,
+        enclosingSchema: EnclosingSchemaInfo? = null,
         valueClassName: Boolean = false,
         schemaInfoName: String? = null,
     ): String {
-        val valueSuffix = if (valueClassName) "Value" else ""
-        var suggestion = schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName()) + valueSuffix
+        var suggestion = schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueClassName)
         while (allocatedNames.contains(suggestion)) {
             suggestion += SUFFIX
         }
@@ -43,34 +45,39 @@ object ModelNameRegistry {
         return suggestion
     }
 
-    private fun Schema.toModelClassName(schemaInfoName: String? = null, enclosingClassName: String? = null) =
-        (enclosingClassName ?: "") + (schemaInfoName?.toModelClassName() ?: safeName().toModelClassName())
+    private fun Schema.toModelClassName(
+        schemaInfoName: String? = null,
+        enclosingClassName: String? = null,
+        valueClassName: Boolean = false,
+    ): String = buildString {
+        if (enclosingClassName != null) {
+            append(enclosingClassName)
+        }
+        val modelClassName = schemaInfoName?.toModelClassName() ?: safeName().toModelClassName()
+        append(modelClassName)
+        if (valueClassName) {
+            append("Value")
+        }
+    }
 
-    private fun EnclosingSchema.toModelClassName() =
+    private fun EnclosingSchemaInfo.toModelClassName() =
         when (this) {
-            is EnclosingSchemaKey -> this.name
-            is EnclosingSchemaOasModel -> this.schema.toModelClassName()
+            is EnclosingSchemaInfoName -> this.name
+            is EnclosingSchemaInfoOasModel -> this.schema.toModelClassName()
             else -> ""
         }
 
     private fun resolveTag(
         schema: Schema,
-        enclosingSchema: EnclosingSchema? = null,
+        enclosingSchema: EnclosingSchemaInfo? = null,
         valueClassName: Boolean = false,
         schemaInfoName: String? = null,
     ): String {
         val overlay = Overlay.of(schema)
         val uri = URL(overlay.jsonReference)
-        val typeName = when (true) {
-            (schemaInfoName != null) -> schemaInfoName.toModelClassName()
-            else -> schema.safeName().toModelClassName()
-        }
+        val typeName = schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueClassName)
 
-        var tag = "file:${uri.file}#${enclosingSchema?.toModelClassName() ?: ""}$typeName"
-        if (valueClassName) {
-            tag += "Value"
-        }
-        return tag
+        return "file:${uri.file}#${enclosingSchema?.toModelClassName() ?: ""}$typeName"
     }
 
     /** Retrieve a model class name created with [ModelNameRegistry.register]. */
@@ -80,7 +87,7 @@ object ModelNameRegistry {
 
     fun getOrRegister(
         schema: Schema,
-        enclosingSchema: EnclosingSchema? = null,
+        enclosingSchema: EnclosingSchemaInfo? = null,
         valueClassName: Boolean = false,
     ) = this[resolveTag(schema, enclosingSchema, valueClassName)]
         .getOrElse { register(schema, enclosingSchema, valueClassName) }
@@ -95,29 +102,4 @@ object ModelNameRegistry {
         allocatedNames.clear()
         tagToName.clear()
     }
-
-    enum class EnclosingSchemaType {
-        KEY,
-        OAS_MODEL,
-    }
-
-    /**
-     * Enclosing schema can either be a schema from Kaizen as OAS model.
-     * Or it can be a root level key in the spec file as captured in an SchemaInfo.
-     */
-    interface EnclosingSchema {
-        val type: EnclosingSchemaType
-    }
-
-    data class EnclosingSchemaKey(val name: String) : EnclosingSchema {
-        override val type = EnclosingSchemaType.KEY
-    }
-
-    data class EnclosingSchemaOasModel(val schema: Schema) : EnclosingSchema {
-        override val type = EnclosingSchemaType.OAS_MODEL
-    }
-
-    fun Schema.toEnclosingSchemaType() = EnclosingSchemaOasModel(this)
-
-    fun String.toEnclosingSchemaType() = EnclosingSchemaKey(this)
 }
