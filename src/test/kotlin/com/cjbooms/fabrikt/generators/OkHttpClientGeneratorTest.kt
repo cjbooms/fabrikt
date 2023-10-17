@@ -130,7 +130,7 @@ class OkHttpClientGeneratorTest {
     }
 
     @Test
-    fun `correct api simple client is generated with external reference solution mode AGGRESSIVE`() {
+    fun `correct api client and models are generated with external reference solution mode AGGRESSIVE`() {
         val packages = Packages("examples.externalReferences.aggressive")
         val apiLocation = javaClass.getResource("/examples/externalReferences/aggressive/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
