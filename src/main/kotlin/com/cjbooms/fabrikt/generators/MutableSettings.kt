@@ -11,6 +11,7 @@ object MutableSettings {
     private lateinit var clientTarget: ClientCodeGenTargetType
     private lateinit var typeOverrides: MutableSet<CodeGenTypeOverride>
     private lateinit var validationLibrary: ValidationLibrary
+    private lateinit var externalRefResolutionMode: ExternalReferencesResolutionMode
 
     fun updateSettings(
         genTypes: Set<CodeGenerationType> = emptySet(),
@@ -20,7 +21,8 @@ object MutableSettings {
         clientOptions: Set<ClientCodeGenOptionType> = emptySet(),
         clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.OK_HTTP,
         typeOverrides: Set<CodeGenTypeOverride> = emptySet(),
-        validationLibrary: ValidationLibrary = ValidationLibrary.JAVAX_VALIDATION
+        validationLibrary: ValidationLibrary = ValidationLibrary.JAVAX_VALIDATION,
+        externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.TARGETED,
     ) {
         this.generationTypes = genTypes.toMutableSet()
         this.controllerOptions = controllerOptions.toMutableSet()
@@ -30,6 +32,7 @@ object MutableSettings {
         this.clientTarget = clientTarget
         this.typeOverrides = typeOverrides.toMutableSet()
         this.validationLibrary = validationLibrary
+        this.externalRefResolutionMode = externalRefResolutionMode
     }
 
     fun addOption(option: ModelCodeGenOptionType) = modelOptions.add(option)
@@ -43,4 +46,5 @@ object MutableSettings {
     fun clientTarget() = this.clientTarget
     fun typeOverrides() = this.typeOverrides.toSet()
     fun validationLibrary() = this.validationLibrary
+    fun externalRefResolutionMode() = this.externalRefResolutionMode
 }

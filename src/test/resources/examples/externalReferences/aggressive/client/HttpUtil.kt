@@ -1,4 +1,4 @@
-package examples.externalReferences.client
+package examples.externalReferences.aggressive.client
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper

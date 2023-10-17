@@ -1,0 +1,85 @@
+openapi: 3.0.0
+paths: {}
+info:
+  title: ""
+  version: ""
+components:
+  schemas:
+    ExternalObject:
+      type: object
+      properties:
+        another:
+          $ref: "#/components/schemas/ExternalObjectTwo"
+        one_of:
+          $ref: "#/components/schemas/ExternalOneOf"
+
+    ExternalObjectTwo:
+      type: object
+      required:
+        - errors
+      properties:
+        list-others:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalObjectThree'
+      additionalProperties:
+        type: object
+        minProperties: 1
+        additionalProperties:
+          $ref: '#/components/schemas/ExternalObjectFour'
+
+    ExternalObjectThree:
+      type: object
+      required:
+        - enum
+        - description
+      properties:
+        enum:
+          type: string
+          enum:
+            - one
+            - two
+            - three
+        description:
+          type: string
+
+    ExternalObjectFour:
+      type: object
+      properties:
+        blah:
+          type: string
+
+    IgnoredExternalObjectFive:
+      type: object
+      properties:
+        blah:
+          type: string
+
+    ExternalOneOf:
+      oneOf:
+        - $ref: '#/components/schemas/OneOfOne'
+        - $ref: '#/components/schemas/OneOfTwo'
+
+    ParentOneOf:
+      type: object
+      discriminator:
+        propertyName: discriminator
+      properties:
+        discriminator:
+          type: string
+
+    OneOfOne:
+      allOf:
+        - $ref: '#/components/schemas/ParentOneOf'
+        - type: object
+          properties:
+            oneOfOne:
+              type: string
+
+    OneOfTwo:
+      allOf:
+        - $ref: '#/components/schemas/ParentOneOf'
+        - type: object
+          properties:
+            oneOfTwo:
+              type: string

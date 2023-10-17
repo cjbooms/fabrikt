@@ -1,4 +1,4 @@
-package examples.externalReferences.models
+package examples.externalReferences.aggressive.models
 
 import com.fasterxml.jackson.`annotation`.JsonAnyGetter
 import com.fasterxml.jackson.`annotation`.JsonAnySetter

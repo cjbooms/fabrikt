@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.generators
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ClientCodeGenTargetType
 import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OkHttpEnhancedClientGenerator
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
+import org.junit.jupiter.api.Test
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OkHttpClientGeneratorTest {
@@ -34,8 +36,7 @@ class OkHttpClientGeneratorTest {
         "multiMediaType",
         "okHttpClientPostWithoutRequestBody",
         "pathLevelParameters",
-        "parameterNameClash",
-        "externalReferences"
+        "parameterNameClash"
     )
 
     @BeforeEach
@@ -126,6 +127,37 @@ class OkHttpClientGeneratorTest {
             .first { it.path.fileName.toString() == "HttpUtil.kt" }
 
         assertThat(generatedHttpUtils.content).isEqualTo(expectedHttpUtils)
+    }
+
+    @Test
+    fun `correct api simple client is generated with external reference solution mode AGGRESSIVE`() {
+        val packages = Packages("examples.externalReferences.aggressive")
+        val apiLocation = javaClass.getResource("/examples/externalReferences/aggressive/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
+
+        val expectedModel = readTextResource("/examples/externalReferences/aggressive/models/Models.kt")
+        val expectedClient = readTextResource("/examples/externalReferences/aggressive/client/ApiClient.kt")
+        val expectedClientCode = readTextResource("/examples/externalReferences/aggressive/client/ApiService.kt")
+
+        val models = JacksonModelGenerator(
+            packages,
+            sourceApi,
+            externalRefResolutionMode = ExternalReferencesResolutionMode.AGGRESSIVE
+        ).generate().toSingleFile()
+        val generator =
+            OkHttpEnhancedClientGenerator(packages, sourceApi)
+        val simpleClientCode = OkHttpSimpleClientGenerator(
+            packages,
+            sourceApi
+        )
+            .generateDynamicClientCode()
+            .toSingleFile()
+        val enhancedClientCode = generator.generateDynamicClientCode(setOf(ClientCodeGenOptionType.RESILIENCE4J))
+            .toSingleFile()
+
+        assertThat(models).isEqualTo(expectedModel)
+        assertThat(simpleClientCode).isEqualTo(expectedClient)
+        assertThat(enhancedClientCode).isEqualTo(expectedClientCode)
     }
 
     private fun Collection<ClientType>.toSingleFile(): String {

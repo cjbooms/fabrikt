@@ -1,9 +1,9 @@
-package examples.externalReferences.client
+package examples.externalReferences.aggressive.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import examples.externalReferences.models.ContainingExternalReference
-import examples.externalReferences.models.ExternalParameter
+import examples.externalReferences.aggressive.models.ContainingExternalReference
+import examples.externalReferences.aggressive.models.ExternalParameter
 import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl

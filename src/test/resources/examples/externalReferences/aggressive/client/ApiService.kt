@@ -1,8 +1,8 @@
-package examples.externalReferences.client
+package examples.externalReferences.aggressive.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import examples.externalReferences.models.ContainingExternalReference
-import examples.externalReferences.models.ExternalParameter
+import examples.externalReferences.aggressive.models.ContainingExternalReference
+import examples.externalReferences.aggressive.models.ExternalParameter
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import okhttp3.OkHttpClient
 import kotlin.String

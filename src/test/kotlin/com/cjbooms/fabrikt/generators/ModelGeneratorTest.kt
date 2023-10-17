@@ -35,6 +35,7 @@ class ModelGeneratorTest {
         "duplicatePropertyHandling",
         "enumExamples",
         "enumPolymorphicDiscriminator",
+        "externalReferences/targeted",
         "githubApi",
         "inLinedObject",
         "jsonMergePatch",
@@ -74,7 +75,7 @@ class ModelGeneratorTest {
         if (testCaseName == "instantDateTime") {
             MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
         }
-        val basePackage = "examples.$testCaseName"
+        val basePackage = "examples.${testCaseName.replace("/", ".")}"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
         val expectedModels = readTextResource("/examples/$testCaseName/models/Models.kt")

@@ -140,6 +140,13 @@ class CodeGenArgs {
         converter = ValidationLibraryOptionConverter::class
     )
     var validationLibrary: ValidationLibrary = ValidationLibrary.JAVAX_VALIDATION
+
+    @Parameter(
+        names = ["--external-ref-resolution"],
+        description = "Specify to which degree referenced schemas from external files are included in model generation. Default: TARGETED",
+        converter = ExternalReferencesResolutionModeConverter::class
+    )
+    var externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.TARGETED
 }
 
 class CodeGenerationTypesConverter : IStringConverter<CodeGenerationType> {
@@ -174,6 +181,10 @@ class ValidationLibraryOptionConverter : IStringConverter<ValidationLibrary> {
 
 class TypeCodeGenOptionsConverter: IStringConverter<CodeGenTypeOverride> {
     override fun convert(value: String): CodeGenTypeOverride = convertToEnumValue(value)
+}
+
+class ExternalReferencesResolutionModeConverter: IStringConverter<ExternalReferencesResolutionMode> {
+    override fun convert(value: String): ExternalReferencesResolutionMode = convertToEnumValue(value)
 }
 
 class PackageNameValidator : IValueValidator<String> {

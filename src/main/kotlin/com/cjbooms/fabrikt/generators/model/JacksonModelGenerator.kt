@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators.model
 
+import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF
 import com.cjbooms.fabrikt.configurations.Packages
@@ -69,6 +70,7 @@ class JacksonModelGenerator(
     private val sourceApi: SourceApi,
     private val options: Set<ModelCodeGenOptionType> = emptySet(),
     private val validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations,
+    private val externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.TARGETED,
 ) {
     companion object {
         fun toModelType(basePackage: String, typeInfo: KotlinTypeInfo, isNullable: Boolean = false): TypeName {
@@ -149,6 +151,7 @@ class JacksonModelGenerator(
         externalApiSchemas.forEach { externalReferences ->
             val api = OpenApi3Parser().parse(externalReferences.key)
             val schemas = api.schemas.entries.map { (key, schema) -> SchemaInfo(key, schema) }
+                .filterByExternalRefResolutionMode(externalRefResolutionMode, externalReferences)
             val externalModels = createModels(api, schemas)
             externalModels.forEach { additionalModel ->
                 if (models.none { it.name == additionalModel.name }) models.add(additionalModel)
@@ -795,6 +798,14 @@ class JacksonModelGenerator(
         }
         return this
     }
+
+    private fun List<SchemaInfo>.filterByExternalRefResolutionMode(
+        mode: ExternalReferencesResolutionMode,
+        externalReferences: Map.Entry<URL, MutableSet<String>>,
+    ) = when (externalRefResolutionMode) {
+            ExternalReferencesResolutionMode.TARGETED -> this.filter { apiSchema -> externalReferences.value.contains(apiSchema.name) }
+            else -> this
+        }
 }
 
 private val Map<String, Any>.hasJsonMergePatchExtension
