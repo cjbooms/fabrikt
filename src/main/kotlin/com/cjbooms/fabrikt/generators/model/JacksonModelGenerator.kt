@@ -151,7 +151,7 @@ class JacksonModelGenerator(
         externalApiSchemas.forEach { externalReferences ->
             val api = OpenApi3Parser().parse(externalReferences.key)
             val schemas = api.schemas.entries.map { (key, schema) -> SchemaInfo(key, schema) }
-                .filterByExternalRefResolutionMode(externalRefResolutionMode, externalReferences)
+                .filterByExternalRefResolutionMode(externalReferences)
             val externalModels = createModels(api, schemas)
             externalModels.forEach { additionalModel ->
                 if (models.none { it.name == additionalModel.name }) models.add(additionalModel)
@@ -800,7 +800,6 @@ class JacksonModelGenerator(
     }
 
     private fun List<SchemaInfo>.filterByExternalRefResolutionMode(
-        mode: ExternalReferencesResolutionMode,
         externalReferences: Map.Entry<URL, MutableSet<String>>,
     ) = when (externalRefResolutionMode) {
             ExternalReferencesResolutionMode.TARGETED -> this.filter { apiSchema -> externalReferences.value.contains(apiSchema.name) }
