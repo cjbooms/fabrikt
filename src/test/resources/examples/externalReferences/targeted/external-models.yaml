@@ -9,10 +9,10 @@ components:
       type: object
       properties:
         another:
-          $ref: "#/components/schemas/ExternalObjectTwo"        
+          $ref: "#/components/schemas/ExternalObjectTwo"
         one_of:
           $ref: "#/components/schemas/ExternalOneOf"
-          
+
     ExternalObjectTwo:
       type: object
       required:
@@ -27,7 +27,7 @@ components:
         minProperties: 1
         additionalProperties:
           $ref: '#/components/schemas/ExternalObjectFour'
-   
+
     ExternalObjectThree:
       type: object
       required:
@@ -41,20 +41,20 @@ components:
             - two
             - three
         description:
-          type: string   
-          
+          type: string
+
     ExternalObjectFour:
       type: object
       properties:
         blah:
-          type: string     
-          
+          type: string
+
     IgnoredExternalObjectFive:
       type: object
       properties:
         blah:
           type: string
-    
+
     ExternalOneOf:
       oneOf:
         - $ref: '#/components/schemas/OneOfOne'
@@ -67,7 +67,7 @@ components:
       properties:
         discriminator:
           type: string
-          
+
     OneOfOne:
       allOf:
         - $ref: '#/components/schemas/ParentOneOf'

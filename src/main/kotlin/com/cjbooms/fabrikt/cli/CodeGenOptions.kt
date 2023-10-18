@@ -73,3 +73,10 @@ enum class ValidationLibrary(val description: String, val annotations: Validatio
     JAKARTA_VALIDATION("Use `jakarta.validation` annotations in generated model classes", JakartaAnnotations);
     override fun toString() = "`${super.toString()}` - $description"
 }
+
+enum class ExternalReferencesResolutionMode(val description: String) {
+    TARGETED("Generate models only for directly referenced schemas in external API files."),
+    AGGRESSIVE("Referencing any schema in an external API file triggers generation of every external schema in that file.");
+
+    override fun toString() = "`${super.toString()}` - $description"
+}

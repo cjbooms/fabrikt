@@ -33,7 +33,8 @@ object CodeGen {
             codeGenArgs.typeOverrides,
             codeGenArgs.srcPath,
             codeGenArgs.resourcesPath,
-            codeGenArgs.validationLibrary
+            codeGenArgs.validationLibrary,
+            codeGenArgs.externalRefResolutionMode
         )
     }
 
@@ -51,9 +52,10 @@ object CodeGen {
         typeOverrides: Set<CodeGenTypeOverride>,
         srcPath: Path,
         resourcesPath: Path,
-        validationLibrary: ValidationLibrary
+        validationLibrary: ValidationLibrary,
+        externalRefResolutionMode: ExternalReferencesResolutionMode
     ) {
-        MutableSettings.updateSettings(codeGenTypes, controllerOptions, controllerTarget, modelOptions, clientOptions, clientTarget, typeOverrides, validationLibrary)
+        MutableSettings.updateSettings(codeGenTypes, controllerOptions, controllerTarget, modelOptions, clientOptions, clientTarget, typeOverrides, validationLibrary, externalRefResolutionMode)
 
         val suppliedApi = pathToApi.toFile().readText()
         val baseDir = pathToApi.parent

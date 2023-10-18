@@ -10,6 +10,7 @@ import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
+import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
 import org.assertj.core.api.Assertions.assertThat
@@ -34,7 +35,7 @@ class ModelGeneratorTest {
         "duplicatePropertyHandling",
         "enumExamples",
         "enumPolymorphicDiscriminator",
-        "externalReferences",
+        "externalReferences/targeted",
         "githubApi",
         "inLinedObject",
         "jsonMergePatch",
@@ -60,6 +61,7 @@ class ModelGeneratorTest {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
         )
+        ModelNameRegistry.clear()
     }
 
     // @Test
@@ -73,7 +75,7 @@ class ModelGeneratorTest {
         if (testCaseName == "instantDateTime") {
             MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
         }
-        val basePackage = "examples.$testCaseName"
+        val basePackage = "examples.${testCaseName.replace("/", ".")}"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
         val expectedModels = readTextResource("/examples/$testCaseName/models/Models.kt")

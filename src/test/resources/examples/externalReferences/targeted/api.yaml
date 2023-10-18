@@ -10,5 +10,3 @@ components:
       properties:
         some-external-reference:
           $ref: './external-models.yaml#/components/schemas/ExternalObject'
-
-

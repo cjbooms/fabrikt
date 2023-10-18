@@ -11,6 +11,7 @@ import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
+import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
 import org.assertj.core.api.Assertions.assertThat
@@ -39,6 +40,7 @@ class OpenFeignClientGeneratorTest {
             clientTarget = ClientCodeGenTargetType.OPEN_FEIGN,
             modelOptions = setOf(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS),
         )
+        ModelNameRegistry.clear()
     }
 
     @ParameterizedTest

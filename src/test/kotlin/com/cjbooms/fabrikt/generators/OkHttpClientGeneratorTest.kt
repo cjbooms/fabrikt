@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.generators
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ClientCodeGenTargetType
 import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OkHttpEnhancedClientGenerator
@@ -14,14 +15,17 @@ import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SimpleFile
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
+import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
+import java.nio.file.Paths
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
+import org.junit.jupiter.api.Test
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OkHttpClientGeneratorTest {
@@ -32,7 +36,7 @@ class OkHttpClientGeneratorTest {
         "multiMediaType",
         "okHttpClientPostWithoutRequestBody",
         "pathLevelParameters",
-        "parameterNameClash",
+        "parameterNameClash"
     )
 
     @BeforeEach
@@ -42,13 +46,15 @@ class OkHttpClientGeneratorTest {
             clientTarget = ClientCodeGenTargetType.OK_HTTP,
             modelOptions = setOf(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS),
         )
+        ModelNameRegistry.clear()
     }
 
     @ParameterizedTest
     @MethodSource("fullApiTestCases")
     fun `correct api simple client is generated from a full API definition`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
-        val sourceApi = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
+        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
         val expectedModel = readTextResource("/examples/$testCaseName/models/Models.kt")
         val expectedClient = readTextResource("/examples/$testCaseName/client/ApiClient.kt")
@@ -72,7 +78,8 @@ class OkHttpClientGeneratorTest {
     @MethodSource("fullApiTestCases")
     fun `correct api fault-tolerant service client is generated when the resilience4j option is set`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
-        val sourceApi = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
+        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
         val expectedLibUtil = readTextResource("/examples/$testCaseName/client/HttpResilience4jUtil.kt")
         val expectedClientCode = readTextResource("/examples/$testCaseName/client/ApiService.kt")
@@ -92,7 +99,8 @@ class OkHttpClientGeneratorTest {
     @MethodSource("fullApiTestCases")
     fun `the enhanced client is not generated when no specific options are provided`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
-        val sourceApi = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
+        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
         val enhancedClientCode = OkHttpEnhancedClientGenerator(
             packages,
@@ -107,7 +115,8 @@ class OkHttpClientGeneratorTest {
     @MethodSource("fullApiTestCases")
     fun `correct http utility libraries are generated`(testCaseName: String) {
         val packages = Packages("examples.$testCaseName")
-        val sourceApi = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
+        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
         val expectedHttpUtils = readTextResource("/examples/$testCaseName/client/HttpUtil.kt")
 
@@ -118,6 +127,37 @@ class OkHttpClientGeneratorTest {
             .first { it.path.fileName.toString() == "HttpUtil.kt" }
 
         assertThat(generatedHttpUtils.content).isEqualTo(expectedHttpUtils)
+    }
+
+    @Test
+    fun `correct api client and models are generated with external reference solution mode AGGRESSIVE`() {
+        val packages = Packages("examples.externalReferences.aggressive")
+        val apiLocation = javaClass.getResource("/examples/externalReferences/aggressive/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
+
+        val expectedModel = readTextResource("/examples/externalReferences/aggressive/models/Models.kt")
+        val expectedClient = readTextResource("/examples/externalReferences/aggressive/client/ApiClient.kt")
+        val expectedClientCode = readTextResource("/examples/externalReferences/aggressive/client/ApiService.kt")
+
+        val models = JacksonModelGenerator(
+            packages,
+            sourceApi,
+            externalRefResolutionMode = ExternalReferencesResolutionMode.AGGRESSIVE
+        ).generate().toSingleFile()
+        val generator =
+            OkHttpEnhancedClientGenerator(packages, sourceApi)
+        val simpleClientCode = OkHttpSimpleClientGenerator(
+            packages,
+            sourceApi
+        )
+            .generateDynamicClientCode()
+            .toSingleFile()
+        val enhancedClientCode = generator.generateDynamicClientCode(setOf(ClientCodeGenOptionType.RESILIENCE4J))
+            .toSingleFile()
+
+        assertThat(models).isEqualTo(expectedModel)
+        assertThat(simpleClientCode).isEqualTo(expectedClient)
+        assertThat(enhancedClientCode).isEqualTo(expectedClientCode)
     }
 
     private fun Collection<ClientType>.toSingleFile(): String {

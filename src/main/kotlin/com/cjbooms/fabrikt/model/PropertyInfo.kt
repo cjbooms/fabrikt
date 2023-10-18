@@ -13,7 +13,6 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleMapDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeType
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.cjbooms.fabrikt.util.NormalisedString.toEnumName
 import com.reprezen.kaizen.oasparser.model3.Schema
@@ -161,7 +160,7 @@ sealed class PropertyInfo {
         val enclosingSchema: Schema? = null
     ) : PropertyInfo() {
         override val typeInfo: KotlinTypeInfo =
-            KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
+            KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toEnclosingSchemaInfo())
         val pattern: String? = schema.safeField(Schema::getPattern)
         val maxLength: Int? = schema.safeField(Schema::getMaxLength)
         val minLength: Int? = schema.safeField(Schema::getMinLength)
@@ -187,7 +186,7 @@ sealed class PropertyInfo {
         val enclosingSchema: Schema?
     ) : PropertyInfo(), CollectionValidation {
         override val typeInfo: KotlinTypeInfo =
-            KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
+            KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toEnclosingSchemaInfo())
         override val minItems: Int? = schema.minItems
         override val maxItems: Int? = schema.maxItems
     }
@@ -221,7 +220,7 @@ sealed class PropertyInfo {
         val enclosingSchema: Schema?
     ) : PropertyInfo() {
         override val typeInfo: KotlinTypeInfo =
-            KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toModelClassName() ?: "")
+            KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toEnclosingSchemaInfo())
     }
 
     data class AdditionalProperties(

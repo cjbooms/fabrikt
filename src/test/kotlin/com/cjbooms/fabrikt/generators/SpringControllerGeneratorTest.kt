@@ -10,6 +10,7 @@ import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
+import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -45,6 +46,7 @@ class SpringControllerGeneratorTest {
     @BeforeEach
     fun init() {
         MutableSettings.updateSettings(genTypes = setOf(CodeGenerationType.CONTROLLERS))
+        ModelNameRegistry.clear()
     }
 
     // @Test

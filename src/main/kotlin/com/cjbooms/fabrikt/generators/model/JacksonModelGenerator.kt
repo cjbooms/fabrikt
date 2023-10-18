@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators.model
 
+import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF
 import com.cjbooms.fabrikt.configurations.Packages
@@ -27,6 +28,7 @@ import com.cjbooms.fabrikt.model.PropertyInfo.Companion.HTTP_SETTINGS
 import com.cjbooms.fabrikt.model.PropertyInfo.Companion.topLevelProperties
 import com.cjbooms.fabrikt.model.SchemaInfo
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.model.toEnclosingSchemaInfo
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getDiscriminatorForInLinedObjectUnderAllOf
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSchemaRefName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
@@ -41,8 +43,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeys
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.toMapValueClassName
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.toModelClassName
+import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.NormalisedString.toEnumName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.jsonoverlay.Overlay
@@ -69,6 +70,7 @@ class JacksonModelGenerator(
     private val sourceApi: SourceApi,
     private val options: Set<ModelCodeGenOptionType> = emptySet(),
     private val validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations,
+    private val externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.TARGETED,
 ) {
     companion object {
         fun toModelType(basePackage: String, typeInfo: KotlinTypeInfo, isNullable: Boolean = false): TypeName {
@@ -148,9 +150,8 @@ class JacksonModelGenerator(
         val models: MutableSet<TypeSpec> = createModels(sourceApi.openApi3, sourceApi.allSchemas)
         externalApiSchemas.forEach { externalReferences ->
             val api = OpenApi3Parser().parse(externalReferences.key)
-            val schemas = api.schemas.entries.map { it.key to it.value }
-                .map { (key, schema) -> SchemaInfo(key, schema) }
-                .filter { apiSchema -> externalReferences.value.contains(apiSchema.name) }
+            val schemas = api.schemas.entries.map { (key, schema) -> SchemaInfo(key, schema) }
+                .filterByExternalRefResolutionMode(externalReferences)
             val externalModels = createModels(api, schemas)
             externalModels.forEach { additionalModel ->
                 if (models.none { it.name == additionalModel.name }) models.add(additionalModel)
@@ -174,7 +175,7 @@ class JacksonModelGenerator(
                     schemaName = it.schema.safeName(),
                     enclosingSchema = it.schema,
                     apiDocUrl = it.schema.getDocumentUrl(),
-                    enclosingModelName = it.name,
+                    enclosingSchemaInfoName = it.name,
                 )
             } else {
                 emptyList()
@@ -187,7 +188,7 @@ class JacksonModelGenerator(
         properties: Collection<PropertyInfo>,
         allSchemas: List<SchemaInfo>,
     ): TypeSpec {
-        val modelName = schemaInfo.name.toModelClassName()
+        val modelName = ModelNameRegistry.getOrRegister(schemaInfo)
         val schemaName = schemaInfo.schema.getSchemaRefName()
         return when {
             schemaInfo.schema.isOneOfSuperInterface() && SEALED_INTERFACES_FOR_ONE_OF in options -> oneOfSuperInterface(
@@ -275,7 +276,6 @@ class JacksonModelGenerator(
         enclosingSchema: Schema,
         apiDocUrl: String,
     ): List<TypeSpec> = topLevelProperties.flatMap {
-        val enclosingModelName = enclosingSchema.toModelClassName()
         if (it.schema.isInExternalDocument(apiDocUrl)) {
             it.schema.captureMissingExternalSchemas(apiDocUrl)
             emptySet()
@@ -284,7 +284,7 @@ class JacksonModelGenerator(
                 is PropertyInfo.ObjectInlinedField -> {
                     val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
                     val currentModel = standardDataClass(
-                        it.name.toModelClassName(enclosingModelName),
+                        ModelNameRegistry.getOrRegister(it.schema, enclosingSchema.toEnclosingSchemaInfo()),
                         it.name,
                         props,
                         it.schema.extensions,
@@ -302,7 +302,7 @@ class JacksonModelGenerator(
                     if (it.schema.isComplexTypedAdditionalProperties("additionalProperties")) {
                         setOf(
                             standardDataClass(
-                                modelName = if (it.schema.isInlinedTypedAdditionalProperties()) it.schema.toMapValueClassName() else it.schema.toModelClassName(),
+                                modelName = ModelNameRegistry.getOrRegister(it.schema, valueSuffix = it.schema.isInlinedTypedAdditionalProperties()),
                                 schemaName = it.name,
                                 properties = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema),
                                 extensions = it.schema.extensions,
@@ -321,7 +321,7 @@ class JacksonModelGenerator(
                     }
 
                 is PropertyInfo.ListField ->
-                    buildInlinedListDefinition(it.schema, it.name, enclosingSchema, apiDocUrl, enclosingModelName)
+                    buildInlinedListDefinition(it.schema, it.name, enclosingSchema, apiDocUrl)
 
                 is PropertyInfo.OneOfAny -> emptySet()
             }
@@ -333,9 +333,11 @@ class JacksonModelGenerator(
         schemaName: String,
         enclosingSchema: Schema,
         apiDocUrl: String,
-        enclosingModelName: String,
+        enclosingSchemaInfoName: String? = null,
     ): Collection<TypeSpec> =
         schema.itemsSchema.let { items ->
+            val enclosingSchemaInfo = enclosingSchemaInfoName?.toEnclosingSchemaInfo()
+                ?: enclosingSchema.toEnclosingSchemaInfo()
             when {
                 items.isInlinedObjectDefinition() ->
                     items.topLevelProperties(HTTP_SETTINGS, enclosingSchema).let { props ->
@@ -344,7 +346,7 @@ class JacksonModelGenerator(
                             enclosingSchema = enclosingSchema,
                             apiDocUrl = apiDocUrl,
                         ) + standardDataClass(
-                            modelName = schema.toModelClassName(enclosingModelName),
+                            modelName = ModelNameRegistry.getOrRegister(schema, enclosingSchemaInfo),
                             schemaName = schemaName,
                             properties = props,
                             extensions = schema.extensions,
@@ -355,7 +357,7 @@ class JacksonModelGenerator(
                 items.isInlinedEnumDefinition() ->
                     setOf(
                         buildEnumClass(
-                            KotlinTypeInfo.from(items, "items", enclosingModelName) as KotlinTypeInfo.Enum,
+                            KotlinTypeInfo.from(items, "items", enclosingSchemaInfo) as KotlinTypeInfo.Enum,
                         ),
                     )
 
@@ -443,7 +445,7 @@ class JacksonModelGenerator(
         if (mapField.schema.additionalPropertiesSchema.isComplexTypedAdditionalProperties("additionalProperties")) {
             val schema = mapField.schema.additionalPropertiesSchema
             standardDataClass(
-                modelName = if (schema.isInlinedTypedAdditionalProperties()) schema.toMapValueClassName() else schema.toModelClassName(),
+                modelName = ModelNameRegistry.getOrRegister(schema, valueSuffix = schema.isInlinedTypedAdditionalProperties()),
                 schemaName = schema.safeName(),
                 properties = mapField.schema.additionalPropertiesSchema.topLevelProperties(HTTP_SETTINGS),
                 extensions = mapField.schema.extensions,
@@ -490,7 +492,7 @@ class JacksonModelGenerator(
             .addCompanionObject()
         for (oneOfInterface in oneOfInterfaces) {
             classBuilder
-                .addSuperinterface(generatedType(packages.base, oneOfInterface.schema.toModelClassName()))
+                .addSuperinterface(generatedType(packages.base, ModelNameRegistry.getOrRegister(oneOfInterface.schema)))
         }
 
         if (!generateObject) {
@@ -796,6 +798,13 @@ class JacksonModelGenerator(
         }
         return this
     }
+
+    private fun List<SchemaInfo>.filterByExternalRefResolutionMode(
+        externalReferences: Map.Entry<URL, MutableSet<String>>,
+    ) = when (externalRefResolutionMode) {
+            ExternalReferencesResolutionMode.TARGETED -> this.filter { apiSchema -> externalReferences.value.contains(apiSchema.name) }
+            else -> this
+        }
 }
 
 private val Map<String, Any>.hasJsonMergePatchExtension

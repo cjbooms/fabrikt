@@ -12,7 +12,6 @@ import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGen
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
-import com.cjbooms.fabrikt.model.Clients
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.KotlinSourceSet
 import com.cjbooms.fabrikt.model.KotlinTypes
@@ -27,7 +26,7 @@ class CodeGenerator(
     private val packages: Packages,
     private val sourceApi: SourceApi,
     private val srcPath: Path,
-    private val resourcesPath: Path
+    private val resourcesPath: Path,
 ) {
 
     fun generate(): Collection<GeneratedFile> = MutableSettings.generationTypes().map(::generateCode).flatten()
@@ -63,7 +62,7 @@ class CodeGenerator(
     private fun resourceSet(resFiles: Collection<ResourceFile>) = setOf(ResourceSourceSet(resFiles, resourcesPath))
 
     private fun models(): Models =
-        JacksonModelGenerator(packages, sourceApi, MutableSettings.modelOptions(), MutableSettings.validationLibrary().annotations).generate()
+        JacksonModelGenerator(packages, sourceApi, MutableSettings.modelOptions(), MutableSettings.validationLibrary().annotations, MutableSettings.externalRefResolutionMode()).generate()
 
     private fun resources(models: Models): List<ResourceFile> =
         listOfNotNull(QuarkusReflectionModelGenerator(models, MutableSettings.generationTypes()).generate())
@@ -75,14 +74,14 @@ class CodeGenerator(
                     packages,
                     sourceApi,
                     MutableSettings.validationLibrary().annotations,
-                    MutableSettings.controllerOptions()
+                    MutableSettings.controllerOptions(),
                 )
 
                 ControllerCodeGenTargetType.MICRONAUT -> MicronautControllerInterfaceGenerator(
                     packages,
                     sourceApi,
                     MutableSettings.validationLibrary().annotations,
-                    MutableSettings.controllerOptions()
+                    MutableSettings.controllerOptions(),
                 )
             }
         return generator.generate()
