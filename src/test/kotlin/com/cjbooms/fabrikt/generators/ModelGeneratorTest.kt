@@ -49,10 +49,10 @@ class ModelGeneratorTest {
         "validationAnnotations",
         "wildCardTypes",
         "singleAllOf",
+        "singleAllOfProperty",
         "responsesSchema",
         "webhook",
         "instantDateTime",
-        "singleAllOf",
         "discriminatedOneOf",
     )
 
