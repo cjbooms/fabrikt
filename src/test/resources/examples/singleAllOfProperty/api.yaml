@@ -1,0 +1,29 @@
+openapi: 3.0.0
+info:
+  title: "Dog API"
+  version: "1"
+
+paths: { }
+
+components:
+  schemas:
+
+    Dog:
+      type: object
+      properties:
+        owner:
+          description: "The registered owner of the dog."
+          allOf:
+            - $ref: "#/components/schemas/Person"
+        walker:
+          description: "The person walking the dog."
+          allOf:
+            - $ref: "#/components/schemas/Person"
+
+    Person:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
