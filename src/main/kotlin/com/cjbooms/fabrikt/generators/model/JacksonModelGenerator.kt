@@ -144,12 +144,12 @@ class JacksonModelGenerator(
         fun generatedType(basePackage: String, modelName: String) = ClassName(modelsPackage(basePackage), modelName)
     }
 
-    private val externalApiSchemas = mutableMapOf<URL, MutableSet<String>>()
+    private val externalApiSchemas = mutableMapOf<String, MutableSet<String>>()
 
     fun generate(): Models {
         val models: MutableSet<TypeSpec> = createModels(sourceApi.openApi3, sourceApi.allSchemas)
         externalApiSchemas.forEach { externalReferences ->
-            val api = OpenApi3Parser().parse(externalReferences.key)
+            val api = OpenApi3Parser().parse(URL(externalReferences.key))
             val schemas = api.schemas.entries.map { (key, schema) -> SchemaInfo(key, schema) }
                 .filterByExternalRefResolutionMode(externalReferences)
             val externalModels = createModels(api, schemas)
@@ -370,7 +370,7 @@ class JacksonModelGenerator(
             val docUrl = schema.getDocumentUrl()
             if (docUrl != apiDocUrl) {
                 try {
-                    externalApiSchemas.getOrPut(URL(docUrl)) { mutableSetOf() }.add(schema.safeName())
+                    externalApiSchemas.getOrPut(docUrl) { mutableSetOf() }.add(schema.safeName())
                 } catch (ex: MalformedURLException) {
                     // skip
                 }
@@ -800,7 +800,7 @@ class JacksonModelGenerator(
     }
 
     private fun List<SchemaInfo>.filterByExternalRefResolutionMode(
-        externalReferences: Map.Entry<URL, MutableSet<String>>,
+        externalReferences: Map.Entry<String, MutableSet<String>>,
     ) = when (externalRefResolutionMode) {
             ExternalReferencesResolutionMode.TARGETED -> this.filter { apiSchema -> externalReferences.value.contains(apiSchema.name) }
             else -> this
