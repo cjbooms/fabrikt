@@ -1,0 +1,57 @@
+package examples.multiMediaType.jdk.client
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import java.io.IOException
+import java.io.InputStream
+import java.io.UncheckedIOException
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+import java.net.http.HttpResponse.*
+import java.util.function.Supplier
+
+@Throws(ApiException::class)
+inline fun <reified T> HttpClient.execute(httpRequest: HttpRequest): ApiResponse<T> {
+    val result: HttpResponse<Supplier<T>> = this.send(httpRequest, JsonBodyHandler(T::class.java))
+
+    return when (result.statusCode()){
+        in 200..299 -> ApiResponse(result.statusCode(), result.headers(), result.body()?.get())
+        in 400..499 -> throw ApiClientException(result.statusCode(), result.headers(), result.body()?.get().toString())
+        in 500..599 -> throw ApiServerException(result.statusCode(), result.headers(), result.body()?.get().toString())
+        else -> throw ApiException("[${result.statusCode()}]: "/*${response.errorMessage()}*/)
+
+    }
+}
+
+fun <W> asJSON(targetType: Class<W>?): BodySubscriber<Supplier<W>> {
+    val upstream = BodySubscribers.ofInputStream()
+    return BodySubscribers.mapping(
+        upstream
+    ) { inputStream: InputStream ->
+        toSupplierOfType(
+            inputStream,
+            targetType
+        )
+    }
+}
+
+fun <W> toSupplierOfType(inputStream: InputStream, targetType: Class<W>?): Supplier<W> {
+    return Supplier {
+        try {
+            inputStream.use { stream ->
+                val objectMapper =
+                    ObjectMapper()
+                return@Supplier objectMapper.readValue<W>(stream, targetType)
+            }
+        } catch (e: IOException) {
+            throw UncheckedIOException(e)
+        }
+    }
+}
+
+
+class JsonBodyHandler<W>(val wClass: Class<W>) : BodyHandler<Supplier<W>> {
+    override fun apply(responseInfo: ResponseInfo): BodySubscriber<Supplier<W>> {
+        return asJSON(wClass)
+    }
+}
