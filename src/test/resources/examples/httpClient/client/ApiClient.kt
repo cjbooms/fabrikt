@@ -1,10 +1,10 @@
-package examples.okHttpClient.client
+package examples.httpClient.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import examples.okHttpClient.models.Content
-import examples.okHttpClient.models.FirstModel
-import examples.okHttpClient.models.QueryResult
+import examples.httpClient.models.Content
+import examples.httpClient.models.FirstModel
+import examples.httpClient.models.QueryResult
 import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -12,6 +12,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
@@ -243,6 +244,70 @@ public class ExamplePath3SubresourceClient(
             .url(httpUrl)
             .headers(httpHeaders)
             .put(objectMapper.writeValueAsString(firstModel).toRequestBody("application/json".toMediaType()))
+            .build()
+
+        return request.execute(client, objectMapper, jacksonTypeRef())
+    }
+
+    /**
+     * DELETE example path 3
+     */
+    @Throws(ApiException::class)
+    public fun deleteExamplePath3PathParamSubresource(
+        additionalHeaders: Map<String, String> =
+            emptyMap(),
+    ): ApiResponse<Unit> {
+        val httpUrl: HttpUrl = "$baseUrl/example-path-3/{path_param}/subresource"
+            .toHttpUrl()
+            .newBuilder()
+            .build()
+
+        val headerBuilder = Headers.Builder()
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
+
+        val request: Request = Request.Builder()
+            .url(httpUrl)
+            .headers(httpHeaders)
+            .delete()
+            .build()
+
+        return request.execute(client, objectMapper, jacksonTypeRef())
+    }
+}
+
+@Suppress("unused")
+public class ExamplePath3SubresourceNameClient(
+    private val objectMapper: ObjectMapper,
+    private val baseUrl: String,
+    private val client: OkHttpClient,
+) {
+    /**
+     * PATCH example path 3
+     *
+     * @param firstModelPatch
+     * @param pathParam The resource id
+     */
+    @Throws(ApiException::class)
+    public fun patchExamplePath3PathParamSubresourceName(
+        firstModelPatch: Any,
+        pathParam: String,
+        additionalHeaders: Map<String, String> = emptyMap(),
+    ): ApiResponse<Unit> {
+        val httpUrl: HttpUrl = "$baseUrl/example-path-3/{path_param}/subresource/name"
+            .pathParam("{path_param}" to pathParam)
+            .toHttpUrl()
+            .newBuilder()
+            .build()
+
+        val headerBuilder = Headers.Builder()
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
+
+        val request: Request = Request.Builder()
+            .url(httpUrl)
+            .headers(httpHeaders)
+            .patch(objectMapper.writeValueAsString(firstModelPatch).toRequestBody("application/json".toMediaType()))
             .build()
 
         return request.execute(client, objectMapper, jacksonTypeRef())

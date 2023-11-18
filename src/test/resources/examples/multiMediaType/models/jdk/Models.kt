@@ -1,11 +1,10 @@
-package examples.okHttpClient.models
+package examples.multiMediaType.jdk.models
 
 import com.fasterxml.jackson.`annotation`.JsonProperty
 import com.fasterxml.jackson.`annotation`.JsonSubTypes
 import com.fasterxml.jackson.`annotation`.JsonTypeInfo
 import com.fasterxml.jackson.`annotation`.JsonValue
 import java.time.OffsetDateTime
-import java.util.UUID
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -14,6 +13,15 @@ import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
+
+public data class AlternateResponseModel(
+    @param:JsonProperty("extra_first_attr")
+    @get:JsonProperty("extra_first_attr")
+    public val extraFirstAttr: OffsetDateTime? = null,
+    @param:JsonProperty("extra_second_attr")
+    @get:JsonProperty("extra_second_attr")
+    public val extraSecondAttr: Int? = null,
+)
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -77,22 +85,25 @@ public enum class ContentThirdAttr(
     }
 }
 
-public data class Failure(
-    @param:JsonProperty("traceId")
-    @get:JsonProperty("traceId")
-    @get:NotNull
-    public val traceId: UUID,
-    @param:JsonProperty("errorCode")
-    @get:JsonProperty("errorCode")
-    @get:NotNull
-    public val errorCode: String,
-    @param:JsonProperty("error")
-    @get:JsonProperty("error")
-    @get:NotNull
-    public val error: String,
-    @param:JsonProperty("subType")
-    @get:JsonProperty("subType")
-    public val subType: String? = null,
+public enum class ContentType(
+    @JsonValue
+    public val `value`: String,
+) {
+    APPLICATION_JSON("application/json"),
+    APPLICATION_VND_CUSTOM_MEDIA_JSON("application/vnd.custom.media+json"),
+    ;
+
+    public companion object {
+        private val mapping: Map<String, ContentType> = values().associateBy(ContentType::value)
+
+        public fun fromValue(`value`: String): ContentType? = mapping[value]
+    }
+}
+
+public data class ErrorResponse(
+    @param:JsonProperty("errorMessage")
+    @get:JsonProperty("errorMessage")
+    public val errorMessage: String? = null,
 )
 
 public data class FirstModel(
@@ -119,6 +130,15 @@ public data class FirstModel(
     @param:JsonProperty("model_type")
     override val modelType: ContentModelType = ContentModelType.FIRST_MODEL,
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag)
+
+public data class OtherQueryResult(
+    @param:JsonProperty("items")
+    @get:JsonProperty("items")
+    @get:NotNull
+    @get:Size(min = 0)
+    @get:Valid
+    public val items: List<AlternateResponseModel>,
+)
 
 public data class QueryResult(
     @param:JsonProperty("items")
@@ -156,6 +176,12 @@ public data class SecondModel(
     @param:JsonProperty("model_type")
     override val modelType: ContentModelType = ContentModelType.SECOND_MODEL,
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag)
+
+public data class SuccessResponse(
+    @param:JsonProperty("successMessage")
+    @get:JsonProperty("successMessage")
+    public val successMessage: String? = null,
+)
 
 public data class ThirdModel(
     @param:JsonProperty("id")
