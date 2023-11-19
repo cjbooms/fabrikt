@@ -1,4 +1,4 @@
-package {{ client }}
+package examples.httpClient.jdk.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import jdk.internal.net.http.RequestPublishers

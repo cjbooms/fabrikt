@@ -1,4 +1,4 @@
-package examples.okHttpClient.client
+package examples.httpClient.client
 
 import okhttp3.Headers
 

@@ -13,6 +13,7 @@ import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientNa
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
 import com.cjbooms.fabrikt.model.*
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
+import com.cjbooms.fabrikt.util.toUpperCase
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.javaparser.utils.CodeGenerationUtils
 import com.reprezen.kaizen.oasparser.model3.Operation
@@ -79,12 +80,12 @@ class JDKHttpSimpleClientGenerator(
         val codeDir = srcPath.resolve(CodeGenerationUtils.packageToPath(packages.base))
         val clientDir = codeDir.resolve("client")
         return setOf(
-            /*HandlebarsTemplates.applyTemplate(
-                template = HandlebarsTemplates.clientApiModels,
+            HandlebarsTemplates.applyTemplate(
+                template = HandlebarsTemplates.clientJDKApiModels,
                 input = packages,
                 path = clientDir,
                 fileName = "ApiModels.kt"
-            ),*/
+            ),
             HandlebarsTemplates.applyTemplate(
                 template = HandlebarsTemplates.clientJDKHttpUtils,
                 input = packages,
@@ -129,15 +130,28 @@ data class SimpleJDKClientOperationStatement(
         this.add("\nval requestBuilder: %T.Builder = HttpRequest.newBuilder()", "HttpRequest".toClassName(httpBasePackage))
         this.add("\n.uri(httpUri)")
 
-        /*when (val op = verb.toUpperCase()) {
-            "PUT" -> this.addRequestSerializerStatement("put")
-            "POST" -> this.addRequestSerializerStatement("post")
-            "PATCH" -> this.addRequestSerializerStatement("patch")
-            "HEAD" -> this.add("\n.head()")
-            "GET" -> this.add("\n.get()")
-            "DELETE" -> this.add("\n.delete()")
+        when (val op = verb.toUpperCase()) {
+            "PUT" -> {
+                parameters.filterIsInstance<BodyParameter>().firstOrNull()?.let {
+                    this.add("\n.PUT(Publishers.jsonBodyPublisher(%N))", it.name)
+                }
+            }
+            "POST" -> {
+                parameters.filterIsInstance<BodyParameter>().firstOrNull()?.let {
+                    this.add("\n.POST(Publishers.jsonBodyPublisher(%N))", it.name)
+                }
+            }
+            "PATCH" -> {
+                parameters.filterIsInstance<BodyParameter>().firstOrNull()?.let {
+                    this.add("\n.method(\"PATCH\", Publishers.jsonBodyPublisher(%N))", it.name)
+                }
+            }
+            "HEAD" -> this.add("\n.method(\"HEAD\", %T.noBody())", "BodyPublishers".toClassName("$httpBasePackage.HttpRequest"))
+            "GET" -> this.add("\n.GET()")
+            "DELETE" -> this.add("\n.DELETE()")
             else -> throw NotImplementedError("API operation $op is not supported")
-        }*/
+        }
+
         return this
     }
 

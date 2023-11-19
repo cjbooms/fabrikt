@@ -1,4 +1,4 @@
-package examples.okHttpClient.client
+package examples.httpClient.client
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry

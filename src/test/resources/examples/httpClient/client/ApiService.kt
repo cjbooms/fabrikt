@@ -1,11 +1,12 @@
-package examples.okHttpClient.client
+package examples.httpClient.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import examples.okHttpClient.models.Content
-import examples.okHttpClient.models.FirstModel
-import examples.okHttpClient.models.QueryResult
+import examples.httpClient.models.Content
+import examples.httpClient.models.FirstModel
+import examples.httpClient.models.QueryResult
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import okhttp3.OkHttpClient
+import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
@@ -142,5 +143,45 @@ public class ExamplePath3SubresourceService(
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
             apiClient.putExamplePath3PathParamSubresource(firstModel, pathParam, ifMatch, csvListQueryParam, additionalHeaders)
+        }
+
+    @Throws(ApiException::class)
+    public fun deleteExamplePath3PathParamSubresource(
+        additionalHeaders: Map<String, String> =
+            emptyMap(),
+    ): ApiResponse<Unit> =
+        withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
+            apiClient.deleteExamplePath3PathParamSubresource(additionalHeaders)
+        }
+}
+
+/**
+ * The circuit breaker registry should have the proper configuration to correctly action on circuit
+ * breaker transitions based on the client exceptions [ApiClientException], [ApiServerException] and
+ * [IOException].
+ *
+ * @see ApiClientException
+ * @see ApiServerException
+ */
+@Suppress("unused")
+public class ExamplePath3SubresourceNameService(
+    private val circuitBreakerRegistry: CircuitBreakerRegistry,
+    objectMapper: ObjectMapper,
+    baseUrl: String,
+    client: OkHttpClient,
+) {
+    public var circuitBreakerName: String = "examplePath3SubresourceNameClient"
+
+    private val apiClient: ExamplePath3SubresourceNameClient =
+        ExamplePath3SubresourceNameClient(objectMapper, baseUrl, client)
+
+    @Throws(ApiException::class)
+    public fun patchExamplePath3PathParamSubresourceName(
+        firstModelPatch: Any,
+        pathParam: String,
+        additionalHeaders: Map<String, String> = emptyMap(),
+    ): ApiResponse<Unit> =
+        withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
+            apiClient.patchExamplePath3PathParamSubresourceName(firstModelPatch, pathParam, additionalHeaders)
         }
 }

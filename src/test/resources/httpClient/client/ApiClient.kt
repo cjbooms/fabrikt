@@ -1,9 +1,9 @@
-package examples.okHttpClient.client
+package examples.httpClient.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import examples.okHttpClient.models.Content
-import examples.okHttpClient.models.FirstModel
+import examples.httpClient.models.Content
+import examples.httpClient.models.FirstModel
 import examples.okHttpClient.models.QueryResult
 import okhttp3.Headers
 import okhttp3.HttpUrl

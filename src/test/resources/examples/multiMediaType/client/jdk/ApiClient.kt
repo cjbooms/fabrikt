@@ -38,6 +38,7 @@ public class ExamplePath1Client(
         val httpUri: URI = URI.create("$baseUrl/example-path-1")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
             .uri(httpUri)
+            .GET()
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -66,6 +67,7 @@ public class ExamplePath2Client(
         val httpUri: URI = URI.create("$baseUrl/example-path-2")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
             .uri(httpUri)
+            .GET()
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -90,6 +92,7 @@ public class MultipleResponseSchemasClient(
         val httpUri: URI = URI.create("$baseUrl/multiple-response-schemas")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
             .uri(httpUri)
+            .GET()
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -112,6 +115,7 @@ public class DifferentSuccessAndErrorResponseSchemaClient(
         val httpUri: URI = URI.create("$baseUrl/different-success-and-error-response-schema")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
             .uri(httpUri)
+            .GET()
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }

@@ -1,6 +1,7 @@
 package examples.multiMediaType.jdk.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import jdk.internal.net.http.RequestPublishers
 import java.io.IOException
 import java.io.InputStream
 import java.io.UncheckedIOException
@@ -53,5 +54,12 @@ fun <W> toSupplierOfType(inputStream: InputStream, targetType: Class<W>?): Suppl
 class JsonBodyHandler<W>(val wClass: Class<W>) : BodyHandler<Supplier<W>> {
     override fun apply(responseInfo: ResponseInfo): BodySubscriber<Supplier<W>> {
         return asJSON(wClass)
+    }
+}
+
+object Publishers {
+    fun <W> jsonBodyPublisher(obj: W) : HttpRequest.BodyPublisher {
+        val data = ObjectMapper().writeValueAsBytes(obj)
+        return RequestPublishers.ByteArrayPublisher(data)
     }
 }

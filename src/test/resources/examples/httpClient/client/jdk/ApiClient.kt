@@ -7,6 +7,8 @@ import examples.httpClient.jdk.models.QueryResult
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
+import java.net.http.HttpRequest.BodyPublishers
+import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
@@ -37,6 +39,7 @@ public class ExamplePath1Client(
         val httpUri: URI = URI.create("$baseUrl/example-path-1")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
             .uri(httpUri)
+            .GET()
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -56,6 +59,7 @@ public class ExamplePath1Client(
         val httpUri: URI = URI.create("$baseUrl/example-path-1")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
             .uri(httpUri)
+            .POST(Publishers.jsonBodyPublisher(content))
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -86,6 +90,7 @@ public class ExamplePath2Client(
         val httpUri: URI = URI.create("$baseUrl/example-path-2/{path_param}")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
             .uri(httpUri)
+            .GET()
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -107,6 +112,7 @@ public class ExamplePath2Client(
         val httpUri: URI = URI.create("$baseUrl/example-path-2/{path_param}")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
             .uri(httpUri)
+            .method("HEAD", BodyPublishers.noBody())
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -128,6 +134,7 @@ public class ExamplePath2Client(
         val httpUri: URI = URI.create("$baseUrl/example-path-2/{path_param}")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
             .uri(httpUri)
+            .PUT(Publishers.jsonBodyPublisher(firstModel))
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -158,6 +165,50 @@ public class ExamplePath3SubresourceClient(
         val httpUri: URI = URI.create("$baseUrl/example-path-3/{path_param}/subresource")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
             .uri(httpUri)
+            .PUT(Publishers.jsonBodyPublisher(firstModel))
+        additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
+        return client.execute(requestBuilder.build())
+    }
+
+    /**
+     * DELETE example path 3
+     */
+    @Throws(ApiException::class)
+    public fun deleteExamplePath3PathParamSubresource(
+        additionalHeaders: Map<String, String> =
+            emptyMap(),
+    ): ApiResponse<Unit> {
+        val httpUri: URI = URI.create("$baseUrl/example-path-3/{path_param}/subresource")
+        val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
+            .uri(httpUri)
+            .DELETE()
+        additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
+        return client.execute(requestBuilder.build())
+    }
+}
+
+@Suppress("unused")
+public class ExamplePath3SubresourceNameClient(
+    private val objectMapper: ObjectMapper,
+    private val baseUrl: String,
+    private val client: HttpClient,
+) {
+    /**
+     * PATCH example path 3
+     *
+     * @param firstModelPatch
+     * @param pathParam The resource id
+     */
+    @Throws(ApiException::class)
+    public fun patchExamplePath3PathParamSubresourceName(
+        firstModelPatch: Any,
+        pathParam: String,
+        additionalHeaders: Map<String, String> = emptyMap(),
+    ): ApiResponse<Unit> {
+        val httpUri: URI = URI.create("$baseUrl/example-path-3/{path_param}/subresource/name")
+        val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
+            .uri(httpUri)
+            .method("PATCH", Publishers.jsonBodyPublisher(firstModelPatch))
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }

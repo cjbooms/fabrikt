@@ -99,7 +99,7 @@ class OkHttpSimpleClientGenerator(
         val clientDir = codeDir.resolve("client")
         return setOf(
             HandlebarsTemplates.applyTemplate(
-                template = HandlebarsTemplates.clientApiModels,
+                template = HandlebarsTemplates.clientOkioApiModels,
                 input = packages,
                 path = clientDir,
                 fileName = "ApiModels.kt"

@@ -111,6 +111,9 @@ public data class FirstModel(
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
     override val etag: String? = null,
+    @param:JsonProperty("name")
+    @get:JsonProperty("name")
+    public val name: String? = null,
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
     public val extraFirstAttr: List<String>? = null,

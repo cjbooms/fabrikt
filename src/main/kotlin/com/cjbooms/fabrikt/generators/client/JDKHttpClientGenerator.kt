@@ -8,9 +8,9 @@ import com.cjbooms.fabrikt.model.SourceApi
 import java.nio.file.Path
 
 class JDKHttpClientGenerator(
-    packages: Packages,
-    api: SourceApi,
-    srcPath: Path,
+    @Suppress("unused") packages: Packages,
+    @Suppress("unused") api: SourceApi,
+    @Suppress("unused") srcPath: Path,
 ) : ClientGenerator {
     override fun generate(options: Set<ClientCodeGenOptionType>): Clients {
         TODO("Not yet implemented")
