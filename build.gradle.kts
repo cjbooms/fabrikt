@@ -32,13 +32,15 @@ val projectDesc = "Fabricates Kotlin code from OpenApi3 specifications"
 val projectLicenseName = "Apache License 2.0"
 val projectLicenseUrl = "https://opensource.org/licenses/Apache-2.0"
 
-repositories {
-    mavenCentral()
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }
 
+val jacksonVersion by extra { "2.15.1" }
+val junitVersion by extra { "5.9.2" }
 dependencies {
-    val jacksonVersion = "2.15.1"
-
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.github.jknack:handlebars:4.3.1")
@@ -53,9 +55,9 @@ dependencies {
     implementation("com.squareup:kotlinpoet:1.14.2") { exclude(module = "kotlin-stdlib-jre7") }
     implementation("com.google.flogger:flogger:0.7.4")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("org.assertj:assertj-core:3.24.2")
 
     // Below dependencies are solely present so code examples in the test resources dir compile
