@@ -39,6 +39,8 @@ fun <T> Request.execute(client: OkHttpClient, objectMapper: ObjectMapper, typeRe
         when {
             response.isSuccessful ->
                 ApiResponse(response.code, response.headers, response.body?.deserialize(objectMapper, typeRef))
+            response.isRedirection() ->
+                throw ApiRedirectException(response.code, response.headers, response.errorMessage())
             response.isBadRequest() ->
                 throw ApiClientException(response.code, response.headers, response.errorMessage())
             response.isServerError() ->
@@ -63,3 +65,5 @@ private fun Response.errorMessage(): String = this.body?.string() ?: this.messag
 private fun Response.isBadRequest(): Boolean = this.code in 400..499
 
 private fun Response.isServerError(): Boolean = this.code in 500..599
+
+private fun Response.isRedirection(): Boolean = this.code in 300..399
