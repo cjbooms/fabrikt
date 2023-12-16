@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import examples.httpClient.jdk.models.Content
 import examples.httpClient.jdk.models.FirstModel
 import examples.httpClient.jdk.models.QueryResult
-import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers
@@ -36,9 +35,15 @@ public class ExamplePath1Client(
         queryParam2: Int? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
-        val httpUri: URI = URI.create("$baseUrl/example-path-1")
+        val url: Url = Url("$baseUrl/example-path-1").addQueryParam(
+            "explode_list_query_param",
+            explodeListQueryParam,
+            true,
+        )
+            .addQueryParam("query_param2", queryParam2)
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .GET()
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
@@ -56,9 +61,14 @@ public class ExamplePath1Client(
         explodeListQueryParam: List<String>? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUri: URI = URI.create("$baseUrl/example-path-1")
+        val url: Url = Url("$baseUrl/example-path-1").addQueryParam(
+            "explode_list_query_param",
+            explodeListQueryParam,
+            true,
+        )
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .POST(Publishers.jsonBodyPublisher(content))
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
@@ -87,10 +97,15 @@ public class ExamplePath2Client(
         ifNoneMatch: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Content> {
-        val httpUri: URI = URI.create("$baseUrl/example-path-2/{path_param}")
+        val url: Url = Url("$baseUrl/example-path-2/{path_param}")
+            .addPathParam("path_param", pathParam)
+            .addQueryParam("limit", limit)
+            .addQueryParam("query_param2", queryParam2)
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .GET()
+        ifNoneMatch?.let { requestBuilder.header("If-None-Match", it.toString()) }
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -109,10 +124,14 @@ public class ExamplePath2Client(
         ifNoneMatch: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUri: URI = URI.create("$baseUrl/example-path-2/{path_param}")
+        val url: Url = Url("$baseUrl/example-path-2/{path_param}")
+            .addPathParam("path_param", pathParam)
+            .addQueryParam("query_param3", queryParam3)
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .method("HEAD", BodyPublishers.noBody())
+        ifNoneMatch?.let { requestBuilder.header("If-None-Match", it.toString()) }
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -131,10 +150,13 @@ public class ExamplePath2Client(
         ifMatch: String,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUri: URI = URI.create("$baseUrl/example-path-2/{path_param}")
+        val url: Url = Url("$baseUrl/example-path-2/{path_param}")
+            .addPathParam("path_param", pathParam)
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .PUT(Publishers.jsonBodyPublisher(firstModel))
+        ifMatch?.let { requestBuilder.header("If-Match", it.toString()) }
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -162,10 +184,17 @@ public class ExamplePath3SubresourceClient(
         csvListQueryParam: List<String>? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUri: URI = URI.create("$baseUrl/example-path-3/{path_param}/subresource")
+        val url: Url = Url("$baseUrl/example-path-3/{path_param}/subresource")
+            .addPathParam("path_param", pathParam).addQueryParam(
+                "csv_list_query_param",
+                csvListQueryParam,
+                false,
+            )
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .PUT(Publishers.jsonBodyPublisher(firstModel))
+        ifMatch?.let { requestBuilder.header("If-Match", it.toString()) }
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -178,9 +207,10 @@ public class ExamplePath3SubresourceClient(
         additionalHeaders: Map<String, String> =
             emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUri: URI = URI.create("$baseUrl/example-path-3/{path_param}/subresource")
+        val url: Url = Url("$baseUrl/example-path-3/{path_param}/subresource")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .DELETE()
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
@@ -205,9 +235,11 @@ public class ExamplePath3SubresourceNameClient(
         pathParam: String,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUri: URI = URI.create("$baseUrl/example-path-3/{path_param}/subresource/name")
+        val url: Url = Url("$baseUrl/example-path-3/{path_param}/subresource/name")
+            .addPathParam("path_param", pathParam)
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .method("PATCH", Publishers.jsonBodyPublisher(firstModelPatch))
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())

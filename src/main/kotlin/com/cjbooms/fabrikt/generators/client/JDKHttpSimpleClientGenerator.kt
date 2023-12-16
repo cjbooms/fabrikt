@@ -114,21 +114,52 @@ data class SimpleJDKClientOperationStatement(
     fun toStatement(): CodeBlock =
         CodeBlock.builder()
             .addUrlStatement()
-            /*.addPathParamStatement()
-            .addQueryParamStatement()*/
+            .addPathParamStatement()
+            .addQueryParamStatement()
             .addRequestStatement()
             .addHeaderParamStatement()
             .addRequestExecutionStatement()
             .build()
 
     private fun CodeBlock.Builder.addUrlStatement(): CodeBlock.Builder {
-        this.add("val httpUri: %T = URI.create(\"%L\")", "URI".toClassName(basePackage), "\$baseUrl$resource")
+        this.add("val url: %T = Url(\"%L\")", "Url".toClassName(packages.client), "\$baseUrl$resource")
+        return this
+    }
+
+    private fun CodeBlock.Builder.addPathParamStatement(): CodeBlock.Builder {
+        parameters
+            .filterIsInstance<RequestParameter>()
+            .filter { it.parameterLocation == PathParam }
+            .forEach {
+                this.add("\n.addPathParam(\"${it.originalName}\", ${it.name})")
+            }
+
+        return this
+    }
+
+    private fun CodeBlock.Builder.addQueryParamStatement(): CodeBlock.Builder {
+        parameters
+            .filterIsInstance<RequestParameter>()
+            .filter { it.parameterLocation == QueryParam }
+            .forEach {
+                when (it.typeInfo) {
+                    is KotlinTypeInfo.Array -> this.add(".addQueryParam(%S, %N, %L)",
+                        it.originalName,
+                        it.name,
+                        if (it.explode == null || it.explode == true) "true" else "false")
+                    else -> this.add(
+                        "\n.addQueryParam(%S, %N)",
+                        it.originalName,
+                        it.name)
+                }
+            }
         return this
     }
 
     private fun CodeBlock.Builder.addRequestStatement(): CodeBlock.Builder {
         this.add("\nval requestBuilder: %T.Builder = HttpRequest.newBuilder()", "HttpRequest".toClassName(httpBasePackage))
-        this.add("\n.uri(httpUri)")
+        this.add("\n.uri(url.toUri())")
+        this.add("\n.version(HttpClient.Version.HTTP_1_1)")
 
         when (val op = verb.toUpperCase()) {
             "PUT" -> {
@@ -159,6 +190,16 @@ data class SimpleJDKClientOperationStatement(
         this.add("\nreturn client.execute(requestBuilder.build())\n")
 
     private fun CodeBlock.Builder.addHeaderParamStatement(): CodeBlock.Builder {
+        parameters
+            .filterIsInstance<RequestParameter>()
+            .filter { it.parameterLocation == HeaderParam }
+            .forEach {
+                this.add(
+                    "\n${it.name}?.let { requestBuilder.header(%S, it.toString()) }",
+                    it.originalName,
+                    //it.name + if (it.typeInfo is KotlinTypeInfo.Enum) "?.value" else ""
+                )
+            }
         return this.add("\nadditionalHeaders.forEach { requestBuilder.header(it.key, it.value) }")
     }
 }

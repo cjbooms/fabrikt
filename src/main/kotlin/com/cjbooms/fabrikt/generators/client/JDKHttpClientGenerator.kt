@@ -8,15 +8,20 @@ import com.cjbooms.fabrikt.model.SourceApi
 import java.nio.file.Path
 
 class JDKHttpClientGenerator(
-    @Suppress("unused") packages: Packages,
-    @Suppress("unused") api: SourceApi,
-    @Suppress("unused") srcPath: Path,
+    packages: Packages,
+    api: SourceApi,
+    srcPath: Path,
 ) : ClientGenerator {
+    private val simpleClientGenerator = JDKHttpSimpleClientGenerator(packages, api, srcPath)
+
     override fun generate(options: Set<ClientCodeGenOptionType>): Clients {
-        TODO("Not yet implemented")
+        val simpleClient = simpleClientGenerator.generateDynamicClientCode()
+
+        return Clients(simpleClient)
     }
 
     override fun generateLibrary(options: Set<ClientCodeGenOptionType>): Collection<GeneratedFile> {
-        TODO("Not yet implemented")
+
+        return simpleClientGenerator.generateLibrary()
     }
 }

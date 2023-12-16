@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import examples.multiMediaType.jdk.models.ContentType
 import examples.multiMediaType.jdk.models.QueryResult
 import examples.multiMediaType.jdk.models.SuccessResponse
-import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import kotlin.Int
@@ -35,10 +34,17 @@ public class ExamplePath1Client(
         acceptHeader: String = "application/vnd.custom.media+xml",
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
-        val httpUri: URI = URI.create("$baseUrl/example-path-1")
+        val url: Url = Url("$baseUrl/example-path-1").addQueryParam(
+            "explode_list_query_param",
+            explodeListQueryParam,
+            true,
+        )
+            .addQueryParam("query_param2", queryParam2)
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .GET()
+        acceptHeader?.let { requestBuilder.header("Accept", it.toString()) }
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -64,10 +70,17 @@ public class ExamplePath2Client(
         accept: ContentType? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
-        val httpUri: URI = URI.create("$baseUrl/example-path-2")
+        val url: Url = Url("$baseUrl/example-path-2").addQueryParam(
+            "explode_list_query_param",
+            explodeListQueryParam,
+            true,
+        )
+            .addQueryParam("query_param2", queryParam2)
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .GET()
+        accept?.let { requestBuilder.header("Accept", it.toString()) }
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -89,10 +102,12 @@ public class MultipleResponseSchemasClient(
         accept: ContentType? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<JsonNode> {
-        val httpUri: URI = URI.create("$baseUrl/multiple-response-schemas")
+        val url: Url = Url("$baseUrl/multiple-response-schemas")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .GET()
+        accept?.let { requestBuilder.header("Accept", it.toString()) }
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
     }
@@ -112,9 +127,10 @@ public class DifferentSuccessAndErrorResponseSchemaClient(
         additionalHeaders: Map<String, String> =
             emptyMap(),
     ): ApiResponse<SuccessResponse> {
-        val httpUri: URI = URI.create("$baseUrl/different-success-and-error-response-schema")
+        val url: Url = Url("$baseUrl/different-success-and-error-response-schema")
         val requestBuilder: HttpRequest.Builder = HttpRequest.newBuilder()
-            .uri(httpUri)
+            .uri(url.toUri())
+            .version(HttpClient.Version.HTTP_1_1)
             .GET()
         additionalHeaders.forEach { requestBuilder.header(it.key, it.value) }
         return client.execute(requestBuilder.build())
