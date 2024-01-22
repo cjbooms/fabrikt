@@ -81,9 +81,10 @@ public data class OneOfAdditionalProps(
     @param:JsonProperty("second_nested_any_of_prop")
     @get:JsonProperty("second_nested_any_of_prop")
     public val secondNestedAnyOfProp: String? = null,
-    @get:JsonIgnore
-    public val properties: MutableMap<String, Any> = mutableMapOf(),
 ) {
+    @get:JsonIgnore
+    public val properties: MutableMap<String, Any> = mutableMapOf()
+
     @JsonAnyGetter
     public fun `get`(): Map<String, Any> = properties
 

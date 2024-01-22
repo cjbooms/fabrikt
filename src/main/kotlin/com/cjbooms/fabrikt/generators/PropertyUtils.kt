@@ -46,11 +46,8 @@ object PropertyUtils {
         val property = PropertySpec.builder(name, wrappedType)
 
         if (this is PropertyInfo.AdditionalProperties) {
-            property.initializer(name)
+            property.initializer("mutableMapOf()")
             property.addAnnotation(JacksonMetadata.ignore)
-            val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
-            constructorParameter.defaultValue("mutableMapOf()")
-            constructorBuilder.addParameter(constructorParameter.build())
 
             val value =
                 if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties) {
