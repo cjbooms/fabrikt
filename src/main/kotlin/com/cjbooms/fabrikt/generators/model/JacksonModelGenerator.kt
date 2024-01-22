@@ -127,7 +127,7 @@ class JacksonModelGenerator(
 
                 else -> className
             }
-            return if (isNullable) typeName.copy(nullable = true) else typeName
+            return if (isNullable || typeInfo.nullable) typeName.copy(nullable = true) else typeName
         }
 
         private fun toClassName(basePackage: String, typeInfo: KotlinTypeInfo): ClassName =
