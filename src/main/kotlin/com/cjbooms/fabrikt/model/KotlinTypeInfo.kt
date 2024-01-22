@@ -13,10 +13,11 @@ import java.math.BigDecimal
 import java.net.URI
 import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.util.Objects
 import java.util.UUID
 import kotlin.reflect.KClass
 
-sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassName: String? = null) {
+sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassName: String? = null, var nullable: kotlin.Boolean = false) {
 
     object Text : KotlinTypeInfo(String::class)
     object Date : KotlinTypeInfo(LocalDate::class)
@@ -55,8 +56,14 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         }
 
     companion object {
-        fun from(schema: Schema, oasKey: String = "", enclosingSchema: EnclosingSchemaInfo? = null): KotlinTypeInfo =
-            when (schema.toOasType(oasKey)) {
+        fun from(inputSchema: Schema, oasKey: String = "", enclosingSchema: EnclosingSchemaInfo? = null): KotlinTypeInfo {
+            val schema = if (inputSchema.allOfSchemas.size == 1) {
+                inputSchema.allOfSchemas[0]
+            } else {
+                inputSchema
+            }
+
+            val typeInfo = when (schema.toOasType(oasKey)) {
                 OasType.Date -> Date
                 OasType.DateTime -> getOverridableDateTimeType()
                 OasType.Text -> Text
@@ -95,6 +102,13 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     if (schema.isOneOfSuperInterface()) Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
                     else AnyType
             }
+
+            return typeInfo.also {
+                if (inputSchema.isNullable || schema.isNullable) {
+                    it.nullable = true
+                }
+            }
+        }
 
         private fun getOverridableDateTimeType(): KotlinTypeInfo {
             val typeOverrides = MutableSettings.typeOverrides()
