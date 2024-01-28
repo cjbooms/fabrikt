@@ -91,7 +91,6 @@ public data class NullabilityCheck(
     public val notNullWithDefaultNotRequired: JsonNullable<String> = JsonNullable.of(""),
     @param:JsonProperty("nullable-with-default-not-required")
     @get:JsonProperty("nullable-with-default-not-required")
-    @get:NotNull
     public val nullableWithDefaultNotRequired: JsonNullable<String?> = JsonNullable.of(""),
     @param:JsonProperty("not-null-no-default-required")
     @get:JsonProperty("not-null-no-default-required")
@@ -99,16 +98,14 @@ public data class NullabilityCheck(
     public val notNullNoDefaultRequired: String,
     @param:JsonProperty("nullable-no-default-required")
     @get:JsonProperty("nullable-no-default-required")
-    @get:NotNull
-    public val nullableNoDefaultRequired: String,
+    public val nullableNoDefaultRequired: String?,
     @param:JsonProperty("not-null-with-default-required")
     @get:JsonProperty("not-null-with-default-required")
     @get:NotNull
     public val notNullWithDefaultRequired: String,
     @param:JsonProperty("nullable-with-default-required")
     @get:JsonProperty("nullable-with-default-required")
-    @get:NotNull
-    public val nullableWithDefaultRequired: String,
+    public val nullableWithDefaultRequired: String?,
 )
 
 public data class TopLevelLevelMergePatchInline(
