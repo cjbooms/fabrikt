@@ -26,6 +26,8 @@ object YamlUtils {
     private val internalMapper: ObjectMapper =
         ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
 
+    private val NULL_TYPE: JsonNode = objectMapper.valueToTree("null")
+
     fun mergeYamlTrees(mainTree: String, updateTree: String) =
         internalMapper.writeValueAsString(
             mergeNodes(
@@ -54,13 +56,13 @@ object YamlUtils {
         when {
             node.isObject -> {
                 var requiresNullable = false
-                node.fields().forEach { (key, value) ->
-                    if (key == "type" && value.isArray && value.contains(objectMapper.valueToTree("null"))) {
-                        val nonNullValue = value.first { it.asText() != "null" }
-                        (node as ObjectNode).replace("type", nonNullValue)
+                node.fields().forEach { (key, maybeTypeArray) ->
+                    if (key == "type" && maybeTypeArray.isArray && maybeTypeArray.contains(NULL_TYPE)) {
+                        val nonNullType = maybeTypeArray.first { it != NULL_TYPE }
+                        (node as ObjectNode).replace("type", nonNullType)
                         requiresNullable = true
                     }
-                    downgradeNullableSyntax(value)
+                    downgradeNullableSyntax(maybeTypeArray)
                 }
                 if (requiresNullable) {
                     (node as ObjectNode).put("nullable", true)
