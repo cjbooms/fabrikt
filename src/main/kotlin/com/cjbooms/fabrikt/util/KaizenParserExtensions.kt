@@ -39,10 +39,13 @@ object KaizenParserExtensions {
         getDiscriminatorForInLinedObjectUnderAllOf()?.propertyName != null
 
     fun Schema.isInlinedObjectDefinition() =
-        isObjectType() && !isSchemaLess() && (
+        (isObjectType() || isAggregatedObject()) && !isSchemaLess() && (
             Overlay.of(this).pathFromRoot.contains("properties") ||
                 Overlay.of(this).pathFromRoot.contains("items")
             )
+
+    private fun Schema.isAggregatedObject(): Boolean =
+        combinedAnyOfAndAllOfSchemas().size > 1
 
     fun Schema.isInlinedTypedAdditionalProperties() =
         isObjectType() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("additionalProperties")
@@ -188,7 +191,7 @@ object KaizenParserExtensions {
     fun Schema.safeName(): String =
         when {
             isOneOfPolymorphicTypes() -> this.oneOfSchemas.first().allOfSchemas.first().safeName()
-            isPropertyWithAllOfSingleType() -> this.allOfSchemas.first().safeName()
+            isInlinedAggregationOfExactlyOne() -> combinedAnyOfAndAllOfSchemas().first().safeName()
             name != null -> name
             else -> Overlay.of(this).pathFromRoot
                 .splitToSequence("/")
@@ -222,8 +225,11 @@ object KaizenParserExtensions {
     fun Schema.isOneOfSuperInterface() =
         discriminator != null && discriminator.propertyName != null && oneOfSchemas.isNotEmpty()
 
-    private fun Schema.isPropertyWithAllOfSingleType() =
-        allOfSchemas?.size == 1 && isInlinedPropertySchema()
+    private fun Schema.isInlinedAggregationOfExactlyOne() =
+        combinedAnyOfAndAllOfSchemas().size == 1 && isInlinedPropertySchema()
+
+    private fun Schema.combinedAnyOfAndAllOfSchemas(): List<Schema> =
+        (allOfSchemas ?: emptyList()) + (anyOfSchemas ?: emptyList())
 
     /**
      * The `pathFromRoot` of a property schema ends with

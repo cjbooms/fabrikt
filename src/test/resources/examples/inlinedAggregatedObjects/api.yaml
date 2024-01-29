@@ -19,6 +19,7 @@ components:
           description: "The person walking the dog."
           allOf:
             - $ref: "#/components/schemas/Person"
+            - $ref: "#/components/schemas/Company"
 
     Person:
       type: object
@@ -26,4 +27,12 @@ components:
         - name
       properties:
         name:
+          type: string
+
+    Company:
+      type: object
+      required:
+        - companyName
+      properties:
+        companyName:
           type: string
