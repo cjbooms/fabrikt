@@ -16,18 +16,11 @@ public data class Dog(
     @param:JsonProperty("owner")
     @get:JsonProperty("owner")
     @get:Valid
-    public val owner: DogOwner? = null,
+    public val owner: Person? = null,
     @param:JsonProperty("walker")
     @get:JsonProperty("walker")
     @get:Valid
     public val walker: DogWalker? = null,
-)
-
-public data class DogOwner(
-    @param:JsonProperty("name")
-    @get:JsonProperty("name")
-    @get:NotNull
-    public val name: String,
 )
 
 public data class DogWalker(

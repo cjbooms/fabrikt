@@ -45,7 +45,7 @@ object KaizenParserExtensions {
             )
 
     private fun Schema.isAggregatedObject(): Boolean =
-        allOfSchemas?.isNotEmpty() == true || anyOfSchemas?.isNotEmpty() == true
+        combinedAnyOfAndAllOfSchemas().size > 1
 
     fun Schema.isInlinedTypedAdditionalProperties() =
         isObjectType() && !isSchemaLess() && Overlay.of(this).pathFromRoot.contains("additionalProperties")
@@ -191,6 +191,7 @@ object KaizenParserExtensions {
     fun Schema.safeName(): String =
         when {
             isOneOfPolymorphicTypes() -> this.oneOfSchemas.first().allOfSchemas.first().safeName()
+            isInlinedAggregationOfExactlyOne() -> combinedAnyOfAndAllOfSchemas().first().safeName()
             name != null -> name
             else -> Overlay.of(this).pathFromRoot
                 .splitToSequence("/")
@@ -223,6 +224,29 @@ object KaizenParserExtensions {
 
     fun Schema.isOneOfSuperInterface() =
         discriminator != null && discriminator.propertyName != null && oneOfSchemas.isNotEmpty()
+
+    private fun Schema.isInlinedAggregationOfExactlyOne() =
+        combinedAnyOfAndAllOfSchemas().size == 1 && isInlinedPropertySchema()
+
+    private fun Schema.combinedAnyOfAndAllOfSchemas(): List<Schema> =
+        (allOfSchemas ?: emptyList()) + (anyOfSchemas ?: emptyList())
+
+    /**
+     * The `pathFromRoot` of a property schema ends with
+     * `/properties/<name of property>`, so we check if the
+     * penultimate segment is `properties`.
+     */
+    private fun Schema.isInlinedPropertySchema(): Boolean {
+        val path = Overlay.of(this).pathFromRoot
+        val lastSegment = path.lastIndexOf('/')
+        if (lastSegment != -1) {
+            val penultimateSegment = path.lastIndexOf('/', lastSegment - 1)
+            if (penultimateSegment != -1) {
+                return path.startsWith("/properties/", penultimateSegment)
+            }
+        }
+        return false
+    }
 
     fun OpenApi3.basePath(): String =
         servers
