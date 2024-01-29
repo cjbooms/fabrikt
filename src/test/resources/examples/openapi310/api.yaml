@@ -1,0 +1,14 @@
+openapi: 3.1.0
+components:
+  schemas:
+    NewNullableFormat:
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          type:
+            - string
+            - 'null'
+          description: The resolved version or `null` if there is no matching version.
+

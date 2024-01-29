@@ -19,32 +19,61 @@ object YamlUtils {
         ObjectMapper(
             YAMLFactory()
                 .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
-                .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
+                .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES),
         )
             .registerKotlinModule()
             .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
     private val internalMapper: ObjectMapper =
         ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
 
+    private val NULL_TYPE: JsonNode = objectMapper.valueToTree("null")
+
     fun mergeYamlTrees(mainTree: String, updateTree: String) =
         internalMapper.writeValueAsString(
             mergeNodes(
                 internalMapper.readTree(mainTree),
-                internalMapper.readTree(updateTree)
-            )
+                internalMapper.readTree(updateTree),
+            ),
         )!!
 
     fun parseOpenApi(input: String, inputDir: Path = Paths.get("").toAbsolutePath()): OpenApi3 =
         try {
-            OpenApi3Parser().parse(input, inputDir.toUri().toURL())
+            val root: JsonNode = objectMapper.readTree(input)
+            if (root["openapi"].asText() == "3.1.0") {
+                downgradeNullableSyntax(root)
+            }
+            OpenApi3Parser().parse(root, inputDir.toUri().toURL())
         } catch (ex: NullPointerException) {
             throw IllegalArgumentException(
                 "The Kaizen openapi-parser library threw a NPE exception when parsing this API. " +
                     "This is commonly due to an external schema reference that is unresolvable, " +
                     "possibly due to a lack of internet connection",
-                ex
+                ex,
             )
         }
+
+    private fun downgradeNullableSyntax(node: JsonNode) {
+        when {
+            node.isObject -> {
+                var requiresNullable = false
+                node.fields().forEach { (key, maybeTypeArray) ->
+                    if (key == "type" && maybeTypeArray.isArray && maybeTypeArray.contains(NULL_TYPE)) {
+                        val nonNullType = maybeTypeArray.first { it != NULL_TYPE }
+                        (node as ObjectNode).replace("type", nonNullType)
+                        requiresNullable = true
+                    }
+                    downgradeNullableSyntax(maybeTypeArray)
+                }
+                if (requiresNullable) {
+                    (node as ObjectNode).put("nullable", true)
+                }
+            }
+
+            node.isArray -> {
+                node.forEach { downgradeNullableSyntax(it) }
+            }
+        }
+    }
 
     /**
      * The below merge function has been shamelessly stolen from Stackoverflow: https://stackoverflow.com/a/32447591/1026785
@@ -56,14 +85,20 @@ object YamlUtils {
             val incomingNode = incomingTree.get(fieldName)
             if (currentNode is ArrayNode && incomingNode is ArrayNode) {
                 incomingNode.forEach {
-                    if (currentNode.contains(it)) mergeNodes(
-                        currentNode.get(currentNode.indexOf(it)),
-                        it
-                    )
-                    else currentNode.add(it)
+                    if (currentNode.contains(it)) {
+                        mergeNodes(
+                            currentNode.get(currentNode.indexOf(it)),
+                            it,
+                        )
+                    } else {
+                        currentNode.add(it)
+                    }
                 }
-            } else if (currentNode is ObjectNode) mergeNodes(currentNode, incomingNode)
-            else (currentTree as? ObjectNode)?.replace(fieldName, incomingNode)
+            } else if (currentNode is ObjectNode) {
+                mergeNodes(currentNode, incomingNode)
+            } else {
+                (currentTree as? ObjectNode)?.replace(fieldName, incomingNode)
+            }
         }
         return currentTree
     }

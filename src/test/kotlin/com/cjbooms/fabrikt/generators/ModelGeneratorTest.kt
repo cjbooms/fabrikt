@@ -54,6 +54,7 @@ class ModelGeneratorTest {
         "webhook",
         "instantDateTime",
         "discriminatedOneOf",
+        "openapi310",
     )
 
     @BeforeEach
