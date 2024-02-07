@@ -13,4 +13,7 @@ public data class OptionalVsRequired(
     @param:JsonProperty("gender")
     @get:JsonProperty("gender")
     public val gender: UUID? = null,
+    @param:JsonProperty("requiredNullable")
+    @get:JsonProperty("requiredNullable")
+    public val requiredNullable: String?,
 )

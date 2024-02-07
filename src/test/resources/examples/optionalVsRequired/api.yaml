@@ -5,9 +5,13 @@ components:
       type: object
       required:
       - name
+      - requiredNullable
       properties:
         name:
           type: string
         gender:
           type: string
           format: uuid
+        requiredNullable:
+          type: string
+          nullable: true
