@@ -165,7 +165,10 @@ class JacksonModelGenerator(
         .filterNot { it.schema.isOneOfPolymorphicTypes() }
         .flatMap {
             val properties = it.schema.topLevelProperties(HTTP_SETTINGS, it.schema)
-            if (properties.isNotEmpty() || it.typeInfo is KotlinTypeInfo.Enum) {
+            if (properties.isNotEmpty() ||
+                it.typeInfo is KotlinTypeInfo.Enum ||
+                findOneOfSuperInterface(schemas, it, options).isNotEmpty()
+            ) {
                 val primaryModel = buildPrimaryModel(api, it, properties, schemas)
                 val inlinedModels = buildInLinedModels(properties, it.schema, it.schema.getDocumentUrl())
                 listOf(primaryModel) + inlinedModels
@@ -469,22 +472,8 @@ class JacksonModelGenerator(
         extensions: Map<String, Any>,
         oneOfInterfaces: Set<SchemaInfo>,
     ): TypeSpec {
-        val filteredProperties = if (oneOfInterfaces.size == 1) {
-            val oneOfInterface = oneOfInterfaces.first()
-            val discriminatorProp = oneOfInterface.schema.discriminator?.propertyName
-            val mappingCount =
-                oneOfInterface.schema.discriminator?.mappings?.values?.count { it.endsWith("/$modelName") }
-            if (discriminatorProp != null && mappingCount == 1) {
-                properties.filterNot { it.name == discriminatorProp }
-            } else {
-                properties
-            }
-        } else {
-            properties
-        }
-
         val name = generatedType(packages.base, modelName)
-        val generateObject = properties.isNotEmpty() && filteredProperties.isEmpty()
+        val generateObject = properties.isEmpty()
         val builder =
             if (generateObject) {
                 TypeSpec.objectBuilder(name)
@@ -503,7 +492,7 @@ class JacksonModelGenerator(
         }
 
         if (!generateObject) {
-            filteredProperties.addToClass(
+            properties.addToClass(
                 schemaName = schemaName,
                 classBuilder = classBuilder,
                 classType = ClassSettings(ClassSettings.PolymorphyType.NONE, extensions.hasJsonMergePatchExtension),
@@ -809,9 +798,14 @@ class JacksonModelGenerator(
     private fun List<SchemaInfo>.filterByExternalRefResolutionMode(
         externalReferences: Map.Entry<String, MutableSet<String>>,
     ) = when (externalRefResolutionMode) {
-            ExternalReferencesResolutionMode.TARGETED -> this.filter { apiSchema -> externalReferences.value.contains(apiSchema.name) }
-            else -> this
+        ExternalReferencesResolutionMode.TARGETED -> this.filter { apiSchema ->
+            externalReferences.value.contains(
+                apiSchema.name
+            )
         }
+
+        else -> this
+    }
 }
 
 private val Map<String, Any>.hasJsonMergePatchExtension
