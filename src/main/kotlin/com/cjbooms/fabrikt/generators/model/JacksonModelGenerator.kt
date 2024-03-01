@@ -798,14 +798,9 @@ class JacksonModelGenerator(
     private fun List<SchemaInfo>.filterByExternalRefResolutionMode(
         externalReferences: Map.Entry<String, MutableSet<String>>,
     ) = when (externalRefResolutionMode) {
-        ExternalReferencesResolutionMode.TARGETED -> this.filter { apiSchema ->
-            externalReferences.value.contains(
-                apiSchema.name
-            )
+            ExternalReferencesResolutionMode.TARGETED -> this.filter { apiSchema -> externalReferences.value.contains(apiSchema.name) }
+            else -> this
         }
-
-        else -> this
-    }
 }
 
 private val Map<String, Any>.hasJsonMergePatchExtension
