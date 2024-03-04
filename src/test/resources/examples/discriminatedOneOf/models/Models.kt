@@ -34,17 +34,17 @@ public data class SomeObj(
 public sealed interface State
 
 public data class StateA(
-    @param:JsonProperty("status")
     @get:JsonProperty("status")
     @get:NotNull
-    public val status: Status,
+    @param:JsonProperty("status")
+    public val status: Status = Status.A,
 ) : State
 
 public data class StateB(
-    @param:JsonProperty("status")
     @get:JsonProperty("status")
     @get:NotNull
-    public val status: Status,
+    @param:JsonProperty("status")
+    public val status: Status = Status.B,
 ) : State
 
 public enum class Status(

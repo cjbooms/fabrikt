@@ -138,6 +138,7 @@ object KaizenParserExtensions {
         api.schemas.values.firstOrNull { it.name == safeName() }
 
     fun Schema.isRequired(
+        api: OpenApi3,
         prop: Map.Entry<String, Schema>,
         markReadWriteOnlyOptional: Boolean,
         markAllOptional: Boolean,
@@ -145,19 +146,50 @@ object KaizenParserExtensions {
         if (markAllOptional || (prop.value.isReadOnly && markReadWriteOnlyOptional) || (prop.value.isWriteOnly && markReadWriteOnlyOptional)) {
             false
         } else {
-            requiredFields.contains(prop.key) || isDiscriminatorProperty(prop) // A discriminator property should be required
+            requiredFields.contains(prop.key) || isDiscriminatorProperty(api, prop) // A discriminator property should be required
         }
 
     fun Schema.getSchemaRefName() = Overlay.of(this).jsonReference.split("/").last()
 
-    fun Schema.isDiscriminatorProperty(prop: Map.Entry<String, Schema>): Boolean =
-        discriminator?.propertyName == prop.key
+    fun Schema.isDiscriminatorProperty(api: OpenApi3, prop: Map.Entry<String, Schema>): Boolean =
+        discriminator?.propertyName == prop.key ||
+            findOneOfSuperInterface(api.schemas.values.toList()).any { oneOf ->
+                oneOf.discriminator?.mappings?.values?.any { it.endsWith("/$name") } ?: false
+            }
+
+    fun Schema.findOneOfSuperInterface(allSchemas: List<Schema>): Set<Schema> {
+        if (ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF !in MutableSettings.modelOptions()) {
+            return emptySet()
+        }
+        return allSchemas
+            .filter { it.discriminator != null && it.oneOfSchemas.isNotEmpty() }
+            .mapNotNull { schema ->
+                schema.discriminator.mappings
+                    .toList()
+                    .find { (_, ref) ->
+                        ref.endsWith("/${name}")
+                    }
+                    ?.let { (key, _) ->
+                        Pair(key!!, schema)
+                    }
+            }
+            .map { (_, parent) ->
+                val field = parent.discriminator.propertyName!!
+                if (!properties.containsKey(field)) {
+                    throw IllegalArgumentException("schema $name did not have discriminator property")
+                }
+                parent
+            }
+            .toSet()
+    }
 
     fun Schema.getKeyIfSingleDiscriminatorValue(
+        api: OpenApi3,
         prop: Map.Entry<String, Schema>,
         enclosingSchema: Schema,
     ): Map<String, PropertyInfo.DiscriminatorKey>? =
-        if (isDiscriminatorProperty(prop) && discriminator.mappingKeys(enclosingSchema).isNotEmpty()) {
+        if (isDiscriminatorProperty(api, prop)) {
+            val discriminator = findDiscriminator(api)
             discriminator.mappingKeys(enclosingSchema).map {
                 if (prop.value.isEnumDefinition()) {
                     it.key to PropertyInfo.DiscriminatorKey.EnumKey(it.key, it.value)
@@ -168,6 +200,18 @@ object KaizenParserExtensions {
         } else {
             null
         }
+
+    private fun Schema.findDiscriminator(api: OpenApi3): Discriminator {
+        val bestDiscriminator = if (this.hasDiscriminator()) {
+            this.discriminator
+        } else {
+            val oneOfDiscriminator = findOneOfSuperInterface(api.schemas.values.toList()).firstOrNull { oneOfInterface ->
+                oneOfInterface.hasDiscriminator()
+            }?.discriminator
+            oneOfDiscriminator ?: this.discriminator
+        }
+        return bestDiscriminator
+    }
 
     fun Discriminator.mappingKeys(enclosingSchema: Schema): Map<String, String> {
         val discriminatorMappings = mappings?.map { it.key to it.value.split("/").last() }?.toMap()
@@ -187,6 +231,7 @@ object KaizenParserExtensions {
             }
 
     fun Schema.hasNoDiscriminator(): Boolean = this.discriminator.propertyName == null
+    fun Schema.hasDiscriminator(): Boolean = !hasNoDiscriminator()
 
     fun Schema.safeName(): String =
         when {
