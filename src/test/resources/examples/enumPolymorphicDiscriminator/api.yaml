@@ -17,6 +17,24 @@ components:
       properties:
         some_enum:
           $ref: '#/components/schemas/ChildDiscriminator'
+        inline_obj:
+          type: object
+          properties:
+            str:
+              type: string
+        inline_array:
+          type: array
+          items:
+            type: object
+            properties:
+              str:
+                type: string
+        inline_enum:
+          type: string
+          enum:
+            - one
+            - two
+            - three
 
     ChildDiscriminator:
       type: string
