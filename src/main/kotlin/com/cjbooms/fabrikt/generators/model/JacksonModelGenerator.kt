@@ -318,7 +318,7 @@ class JacksonModelGenerator(
                     }
 
                 is PropertyInfo.Field ->
-                    if (it.typeInfo is KotlinTypeInfo.Enum) {
+                    if (it.typeInfo is KotlinTypeInfo.Enum && !it.isInherited) {
                         setOf(buildEnumClass(it.typeInfo as KotlinTypeInfo.Enum))
                     } else {
                         emptySet()

@@ -29,6 +29,12 @@ components:
             properties:
               str:
                 type: string
+        inline_enum:
+          type: string
+          enum:
+            - one
+            - two
+            - three
 
     ChildDiscriminator:
       type: string

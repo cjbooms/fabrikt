@@ -37,6 +37,7 @@ import kotlin.collections.Map
 public sealed class ChildDefinition(
     public open val inlineObj: ChildDefinitionInlineObj? = null,
     public open val inlineArray: List<ChildDefinitionInlineArray>? = null,
+    public open val inlineEnum: ChildDefinitionInlineEnum? = null,
 ) {
     public abstract val someEnum: ChildDiscriminator
 }
@@ -46,6 +47,23 @@ public data class ChildDefinitionInlineArray(
     @get:JsonProperty("str")
     public val str: String? = null,
 )
+
+public enum class ChildDefinitionInlineEnum(
+    @JsonValue
+    public val `value`: String,
+) {
+    ONE("one"),
+    TWO("two"),
+    THREE("three"),
+    ;
+
+    public companion object {
+        private val mapping: Map<String, ChildDefinitionInlineEnum> =
+            values().associateBy(ChildDefinitionInlineEnum::value)
+
+        public fun fromValue(`value`: String): ChildDefinitionInlineEnum? = mapping[value]
+    }
+}
 
 public data class ChildDefinitionInlineObj(
     @param:JsonProperty("str")
@@ -80,6 +98,9 @@ public data class DiscriminatedChild1(
     @get:JsonProperty("inline_array")
     @get:Valid
     override val inlineArray: List<ChildDefinitionInlineArray>? = null,
+    @param:JsonProperty("inline_enum")
+    @get:JsonProperty("inline_enum")
+    override val inlineEnum: ChildDefinitionInlineEnum? = null,
     @param:JsonProperty("some_prop")
     @get:JsonProperty("some_prop")
     public val someProp: String? = null,
@@ -87,7 +108,7 @@ public data class DiscriminatedChild1(
     @get:NotNull
     @param:JsonProperty("some_enum")
     override val someEnum: ChildDiscriminator = ChildDiscriminator.OBJ_ONE_ONLY,
-) : ChildDefinition(inlineObj, inlineArray)
+) : ChildDefinition(inlineObj, inlineArray, inlineEnum)
 
 public data class DiscriminatedChild2(
     @get:JsonProperty("some_enum")
@@ -101,10 +122,13 @@ public data class DiscriminatedChild2(
     @get:JsonProperty("inline_array")
     @get:Valid
     override val inlineArray: List<ChildDefinitionInlineArray>? = null,
+    @param:JsonProperty("inline_enum")
+    @get:JsonProperty("inline_enum")
+    override val inlineEnum: ChildDefinitionInlineEnum? = null,
     @param:JsonProperty("some_prop")
     @get:JsonProperty("some_prop")
     public val someProp: String? = null,
-) : ChildDefinition(inlineObj, inlineArray)
+) : ChildDefinition(inlineObj, inlineArray, inlineEnum)
 
 public data class DiscriminatedChild3(
     @param:JsonProperty("inline_obj")
@@ -115,11 +139,14 @@ public data class DiscriminatedChild3(
     @get:JsonProperty("inline_array")
     @get:Valid
     override val inlineArray: List<ChildDefinitionInlineArray>? = null,
+    @param:JsonProperty("inline_enum")
+    @get:JsonProperty("inline_enum")
+    override val inlineEnum: ChildDefinitionInlineEnum? = null,
     @get:JsonProperty("some_enum")
     @get:NotNull
     @param:JsonProperty("some_enum")
     override val someEnum: ChildDiscriminator = ChildDiscriminator.OBJ_THREE,
-) : ChildDefinition(inlineObj, inlineArray)
+) : ChildDefinition(inlineObj, inlineArray, inlineEnum)
 
 public data class Responses(
     @param:JsonProperty("entries")
