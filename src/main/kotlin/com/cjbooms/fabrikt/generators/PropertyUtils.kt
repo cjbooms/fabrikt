@@ -21,6 +21,7 @@ data class ClassSettings(
         NONE,
         SUPER,
         SUB,
+        ONE_OF,
     }
 }
 
@@ -102,11 +103,16 @@ object PropertyUtils {
                     property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
                     property.addValidationAnnotations(this, validationAnnotations)
                 }
+
+                ClassSettings.PolymorphyType.ONE_OF -> {
+                    property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
+                    property.addValidationAnnotations(this, validationAnnotations)
+                }
             }
 
             if (isDiscriminatorFieldWithSingleKnownValue(classSettings, schemaName)) {
                 this as PropertyInfo.Field
-                if (classSettings.polymorphyType == ClassSettings.PolymorphyType.SUB) {
+                if (classSettings.polymorphyType in listOf(ClassSettings.PolymorphyType.SUB, ClassSettings.PolymorphyType.ONE_OF)) {
                     property.initializer(name)
                     property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
                     val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)

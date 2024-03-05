@@ -15,6 +15,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeType
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.cjbooms.fabrikt.util.NormalisedString.toEnumName
+import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
 
 sealed class PropertyInfo {
@@ -38,7 +39,7 @@ sealed class PropertyInfo {
 
         val HTTP_SETTINGS = Settings()
 
-        fun Schema.topLevelProperties(settings: Settings, enclosingSchema: Schema? = null): Collection<PropertyInfo> {
+        fun Schema.topLevelProperties(settings: Settings, api: OpenApi3, enclosingSchema: Schema? = null): Collection<PropertyInfo> {
             val results = mutableListOf<PropertyInfo>() +
                 allOfSchemas.flatMap {
                     it.topLevelProperties(
@@ -47,12 +48,13 @@ sealed class PropertyInfo {
                             enclosingSchema,
                             it
                         ),
+                        api,
                         this
                     )
                 } +
                 (if (oneOfSchemas.isEmpty()) emptyList() else listOf(OneOfAny(oneOfSchemas.first()))) +
-                anyOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true), this) } +
-                getInLinedProperties(settings, enclosingSchema)
+                anyOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true), api, this) } +
+                getInLinedProperties(settings, api, enclosingSchema)
             return results.distinctBy { it.oasKey }
         }
 
@@ -68,13 +70,14 @@ sealed class PropertyInfo {
 
         private fun Schema.getInLinedProperties(
             settings: Settings,
+            api: OpenApi3,
             enclosingSchema: Schema? = null
         ): Collection<PropertyInfo> {
             val mainProperties: List<PropertyInfo> = properties.map { property ->
                 when (property.value.safeType()) {
                     OasType.Array.type ->
                         ListField(
-                            isRequired(property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
+                            isRequired(api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
                             property.key,
                             property.value,
                             settings.markAsInherited,
@@ -87,6 +90,7 @@ sealed class PropertyInfo {
                         if (property.value.isSimpleMapDefinition() || property.value.isSchemaLess())
                             MapField(
                                 isRequired = isRequired(
+                                    api,
                                     property,
                                     settings.markReadWriteOnlyOptional,
                                     settings.markAllOptional
@@ -99,7 +103,7 @@ sealed class PropertyInfo {
                         else if (property.value.isInlinedObjectDefinition())
                             ObjectInlinedField(
                                 isRequired = isRequired(
-                                    property, settings.markReadWriteOnlyOptional, settings.markAllOptional
+                                    api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional
                                 ),
                                 oasKey = property.key,
                                 schema = property.value,
@@ -109,7 +113,7 @@ sealed class PropertyInfo {
                             )
                         else
                             ObjectRefField(
-                                isRequired(property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
+                                isRequired(api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
                                 property.key,
                                 property.value,
                                 settings.markAsInherited,
@@ -120,13 +124,13 @@ sealed class PropertyInfo {
                             null
                         } else {
                             Field(
-                                isRequired(property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
+                                isRequired(api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
                                 oasKey = property.key,
                                 schema = property.value,
                                 isInherited = settings.markAsInherited,
-                                isPolymorphicDiscriminator = isDiscriminatorProperty(property),
+                                isPolymorphicDiscriminator = isDiscriminatorProperty(api, property),
                                 maybeDiscriminator = enclosingSchema?.let {
-                                    this.getKeyIfSingleDiscriminatorValue(property, it)
+                                    this.getKeyIfSingleDiscriminatorValue(api, property, it)
                                 },
                                 enclosingSchema = if (property.value.isInlinedEnumDefinition()) this else null
                             )
