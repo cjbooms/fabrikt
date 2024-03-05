@@ -282,16 +282,20 @@ class JacksonModelGenerator(
         } else {
             when (it) {
                 is PropertyInfo.ObjectInlinedField -> {
-                    val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
-                    val currentModel = standardDataClass(
-                        ModelNameRegistry.getOrRegister(it.schema, enclosingSchema.toEnclosingSchemaInfo()),
-                        it.name,
-                        props,
-                        it.schema.extensions,
-                        oneOfInterfaces = emptySet(),
-                    )
-                    val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
-                    inlinedModels + currentModel
+                    if (it.isInherited) {
+                        emptySet() // Rely on the parent definition
+                    } else {
+                        val props = it.schema.topLevelProperties(HTTP_SETTINGS, enclosingSchema)
+                        val currentModel = standardDataClass(
+                            ModelNameRegistry.getOrRegister(it.schema, enclosingSchema.toEnclosingSchemaInfo()),
+                            it.name,
+                            props,
+                            it.schema.extensions,
+                            oneOfInterfaces = emptySet(),
+                        )
+                        val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
+                        inlinedModels + currentModel
+                    }
                 }
 
                 is PropertyInfo.ObjectRefField -> emptySet() // Not an inlined definition, so do nothing
@@ -321,8 +325,11 @@ class JacksonModelGenerator(
                     }
 
                 is PropertyInfo.ListField ->
-                    buildInlinedListDefinition(it.schema, it.name, enclosingSchema, apiDocUrl)
-
+                    if (it.isInherited) {
+                        emptySet() // Rely on the parent definition
+                    } else {
+                        buildInlinedListDefinition(it.schema, it.name, enclosingSchema, apiDocUrl)
+                    }
                 is PropertyInfo.OneOfAny -> emptySet()
             }
         }
@@ -707,20 +714,20 @@ class JacksonModelGenerator(
     ): TypeSpec.Builder {
         this.forEach {
             it.addToClass(
-                schemaName,
-                toModelType(
+                schemaName = schemaName,
+                type = toModelType(
                     packages.base,
                     it.typeInfo,
                     it.isNullable(),
                 ),
-                toClassName(
+                parameterizedType = toClassName(
                     packages.base,
                     it.typeInfo,
                 ),
-                classBuilder,
-                constructorBuilder,
-                classType,
-                validationAnnotations,
+                classBuilder = classBuilder,
+                constructorBuilder = constructorBuilder,
+                classSettings = classType,
+                validationAnnotations = validationAnnotations,
             )
         }
         if (constructorBuilder.parameters.isNotEmpty() && classBuilder.modifiers.isEmpty()) {
