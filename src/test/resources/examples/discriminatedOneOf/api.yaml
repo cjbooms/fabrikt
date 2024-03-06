@@ -35,6 +35,12 @@ components:
       type: object
       required:
         - status
+        - mode
       properties:
         status:
           $ref: '#/components/schemas/Status'
+        mode:
+          type: string
+          enum:
+            - mode1
+            - mode2
