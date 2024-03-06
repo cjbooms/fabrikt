@@ -41,11 +41,29 @@ public data class StateA(
 ) : State
 
 public data class StateB(
+    @get:JsonProperty("mode")
+    @get:NotNull
+    public val mode: StateBMode,
     @get:JsonProperty("status")
     @get:NotNull
     @param:JsonProperty("status")
     public val status: Status = Status.B,
 ) : State
+
+public enum class StateBMode(
+    @JsonValue
+    public val `value`: String,
+) {
+    MODE1("mode1"),
+    MODE2("mode2"),
+    ;
+
+    public companion object {
+        private val mapping: Map<String, StateBMode> = values().associateBy(StateBMode::value)
+
+        public fun fromValue(`value`: String): StateBMode? = mapping[value]
+    }
+}
 
 public enum class Status(
     @JsonValue

@@ -154,7 +154,8 @@ object KaizenParserExtensions {
     fun Schema.isDiscriminatorProperty(api: OpenApi3, prop: Map.Entry<String, Schema>): Boolean =
         discriminator?.propertyName == prop.key ||
             findOneOfSuperInterface(api.schemas.values.toList()).any { oneOf ->
-                oneOf.discriminator?.mappings?.values?.any { it.endsWith("/$name") } ?: false
+                oneOf.discriminator?.propertyName == prop.key
+                        && oneOf.discriminator?.mappings?.values?.any { it.endsWith("/$name") } ?: false
             }
 
     fun Schema.findOneOfSuperInterface(allSchemas: List<Schema>): Set<Schema> {
