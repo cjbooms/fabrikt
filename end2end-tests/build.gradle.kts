@@ -1,7 +1,7 @@
 val fabrikt: Configuration by configurations.creating
 
 val generationDir = "$buildDir/generated"
-val apiFile = "$buildDir/../../src/test/resources/examples/okHttpClient/api.yaml"
+val apiFile = "$buildDir/../../src/test/resources/examples/httpClient/api.yaml"
 
 sourceSets {
     main { java.srcDirs("$generationDir/src/main/kotlin") }
@@ -40,7 +40,7 @@ dependencies {
 
 tasks {
 
-    val generateCode by creating(JavaExec::class) {
+    val generateOkioCode by creating(JavaExec::class) {
         inputs.files(apiFile)
         outputs.dir(generationDir)
         outputs.cacheIf { true }
@@ -58,9 +58,29 @@ tasks {
         dependsOn(":shadowJar")
     }
 
+    val generateJdkClientCode by creating(JavaExec::class) {
+        inputs.files(apiFile)
+        outputs.dir(generationDir)
+        outputs.cacheIf { true }
+        classpath = rootProject.files("./build/libs/fabrikt-${rootProject.version}.jar")
+        mainClass.set("com.cjbooms.fabrikt.cli.CodeGen")
+        args = listOf(
+            "--output-directory", generationDir,
+            "--base-package", "com.example.jdk_client",
+            "--api-file", apiFile,
+            "--targets", "http_models",
+            "--http-client-target", "JDK_HTTP",
+            "--targets", "client",
+            "--http-client-opts", "resilience4j"
+        )
+        dependsOn(":jar")
+        dependsOn(":shadowJar")
+    }
+
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
-        dependsOn(generateCode)
+        dependsOn(generateOkioCode)
+        dependsOn(generateJdkClientCode)
     }
 
 
