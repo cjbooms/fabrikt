@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
 import com.cjbooms.fabrikt.generators.client.OpenFeignInterfaceGenerator
+import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
@@ -42,7 +43,7 @@ class CodeGenerator(
     private fun generateModels(): Collection<GeneratedFile> = sourceSet(models().files)
 
     private fun generateControllerInterfaces(): Collection<GeneratedFile> =
-        sourceSet(controllers().files).plus(sourceSet(models().files))
+        sourceSet(controllers()).plus(sourceSet(models().files))
 
     private fun generateClient(): Collection<GeneratedFile> {
         val clientGenerator = when (MutableSettings.clientTarget()) {
@@ -67,7 +68,7 @@ class CodeGenerator(
     private fun resources(models: Models): List<ResourceFile> =
         listOfNotNull(QuarkusReflectionModelGenerator(models).generate())
 
-    private fun controllers(): KotlinTypes {
+    private fun controllers(): List<FileSpec> {
         val generator =
             when (MutableSettings.controllerTarget()) {
                 ControllerCodeGenTargetType.SPRING -> SpringControllerInterfaceGenerator(
@@ -83,7 +84,24 @@ class CodeGenerator(
                     MutableSettings.validationLibrary().annotations,
                     MutableSettings.controllerOptions(),
                 )
+
+                ControllerCodeGenTargetType.KTOR -> KtorControllerInterfaceGenerator(
+                    packages,
+                    sourceApi,
+                )
             }
-        return generator.generate()
+
+        val controllerFiles: Collection<FileSpec> = generator.generate().files
+        val libFiles: Collection<FileSpec> = generator.generateLibrary().map {
+            val builder = FileSpec.builder(it.className)
+                .addType(it.spec)
+
+            // add imports for the library files
+            it.imports.forEach { import -> builder.addImport(import.packageName, import.name) }
+
+            builder.build()
+        }
+
+        return controllerFiles.plus(libFiles)
     }
 }

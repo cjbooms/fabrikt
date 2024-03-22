@@ -59,7 +59,8 @@ enum class ControllerCodeGenOptionType(val description: String) {
 
 enum class ControllerCodeGenTargetType(val description: String) {
     SPRING("Generate for Spring framework."),
-    MICRONAUT("Generate for Micronaut framework.");
+    MICRONAUT("Generate for Micronaut framework."),
+    KTOR("Generate for Ktor server.");
 
     override fun toString() = "`${super.toString()}` - $description"
 }

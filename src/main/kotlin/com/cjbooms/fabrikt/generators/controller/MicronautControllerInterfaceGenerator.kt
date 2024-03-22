@@ -13,6 +13,7 @@ import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports.SECURITY_RULE_IS_ANONYMOUS
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports.SECURITY_RULE_IS_AUTHENTICATED
 import com.cjbooms.fabrikt.model.BodyParameter
+import com.cjbooms.fabrikt.model.ControllerLibraryType
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.HeaderParam
 import com.cjbooms.fabrikt.model.KotlinTypes
@@ -37,7 +38,7 @@ class MicronautControllerInterfaceGenerator(
     private val api: SourceApi,
     private val validationAnnotations: ValidationAnnotations,
     private val options: Set<ControllerCodeGenOptionType> = emptySet(),
-) : ControllerInterfaceGenerator(packages, api, validationAnnotations) {
+) : ControllerInterfaceGenerator, AnnotationBasedControllerInterfaceGenerator(packages, api, validationAnnotations) {
 
     private val useSuspendModifier: Boolean
         get() = options.any { it == ControllerCodeGenOptionType.SUSPEND_MODIFIER }
@@ -52,6 +53,8 @@ class MicronautControllerInterfaceGenerator(
             }.toSet(),
             addAuthenticationParameter,
         )
+
+    override fun generateLibrary(): Collection<ControllerLibraryType> = emptySet()
 
     override fun controllerBuilder(
         className: String,

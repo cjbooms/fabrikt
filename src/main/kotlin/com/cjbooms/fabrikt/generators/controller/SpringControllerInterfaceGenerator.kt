@@ -11,6 +11,7 @@ import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securi
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringAnnotations
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.BodyParameter
+import com.cjbooms.fabrikt.model.ControllerLibraryType
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.HeaderParam
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
@@ -36,7 +37,7 @@ class SpringControllerInterfaceGenerator(
     private val api: SourceApi,
     private val validationAnnotations: ValidationAnnotations,
     private val options: Set<ControllerCodeGenOptionType> = emptySet(),
-) : ControllerInterfaceGenerator(packages, api, validationAnnotations) {
+) : ControllerInterfaceGenerator, AnnotationBasedControllerInterfaceGenerator(packages, api, validationAnnotations) {
 
     private val addAuthenticationParameter: Boolean
         get() = options.any { it == ControllerCodeGenOptionType.AUTHENTICATION }
@@ -47,6 +48,8 @@ class SpringControllerInterfaceGenerator(
                 buildController(resourceName, paths.values)
             }.toSet(),
         )
+
+    override fun generateLibrary(): Collection<ControllerLibraryType> = emptySet()
 
     override fun controllerBuilder(
         className: String,
