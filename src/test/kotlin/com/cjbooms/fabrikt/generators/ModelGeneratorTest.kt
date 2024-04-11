@@ -56,6 +56,7 @@ class ModelGeneratorTest {
         "discriminatedOneOf",
         "openapi310",
         "binary",
+        "oneOfMarkerInterface",
     )
 
     @BeforeEach
