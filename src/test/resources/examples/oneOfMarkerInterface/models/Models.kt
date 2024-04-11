@@ -1,8 +1,16 @@
 package examples.oneOfMarkerInterface.models
 
 import com.fasterxml.jackson.`annotation`.JsonProperty
+import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import kotlin.String
+
+public data class Container(
+    @param:JsonProperty("state")
+    @get:JsonProperty("state")
+    @get:Valid
+    public val state: State? = null,
+)
 
 public sealed interface State
 

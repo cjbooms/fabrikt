@@ -3,6 +3,11 @@ info:
 paths:
 components:
   schemas:
+    Container:
+      type: object
+      properties:
+        state:
+          $ref: '#/components/schemas/State'
 
     State:
       oneOf:
