@@ -17,8 +17,14 @@ object JacksonMetadata {
     private val JSON_ANY_SETTER = ClassName("com.fasterxml.jackson.annotation", "JsonAnySetter")
     private val JSON_ANY_GETTER = ClassName("com.fasterxml.jackson.annotation", "JsonAnyGetter")
     private val JSON_IGNORE = ClassName("com.fasterxml.jackson.annotation", "JsonIgnore")
+    private val JSON_INCLUDE_CLASS = ClassName("com.fasterxml.jackson.annotation", "JsonInclude")
 
     val JSON_VALUE = AnnotationSpec.builder(JSON_VALUE_CLASS).build()
+    val JSON_INCLUDE = AnnotationSpec
+        .builder(JSON_INCLUDE_CLASS)
+        .useSiteTarget(AnnotationSpec.UseSiteTarget.PARAM)
+        .addMember("%T.Include.NON_NULL", JSON_INCLUDE_CLASS)
+        .build()
 
     fun jacksonPropertyAnnotation(name: String) = AnnotationSpec
         .builder(JSON_PROPERTY_CLASS)
