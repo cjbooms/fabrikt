@@ -22,3 +22,11 @@ paths:
               schema:
                 type: string
                 format: binary
+
+components:
+  schemas:
+    BinaryData:
+      properties:
+        binaryValue:
+          type: string
+          format: binary

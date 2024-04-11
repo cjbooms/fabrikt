@@ -55,6 +55,7 @@ class ModelGeneratorTest {
         "instantDateTime",
         "discriminatedOneOf",
         "openapi310",
+        "binary",
     )
 
     @BeforeEach
