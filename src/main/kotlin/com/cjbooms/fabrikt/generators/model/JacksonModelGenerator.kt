@@ -6,7 +6,7 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.ClassSettings
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
-import com.cjbooms.fabrikt.generators.JavaxValidationAnnotations
+import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.PropertyUtils.addToClass
 import com.cjbooms.fabrikt.generators.PropertyUtils.isNullable
 import com.cjbooms.fabrikt.generators.TypeFactory.createList
@@ -69,10 +69,10 @@ import java.net.URL
 class JacksonModelGenerator(
     private val packages: Packages,
     private val sourceApi: SourceApi,
-    private val options: Set<ModelCodeGenOptionType> = emptySet(),
-    private val validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations,
-    private val externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.TARGETED,
 ) {
+    private val options = MutableSettings.modelOptions()
+    private val validationAnnotations: ValidationAnnotations = MutableSettings.validationLibrary().annotations
+    private val externalRefResolutionMode: ExternalReferencesResolutionMode = MutableSettings.externalRefResolutionMode()
     companion object {
         fun toModelType(basePackage: String, typeInfo: KotlinTypeInfo, isNullable: Boolean = false): TypeName {
             val className =

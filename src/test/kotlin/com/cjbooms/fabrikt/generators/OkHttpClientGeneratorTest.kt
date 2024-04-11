@@ -138,11 +138,13 @@ class OkHttpClientGeneratorTest {
         val expectedModel = readTextResource("/examples/externalReferences/aggressive/models/Models.kt")
         val expectedClient = readTextResource("/examples/externalReferences/aggressive/client/ApiClient.kt")
         val expectedClientCode = readTextResource("/examples/externalReferences/aggressive/client/ApiService.kt")
+        MutableSettings.updateSettings(
+            externalRefResolutionMode = ExternalReferencesResolutionMode.AGGRESSIVE,
+        )
 
         val models = JacksonModelGenerator(
             packages,
             sourceApi,
-            externalRefResolutionMode = ExternalReferencesResolutionMode.AGGRESSIVE
         ).generate().toSingleFile()
         val generator =
             OkHttpEnhancedClientGenerator(packages, sourceApi)
