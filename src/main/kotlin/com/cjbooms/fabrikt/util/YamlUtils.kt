@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactoryBuilder
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.reprezen.kaizen.oasparser.OpenApi3Parser
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
+import org.yaml.snakeyaml.LoaderOptions
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -17,16 +19,29 @@ object YamlUtils {
 
     val objectMapper: ObjectMapper =
         ObjectMapper(
-            YAMLFactory()
+            YAMLFactory.builder()
                 .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
-                .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES),
+                .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
+                .increaseMaxFileSize()
+                .build()
         )
             .registerKotlinModule()
             .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
     private val internalMapper: ObjectMapper =
-        ObjectMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
+        ObjectMapper(
+            YAMLFactory.builder()
+                .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
+                .increaseMaxFileSize()
+                .build()
+        )
 
     private val NULL_TYPE: JsonNode = objectMapper.valueToTree("null")
+
+    private fun YAMLFactoryBuilder.increaseMaxFileSize(): YAMLFactoryBuilder = loaderOptions(
+        LoaderOptions().apply {
+            codePointLimit = 100 * 1024 * 1024 // 100MB
+        }
+    )
 
     fun mergeYamlTrees(mainTree: String, updateTree: String) =
         internalMapper.writeValueAsString(
