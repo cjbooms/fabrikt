@@ -10,6 +10,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.reprezen.kaizen.oasparser.OpenApi3Parser
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
+import org.yaml.snakeyaml.LoaderOptions
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -17,9 +18,15 @@ object YamlUtils {
 
     val objectMapper: ObjectMapper =
         ObjectMapper(
-            YAMLFactory()
+            YAMLFactory.builder()
                 .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
-                .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES),
+                .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
+                .loaderOptions(
+                    LoaderOptions().apply {
+                        codePointLimit = 100 * 1024 * 1024 // 100MB }
+                    }
+                )
+                .build()
         )
             .registerKotlinModule()
             .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
