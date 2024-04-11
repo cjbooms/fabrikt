@@ -62,10 +62,10 @@ class CodeGenerator(
     private fun resourceSet(resFiles: Collection<ResourceFile>) = setOf(ResourceSourceSet(resFiles, resourcesPath))
 
     private fun models(): Models =
-        JacksonModelGenerator(packages, sourceApi, MutableSettings.modelOptions(), MutableSettings.validationLibrary().annotations, MutableSettings.externalRefResolutionMode()).generate()
+        JacksonModelGenerator(packages, sourceApi).generate()
 
     private fun resources(models: Models): List<ResourceFile> =
-        listOfNotNull(QuarkusReflectionModelGenerator(models, MutableSettings.generationTypes()).generate())
+        listOfNotNull(QuarkusReflectionModelGenerator(models).generate())
 
     private fun controllers(): KotlinTypes {
         val generator =

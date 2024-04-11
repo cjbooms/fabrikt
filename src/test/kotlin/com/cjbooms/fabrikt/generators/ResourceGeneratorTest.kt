@@ -39,11 +39,13 @@ class ResourceGeneratorTest {
         val sourceApi = SourceApi(apiLocation!!.readText(), baseDir = Paths.get(apiLocation.toURI()))
         val expectedResource =
             javaClass.getResource("/examples/$testCaseName/resources/reflection-config.json")!!.readText()
-        val generationTypes = setOf(CodeGenerationType.QUARKUS_REFLECTION_CONFIG)
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.QUARKUS_REFLECTION_CONFIG),
+        )
 
-        val models = JacksonModelGenerator(Packages(basePackage), sourceApi, emptySet()).generate()
+        val models = JacksonModelGenerator(Packages(basePackage), sourceApi).generate()
 
-        val resources = QuarkusReflectionModelGenerator(models, generationTypes).generate()?.toSingleFile()
+        val resources = QuarkusReflectionModelGenerator(models).generate()?.toSingleFile()
 
         assertThat(resources).isEqualTo(expectedResource)
     }

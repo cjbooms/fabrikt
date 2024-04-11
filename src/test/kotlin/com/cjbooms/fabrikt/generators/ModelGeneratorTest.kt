@@ -73,6 +73,7 @@ class ModelGeneratorTest {
     @MethodSource("testCases")
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         print("Testcase: $testCaseName")
+        MutableSettings.updateSettings()
         MutableSettings.addOption(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS)
         if (testCaseName == "instantDateTime") {
             MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
@@ -88,7 +89,6 @@ class ModelGeneratorTest {
         val models = JacksonModelGenerator(
             Packages(basePackage),
             sourceApi,
-            setOf(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF),
         ).generate().toSingleFile()
 
         assertThat(models).isEqualTo(expectedModels)
@@ -99,11 +99,13 @@ class ModelGeneratorTest {
         val basePackage = "examples.jakartaValidationAnnotations"
         val spec = readTextResource("/examples/jakartaValidationAnnotations/api.yaml")
         val expectedJakartaModel = readTextResource("/examples/jakartaValidationAnnotations/models/Models.kt")
-        MutableSettings.updateSettings(genTypes = setOf(CodeGenerationType.HTTP_MODELS))
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.HTTP_MODELS),
+            validationLibrary = ValidationLibrary.JAKARTA_VALIDATION
+        )
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            validationAnnotations = ValidationLibrary.JAKARTA_VALIDATION.annotations,
         ).generate()
 
         assertThat(models.files.size).isEqualTo(4)
@@ -131,11 +133,12 @@ class ModelGeneratorTest {
         val basePackage = "examples.javaSerializableModels"
         val spec = readTextResource("/examples/javaSerializableModels/api.yaml")
         val expectedModels = readTextResource("/examples/javaSerializableModels/models/Models.kt")
-
+        MutableSettings.updateSettings(
+            modelOptions = setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION),
+        )
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION),
         )
             .generate()
             .toSingleFile()
@@ -188,11 +191,13 @@ class ModelGeneratorTest {
         val basePackage = "examples.quarkusReflectionModels"
         val spec = readTextResource("/examples/quarkusReflectionModels/api.yaml")
         val expectedModels = readTextResource("/examples/quarkusReflectionModels/models/Models.kt")
+        MutableSettings.updateSettings(
+            modelOptions = setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION),
+        )
 
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION),
         )
             .generate()
             .toSingleFile()
@@ -205,11 +210,13 @@ class ModelGeneratorTest {
         val basePackage = "examples.micronautIntrospectedModels"
         val spec = readTextResource("/examples/micronautIntrospectedModels/api.yaml")
         val expectedModels = readTextResource("/examples/micronautIntrospectedModels/models/Models.kt")
+        MutableSettings.updateSettings(
+            modelOptions = setOf(ModelCodeGenOptionType.MICRONAUT_INTROSPECTION),
+        )
 
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.MICRONAUT_INTROSPECTION),
         )
             .generate()
             .toSingleFile()
@@ -222,11 +229,13 @@ class ModelGeneratorTest {
         val basePackage = "examples.micronautReflectionModels"
         val spec = readTextResource("/examples/micronautReflectionModels/api.yaml")
         val expectedModels = readTextResource("/examples/micronautReflectionModels/models/Models.kt")
+        MutableSettings.updateSettings(
+            modelOptions = setOf(ModelCodeGenOptionType.MICRONAUT_REFLECTION),
+        )
 
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.MICRONAUT_REFLECTION),
         )
             .generate()
             .toSingleFile()
@@ -239,11 +248,13 @@ class ModelGeneratorTest {
         val basePackage = "examples.companionObject"
         val spec = readTextResource("/examples/companionObject/api.yaml")
         val expectedModels = readTextResource("/examples/companionObject/models/Models.kt")
+        MutableSettings.updateSettings(
+            modelOptions = setOf(ModelCodeGenOptionType.INCLUDE_COMPANION_OBJECT),
+        )
 
         val models = JacksonModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
-            setOf(ModelCodeGenOptionType.INCLUDE_COMPANION_OBJECT),
         )
             .generate()
             .toSingleFile()
