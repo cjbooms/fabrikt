@@ -67,8 +67,8 @@ class ModelGeneratorTest {
         ModelNameRegistry.clear()
     }
 
-    // @Test
-    // fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("insert test case")
+    @Test
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("oneOfMarkerInterface")
 
     @ParameterizedTest
     @MethodSource("testCases")
@@ -79,7 +79,7 @@ class ModelGeneratorTest {
         if (testCaseName == "instantDateTime") {
             MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
         }
-        if (testCaseName == "discriminatedOneOf") {
+        if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface") {
             MutableSettings.addOption(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF)
         }
         val basePackage = "examples.${testCaseName.replace("/", ".")}"
