@@ -9,6 +9,7 @@ This library was built to take advantage of the complex modeling features availa
  - Maps of Maps of Maps
  - GraalVM Native Reflection Registration
  - Json Merge Patch (via `JsonNullable`) (add `x-json-merge-patch: true` to schemas)
+ - Override Jackson Include NonNull (via `JsonInclude`) (add `x-jackson-include-non-null: true` to schemas)
 
 More than just bootstrapping, this library can be permanently integrated into a gradle or maven build and will ensure contract and code always match, even as APIs evolve in complexity. 
 
