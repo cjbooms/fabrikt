@@ -60,7 +60,7 @@ class OkHttpEnhancedClientGenerator(
                         .addParameter(
                             ParameterSpec.builder(
                                 ADDITIONAL_HEADERS_PARAMETER_NAME,
-                                TypeFactory.createMapOfStringToType(String::class.asTypeName())
+                                TypeFactory.createMapOfStringToNonNullType(String::class.asTypeName())
                             )
                                 .defaultValue("emptyMap()")
                                 .build()

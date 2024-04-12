@@ -32,13 +32,13 @@ public data class BulkEntityDetails(
     @get:Valid
     public val entities: List<EntityDetails>,
     @get:JsonIgnore
-    public val properties: MutableMap<String, Any> = mutableMapOf(),
+    public val properties: MutableMap<String, Any?> = mutableMapOf(),
 ) {
     @JsonAnyGetter
-    public fun `get`(): Map<String, Any> = properties
+    public fun `get`(): Map<String, Any?> = properties
 
     @JsonAnySetter
-    public fun `set`(name: String, `value`: Any) {
+    public fun `set`(name: String, `value`: Any?) {
         properties[name] = value
     }
 }
@@ -121,13 +121,13 @@ public data class EntityDetails(
     @get:NotNull
     public val id: String,
     @get:JsonIgnore
-    public val properties: MutableMap<String, Any> = mutableMapOf(),
+    public val properties: MutableMap<String, Any?> = mutableMapOf(),
 ) {
     @JsonAnyGetter
-    public fun `get`(): Map<String, Any> = properties
+    public fun `get`(): Map<String, Any?> = properties
 
     @JsonAnySetter
-    public fun `set`(name: String, `value`: Any) {
+    public fun `set`(name: String, `value`: Any?) {
         properties[name] = value
     }
 }
@@ -140,15 +140,15 @@ public data class Event(
     @param:JsonProperty("data")
     @get:JsonProperty("data")
     @get:NotNull
-    public val `data`: Map<String, Any>,
+    public val `data`: Map<String, Any?>,
     @get:JsonIgnore
-    public val properties: MutableMap<String, Any> = mutableMapOf(),
+    public val properties: MutableMap<String, Any?> = mutableMapOf(),
 ) {
     @JsonAnyGetter
-    public fun `get`(): Map<String, Any> = properties
+    public fun `get`(): Map<String, Any?> = properties
 
     @JsonAnySetter
-    public fun `set`(name: String, `value`: Any) {
+    public fun `set`(name: String, `value`: Any?) {
         properties[name] = value
     }
 }
@@ -161,13 +161,13 @@ public data class EventResults(
     @get:Valid
     public val changeEvents: List<Event>,
     @get:JsonIgnore
-    public val properties: MutableMap<String, Any> = mutableMapOf(),
+    public val properties: MutableMap<String, Any?> = mutableMapOf(),
 ) {
     @JsonAnyGetter
-    public fun `get`(): Map<String, Any> = properties
+    public fun `get`(): Map<String, Any?> = properties
 
     @JsonAnySetter
-    public fun `set`(name: String, `value`: Any) {
+    public fun `set`(name: String, `value`: Any?) {
         properties[name] = value
     }
 }

@@ -54,5 +54,5 @@ public data class ValidationAnnotations(
     @param:JsonProperty("qualities")
     @get:JsonProperty("qualities")
     @get:Valid
-    public val qualities: Map<String, QualitiesValue>? = null,
+    public val qualities: Map<String, QualitiesValue?>? = null,
 )
