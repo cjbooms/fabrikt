@@ -258,6 +258,9 @@ object KaizenParserExtensions {
         oneOfSchemas.isNotEmpty() && allOfSchemas.isEmpty() && anyOfSchemas.isEmpty() && properties.isEmpty() &&
             oneOfSchemas.all { it.isObjectType() }
 
+    fun Schema.isOneOfSuperInterfaceWithDiscriminator() =
+        discriminator != null && discriminator.propertyName != null && isOneOfSuperInterface()
+
     private fun Schema.isInlinedAggregationOfExactlyOne() =
         combinedAnyOfAndAllOfSchemas().size == 1 && isInlinedPropertySchema()
 

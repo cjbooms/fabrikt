@@ -6,7 +6,7 @@ import com.cjbooms.fabrikt.model.OasType.Companion.toOasType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getEnumValues
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterface
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterfaceWithDiscriminator
 import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.reprezen.kaizen.oasparser.model3.Schema
 import java.math.BigDecimal
@@ -21,8 +21,8 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     object Text : KotlinTypeInfo(String::class)
     object Date : KotlinTypeInfo(LocalDate::class)
     object DateTime : KotlinTypeInfo(OffsetDateTime::class)
-    object Instant: KotlinTypeInfo(java.time.Instant::class)
-    object LocalDateTime: KotlinTypeInfo(java.time.LocalDateTime::class)
+    object Instant : KotlinTypeInfo(java.time.Instant::class)
+    object LocalDateTime : KotlinTypeInfo(java.time.LocalDateTime::class)
     object Double : KotlinTypeInfo(kotlin.Double::class)
     object Float : KotlinTypeInfo(kotlin.Float::class)
     object Numeric : KotlinTypeInfo(BigDecimal::class)
@@ -62,6 +62,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Text -> Text
                 OasType.Enum ->
                     Enum(schema.getEnumValues(), ModelNameRegistry.getOrRegister(schema, enclosingSchema))
+
                 OasType.Uuid -> Uuid
                 OasType.Uri -> Uri
                 OasType.Base64String -> ByteArray
@@ -77,12 +78,15 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     if (schema.itemsSchema.isNotDefined())
                         throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")
                     else Array(from(schema.itemsSchema, oasKey, enclosingSchema))
+
                 OasType.Object -> Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
                 OasType.Map ->
                     Map(from(schema.additionalPropertiesSchema, "", enclosingSchema))
+
                 OasType.TypedObjectAdditionalProperties -> GeneratedTypedAdditionalProperties(
                     ModelNameRegistry.getOrRegister(schema, valueSuffix = schema.isInlinedTypedAdditionalProperties())
                 )
+
                 OasType.UntypedObjectAdditionalProperties -> UntypedObjectAdditionalProperties
                 OasType.UntypedObject -> UntypedObject
                 OasType.UnknownAdditionalProperties -> UnknownAdditionalProperties
@@ -90,10 +94,14 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     MapTypeAdditionalProperties(
                         from(schema.additionalPropertiesSchema, "", enclosingSchema)
                     )
+
                 OasType.Any -> AnyType
                 OasType.OneOfAny ->
-                    if (schema.isOneOfSuperInterface()) Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
-                    else AnyType
+                    if (schema.isOneOfSuperInterfaceWithDiscriminator()) {
+                        Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
+                    } else {
+                        AnyType
+                    }
             }
 
         private fun getOverridableDateTimeType(): KotlinTypeInfo {
