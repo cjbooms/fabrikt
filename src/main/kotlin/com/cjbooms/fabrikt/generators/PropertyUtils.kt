@@ -59,10 +59,11 @@ object PropertyUtils {
 
             val value =
                 if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties) {
-                    Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), parameterizedType)
+                    Map::class.asTypeName()
+                        .parameterizedBy(String::class.asTypeName(), parameterizedType.copy(nullable = true))
                 } else {
                     parameterizedType
-                }
+                }.copy(nullable = true)
             classBuilder.addFunction(
                 FunSpec.builder("get")
                     .returns(Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), value))

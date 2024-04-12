@@ -85,7 +85,7 @@ class OpenFeignInterfaceGenerator(
             .addParameter(
                 ParameterSpec.builder(
                     ADDITIONAL_HEADERS_PARAMETER_NAME,
-                    TypeFactory.createMapOfStringToType(String::class.asTypeName()),
+                    TypeFactory.createMapOfStringToNonNullType(String::class.asTypeName()),
                 )
                     .addAnnotation(OpenFeignAnnotations.HEADER_MAP)
                     .defaultValue("emptyMap()")

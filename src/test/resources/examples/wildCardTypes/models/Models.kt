@@ -14,5 +14,5 @@ public data class WildCardTypes(
     @param:JsonProperty("meta")
     @get:JsonProperty("meta")
     @get:NotNull
-    public val meta: Map<String, Any>,
+    public val meta: Map<String, Any?>,
 )

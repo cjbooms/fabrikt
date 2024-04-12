@@ -11,6 +11,7 @@ import com.cjbooms.fabrikt.generators.PropertyUtils.addToClass
 import com.cjbooms.fabrikt.generators.PropertyUtils.isNullable
 import com.cjbooms.fabrikt.generators.TypeFactory.createList
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfMapsStringToStringAny
+import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfStringToNonNullType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfStringToType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfMapsStringToStringType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfStringToType
@@ -408,7 +409,7 @@ class JacksonModelGenerator(
         )
         val companion = TypeSpec.companionObjectBuilder()
             .addProperty(
-                PropertySpec.builder("mapping", createMapOfStringToType(enumType))
+                PropertySpec.builder("mapping", createMapOfStringToNonNullType(enumType))
                     .initializer("values().associateBy(%T::value)", enumType)
                     .addModifiers(KModifier.PRIVATE)
                     .build(),

@@ -13,8 +13,8 @@ object TypeFactory {
             String::class.asTypeName(),
             Map::class.asTypeName().parameterizedBy(
                 String::class.asTypeName(),
-                Any::class.asTypeName()
-            )
+                Any::class.asTypeName().copy(nullable = true)
+            ).copy(nullable = true)
         )
 
     fun createMutableMapOfMapsStringToStringType(type: TypeName) =
@@ -22,17 +22,22 @@ object TypeFactory {
             String::class.asTypeName(),
             Map::class.asTypeName().parameterizedBy(
                 String::class.asTypeName(),
-                type
-            )
+                type.copy(nullable = true)
+            ).copy(nullable = true)
         )
 
     fun createMutableMapOfStringToType(type: TypeName) =
         ClassName("kotlin.collections", "MutableMap").parameterizedBy(
             String::class.asTypeName(),
-            type
+            type.copy(nullable = true)
         )
 
     fun createMapOfStringToType(type: TypeName) =
+        Map::class.asClassName().parameterizedBy(
+            String::class.asTypeName(),
+            type.copy(nullable = true)
+        )
+    fun createMapOfStringToNonNullType(type: TypeName) =
         Map::class.asClassName().parameterizedBy(
             String::class.asTypeName(),
             type
