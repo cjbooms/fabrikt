@@ -43,6 +43,7 @@ enum class ModelCodeGenOptionType(val description: String) {
     MICRONAUT_REFLECTION("This option adds @ReflectiveAccess to the generated models. Requires dependency \"'io.micronaut:micronaut-core:+\""),
     INCLUDE_COMPANION_OBJECT("This option adds a companion object to the generated models."),
     SEALED_INTERFACES_FOR_ONE_OF("This option enables the generation of interfaces for discriminated oneOf types"),
+    NON_NULL_MAP_VALUES("This option makes map values non-null. The default (since v15) and most spec compliant is make map values nullable"),
     ;
 
     override fun toString() = "`${super.toString()}` - $description"

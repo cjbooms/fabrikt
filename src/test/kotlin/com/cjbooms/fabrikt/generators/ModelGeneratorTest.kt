@@ -40,6 +40,7 @@ class ModelGeneratorTest {
         "inLinedObject",
         "customExtensions",
         "mapExamples",
+        "mapExamplesNonNullValues",
         "mixingCamelSnakeLispCase",
         "oneOfPolymorphicModels",
         "optionalVsRequired",
@@ -81,6 +82,9 @@ class ModelGeneratorTest {
         }
         if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface") {
             MutableSettings.addOption(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF)
+        }
+        if (testCaseName == "mapExamplesNonNullValues") {
+            MutableSettings.addOption(ModelCodeGenOptionType.NON_NULL_MAP_VALUES)
         }
         val basePackage = "examples.${testCaseName.replace("/", ".")}"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!

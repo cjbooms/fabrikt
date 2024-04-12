@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
@@ -13,8 +14,8 @@ object TypeFactory {
             String::class.asTypeName(),
             Map::class.asTypeName().parameterizedBy(
                 String::class.asTypeName(),
-                Any::class.asTypeName().copy(nullable = true)
-            ).copy(nullable = true)
+                Any::class.asTypeName().maybeMakeMapValueNullable()
+            ).maybeMakeMapValueNullable()
         )
 
     fun createMutableMapOfMapsStringToStringType(type: TypeName) =
@@ -22,21 +23,22 @@ object TypeFactory {
             String::class.asTypeName(),
             Map::class.asTypeName().parameterizedBy(
                 String::class.asTypeName(),
-                type.copy(nullable = true)
-            ).copy(nullable = true)
+                type.maybeMakeMapValueNullable()
+            ).maybeMakeMapValueNullable()
         )
 
     fun createMutableMapOfStringToType(type: TypeName) =
         ClassName("kotlin.collections", "MutableMap").parameterizedBy(
             String::class.asTypeName(),
-            type.copy(nullable = true)
+            type.maybeMakeMapValueNullable()
         )
 
     fun createMapOfStringToType(type: TypeName) =
         Map::class.asClassName().parameterizedBy(
             String::class.asTypeName(),
-            type.copy(nullable = true)
+            type.maybeMakeMapValueNullable()
         )
+
     fun createMapOfStringToNonNullType(type: TypeName) =
         Map::class.asClassName().parameterizedBy(
             String::class.asTypeName(),
@@ -45,4 +47,8 @@ object TypeFactory {
 
     fun createList(clazz: TypeName) =
         List::class.asClassName().parameterizedBy(clazz)
+
+    fun TypeName.maybeMakeMapValueNullable(): TypeName =
+        if (MutableSettings.modelOptions().contains(ModelCodeGenOptionType.NON_NULL_MAP_VALUES)) this
+        else this.copy(nullable = true)
 }
