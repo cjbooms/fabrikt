@@ -1,0 +1,42 @@
+openapi: 3.0.0
+paths:
+info:
+  title:
+  version:
+components:
+  schemas:
+
+    Container:
+      type: object
+      required:
+        - string_map
+        - typed_object_map
+        - object_map
+      properties:
+        string_map:
+          $ref: '#/components/schemas/StringMap'
+        typed_object_map:
+          $ref: '#/components/schemas/TypedObjectMap'
+        object_map:
+          $ref: '#/components/schemas/ObjectMap'
+
+    StringMap:
+      type: object
+      additionalProperties:
+        type: string
+
+    TypedObjectMap:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          code:
+            type: integer
+          text:
+            type: string
+
+    ObjectMap:
+      type: object
+      additionalProperties:
+        type: object
+

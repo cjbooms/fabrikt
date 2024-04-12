@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.generators.TypeFactory.maybeMakeMapValueNullable
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PropertyInfo
@@ -60,10 +61,10 @@ object PropertyUtils {
             val value =
                 if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties) {
                     Map::class.asTypeName()
-                        .parameterizedBy(String::class.asTypeName(), parameterizedType.copy(nullable = true))
+                        .parameterizedBy(String::class.asTypeName(), parameterizedType.maybeMakeMapValueNullable())
                 } else {
                     parameterizedType
-                }.copy(nullable = true)
+                }.maybeMakeMapValueNullable()
             classBuilder.addFunction(
                 FunSpec.builder("get")
                     .returns(Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), value))
