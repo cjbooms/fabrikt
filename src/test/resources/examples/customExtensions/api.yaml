@@ -5,6 +5,25 @@ info:
   version: ""
 components:
   schemas:
+    ParentWithIncludeNonNullExtension:
+      x-jackson-include-non-null: true
+      type: object
+      required:
+        - simpleRequired
+      properties:
+        simpleNullable:
+          nullable: true
+          type: string
+        simpleRequired:
+          type: string
+        childWithout:
+          x-jackson-include-non-null: false
+          type: object
+          properties:
+            direct:
+              type: string
+
+
     NoMergePatchInline:
       type: object
       properties:

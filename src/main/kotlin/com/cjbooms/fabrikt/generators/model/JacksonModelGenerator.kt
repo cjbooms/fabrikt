@@ -469,13 +469,13 @@ class JacksonModelGenerator(
                 properties.addToClass(
                     schemaName = schemaName,
                     classBuilder = classBuilder,
-                    classType = ClassSettings(ClassSettings.PolymorphyType.ONE_OF, extensions.hasJsonMergePatchExtension),
+                    classType = ClassSettings(ClassSettings.PolymorphyType.ONE_OF, extensions),
                 )
             } else {
                 properties.addToClass(
                     schemaName = schemaName,
                     classBuilder = classBuilder,
-                    classType = ClassSettings(ClassSettings.PolymorphyType.NONE, extensions.hasJsonMergePatchExtension),
+                    classType = ClassSettings(ClassSettings.PolymorphyType.NONE, extensions),
                 )
             }
         }
@@ -619,7 +619,7 @@ class JacksonModelGenerator(
             schemaName,
             constructorBuilder,
             this,
-            ClassSettings(ClassSettings.PolymorphyType.SUPER, extensions.hasJsonMergePatchExtension),
+            ClassSettings(ClassSettings.PolymorphyType.SUPER, extensions),
         )
 
         return this
@@ -671,7 +671,7 @@ class JacksonModelGenerator(
             schemaName,
             constructorBuilder,
             this,
-            ClassSettings(ClassSettings.PolymorphyType.SUB, extensions.hasJsonMergePatchExtension),
+            ClassSettings(ClassSettings.PolymorphyType.SUB, extensions),
         )
         return this
     }
@@ -783,6 +783,3 @@ class JacksonModelGenerator(
             else -> this
         }
 }
-
-private val Map<String, Any>.hasJsonMergePatchExtension
-    get() = this.containsKey("x-json-merge-patch")

@@ -15,8 +15,12 @@ import com.squareup.kotlinpoet.asTypeName
 
 data class ClassSettings(
     val polymorphyType: PolymorphyType,
-    val isMergePatchPattern: Boolean,
+    val extensions: Map<String, Any> = emptyMap(),
 ) {
+
+    val isMergePatchPattern = extensions["x-json-merge-patch"] as? Boolean ?: false
+    val addJsonIncludeNonNullAnnotation = extensions["x-jackson-include-non-null"] as? Boolean ?: false
+
     enum class PolymorphyType {
         NONE,
         SUPER,
@@ -32,7 +36,7 @@ object PropertyUtils {
         parameterizedType: TypeName,
         classBuilder: TypeSpec.Builder,
         constructorBuilder: FunSpec.Builder,
-        classSettings: ClassSettings = ClassSettings(ClassSettings.PolymorphyType.NONE, false),
+        classSettings: ClassSettings = ClassSettings(ClassSettings.PolymorphyType.NONE),
         validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations,
     ) {
         val wrappedType =
@@ -131,6 +135,9 @@ object PropertyUtils {
                 val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
                 val oasDefault = getDefaultValue(this, parameterizedType)
                 if (!isRequired) {
+                    if (classSettings.addJsonIncludeNonNullAnnotation) {
+                        property.addAnnotation(JacksonMetadata.JSON_INCLUDE)
+                    }
                     if (oasDefault != null) {
                         val wrappedDefault =
                             if (classSettings.isMergePatchPattern) {
