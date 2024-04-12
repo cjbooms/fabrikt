@@ -163,23 +163,9 @@ object KaizenParserExtensions {
             return emptySet()
         }
         return allSchemas
-            .filter { it.discriminator != null && it.oneOfSchemas.isNotEmpty() }
+            .filter { it.oneOfSchemas.isNotEmpty() }
             .mapNotNull { schema ->
-                schema.discriminator.mappings
-                    .toList()
-                    .find { (_, ref) ->
-                        ref.endsWith("/${name}")
-                    }
-                    ?.let { (key, _) ->
-                        Pair(key!!, schema)
-                    }
-            }
-            .map { (_, parent) ->
-                val field = parent.discriminator.propertyName!!
-                if (!properties.containsKey(field)) {
-                    throw IllegalArgumentException("schema $name did not have discriminator property")
-                }
-                parent
+                if (schema.oneOfSchemas.toList().contains(this)) schema else null
             }
             .toSet()
     }
@@ -269,7 +255,11 @@ object KaizenParserExtensions {
         this.oneOfSchemas?.firstOrNull()?.allOfSchemas?.firstOrNull() != null
 
     fun Schema.isOneOfSuperInterface() =
-        discriminator != null && discriminator.propertyName != null && oneOfSchemas.isNotEmpty()
+        oneOfSchemas.isNotEmpty() && allOfSchemas.isEmpty() && anyOfSchemas.isEmpty() && properties.isEmpty() &&
+            oneOfSchemas.all { it.isObjectType() }
+
+    fun Schema.isOneOfSuperInterfaceWithDiscriminator() =
+        discriminator != null && discriminator.propertyName != null && isOneOfSuperInterface()
 
     private fun Schema.isInlinedAggregationOfExactlyOne() =
         combinedAnyOfAndAllOfSchemas().size == 1 && isInlinedPropertySchema()

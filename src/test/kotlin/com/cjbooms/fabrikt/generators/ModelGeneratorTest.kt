@@ -56,6 +56,7 @@ class ModelGeneratorTest {
         "discriminatedOneOf",
         "openapi310",
         "binary",
+        "oneOfMarkerInterface",
     )
 
     @BeforeEach
@@ -78,7 +79,7 @@ class ModelGeneratorTest {
         if (testCaseName == "instantDateTime") {
             MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
         }
-        if (testCaseName == "discriminatedOneOf") {
+        if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface") {
             MutableSettings.addOption(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF)
         }
         val basePackage = "examples.${testCaseName.replace("/", ".")}"

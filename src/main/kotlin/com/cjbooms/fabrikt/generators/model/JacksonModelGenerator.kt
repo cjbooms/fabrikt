@@ -516,36 +516,37 @@ class JacksonModelGenerator(
 
     private fun oneOfSuperInterface(
         modelName: String,
-        discriminator: Discriminator,
+        discriminator: Discriminator?,
         allSchemas: List<SchemaInfo>,
         members: List<Schema>,
         oneOfSuperInterfaces: Set<Schema>,
     ): TypeSpec {
         val interfaceBuilder = TypeSpec.interfaceBuilder(generatedType(packages.base, modelName))
             .addModifiers(KModifier.SEALED)
-            .addAnnotation(basePolymorphicType(discriminator.propertyName))
+
+        if (discriminator != null && discriminator.propertyName != null) {
+            interfaceBuilder.addAnnotation(basePolymorphicType(discriminator.propertyName))
+            val membersAndMappingsConsistent = members.all { member ->
+                discriminator.mappings.any { (_, ref) -> ref.endsWith("/${member.name}") }
+            }
+            if (!membersAndMappingsConsistent) {
+                throw IllegalArgumentException("members and mappings are not consistent for oneOf super interface $modelName!")
+            }
+            val mappings = discriminator.mappings
+                .mapValues { (_, value) ->
+                    allSchemas.find { value.endsWith("/${it.name}") }!!
+                }
+                .mapValues { (_, value) ->
+                    toModelType(packages.base, KotlinTypeInfo.from(value.schema, value.name))
+                }
+            interfaceBuilder.addAnnotation(polymorphicSubTypes(mappings, enumDiscriminator = null))
+        }
 
         for (oneOfSuperInterface in oneOfSuperInterfaces) {
             interfaceBuilder.addSuperinterface(generatedType(packages.base, oneOfSuperInterface.name))
         }
 
-        val membersAndMappingsConsistent = members.all { member ->
-            discriminator.mappings.any { (_, ref) -> ref.endsWith("/${member.name}") }
-        }
-
-        if (!membersAndMappingsConsistent) {
-            throw IllegalArgumentException("members and mappings are not consistent for oneOf super interface $modelName!")
-        }
-
-        val mappings = discriminator.mappings
-            .mapValues { (_, value) ->
-                allSchemas.find { value.endsWith("/${it.name}") }!!
-            }
-            .mapValues { (_, value) ->
-                toModelType(packages.base, KotlinTypeInfo.from(value.schema, value.name))
-            }
-
-        interfaceBuilder.addAnnotation(polymorphicSubTypes(mappings, enumDiscriminator = null))
+        interfaceBuilder
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
