@@ -123,11 +123,11 @@ class ModelGeneratorTest {
     @Test
     fun `generate models using no validation annotations`() {
         val basePackage = "examples.noValidationAnnotations"
-        val spec = readTextResource("/examples/jakartaValidationAnnotations/api.yaml")
-        val expectedJakartaModel = readTextResource("/examples/jakartaValidationAnnotations/models/Models.kt")
+        val spec = readTextResource("/examples/noValidationAnnotations/api.yaml")
+        val expectedJakartaModel = readTextResource("/examples/noValidationAnnotations/models/Models.kt")
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
-            validationLibrary = ValidationLibrary.JAKARTA_VALIDATION
+            validationLibrary = ValidationLibrary.NO_VALIDATION
         )
         val models = JacksonModelGenerator(
             Packages(basePackage),

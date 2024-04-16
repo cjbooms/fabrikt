@@ -1,0 +1,60 @@
+openapi: 3.0.0
+components:
+  schemas:
+    ValidationAnnotations:
+      type: object
+      required:
+        - user_name
+        - age
+        - bio
+        - friends
+      properties:
+        user_name:
+          type: string
+          pattern: '[a-zA-Z]'
+        age:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 100
+          exclusiveMinimum: true
+          exclusiveMaximum: false
+        bio:
+          type: string
+          minLength: 20
+          maxLength: 200
+        friends:
+          type: array
+          items:
+            type: object
+            required:
+              - first_name
+            properties:
+              first_name:
+                type: string
+              last_name:
+                type: string
+          minItems: 0
+          maxItems: 10
+        address:
+          type: object
+          required:
+            - street
+            - city
+            - postal_code
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+            postal_code:
+              type: string
+        qualities:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              name:
+                type: string
+              value:
+                type: string
