@@ -129,9 +129,11 @@ class SpringControllerGeneratorTest {
     @EnumSource(ValidationLibrary::class)
     fun `ensure controller method parameters have correct validation annotations`(library: ValidationLibrary) {
         setupGithubApiTestEnv(library.annotations)
+        if (library == ValidationLibrary.NO_VALIDATION) return
         val desiredPackagePrefix = when (library) {
             ValidationLibrary.JAVAX_VALIDATION -> "javax.validation."
             ValidationLibrary.JAKARTA_VALIDATION -> "jakarta.validation."
+            else -> throw IllegalArgumentException("Unknown library: $library")
         }
         val parameterValidationAnnotations = generated
             .flatMap { it.members }

@@ -10,6 +10,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.basePath
 import com.cjbooms.fabrikt.util.toUpperCase
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Path
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -45,10 +46,14 @@ abstract class ControllerInterfaceGenerator(
             packages.base
         )
     }
+
     fun ParameterSpec.Builder.addValidationAnnotations(parameter: RequestParameter): ParameterSpec.Builder {
-        if (parameter.minimum != null) this.addAnnotation(validationAnnotations.min(parameter.minimum.toInt()))
-        if (parameter.maximum != null) this.addAnnotation(validationAnnotations.max(parameter.maximum.toInt()))
-        if (parameter.typeInfo.isComplexType) this.addAnnotation(validationAnnotations.parameterValid())
+        if (parameter.minimum != null) this.maybeAddAnnotation(validationAnnotations.min(parameter.minimum.toInt()))
+        if (parameter.maximum != null) this.maybeAddAnnotation(validationAnnotations.max(parameter.maximum.toInt()))
+        if (parameter.typeInfo.isComplexType) this.maybeAddAnnotation(validationAnnotations.parameterValid())
         return this
     }
+
+    fun ParameterSpec.Builder.maybeAddAnnotation(annotation: AnnotationSpec?) =
+        if (annotation != null) this.addAnnotation(annotation) else this
 }

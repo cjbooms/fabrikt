@@ -119,6 +119,27 @@ class ModelGeneratorTest {
         assertThat(Linter.lintString(validationAnnotationsModel.toString())).isEqualTo(expectedJakartaModel)
     }
 
+
+    @Test
+    fun `generate models using no validation annotations`() {
+        val basePackage = "examples.noValidationAnnotations"
+        val spec = readTextResource("/examples/jakartaValidationAnnotations/api.yaml")
+        val expectedJakartaModel = readTextResource("/examples/jakartaValidationAnnotations/models/Models.kt")
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.HTTP_MODELS),
+            validationLibrary = ValidationLibrary.JAKARTA_VALIDATION
+        )
+        val models = JacksonModelGenerator(
+            Packages(basePackage),
+            SourceApi(spec),
+        ).generate()
+
+        assertThat(models.files.size).isEqualTo(4)
+        val validationAnnotationsModel = models.files.first { it.name == "ValidationAnnotations" }
+        assertThat(validationAnnotationsModel).isNotNull
+        assertThat(Linter.lintString(validationAnnotationsModel.toString())).isEqualTo(expectedJakartaModel)
+    }
+
     @Test
     fun `sealed classes are correctly grouped into a single file`() {
         val basePackage = "examples.polymorphicModels.sealed"
