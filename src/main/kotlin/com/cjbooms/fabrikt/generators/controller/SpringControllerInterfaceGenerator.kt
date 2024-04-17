@@ -83,7 +83,7 @@ class SpringControllerInterfaceGenerator(
                         it
                             .toParameterSpecBuilder()
                             .addAnnotation(SpringAnnotations.requestBodyBuilder().build())
-                            .addAnnotation(validationAnnotations.parameterValid())
+                            .maybeAddAnnotation(validationAnnotations.parameterValid())
                             .build()
                     is RequestParameter ->
                         it

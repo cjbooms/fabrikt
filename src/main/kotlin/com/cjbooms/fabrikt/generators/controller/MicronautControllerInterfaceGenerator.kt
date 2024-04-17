@@ -98,7 +98,7 @@ class MicronautControllerInterfaceGenerator(
                                 AnnotationSpec
                                     .builder(MicronautImports.BODY).build(),
                             )
-                            .addAnnotation(validationAnnotations.parameterValid())
+                            .maybeAddAnnotation(validationAnnotations.parameterValid())
                             .build()
 
                     is RequestParameter ->

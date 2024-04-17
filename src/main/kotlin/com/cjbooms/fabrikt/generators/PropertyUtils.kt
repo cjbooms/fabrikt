@@ -4,6 +4,7 @@ import com.cjbooms.fabrikt.generators.TypeFactory.maybeMakeMapValueNullable
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PropertyInfo
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -230,28 +231,28 @@ object PropertyUtils {
         info: PropertyInfo,
         validationAnnotations: ValidationAnnotations,
     ) {
-        if (!info.isNullable()) addAnnotation(validationAnnotations.nonNullAnnotation)
+        if (!info.isNullable()) maybeAddAnnotation(validationAnnotations.nonNullAnnotation)
         when (info) {
             is PropertyInfo.Field -> {
                 // Regex validation pattern to validate string input
-                info.pattern?.let { addAnnotation(validationAnnotations.regexPattern(it)) }
+                info.pattern?.let { maybeAddAnnotation(validationAnnotations.regexPattern(it)) }
 
                 // Size Restrictions for Strings
                 val (min, max) = Pair(info.minLength, info.maxLength)
                 if (min != null || max != null) {
-                    addAnnotation(
+                    maybeAddAnnotation(
                         validationAnnotations.lengthRestriction(min, max),
                     )
                 }
 
                 // Numeric value validation
                 info.minimum?.let {
-                    addAnnotation(
+                    maybeAddAnnotation(
                         validationAnnotations.minRestriction(it, info.exclusiveMinimum ?: false),
                     )
                 }
                 info.maximum?.let {
-                    addAnnotation(
+                    maybeAddAnnotation(
                         validationAnnotations.maxRestriction(it, info.exclusiveMaximum ?: false),
                     )
                 }
@@ -261,7 +262,7 @@ object PropertyUtils {
                 // Size Restrictions for collections
                 val (minCollLen, maxCollLen) = Pair(info.minItems, info.maxItems)
                 if (minCollLen != null || maxCollLen != null) {
-                    addAnnotation(
+                    maybeAddAnnotation(
                         validationAnnotations.lengthRestriction(
                             minCollLen,
                             maxCollLen,
@@ -276,21 +277,24 @@ object PropertyUtils {
         when (val typeInfo = info.typeInfo) {
             is KotlinTypeInfo.Map -> {
                 if (typeInfo.parameterizedType.isComplexType) {
-                    addAnnotation(validationAnnotations.fieldValid())
+                    maybeAddAnnotation(validationAnnotations.fieldValid())
                 }
             }
 
             is KotlinTypeInfo.Array -> {
                 if (typeInfo.parameterizedType.isComplexType) {
-                    addAnnotation(validationAnnotations.fieldValid())
+                    maybeAddAnnotation(validationAnnotations.fieldValid())
                 }
             }
 
             else -> {
                 if (typeInfo.isComplexType) {
-                    addAnnotation(validationAnnotations.fieldValid())
+                    maybeAddAnnotation(validationAnnotations.fieldValid())
                 }
             }
         }
     }
+
+    private fun PropertySpec.Builder.maybeAddAnnotation(annotationSpec: AnnotationSpec?) =
+        if (annotationSpec != null) addAnnotation(annotationSpec) else this
 }
