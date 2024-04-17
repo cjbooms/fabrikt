@@ -239,6 +239,8 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               | CHOOSE ONE OF: |
 |                               |   `JAVAX_VALIDATION` - Use `javax.validation` annotations in generated model classes (default) |
 |                               |   `JAKARTA_VALIDATION` - Use `jakarta.validation` annotations in generated model classes |
+|                               |   `NO_VALIDATION` - Use no validation annotations in generated model classes |
+
 
 ### Command Line
 Fabrikt is packaged as an executable jar, allowing it to be integrated into any build tool. The CLI can be invoked as follows:
