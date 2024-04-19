@@ -18,7 +18,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
 import io.ktor.server.request.receive
@@ -48,12 +47,10 @@ public interface InternalEventsController {
 
     public companion object {
         public fun Route.internalEventsRoutes(controller: InternalEventsController) {
-            authenticate("oauth2") {
-                post("/internal/events") {
-                    val bulkEntityDetails = call.receive<BulkEntityDetails>()
-                    val result = controller.post(call, bulkEntityDetails)
-                    call.respond(result.status, result.message)
-                }
+            post("/internal/events") {
+                val bulkEntityDetails = call.receive<BulkEntityDetails>()
+                val result = controller.post(call, bulkEntityDetails)
+                call.respond(result.status, result.message)
             }
         }
     }

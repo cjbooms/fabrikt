@@ -1,8 +1,10 @@
 package com.cjbooms.fabrikt.generators.controller
 
+import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
+import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecuritySupport
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
 import com.cjbooms.fabrikt.model.BodyParameter
@@ -49,6 +51,7 @@ private const val CONTROLLER_RESULT_CLASS_NAME = "ControllerResult"
 class KtorControllerInterfaceGenerator(
     private val packages: Packages,
     private val api: SourceApi,
+    private val options: Set<ControllerCodeGenOptionType> = emptySet(),
 ) : ControllerInterfaceGenerator {
     override fun generate(): KtorControllers {
         val controllerInterfaces = api.openApi3.routeToPaths().map { (resourceName, paths) ->
@@ -148,12 +151,24 @@ class KtorControllerInterfaceGenerator(
     private fun buildRouteCode(operation: Operation, verb: String, path: Map.Entry<String, Path>): String {
         val codeBlock = StringBuilder()
 
-        val addAuth = operation.securitySupport().allowsAuthenticated
+        val globalSecurity = this.api.openApi3.securityRequirements.securitySupport()
+        val securityOption = operation.securitySupport(globalSecurity)
+
+        val addAuth = securityOption.allowsAuthenticated && options.contains(ControllerCodeGenOptionType.AUTHENTICATION)
         if (addAuth) {
             // Using the key from the first security requirement as the auth name
-            val authName: String = operation.securityRequirements.first().requirements.keys.first()
+            val authName = if (operation.hasSecurityRequirements()) {
+                operation.securityRequirements.first().requirements.keys.first()
+            } else {
+                // Fall back to the global security requirements
+                this.api.openApi3.securityRequirements.first().requirements.keys.first()
+            }
 
-            codeBlock.appendLine("authenticate(\"$authName\") {")
+            if (securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL) {
+                codeBlock.appendLine("authenticate(\"$authName\", optional = true) {")
+            } else {
+                codeBlock.appendLine("authenticate(\"$authName\") {")
+            }
         }
 
         val params = operation.toIncomingParameters(packages.base, path.value.parameters, emptyList())

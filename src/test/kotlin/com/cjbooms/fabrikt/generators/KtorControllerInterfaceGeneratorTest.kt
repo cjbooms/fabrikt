@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
@@ -37,7 +38,10 @@ class KtorControllerInterfaceGeneratorTest {
 
     private fun setupGithubApiTestEnv() {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        generated = KtorControllerInterfaceGenerator(Packages(basePackage), api).generate().files
+        generated = KtorControllerInterfaceGenerator(
+            Packages(basePackage),
+            api
+        ).generate().files
     }
 
     @BeforeEach
@@ -66,6 +70,23 @@ class KtorControllerInterfaceGeneratorTest {
 
         val library = ktorControllers.generateLibrary()
         val controllers = ktorControllers.generate().toSingleFile(library)
+
+        assertThat(controllers).isEqualTo(expectedControllers)
+    }
+
+    @Test
+    fun `correct controllers are generated for ControllerCodeGenOptionType_AUTHENTICATION`() {
+        val basePackage = "examples.authentication"
+        val api = SourceApi(readTextResource("/examples/authentication/api.yaml"))
+        val expectedControllers = readTextResource("/examples/authentication/controllers/ktor/Controllers.kt")
+
+        val generator = KtorControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            setOf(ControllerCodeGenOptionType.AUTHENTICATION),
+        )
+        val library = generator.generateLibrary()
+        val controllers = generator.generate().toSingleFile(library)
 
         assertThat(controllers).isEqualTo(expectedControllers)
     }
@@ -100,7 +121,10 @@ class KtorControllerInterfaceGeneratorTest {
     @Test
     fun `ensure that subresource specific controllers are created`() {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val controllers = KtorControllerInterfaceGenerator(Packages(basePackage), api).generate()
+        val controllers = KtorControllerInterfaceGenerator(
+            Packages(basePackage),
+            api
+        ).generate()
 
         assertThat(controllers.files).size().isEqualTo(6)
         assertThat(controllers.files.map { it.name }).containsAll(
@@ -138,7 +162,10 @@ class KtorControllerInterfaceGeneratorTest {
     @Test
     fun `ensure controller methods has the suspend modifier`() {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val controllers = KtorControllerInterfaceGenerator(Packages(basePackage), api).generate()
+        val controllers = KtorControllerInterfaceGenerator(
+            Packages(basePackage),
+            api
+        ).generate()
 
         assertThat(controllers.files).size().isEqualTo(6)
         assertThat(
@@ -174,7 +201,10 @@ class KtorControllerInterfaceGeneratorTest {
     @Test
     fun `ensure generates ByteArray body parameter and response for string with format binary`() {
         val api = SourceApi(readTextResource("/examples/binary/api.yaml"))
-        val controllers = KtorControllerInterfaceGenerator(Packages(basePackage), api).generate().toSingleFile(emptySet())
+        val controllers = KtorControllerInterfaceGenerator(
+            Packages(basePackage),
+            api
+        ).generate().toSingleFile(emptySet())
         val expectedControllers = readTextResource("/examples/binary/controllers/ktor/Controllers.kt")
 
         assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
