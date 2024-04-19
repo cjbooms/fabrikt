@@ -88,6 +88,7 @@ class CodeGenerator(
                 ControllerCodeGenTargetType.KTOR -> KtorControllerInterfaceGenerator(
                     packages,
                     sourceApi,
+                    MutableSettings.controllerOptions(),
                 )
             }
 
