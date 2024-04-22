@@ -7,7 +7,6 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.`get`
 import io.ktor.server.util.getOrFail
@@ -15,7 +14,6 @@ import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
 import kotlin.String
-import kotlin.Unit
 
 public interface ExampleController {
     /**
@@ -28,15 +26,14 @@ public interface ExampleController {
         call: ApplicationCall,
         a: String,
         b: String,
-    ): ControllerResult<Unit>
+    )
 
     public companion object {
         public fun Route.exampleRoutes(controller: ExampleController) {
             `get`("/example") {
                 val a = call.request.queryParameters.getOrFail<kotlin.String>("a")
                 val b = call.request.queryParameters.getOrFail<kotlin.String>("b")
-                val result = controller.get(call, a, b)
-                call.respond(result.status)
+                controller.get(call, a, b)
             }
         }
 

@@ -9,7 +9,6 @@ import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
 import io.ktor.server.request.receive
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.`get`
 import io.ktor.server.routing.post
@@ -18,7 +17,6 @@ import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
 import kotlin.String
-import kotlin.Unit
 
 public interface ExampleController {
     /**
@@ -31,7 +29,7 @@ public interface ExampleController {
         call: ApplicationCall,
         pathB: String,
         queryB: String,
-    ): ControllerResult<Unit>
+    )
 
     /**
      *
@@ -43,21 +41,19 @@ public interface ExampleController {
         call: ApplicationCall,
         querySomeObject: String,
         bodySomeObject: SomeObject,
-    ): ControllerResult<Unit>
+    )
 
     public companion object {
         public fun Route.exampleRoutes(controller: ExampleController) {
             `get`("/example/{b}") {
                 val pathB = call.parameters.getOrFail<kotlin.String>("b")
                 val queryB = call.request.queryParameters.getOrFail<kotlin.String>("b")
-                val result = controller.getById(call, pathB, queryB)
-                call.respond(result.status)
+                controller.getById(call, pathB, queryB)
             }
             post("/example") {
                 val querySomeObject = call.request.queryParameters.getOrFail<kotlin.String>("someObject")
                 val bodySomeObject = call.receive<SomeObject>()
-                val result = controller.post(call, querySomeObject, bodySomeObject)
-                call.respond(result.status)
+                controller.post(call, querySomeObject, bodySomeObject)
             }
         }
 

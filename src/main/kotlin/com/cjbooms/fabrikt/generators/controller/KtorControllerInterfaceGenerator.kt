@@ -79,10 +79,15 @@ class KtorControllerInterfaceGenerator(
                             .addModifiers(setOf(KModifier.ABSTRACT, KModifier.SUSPEND))
                             .addParameter("call", ClassName("io.ktor.server.application", "ApplicationCall"))
 
-                        controllerFunBuilder.returns(
-                            ClassName(packages.controllers, CONTROLLER_RESULT_CLASS_NAME)
-                                .parameterizedBy(operation.happyPathResponse(packages.base))
-                        )
+                        val happyPathResponse = operation.happyPathResponse(packages.base)
+                        if (happyPathResponse.simpleName() != Unit::class.simpleName) {
+                            // When return type is not Unit the controller implementation is expected to return a
+                            // ControllerResult, which we unpack in the routing function
+                            controllerFunBuilder.returns(
+                                ClassName(packages.controllers, CONTROLLER_RESULT_CLASS_NAME)
+                                    .parameterizedBy(happyPathResponse)
+                            )
+                        }
 
                         val params = operation.toIncomingParameters(packages.base, path.value.parameters, emptyList())
                         val (pathParams, queryParams, headerParams, bodyParams) = params.splitByType()
@@ -229,18 +234,12 @@ class KtorControllerInterfaceGenerator(
                     else "call"
                 }
 
-        builder.addStatement("val result = controller.$methodName($methodParameters)")
-
         if (happyPathResponse.simpleName() == Unit::class.simpleName) {
-            // When return type is Unit we only respond with the status code.
-            // Note however that in some cases the controller may choose to respond directly on the call
-            // in which case that takes precedence in Ktor's routing. For example: call.respondRedirect().
-            builder.addStatement(
-                "%M.%M(result.status)",
-                MemberName("io.ktor.server.application", "call"),
-                MemberName("io.ktor.server.response", "respond"),
-            )
+            // When return type is Unit we leave it up to the controller implementation to respond if needed.
+            // Ktor will respond 200 OK by default.
+            builder.addStatement("controller.$methodName($methodParameters)")
         } else {
+            builder.addStatement("val result = controller.$methodName($methodParameters)")
             builder.addStatement(
                 "%M.%M(result.status, result.message)",
                 MemberName("io.ktor.server.application", "call"),

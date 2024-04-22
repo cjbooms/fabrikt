@@ -8,7 +8,6 @@ import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.`get`
 import io.ktor.server.util.getOrFail
@@ -16,7 +15,6 @@ import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
 import kotlin.String
-import kotlin.Unit
 
 public interface RequiredController {
     /**
@@ -24,15 +22,14 @@ public interface RequiredController {
      *
      * @param testString
      */
-    public suspend fun testPath(call: ApplicationCall, testString: String): ControllerResult<Unit>
+    public suspend fun testPath(call: ApplicationCall, testString: String)
 
     public companion object {
         public fun Route.requiredRoutes(controller: RequiredController) {
             authenticate("BasicAuth", optional = false) {
                 `get`("/required") {
                     val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                    val result = controller.testPath(call, testString)
-                    call.respond(result.status)
+                    controller.testPath(call, testString)
                 }
             }
         }
@@ -77,14 +74,13 @@ public interface ProhibitedController {
      *
      * @param testString
      */
-    public suspend fun testPath(call: ApplicationCall, testString: String): ControllerResult<Unit>
+    public suspend fun testPath(call: ApplicationCall, testString: String)
 
     public companion object {
         public fun Route.prohibitedRoutes(controller: ProhibitedController) {
             `get`("/prohibited") {
                 val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                val result = controller.testPath(call, testString)
-                call.respond(result.status)
+                controller.testPath(call, testString)
             }
         }
 
@@ -128,15 +124,14 @@ public interface OptionalController {
      *
      * @param testString
      */
-    public suspend fun testPath(call: ApplicationCall, testString: String): ControllerResult<Unit>
+    public suspend fun testPath(call: ApplicationCall, testString: String)
 
     public companion object {
         public fun Route.optionalRoutes(controller: OptionalController) {
             authenticate("BasicAuth", optional = true) {
                 `get`("/optional") {
                     val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                    val result = controller.testPath(call, testString)
-                    call.respond(result.status)
+                    controller.testPath(call, testString)
                 }
             }
         }
@@ -181,14 +176,13 @@ public interface NoneController {
      *
      * @param testString
      */
-    public suspend fun testPath(call: ApplicationCall, testString: String): ControllerResult<Unit>
+    public suspend fun testPath(call: ApplicationCall, testString: String)
 
     public companion object {
         public fun Route.noneRoutes(controller: NoneController) {
             `get`("/none") {
                 val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                val result = controller.testPath(call, testString)
-                call.respond(result.status)
+                controller.testPath(call, testString)
             }
         }
 
@@ -232,15 +226,14 @@ public interface DefaultController {
      *
      * @param testString
      */
-    public suspend fun testPath(call: ApplicationCall, testString: String): ControllerResult<Unit>
+    public suspend fun testPath(call: ApplicationCall, testString: String)
 
     public companion object {
         public fun Route.defaultRoutes(controller: DefaultController) {
             authenticate("basicAuth", optional = false) {
                 `get`("/default") {
                     val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                    val result = controller.testPath(call, testString)
-                    call.respond(result.status)
+                    controller.testPath(call, testString)
                 }
             }
         }

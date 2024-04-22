@@ -32,7 +32,6 @@ import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
-import kotlin.Unit
 import kotlin.collections.List
 
 public interface InternalEventsController {
@@ -131,7 +130,7 @@ public interface ContributorsController {
         xFlowId: String?,
         idempotencyKey: String?,
         contributor: Contributor,
-    ): ControllerResult<Unit>
+    )
 
     /**
      * Get a Contributor by ID
@@ -185,7 +184,7 @@ public interface ContributorsController {
         idempotencyKey: String?,
         id: String,
         contributor: Contributor,
-    ): ControllerResult<Unit>
+    )
 
     public companion object {
         public fun Route.contributorsRoutes(controller: ContributorsController) {
@@ -202,8 +201,7 @@ public interface ContributorsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val contributor = call.receive<Contributor>()
-                val result = controller.createContributor(call, xFlowId, idempotencyKey, contributor)
-                call.respond(result.status)
+                controller.createContributor(call, xFlowId, idempotencyKey, contributor)
             }
             `get`("/contributors/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -220,8 +218,7 @@ public interface ContributorsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val contributor = call.receive<Contributor>()
-                val result = controller.putById(call, ifMatch, xFlowId, idempotencyKey, id, contributor)
-                call.respond(result.status)
+                controller.putById(call, ifMatch, xFlowId, idempotencyKey, id, contributor)
             }
         }
 
@@ -304,7 +301,7 @@ public interface OrganisationsController {
         xFlowId: String?,
         idempotencyKey: String?,
         organisation: Organisation,
-    ): ControllerResult<Unit>
+    )
 
     /**
      * Get a Organisation by ID
@@ -358,7 +355,7 @@ public interface OrganisationsController {
         idempotencyKey: String?,
         id: String,
         organisation: Organisation,
-    ): ControllerResult<Unit>
+    )
 
     public companion object {
         public fun Route.organisationsRoutes(controller: OrganisationsController) {
@@ -375,8 +372,7 @@ public interface OrganisationsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val organisation = call.receive<Organisation>()
-                val result = controller.post(call, xFlowId, idempotencyKey, organisation)
-                call.respond(result.status)
+                controller.post(call, xFlowId, idempotencyKey, organisation)
             }
             `get`("/organisations/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -393,8 +389,7 @@ public interface OrganisationsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val organisation = call.receive<Organisation>()
-                val result = controller.putById(call, ifMatch, xFlowId, idempotencyKey, id, organisation)
-                call.respond(result.status)
+                controller.putById(call, ifMatch, xFlowId, idempotencyKey, id, organisation)
             }
         }
 
@@ -509,7 +504,7 @@ public interface OrganisationsContributorsController {
         idempotencyKey: String?,
         parentId: String,
         id: String,
-    ): ControllerResult<Unit>
+    )
 
     /**
      * Remove Contributor from this Organisation. Does not delete the underlying Contributor.
@@ -525,7 +520,7 @@ public interface OrganisationsContributorsController {
         xFlowId: String?,
         parentId: String,
         id: String,
-    ): ControllerResult<Unit>
+    )
 
     public companion object {
         public fun Route.organisationsContributorsRoutes(controller: OrganisationsContributorsController) {
@@ -553,15 +548,13 @@ public interface OrganisationsContributorsController {
                 val ifMatch = call.request.headers.getOrFail("If-Match")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
-                val result = controller.putById(call, ifMatch, xFlowId, idempotencyKey, parentId, id)
-                call.respond(result.status)
+                controller.putById(call, ifMatch, xFlowId, idempotencyKey, parentId, id)
             }
             delete("/organisations/{parent-id}/contributors/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                val result = controller.deleteById(call, xFlowId, parentId, id)
-                call.respond(result.status)
+                controller.deleteById(call, xFlowId, parentId, id)
             }
         }
 
@@ -650,7 +643,7 @@ public interface RepositoriesController {
         xFlowId: String?,
         idempotencyKey: String?,
         repository: Repository,
-    ): ControllerResult<Unit>
+    )
 
     /**
      * Get a Repository by ID
@@ -704,7 +697,7 @@ public interface RepositoriesController {
         idempotencyKey: String?,
         id: String,
         repository: Repository,
-    ): ControllerResult<Unit>
+    )
 
     public companion object {
         public fun Route.repositoriesRoutes(controller: RepositoriesController) {
@@ -725,8 +718,7 @@ public interface RepositoriesController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val repository = call.receive<Repository>()
-                val result = controller.post(call, xFlowId, idempotencyKey, repository)
-                call.respond(result.status)
+                controller.post(call, xFlowId, idempotencyKey, repository)
             }
             `get`("/repositories/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -743,8 +735,7 @@ public interface RepositoriesController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val repository = call.receive<Repository>()
-                val result = controller.putById(call, ifMatch, xFlowId, idempotencyKey, id, repository)
-                call.respond(result.status)
+                controller.putById(call, ifMatch, xFlowId, idempotencyKey, id, repository)
             }
         }
 
@@ -832,7 +823,7 @@ public interface RepositoriesPullRequestsController {
         idempotencyKey: String?,
         parentId: String,
         pullRequest: PullRequest,
-    ): ControllerResult<Unit>
+    )
 
     /**
      * Get a PullRequest for this Repository by ID
@@ -886,7 +877,7 @@ public interface RepositoriesPullRequestsController {
         parentId: String,
         id: String,
         pullRequest: PullRequest,
-    ): ControllerResult<Unit>
+    )
 
     public companion object {
         public fun Route.repositoriesPullRequestsRoutes(controller: RepositoriesPullRequestsController) {
@@ -905,8 +896,7 @@ public interface RepositoriesPullRequestsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val pullRequest = call.receive<PullRequest>()
-                val result = controller.post(call, xFlowId, idempotencyKey, parentId, pullRequest)
-                call.respond(result.status)
+                controller.post(call, xFlowId, idempotencyKey, parentId, pullRequest)
             }
             `get`("/repositories/{parent-id}/pull-requests/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
@@ -923,16 +913,7 @@ public interface RepositoriesPullRequestsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val pullRequest = call.receive<PullRequest>()
-                val result = controller.putById(
-                    call,
-                    ifMatch,
-                    xFlowId,
-                    idempotencyKey,
-                    parentId,
-                    id,
-                    pullRequest,
-                )
-                call.respond(result.status)
+                controller.putById(call, ifMatch, xFlowId, idempotencyKey, parentId, id, pullRequest)
             }
         }
 
