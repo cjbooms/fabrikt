@@ -121,6 +121,8 @@ class KtorControllerInterfaceGenerator(
             controllerBuilder.addType(
                 TypeSpec.companionObjectBuilder()
                     .addFunction(routeFunBuilder.build())
+                    .addFunction(getTypedFunBuilder.build())
+                    .addFunction(getOrFailFunBuilder.build())
                     .build()
             )
 
@@ -136,8 +138,9 @@ class KtorControllerInterfaceGenerator(
                 "io.ktor.server.request" to "receive",
                 "io.ktor.server.response" to "respond",
                 "io.ktor.server.util" to "getOrFail",
-                "${packages.controllers}.RoutingUtils" to "getTyped", // utility for parsing query parameters
-                "${packages.controllers}.RoutingUtils" to "getOrFail", // utility for parsing header parameters
+                "io.ktor.util.reflect" to "typeInfo",
+                "io.ktor.util.converters" to "DefaultConversionService",
+                "io.ktor.server.plugins" to "ParameterConversionException",
             )
             .plus(usedVerbs.map { "io.ktor.server.routing" to it })
             .map { Import(it.first, it.second) }
@@ -165,9 +168,9 @@ class KtorControllerInterfaceGenerator(
             }
 
             if (securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL) {
-                codeBlock.appendLine("authenticate(\"$authName\", optional = true) {")
+                codeBlock.appendLine("authenticate(\"$authName\", optional = true) {⇥")
             } else {
-                codeBlock.appendLine("authenticate(\"$authName\") {")
+                codeBlock.appendLine("authenticate(\"$authName\") {⇥")
             }
         }
 
@@ -178,7 +181,7 @@ class KtorControllerInterfaceGenerator(
 
         val methodName = getMethodName(operation, verb, path)
 
-        codeBlock.appendLine("${verb}(\"${path.key}\") {")
+        codeBlock.appendLine("${verb}(\"${path.key}\") {⇥")
 
         pathParams.forEach { param ->
             codeBlock.appendLine("val ${param.name} = call.parameters.getOrFail<${param.type}>(\"${param.originalName}\")")
@@ -224,17 +227,16 @@ class KtorControllerInterfaceGenerator(
             codeBlock.appendLine("call.respond(result.status, result.message)")
         }
 
-        codeBlock.appendLine("}")
+        codeBlock.appendLine("⇤}")
 
         if (addAuth) {
-            codeBlock.appendLine("}")
+            codeBlock.appendLine("⇤}")
         }
 
         return codeBlock.toString()
     }
 
     override fun generateLibrary(): Collection<ControllerLibraryType> = listOf(
-        buildRoutingUtils(),
         buildControllerResult()
     )
 
@@ -269,68 +271,60 @@ class KtorControllerInterfaceGenerator(
     }
 
     /**
-     * Builds a utility object to be used for parsing query parameters
+     * Function for getting a typed query parameter
+     *
+     * Similar to Ktor's getOrFail but will not fail on missing parameter
      */
-    private fun buildRoutingUtils(): ControllerLibraryType {
-        val genericR = TypeVariableName("R", Any::class)
+    private val getTypedFunBuilder = run {
+        val returnType = TypeVariableName("R", Any::class)
+            .copy(nullable = true, reified = true)
 
-        val returnType = genericR.copy(nullable = true, reified = true)
-
-        val spec = TypeSpec.objectBuilder("RoutingUtils")
-            .addFunction(
-                // Function for getting a typed query parameter
-                // Similar to Ktor's getOrFail but will not fail on missing parameter
-                FunSpec.builder("getTyped")
-                    .addModifiers(KModifier.INLINE)
-                    .receiver(ClassName("io.ktor.http", "Parameters"))
-                    .addParameter("name", String::class)
-                    .addTypeVariable(returnType)
-                    .returns(returnType)
-                    .addCode("""
-                        val values = getAll(name) ?: return null
-                        val typeInfo = typeInfo<R>()
-                        return try {
-                            @Suppress("UNCHECKED_CAST")
-                            DefaultConversionService.fromValues(values, typeInfo) as R
-                        } catch (cause: Exception) {
-                            throw ParameterConversionException(name, typeInfo.type.simpleName ?: typeInfo.type.toString(), cause)
-                        }
-                    """.trimIndent())
-                    .addKdoc("""
-                        Gets parameter value associated with this name or null if the name is not present.
-                        Converting to type R using DefaultConversionService.
-                        
-                        Throws:
-                          ParameterConversionException - when conversion from String to R fails
-                    """.trimIndent())
-                    .build()
+        FunSpec.builder("getTyped")
+            .addModifiers(KModifier.INLINE, KModifier.PRIVATE)
+            .receiver(ClassName("io.ktor.http", "Parameters"))
+            .addParameter("name", String::class)
+            .addTypeVariable(returnType)
+            .returns(returnType)
+            .addCode("""
+                val values = getAll(name) ?: return null
+                val typeInfo = typeInfo<R>()
+                return try {
+                    @Suppress("UNCHECKED_CAST")
+                    DefaultConversionService.fromValues(values, typeInfo) as R
+                } catch (cause: Exception) {
+                    throw ParameterConversionException(name, typeInfo.type.simpleName ?: typeInfo.type.toString(), cause)
+                }
+            """.trimIndent()
             )
-            .addFunction(
-                // Function for getting typed header parameter
-                FunSpec.builder("getOrFail")
-                    .receiver(ClassName("io.ktor.http", "Headers"))
-                    .returns(String::class)
-                    .addParameter("name", String::class)
-                    .addCode("""
-                        return this[name] ?: throw BadRequestException("Header " + name + " is required")
-                    """.trimIndent())
-                    .addKdoc("""
-                        Gets first value from the list of values associated with a name.
-                        
-                        Throws:
-                          BadRequestException - when the name is not present
-                    """.trimIndent())
-                    .build()
+            .addKdoc("""
+                Gets parameter value associated with this name or null if the name is not present.
+                Converting to type R using DefaultConversionService.
+                
+                Throws:
+                  ParameterConversionException - when conversion from String to R fails
+            """.trimIndent()
             )
-            .build()
-
-        return ControllerLibraryType(spec, packages.base, imports = setOf(
-            Import("io.ktor.util.reflect", "typeInfo"),
-            Import("io.ktor.server.plugins", "BadRequestException"),
-            Import("io.ktor.util.converters", "DefaultConversionService"),
-            Import("io.ktor.server.plugins", "ParameterConversionException"),
-        ))
     }
+
+    /**
+     * Function for getting typed header parameter
+     */
+    private val getOrFailFunBuilder =
+        FunSpec.builder("getOrFail")
+            .addModifiers(KModifier.PRIVATE)
+            .receiver(ClassName("io.ktor.http", "Headers"))
+            .returns(String::class)
+            .addParameter("name", String::class)
+            .addCode("""
+                return this[name] ?: throw BadRequestException("Header " + name + " is required")
+            """.trimIndent())
+            .addKdoc("""
+                Gets first value from the list of values associated with a name.
+                
+                Throws:
+                  BadRequestException - when the name is not present
+            """.trimIndent()
+            )
 
     private fun getMethodName(
         operation: Operation, verb: String, path: Map.Entry<String, Path>
