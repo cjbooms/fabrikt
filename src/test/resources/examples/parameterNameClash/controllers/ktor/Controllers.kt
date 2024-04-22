@@ -47,7 +47,7 @@ public interface ExampleController {
 
     public companion object {
         public fun Route.exampleRoutes(controller: ExampleController) {
-            get("/example/{b}") {
+            `get`("/example/{b}") {
                 val pathB = call.parameters.getOrFail<kotlin.String>("b")
                 val queryB = call.request.queryParameters.getOrFail<kotlin.String>("b")
                 val result = controller.getById(call, pathB, queryB)

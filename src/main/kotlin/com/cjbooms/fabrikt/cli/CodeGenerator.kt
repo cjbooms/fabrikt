@@ -94,13 +94,9 @@ class CodeGenerator(
 
         val controllerFiles: Collection<FileSpec> = generator.generate().files
         val libFiles: Collection<FileSpec> = generator.generateLibrary().map {
-            val builder = FileSpec.builder(it.className)
+            FileSpec.builder(it.className)
                 .addType(it.spec)
-
-            // add imports for the library files
-            it.imports.forEach { import -> builder.addImport(import.packageName, import.name) }
-
-            builder.build()
+                .build()
         }
 
         return controllerFiles.plus(libFiles)

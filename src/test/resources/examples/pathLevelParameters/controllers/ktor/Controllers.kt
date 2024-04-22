@@ -32,7 +32,7 @@ public interface ExampleController {
 
     public companion object {
         public fun Route.exampleRoutes(controller: ExampleController) {
-            get("/example") {
+            `get`("/example") {
                 val a = call.request.queryParameters.getOrFail<kotlin.String>("a")
                 val b = call.request.queryParameters.getOrFail<kotlin.String>("b")
                 val result = controller.get(call, a, b)

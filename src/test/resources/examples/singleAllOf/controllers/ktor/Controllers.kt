@@ -24,7 +24,7 @@ public interface TestController {
 
     public companion object {
         public fun Route.testRoutes(controller: TestController) {
-            get("/test") {
+            `get`("/test") {
                 val result = controller.test(call)
                 call.respond(result.status, result.message)
             }

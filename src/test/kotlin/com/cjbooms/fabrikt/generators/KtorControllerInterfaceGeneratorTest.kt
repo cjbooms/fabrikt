@@ -180,17 +180,12 @@ class KtorControllerInterfaceGeneratorTest {
         val destPackage = if (controllers.isNotEmpty()) controllers.first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
 
-        globalImports.forEach {
-            singleFileBuilder.addImport(it.packageName, it.name)
-        }
-
         controllers.forEach {
             singleFileBuilder.addType(it.spec)
         }
 
         extraSpecs.forEach {
             singleFileBuilder.addType(it.spec)
-            it.imports.forEach { import -> singleFileBuilder.addImport(import.packageName, import.name) }
         }
 
         val singleFileString = singleFileBuilder.build().toString()

@@ -189,7 +189,7 @@ public interface ContributorsController {
 
     public companion object {
         public fun Route.contributorsRoutes(controller: ContributorsController) {
-            get("/contributors") {
+            `get`("/contributors") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
                 val includeInactive =
@@ -205,7 +205,7 @@ public interface ContributorsController {
                 val result = controller.createContributor(call, xFlowId, idempotencyKey, contributor)
                 call.respond(result.status)
             }
-            get("/contributors/{id}") {
+            `get`("/contributors/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
@@ -362,7 +362,7 @@ public interface OrganisationsController {
 
     public companion object {
         public fun Route.organisationsRoutes(controller: OrganisationsController) {
-            get("/organisations") {
+            `get`("/organisations") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
                 val includeInactive =
@@ -378,7 +378,7 @@ public interface OrganisationsController {
                 val result = controller.post(call, xFlowId, idempotencyKey, organisation)
                 call.respond(result.status)
             }
-            get("/organisations/{id}") {
+            `get`("/organisations/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
@@ -529,7 +529,7 @@ public interface OrganisationsContributorsController {
 
     public companion object {
         public fun Route.organisationsContributorsRoutes(controller: OrganisationsContributorsController) {
-            get("/organisations/{parent-id}/contributors") {
+            `get`("/organisations/{parent-id}/contributors") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
@@ -539,7 +539,7 @@ public interface OrganisationsContributorsController {
                 val result = controller.get(call, xFlowId, parentId, limit, includeInactive, cursor)
                 call.respond(result.status, result.message)
             }
-            get("/organisations/{parent-id}/contributors/{id}") {
+            `get`("/organisations/{parent-id}/contributors/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
@@ -708,7 +708,7 @@ public interface RepositoriesController {
 
     public companion object {
         public fun Route.repositoriesRoutes(controller: RepositoriesController) {
-            get("/repositories") {
+            `get`("/repositories") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
                 val slug =
@@ -728,7 +728,7 @@ public interface RepositoriesController {
                 val result = controller.post(call, xFlowId, idempotencyKey, repository)
                 call.respond(result.status)
             }
-            get("/repositories/{id}") {
+            `get`("/repositories/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
@@ -890,7 +890,7 @@ public interface RepositoriesPullRequestsController {
 
     public companion object {
         public fun Route.repositoriesPullRequestsRoutes(controller: RepositoriesPullRequestsController) {
-            get("/repositories/{parent-id}/pull-requests") {
+            `get`("/repositories/{parent-id}/pull-requests") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
@@ -908,7 +908,7 @@ public interface RepositoriesPullRequestsController {
                 val result = controller.post(call, xFlowId, idempotencyKey, parentId, pullRequest)
                 call.respond(result.status)
             }
-            get("/repositories/{parent-id}/pull-requests/{id}") {
+            `get`("/repositories/{parent-id}/pull-requests/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
