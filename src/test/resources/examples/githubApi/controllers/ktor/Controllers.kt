@@ -2,24 +2,17 @@ package examples.githubApi.controllers
 
 import examples.githubApi.models.BulkEntityDetails
 import examples.githubApi.models.Contributor
-import examples.githubApi.models.ContributorQueryResult
-import examples.githubApi.models.EventResults
 import examples.githubApi.models.Organisation
-import examples.githubApi.models.OrganisationQueryResult
 import examples.githubApi.models.PullRequest
-import examples.githubApi.models.PullRequestQueryResult
 import examples.githubApi.models.Repository
-import examples.githubApi.models.RepositoryQueryResult
 import examples.githubApi.models.StatusQueryParam
 import io.ktor.http.Headers
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
 import io.ktor.server.request.receive
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.`get`
@@ -38,16 +31,19 @@ public interface InternalEventsController {
     /**
      * Generate change events for a list of entities
      *
+     * Route is expected to respond with [examples.githubApi.models.EventResults].
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param bulkEntityDetails
+     * @param call The Ktor application call
      */
-    public suspend fun post(call: ApplicationCall, bulkEntityDetails: BulkEntityDetails): ControllerResult<EventResults>
+    public suspend fun post(bulkEntityDetails: BulkEntityDetails, call: ApplicationCall)
 
     public companion object {
         public fun Route.internalEventsRoutes(controller: InternalEventsController) {
             post("/internal/events") {
                 val bulkEntityDetails = call.receive<BulkEntityDetails>()
-                val result = controller.post(call, bulkEntityDetails)
-                call.respond(result.status, result.message)
+                controller.post(bulkEntityDetails, call)
             }
         }
 
@@ -89,33 +85,36 @@ public interface ContributorsController {
     /**
      * Page through all the Contributor resources matching the query filters
      *
+     * Route is expected to respond with [examples.githubApi.models.ContributorQueryResult].
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param limit Upper bound for number of results to be returned from query api. A default limit
      * will be applied if this is not present
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param includeInactive A query parameter to request both active and inactive entities
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
-     *
+     * @param call The Ktor application call
      */
     public suspend fun searchContributors(
-        call: ApplicationCall,
         xFlowId: String?,
         limit: Int?,
         includeInactive: Boolean?,
         cursor: String?,
-    ): ControllerResult<ContributorQueryResult>
+        call: ApplicationCall,
+    )
 
     /**
      * Create a new Contributor
      *
+     * Route is expected to respond with status 201.
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param contributor
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
      * network failures. This Id should remain the same for a given operation, so that the server can use
@@ -123,40 +122,44 @@ public interface ContributorsController {
      * key as subsequent requests with the same key return the same result. How the key is generated is
      * up to the client, but it is suggested to use UUID (v4), or any other random string with enough
      * entropy to avoid collisions.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun createContributor(
-        call: ApplicationCall,
         xFlowId: String?,
         idempotencyKey: String?,
         contributor: Contributor,
+        call: ApplicationCall,
     )
 
     /**
      * Get a Contributor by ID
      *
+     * Route is expected to respond with [examples.githubApi.models.Contributor].
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param id The unique id for the resource
      * @param status Changes the behavior of GET | HEAD based on the value of the status property.
      * Will return a 404 if the status property does not match the query parameter."
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun getContributor(
-        call: ApplicationCall,
         xFlowId: String?,
         ifNoneMatch: String?,
         id: String,
         status: StatusQueryParam?,
-    ): ControllerResult<Contributor>
+        call: ApplicationCall,
+    )
 
     /**
      * Update an existing Contributor
+     *
+     * Route is expected to respond with status 204.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param contributor
      * @param id The unique id for the resource
@@ -164,10 +167,8 @@ public interface ContributorsController {
      * operate on the resource that matches at least one of the provided entity-tags. This allows clients
      * express a precondition that prevent the method from being applied if there have been any changes
      * to the resource.
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
      * network failures. This Id should remain the same for a given operation, so that the server can use
@@ -175,15 +176,15 @@ public interface ContributorsController {
      * key as subsequent requests with the same key return the same result. How the key is generated is
      * up to the client, but it is suggested to use UUID (v4), or any other random string with enough
      * entropy to avoid collisions.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun putById(
-        call: ApplicationCall,
         ifMatch: String,
         xFlowId: String?,
         idempotencyKey: String?,
         id: String,
         contributor: Contributor,
+        call: ApplicationCall,
     )
 
     public companion object {
@@ -194,14 +195,13 @@ public interface ContributorsController {
                 val includeInactive =
                     call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
                 val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
-                val result = controller.searchContributors(call, xFlowId, limit, includeInactive, cursor)
-                call.respond(result.status, result.message)
+                controller.searchContributors(xFlowId, limit, includeInactive, cursor, call)
             }
             post("/contributors") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val contributor = call.receive<Contributor>()
-                controller.createContributor(call, xFlowId, idempotencyKey, contributor)
+                controller.createContributor(xFlowId, idempotencyKey, contributor, call)
             }
             `get`("/contributors/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -209,8 +209,7 @@ public interface ContributorsController {
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
                     call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
-                val result = controller.getContributor(call, xFlowId, ifNoneMatch, id, status)
-                call.respond(result.status, result.message)
+                controller.getContributor(xFlowId, ifNoneMatch, id, status, call)
             }
             put("/contributors/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -218,7 +217,7 @@ public interface ContributorsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val contributor = call.receive<Contributor>()
-                controller.putById(call, ifMatch, xFlowId, idempotencyKey, id, contributor)
+                controller.putById(ifMatch, xFlowId, idempotencyKey, id, contributor, call)
             }
         }
 
@@ -260,33 +259,36 @@ public interface OrganisationsController {
     /**
      * Page through all the Organisation resources matching the query filters
      *
+     * Route is expected to respond with [examples.githubApi.models.OrganisationQueryResult].
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param limit Upper bound for number of results to be returned from query api. A default limit
      * will be applied if this is not present
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param includeInactive A query parameter to request both active and inactive entities
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
-     *
+     * @param call The Ktor application call
      */
     public suspend fun `get`(
-        call: ApplicationCall,
         xFlowId: String?,
         limit: Int?,
         includeInactive: Boolean?,
         cursor: String?,
-    ): ControllerResult<OrganisationQueryResult>
+        call: ApplicationCall,
+    )
 
     /**
      * Create a new Organisation
      *
+     * Route is expected to respond with status 201.
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param organisation
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
      * network failures. This Id should remain the same for a given operation, so that the server can use
@@ -294,40 +296,44 @@ public interface OrganisationsController {
      * key as subsequent requests with the same key return the same result. How the key is generated is
      * up to the client, but it is suggested to use UUID (v4), or any other random string with enough
      * entropy to avoid collisions.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun post(
-        call: ApplicationCall,
         xFlowId: String?,
         idempotencyKey: String?,
         organisation: Organisation,
+        call: ApplicationCall,
     )
 
     /**
      * Get a Organisation by ID
      *
+     * Route is expected to respond with [examples.githubApi.models.Organisation].
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param id The unique id for the resource
      * @param status Changes the behavior of GET | HEAD based on the value of the status property.
      * Will return a 404 if the status property does not match the query parameter."
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun getById(
-        call: ApplicationCall,
         xFlowId: String?,
         ifNoneMatch: String?,
         id: String,
         status: StatusQueryParam?,
-    ): ControllerResult<Organisation>
+        call: ApplicationCall,
+    )
 
     /**
      * Update an existing Organisation
+     *
+     * Route is expected to respond with status 204.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param organisation
      * @param id The unique id for the resource
@@ -335,10 +341,8 @@ public interface OrganisationsController {
      * operate on the resource that matches at least one of the provided entity-tags. This allows clients
      * express a precondition that prevent the method from being applied if there have been any changes
      * to the resource.
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
      * network failures. This Id should remain the same for a given operation, so that the server can use
@@ -346,15 +350,15 @@ public interface OrganisationsController {
      * key as subsequent requests with the same key return the same result. How the key is generated is
      * up to the client, but it is suggested to use UUID (v4), or any other random string with enough
      * entropy to avoid collisions.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun putById(
-        call: ApplicationCall,
         ifMatch: String,
         xFlowId: String?,
         idempotencyKey: String?,
         id: String,
         organisation: Organisation,
+        call: ApplicationCall,
     )
 
     public companion object {
@@ -365,14 +369,13 @@ public interface OrganisationsController {
                 val includeInactive =
                     call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
                 val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
-                val result = controller.get(call, xFlowId, limit, includeInactive, cursor)
-                call.respond(result.status, result.message)
+                controller.get(xFlowId, limit, includeInactive, cursor, call)
             }
             post("/organisations") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val organisation = call.receive<Organisation>()
-                controller.post(call, xFlowId, idempotencyKey, organisation)
+                controller.post(xFlowId, idempotencyKey, organisation, call)
             }
             `get`("/organisations/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -380,8 +383,7 @@ public interface OrganisationsController {
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
                     call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
-                val result = controller.getById(call, xFlowId, ifNoneMatch, id, status)
-                call.respond(result.status, result.message)
+                controller.getById(xFlowId, ifNoneMatch, id, status, call)
             }
             put("/organisations/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -389,7 +391,7 @@ public interface OrganisationsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val organisation = call.receive<Organisation>()
-                controller.putById(call, ifMatch, xFlowId, idempotencyKey, id, organisation)
+                controller.putById(ifMatch, xFlowId, idempotencyKey, id, organisation, call)
             }
         }
 
@@ -432,51 +434,57 @@ public interface OrganisationsContributorsController {
      * Page through all the Contributor resources for this parent Organisation matching the query
      * filters
      *
+     * Route is expected to respond with [examples.githubApi.models.ContributorQueryResult].
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param parentId The unique id for the parent resource
      * @param limit Upper bound for number of results to be returned from query api. A default limit
      * will be applied if this is not present
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param includeInactive A query parameter to request both active and inactive entities
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
-     *
+     * @param call The Ktor application call
      */
     public suspend fun `get`(
-        call: ApplicationCall,
         xFlowId: String?,
         parentId: String,
         limit: Int?,
         includeInactive: Boolean?,
         cursor: String?,
-    ): ControllerResult<ContributorQueryResult>
+        call: ApplicationCall,
+    )
 
     /**
      * Get a Contributor for this Organisation by ID
+     *
+     * Route is expected to respond with [examples.githubApi.models.Contributor].
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param parentId The unique id for the parent resource
      * @param id The unique id for the resource
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun getById(
-        call: ApplicationCall,
         xFlowId: String?,
         ifNoneMatch: String?,
         parentId: String,
         id: String,
-    ): ControllerResult<Contributor>
+        call: ApplicationCall,
+    )
 
     /**
      * Add an existing Contributor to this Organisation
+     *
+     * Route is expected to respond with status 204.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param parentId The unique id for the parent resource
      * @param id The unique id for the resource
@@ -484,10 +492,8 @@ public interface OrganisationsContributorsController {
      * operate on the resource that matches at least one of the provided entity-tags. This allows clients
      * express a precondition that prevent the method from being applied if there have been any changes
      * to the resource.
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
      * network failures. This Id should remain the same for a given operation, so that the server can use
@@ -495,31 +501,34 @@ public interface OrganisationsContributorsController {
      * key as subsequent requests with the same key return the same result. How the key is generated is
      * up to the client, but it is suggested to use UUID (v4), or any other random string with enough
      * entropy to avoid collisions.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun putById(
-        call: ApplicationCall,
         ifMatch: String,
         xFlowId: String?,
         idempotencyKey: String?,
         parentId: String,
         id: String,
+        call: ApplicationCall,
     )
 
     /**
      * Remove Contributor from this Organisation. Does not delete the underlying Contributor.
      *
+     * Route is expected to respond with status 200.
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param parentId The unique id for the parent resource
      * @param id The unique id for the resource
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun deleteById(
-        call: ApplicationCall,
         xFlowId: String?,
         parentId: String,
         id: String,
+        call: ApplicationCall,
     )
 
     public companion object {
@@ -531,16 +540,14 @@ public interface OrganisationsContributorsController {
                 val includeInactive =
                     call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
                 val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
-                val result = controller.get(call, xFlowId, parentId, limit, includeInactive, cursor)
-                call.respond(result.status, result.message)
+                controller.get(xFlowId, parentId, limit, includeInactive, cursor, call)
             }
             `get`("/organisations/{parent-id}/contributors/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
-                val result = controller.getById(call, xFlowId, ifNoneMatch, parentId, id)
-                call.respond(result.status, result.message)
+                controller.getById(xFlowId, ifNoneMatch, parentId, id, call)
             }
             put("/organisations/{parent-id}/contributors/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
@@ -548,13 +555,13 @@ public interface OrganisationsContributorsController {
                 val ifMatch = call.request.headers.getOrFail("If-Match")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
-                controller.putById(call, ifMatch, xFlowId, idempotencyKey, parentId, id)
+                controller.putById(ifMatch, xFlowId, idempotencyKey, parentId, id, call)
             }
             delete("/organisations/{parent-id}/contributors/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                controller.deleteById(call, xFlowId, parentId, id)
+                controller.deleteById(xFlowId, parentId, id, call)
             }
         }
 
@@ -596,39 +603,40 @@ public interface RepositoriesController {
     /**
      * Page through all the Repository resources matching the query filters
      *
+     * Route is expected to respond with [examples.githubApi.models.RepositoryQueryResult].
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param limit Upper bound for number of results to be returned from query api. A default limit
      * will be applied if this is not present
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param slug Filters resources by the [slug] property. Accepts comma-delimited values
-     *
      * @param name Filters resources by the [name] property. Accepts comma-delimited values
-     *
      * @param includeInactive A query parameter to request both active and inactive entities
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
-     *
+     * @param call The Ktor application call
      */
     public suspend fun `get`(
-        call: ApplicationCall,
         xFlowId: String?,
         limit: Int?,
         slug: List<String>?,
         name: List<String>?,
         includeInactive: Boolean?,
         cursor: String?,
-    ): ControllerResult<RepositoryQueryResult>
+        call: ApplicationCall,
+    )
 
     /**
      * Create a new Repository
      *
+     * Route is expected to respond with status 201.
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param repository
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
      * network failures. This Id should remain the same for a given operation, so that the server can use
@@ -636,40 +644,44 @@ public interface RepositoriesController {
      * key as subsequent requests with the same key return the same result. How the key is generated is
      * up to the client, but it is suggested to use UUID (v4), or any other random string with enough
      * entropy to avoid collisions.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun post(
-        call: ApplicationCall,
         xFlowId: String?,
         idempotencyKey: String?,
         repository: Repository,
+        call: ApplicationCall,
     )
 
     /**
      * Get a Repository by ID
      *
+     * Route is expected to respond with [examples.githubApi.models.Repository].
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param id The unique id for the resource
      * @param status Changes the behavior of GET | HEAD based on the value of the status property.
      * Will return a 404 if the status property does not match the query parameter."
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun getById(
-        call: ApplicationCall,
         xFlowId: String?,
         ifNoneMatch: String?,
         id: String,
         status: StatusQueryParam?,
-    ): ControllerResult<Repository>
+        call: ApplicationCall,
+    )
 
     /**
      * Update an existing Repository
+     *
+     * Route is expected to respond with status 204.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param repository
      * @param id The unique id for the resource
@@ -677,10 +689,8 @@ public interface RepositoriesController {
      * operate on the resource that matches at least one of the provided entity-tags. This allows clients
      * express a precondition that prevent the method from being applied if there have been any changes
      * to the resource.
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
      * network failures. This Id should remain the same for a given operation, so that the server can use
@@ -688,15 +698,15 @@ public interface RepositoriesController {
      * key as subsequent requests with the same key return the same result. How the key is generated is
      * up to the client, but it is suggested to use UUID (v4), or any other random string with enough
      * entropy to avoid collisions.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun putById(
-        call: ApplicationCall,
         ifMatch: String,
         xFlowId: String?,
         idempotencyKey: String?,
         id: String,
         repository: Repository,
+        call: ApplicationCall,
     )
 
     public companion object {
@@ -711,14 +721,13 @@ public interface RepositoriesController {
                 val includeInactive =
                     call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
                 val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
-                val result = controller.get(call, xFlowId, limit, slug, name, includeInactive, cursor)
-                call.respond(result.status, result.message)
+                controller.get(xFlowId, limit, slug, name, includeInactive, cursor, call)
             }
             post("/repositories") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val repository = call.receive<Repository>()
-                controller.post(call, xFlowId, idempotencyKey, repository)
+                controller.post(xFlowId, idempotencyKey, repository, call)
             }
             `get`("/repositories/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -726,8 +735,7 @@ public interface RepositoriesController {
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
                     call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
-                val result = controller.getById(call, xFlowId, ifNoneMatch, id, status)
-                call.respond(result.status, result.message)
+                controller.getById(xFlowId, ifNoneMatch, id, status, call)
             }
             put("/repositories/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -735,7 +743,7 @@ public interface RepositoriesController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val repository = call.receive<Repository>()
-                controller.putById(call, ifMatch, xFlowId, idempotencyKey, id, repository)
+                controller.putById(ifMatch, xFlowId, idempotencyKey, id, repository, call)
             }
         }
 
@@ -778,36 +786,39 @@ public interface RepositoriesPullRequestsController {
      * Page through all the PullRequest resources for this parent Repository matching the query
      * filters
      *
+     * Route is expected to respond with [examples.githubApi.models.PullRequestQueryResult].
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param parentId The unique id for the parent resource
      * @param limit Upper bound for number of results to be returned from query api. A default limit
      * will be applied if this is not present
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param includeInactive A query parameter to request both active and inactive entities
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
-     *
+     * @param call The Ktor application call
      */
     public suspend fun `get`(
-        call: ApplicationCall,
         xFlowId: String?,
         parentId: String,
         limit: Int?,
         includeInactive: Boolean?,
         cursor: String?,
-    ): ControllerResult<PullRequestQueryResult>
+        call: ApplicationCall,
+    )
 
     /**
      * Create a new PullRequest for this parent Repository
+     *
+     * Route is expected to respond with status 201.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param pullRequest
      * @param parentId The unique id for the parent resource
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
      * network failures. This Id should remain the same for a given operation, so that the server can use
@@ -815,39 +826,44 @@ public interface RepositoriesPullRequestsController {
      * key as subsequent requests with the same key return the same result. How the key is generated is
      * up to the client, but it is suggested to use UUID (v4), or any other random string with enough
      * entropy to avoid collisions.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun post(
-        call: ApplicationCall,
         xFlowId: String?,
         idempotencyKey: String?,
         parentId: String,
         pullRequest: PullRequest,
+        call: ApplicationCall,
     )
 
     /**
      * Get a PullRequest for this Repository by ID
      *
+     * Route is expected to respond with [examples.githubApi.models.PullRequest].
+     * Use [io.ktor.server.response.respond] to send the response.
+     *
      * @param parentId The unique id for the parent resource
      * @param id The unique id for the resource
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun getById(
-        call: ApplicationCall,
         xFlowId: String?,
         ifNoneMatch: String?,
         parentId: String,
         id: String,
-    ): ControllerResult<PullRequest>
+        call: ApplicationCall,
+    )
 
     /**
      * Update the PullRequest owned by this Repository
+     *
+     * Route is expected to respond with status 204.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param pullRequest
      * @param parentId The unique id for the parent resource
@@ -856,10 +872,8 @@ public interface RepositoriesPullRequestsController {
      * operate on the resource that matches at least one of the provided entity-tags. This allows clients
      * express a precondition that prevent the method from being applied if there have been any changes
      * to the resource.
-     *
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
      * for diagnosing.
-     *
      * @param idempotencyKey This unique identifier can be used to allow for clients to safely retry
      * requests without accidentally performing the same operation twice. This is useful in cases such as
      * network failures. This Id should remain the same for a given operation, so that the server can use
@@ -867,16 +881,16 @@ public interface RepositoriesPullRequestsController {
      * key as subsequent requests with the same key return the same result. How the key is generated is
      * up to the client, but it is suggested to use UUID (v4), or any other random string with enough
      * entropy to avoid collisions.
-     *
+     * @param call The Ktor application call
      */
     public suspend fun putById(
-        call: ApplicationCall,
         ifMatch: String,
         xFlowId: String?,
         idempotencyKey: String?,
         parentId: String,
         id: String,
         pullRequest: PullRequest,
+        call: ApplicationCall,
     )
 
     public companion object {
@@ -888,23 +902,21 @@ public interface RepositoriesPullRequestsController {
                 val includeInactive =
                     call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
                 val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
-                val result = controller.get(call, xFlowId, parentId, limit, includeInactive, cursor)
-                call.respond(result.status, result.message)
+                controller.get(xFlowId, parentId, limit, includeInactive, cursor, call)
             }
             post("/repositories/{parent-id}/pull-requests") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val pullRequest = call.receive<PullRequest>()
-                controller.post(call, xFlowId, idempotencyKey, parentId, pullRequest)
+                controller.post(xFlowId, idempotencyKey, parentId, pullRequest, call)
             }
             `get`("/repositories/{parent-id}/pull-requests/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
-                val result = controller.getById(call, xFlowId, ifNoneMatch, parentId, id)
-                call.respond(result.status, result.message)
+                controller.getById(xFlowId, ifNoneMatch, parentId, id, call)
             }
             put("/repositories/{parent-id}/pull-requests/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
@@ -913,7 +925,7 @@ public interface RepositoriesPullRequestsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val pullRequest = call.receive<PullRequest>()
-                controller.putById(call, ifMatch, xFlowId, idempotencyKey, parentId, id, pullRequest)
+                controller.putById(ifMatch, xFlowId, idempotencyKey, parentId, id, pullRequest, call)
             }
         }
 
@@ -950,8 +962,3 @@ public interface RepositoriesPullRequestsController {
             BadRequestException("Header " + name + " is required")
     }
 }
-
-public data class ControllerResult<T>(
-    public val status: HttpStatusCode,
-    public val message: T,
-)

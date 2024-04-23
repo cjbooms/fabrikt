@@ -1,7 +1,6 @@
 package examples.pathLevelParameters.controllers
 
 import io.ktor.http.Headers
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
@@ -17,15 +16,17 @@ import kotlin.String
 
 public interface ExampleController {
     /**
-     *
+     * Route is expected to respond with status 204.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param a
      * @param b
+     * @param call The Ktor application call
      */
     public suspend fun `get`(
-        call: ApplicationCall,
         a: String,
         b: String,
+        call: ApplicationCall,
     )
 
     public companion object {
@@ -33,7 +34,7 @@ public interface ExampleController {
             `get`("/example") {
                 val a = call.request.queryParameters.getOrFail<kotlin.String>("a")
                 val b = call.request.queryParameters.getOrFail<kotlin.String>("b")
-                controller.get(call, a, b)
+                controller.get(a, b, call)
             }
         }
 
@@ -70,8 +71,3 @@ public interface ExampleController {
             BadRequestException("Header " + name + " is required")
     }
 }
-
-public data class ControllerResult<T>(
-    public val status: HttpStatusCode,
-    public val message: T,
-)

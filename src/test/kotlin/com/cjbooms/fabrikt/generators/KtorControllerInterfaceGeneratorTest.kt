@@ -58,7 +58,7 @@ class KtorControllerInterfaceGeneratorTest {
 
     @ParameterizedTest
     @MethodSource("testCases")
-    fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
+    fun `correct controllers are generated for different OpenApi Specifications`(testCaseName: String) {
         val basePackage = "examples.$testCaseName"
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
         val expectedControllers = readTextResource("/examples/$testCaseName/controllers/ktor/Controllers.kt")
@@ -196,12 +196,16 @@ class KtorControllerInterfaceGeneratorTest {
     @Test
     fun `ensure generates ByteArray body parameter and response for string with format binary`() {
         val api = SourceApi(readTextResource("/examples/binary/api.yaml"))
-        val controllers = KtorControllerInterfaceGenerator(
+        val generator = KtorControllerInterfaceGenerator(
             Packages(basePackage),
             api
-        ).generate().toSingleFile(emptySet())
+        )
+        val controllers = generator.generate()
+        val lib = generator.generateLibrary()
+
+        val fileStr = controllers.toSingleFile(lib)
         val expectedControllers = readTextResource("/examples/binary/controllers/ktor/Controllers.kt")
 
-        assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
+        assertThat(fileStr.trim()).isEqualTo(expectedControllers.trim())
     }
 }

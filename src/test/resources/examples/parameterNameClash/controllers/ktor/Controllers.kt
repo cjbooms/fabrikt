@@ -2,7 +2,6 @@ package examples.parameterNameClash.controllers
 
 import examples.parameterNameClash.models.SomeObject
 import io.ktor.http.Headers
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
@@ -20,27 +19,31 @@ import kotlin.String
 
 public interface ExampleController {
     /**
-     *
+     * Route is expected to respond with status 204.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param pathB
      * @param queryB
+     * @param call The Ktor application call
      */
     public suspend fun getById(
-        call: ApplicationCall,
         pathB: String,
         queryB: String,
+        call: ApplicationCall,
     )
 
     /**
-     *
+     * Route is expected to respond with status 204.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param bodySomeObject example
      * @param querySomeObject
+     * @param call The Ktor application call
      */
     public suspend fun post(
-        call: ApplicationCall,
         querySomeObject: String,
         bodySomeObject: SomeObject,
+        call: ApplicationCall,
     )
 
     public companion object {
@@ -48,12 +51,12 @@ public interface ExampleController {
             `get`("/example/{b}") {
                 val pathB = call.parameters.getOrFail<kotlin.String>("b")
                 val queryB = call.request.queryParameters.getOrFail<kotlin.String>("b")
-                controller.getById(call, pathB, queryB)
+                controller.getById(pathB, queryB, call)
             }
             post("/example") {
                 val querySomeObject = call.request.queryParameters.getOrFail<kotlin.String>("someObject")
                 val bodySomeObject = call.receive<SomeObject>()
-                controller.post(call, querySomeObject, bodySomeObject)
+                controller.post(querySomeObject, bodySomeObject, call)
             }
         }
 
@@ -90,8 +93,3 @@ public interface ExampleController {
             BadRequestException("Header " + name + " is required")
     }
 }
-
-public data class ControllerResult<T>(
-    public val status: HttpStatusCode,
-    public val message: T,
-)

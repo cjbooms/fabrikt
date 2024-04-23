@@ -1,7 +1,6 @@
 package examples.authentication.controllers
 
 import io.ktor.http.Headers
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
@@ -21,14 +20,16 @@ import kotlin.String
 
 public interface RequiredController {
     /**
-     *
+     * Route is expected to respond with status 200.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param testString
+     * @param call The Ktor application call
      */
     public suspend fun testPath(
-        call: ApplicationCall,
         testString: String,
         principal: Principal,
+        call: ApplicationCall,
     )
 
     public companion object {
@@ -38,7 +39,7 @@ public interface RequiredController {
                     val principal = call.principal<Principal>() ?: throw
                         IllegalStateException("Principal not found")
                     val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                    controller.testPath(call, testString, principal)
+                    controller.testPath(testString, principal, call)
                 }
             }
         }
@@ -79,17 +80,19 @@ public interface RequiredController {
 
 public interface ProhibitedController {
     /**
-     *
+     * Route is expected to respond with status 200.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param testString
+     * @param call The Ktor application call
      */
-    public suspend fun testPath(call: ApplicationCall, testString: String)
+    public suspend fun testPath(testString: String, call: ApplicationCall)
 
     public companion object {
         public fun Route.prohibitedRoutes(controller: ProhibitedController) {
             `get`("/prohibited") {
                 val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                controller.testPath(call, testString)
+                controller.testPath(testString, call)
             }
         }
 
@@ -129,14 +132,16 @@ public interface ProhibitedController {
 
 public interface OptionalController {
     /**
-     *
+     * Route is expected to respond with status 200.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param testString
+     * @param call The Ktor application call
      */
     public suspend fun testPath(
-        call: ApplicationCall,
         testString: String,
         principal: Principal?,
+        call: ApplicationCall,
     )
 
     public companion object {
@@ -145,7 +150,7 @@ public interface OptionalController {
                 `get`("/optional") {
                     val principal = call.principal<Principal>()
                     val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                    controller.testPath(call, testString, principal)
+                    controller.testPath(testString, principal, call)
                 }
             }
         }
@@ -186,17 +191,19 @@ public interface OptionalController {
 
 public interface NoneController {
     /**
-     *
+     * Route is expected to respond with status 200.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param testString
+     * @param call The Ktor application call
      */
-    public suspend fun testPath(call: ApplicationCall, testString: String)
+    public suspend fun testPath(testString: String, call: ApplicationCall)
 
     public companion object {
         public fun Route.noneRoutes(controller: NoneController) {
             `get`("/none") {
                 val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                controller.testPath(call, testString)
+                controller.testPath(testString, call)
             }
         }
 
@@ -236,14 +243,16 @@ public interface NoneController {
 
 public interface DefaultController {
     /**
-     *
+     * Route is expected to respond with status 200.
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param testString
+     * @param call The Ktor application call
      */
     public suspend fun testPath(
-        call: ApplicationCall,
         testString: String,
         principal: Principal,
+        call: ApplicationCall,
     )
 
     public companion object {
@@ -253,7 +262,7 @@ public interface DefaultController {
                     val principal = call.principal<Principal>() ?: throw
                         IllegalStateException("Principal not found")
                     val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                    controller.testPath(call, testString, principal)
+                    controller.testPath(testString, principal, call)
                 }
             }
         }
@@ -291,8 +300,3 @@ public interface DefaultController {
             BadRequestException("Header " + name + " is required")
     }
 }
-
-public data class ControllerResult<T>(
-    public val status: HttpStatusCode,
-    public val message: T,
-)

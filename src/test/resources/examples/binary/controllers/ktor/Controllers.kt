@@ -7,7 +7,6 @@ import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
 import io.ktor.server.request.receive
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.util.converters.DefaultConversionService
@@ -18,18 +17,19 @@ import kotlin.String
 
 public interface BinaryDataController {
     /**
-     *
+     * Route is expected to respond with [kotlin.ByteArray].
+     * Use [io.ktor.server.response.respond] to send the response.
      *
      * @param applicationOctetStream
+     * @param call The Ktor application call
      */
-    public suspend fun postBinaryData(call: ApplicationCall, applicationOctetStream: ByteArray): ControllerResult<ByteArray>
+    public suspend fun postBinaryData(applicationOctetStream: ByteArray, call: ApplicationCall)
 
     public companion object {
         public fun Route.binaryDataRoutes(controller: BinaryDataController) {
             post("/binary-data") {
                 val applicationOctetStream = call.receive<ByteArray>()
-                val result = controller.postBinaryData(call, applicationOctetStream)
-                call.respond(result.status, result.message)
+                controller.postBinaryData(applicationOctetStream, call)
             }
         }
 

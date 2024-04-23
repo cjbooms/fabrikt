@@ -1,14 +1,10 @@
 package examples.singleAllOf.controllers
 
-import examples.singleAllOf.models.Result
 import io.ktor.http.Headers
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.`get`
 import io.ktor.util.converters.DefaultConversionService
@@ -18,15 +14,17 @@ import kotlin.String
 
 public interface TestController {
     /**
+     * Route is expected to respond with [examples.singleAllOf.models.Result].
+     * Use [io.ktor.server.response.respond] to send the response.
      *
+     * @param call The Ktor application call
      */
-    public suspend fun test(call: ApplicationCall): ControllerResult<Result>
+    public suspend fun test(call: ApplicationCall)
 
     public companion object {
         public fun Route.testRoutes(controller: TestController) {
             `get`("/test") {
-                val result = controller.test(call)
-                call.respond(result.status, result.message)
+                controller.test(call)
             }
         }
 
@@ -63,8 +61,3 @@ public interface TestController {
             BadRequestException("Header " + name + " is required")
     }
 }
-
-public data class ControllerResult<T>(
-    public val status: HttpStatusCode,
-    public val message: T,
-)

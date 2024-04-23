@@ -3,7 +3,7 @@ package com.cjbooms.fabrikt.generators.controller
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecuritySupport
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
@@ -30,8 +30,6 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
@@ -73,65 +71,10 @@ class KtorControllerInterfaceGenerator(
                         val routeCode = buildRouteCode(operation, verb, path)
                         routeFunBuilder.addCode(routeCode)
 
-                        // generate controller interface
-                        val methodName = getMethodName(operation, verb, path)
-                        val controllerFunBuilder = FunSpec.builder(methodName)
-                            .addModifiers(setOf(KModifier.ABSTRACT, KModifier.SUSPEND))
-                            .addParameter("call", ClassName("io.ktor.server.application", "ApplicationCall"))
+                        // generate controller interface function
+                        val controllerFun = buildControllerFun(operation, verb, path)
 
-                        val happyPathResponse = operation.happyPathResponse(packages.base)
-                        if (happyPathResponse.simpleName() != Unit::class.simpleName) {
-                            // When return type is not Unit the controller implementation is expected to return a
-                            // ControllerResult, which we unpack in the routing function
-                            controllerFunBuilder.returns(
-                                ClassName(packages.controllers, CONTROLLER_RESULT_CLASS_NAME)
-                                    .parameterizedBy(happyPathResponse)
-                            )
-                        }
-
-                        val params = operation.toIncomingParameters(packages.base, path.value.parameters, emptyList())
-                        val (pathParams, queryParams, headerParams, bodyParams) = params.splitByType()
-
-                        headerParams.forEach { param ->
-                            // TODO: Consider handling header parameter types. Currently everything is a string.
-                            if (param.isRequired) {
-                                controllerFunBuilder.addParameter(ParameterSpec.builder(param.name, String::class).build())
-                            } else {
-                                controllerFunBuilder.addParameter(
-                                    ParameterSpec.builder(param.name, String::class.asTypeName().copy(nullable = true)).build()
-                                )
-                            }
-                        }
-
-                        (pathParams + queryParams).forEach { param ->
-                            if (param.isRequired) {
-                                controllerFunBuilder.addParameter(param.toParameterSpecBuilder().build())
-                            } else {
-                                controllerFunBuilder.addParameter(
-                                    ParameterSpec.builder(param.name, param.type.copy(nullable = true)).build()
-                                )
-                            }
-                        }
-
-                        bodyParams.forEach { param ->
-                            controllerFunBuilder.addParameter(param.toParameterSpecBuilder().build())
-                        }
-
-                        val securityOption = operation.securitySupport(globalSecurity)
-                        val addAuth = securityOption.allowsAuthenticated && options.contains(ControllerCodeGenOptionType.AUTHENTICATION)
-                        if (addAuth) {
-                            controllerFunBuilder.addParameter(
-                                "principal",
-                                ClassName(
-                                    "io.ktor.server.auth",
-                                    "Principal"
-                                ).copy(nullable = securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL)
-                            ).build()
-                        }
-
-                        controllerFunBuilder.addKdoc(operation.toKdoc(params))
-
-                        controllerBuilder.addFunction(controllerFunBuilder.build())
+                        controllerBuilder.addFunction(controllerFun)
                     }
             }
 
@@ -139,19 +82,77 @@ class KtorControllerInterfaceGenerator(
             controllerBuilder.addType(
                 TypeSpec.companionObjectBuilder()
                     .addFunction(routeFunBuilder.build())
-                    .addFunction(getTypedFunBuilder.build())
-                    .addFunction(getOrFailFunBuilder.build())
+                    .addFunction(getTypedFun)
+                    .addFunction(getOrFailFun)
                     .build()
             )
 
-            controllerBuilder
+            controllerBuilder.build()
         }
 
-        val controllers = controllerInterfaces.map { ControllerType(it.build(), packages.base) }.toSet()
-
-        return KtorControllers(controllers)
+        return KtorControllers(
+            controllerInterfaces.map { ControllerType(it, packages.base) }.toSet()
+        )
     }
 
+    /**
+     * Builds the base controller function that takes in all parameters.
+     */
+    private fun buildControllerFun(operation: Operation, verb: String, path: Map.Entry<String, Path>): FunSpec {
+        val methodName = getMethodName(operation, verb, path)
+        val builder = FunSpec.builder(methodName)
+            .addModifiers(setOf(KModifier.SUSPEND, KModifier.ABSTRACT))
+
+        val params = operation.toIncomingParameters(packages.base, path.value.parameters, emptyList())
+        val (pathParams, queryParams, headerParams, bodyParams) = params.splitByType()
+
+        headerParams.forEach { param ->
+            // TODO: Consider handling header parameter types. Currently everything is a string.
+            if (param.isRequired) {
+                builder.addParameter(ParameterSpec.builder(param.name, String::class).build())
+            } else {
+                builder.addParameter(
+                    ParameterSpec.builder(param.name, String::class.asTypeName().copy(nullable = true)).build()
+                )
+            }
+        }
+
+        (pathParams + queryParams).forEach { param ->
+            if (param.isRequired) {
+                builder.addParameter(param.toParameterSpecBuilder().build())
+            } else {
+                builder.addParameter(
+                    ParameterSpec.builder(param.name, param.type.copy(nullable = true)).build()
+                )
+            }
+        }
+
+        bodyParams.forEach { param ->
+            builder.addParameter(param.toParameterSpecBuilder().build())
+        }
+
+        val securityOption = operation.securitySupport(globalSecurity)
+        val addAuth = securityOption.allowsAuthenticated && options.contains(ControllerCodeGenOptionType.AUTHENTICATION)
+        if (addAuth) {
+            builder.addParameter(
+                "principal",
+                ClassName(
+                    "io.ktor.server.auth",
+                    "Principal"
+                ).copy(nullable = securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL)
+            ).build()
+        }
+
+        builder.addKdoc(buildControllerFunKdoc(operation, params))
+
+        builder.addParameter("call", ClassName("io.ktor.server.application", "ApplicationCall"))
+
+        return builder.build()
+    }
+
+    /**
+     * Builds the code that goes into the route function.
+     */
     private fun buildRouteCode(operation: Operation, verb: String, path: Map.Entry<String, Path>): CodeBlock {
         val builder = CodeBlock.builder()
 
@@ -178,8 +179,6 @@ class KtorControllerInterfaceGenerator(
 
         val params = operation.toIncomingParameters(packages.base, path.value.parameters, emptyList())
         val (pathParams, queryParams, headerParams, bodyParams) = params.splitByType()
-
-        val happyPathResponse = operation.happyPathResponse(packages.base)
 
         val methodName = getMethodName(operation, verb, path)
 
@@ -245,8 +244,9 @@ class KtorControllerInterfaceGenerator(
                 )
             } else {
                 builder.addStatement(
-                    "val ${param.name} = %M.request.queryParameters.getTyped<$typeName>(\"${param.originalName}\")",
+                    "val ${param.name} = %M.request.queryParameters.%M<$typeName>(\"${param.originalName}\")",
                     MemberName("io.ktor.server.application", "call"),
+                    MemberName(packages.controllers, "getTyped"),
                 )
             }
         }
@@ -260,23 +260,13 @@ class KtorControllerInterfaceGenerator(
         }
 
         val methodParameters =
-            (listOf("call") + (listOf(headerParams, pathParams, queryParams, bodyParams).flatten().map { it.name })
+            listOf(headerParams, pathParams, queryParams, bodyParams).asSequence().flatten().map { it.name }
                 .plus(if (addAuth) "principal" else null)
-                .filterNotNull())
+                .filterNotNull()
+                .plus("call")
                 .joinToString(", ")
 
-        if (happyPathResponse.simpleName() == Unit::class.simpleName) {
-            // When return type is Unit we leave it up to the controller implementation to respond if needed.
-            // Ktor will respond 200 OK by default.
-            builder.addStatement("controller.$methodName($methodParameters)")
-        } else {
-            builder.addStatement("val result = controller.$methodName($methodParameters)")
-            builder.addStatement(
-                "%M.%M(result.status, result.message)",
-                MemberName("io.ktor.server.application", "call"),
-                MemberName("io.ktor.server.response", "respond"),
-            )
-        }
+        builder.addStatement("controller.$methodName($methodParameters)")
 
         builder
             .unindent()
@@ -291,46 +281,50 @@ class KtorControllerInterfaceGenerator(
         return builder.build()
     }
 
-    override fun generateLibrary(): Collection<ControllerLibraryType> = listOf(
-        buildControllerResult()
-    )
+    private fun buildControllerFunKdoc(operation: Operation, parameters: List<IncomingParameter>): CodeBlock {
+        val kDoc = CodeBlock.builder()
 
-    /**
-     * Builds a data class to be used as a return type for controller methods
-     */
-    private fun buildControllerResult(): ControllerLibraryType {
-        val genericT = TypeVariableName("T")
+        // add summary and description
+        val methodDesc = listOf(operation.summary.orEmpty(), operation.description.orEmpty()).filter { it.isNotEmpty() }
+        if (methodDesc.isNotEmpty()) {
+            methodDesc.forEach { kDoc.add("%L\n", it) }
+            kDoc.add("\n")
+        }
 
-        val spec = TypeSpec.classBuilder(CONTROLLER_RESULT_CLASS_NAME)
-            .addModifiers(KModifier.DATA)
-            .addTypeVariable(genericT)
-            .primaryConstructor(
-                FunSpec.constructorBuilder()
-                    .addParameter("status", ClassName("io.ktor.http", "HttpStatusCode"))
-                    .addParameter("message", genericT) // naming aligned with Ktor's call.response(status, message)
-                    .build()
+        // document the response
+        val happyPathResponse = operation.happyPathResponse(packages.base)
+        if (happyPathResponse.isUnit()) {
+            kDoc.add("Route is expected to respond with status ${operation.responses.keys.first()}.\n")
+        } else if (operation.responses.isNotEmpty()) {
+            kDoc.add(
+                "Route is expected to respond with [%L].\n",
+                happyPathResponse.toString(),
             )
-            .addProperty(
-                PropertySpec.builder("status", ClassName("io.ktor.http", "HttpStatusCode"))
-                    .initializer("status")
-                    .build()
-            )
-            .addProperty(
-                PropertySpec.builder("message", genericT)
-                    .initializer("message")
-                    .build()
-            )
-            .build()
+        }
 
-        return ControllerLibraryType(spec, packages.base)
+        // document how to send response
+        kDoc.add(
+            "Use [%M] to send the response.\n\n",
+            MemberName("io.ktor.server.response", "respond", isExtension = true)
+        )
+
+        // document parameters
+        parameters.forEach {
+            kDoc.add("@param %L %L\n", it.name.toKCodeName(), it.description?.trimIndent().orEmpty()).build()
+        }
+        kDoc.add("@param call The Ktor application call\n")
+
+        return kDoc.build()
     }
+
+    override fun generateLibrary(): Collection<ControllerLibraryType> = emptySet()
 
     /**
      * Function for getting a typed query parameter
      *
      * Similar to Ktor's getOrFail but will not fail on missing parameter
      */
-    private val getTypedFunBuilder = run {
+    private val getTypedFun = run {
         val returnType = TypeVariableName("R", Any::class)
             .copy(nullable = true, reified = true)
 
@@ -362,12 +356,13 @@ class KtorControllerInterfaceGenerator(
                   ParameterConversionException - when conversion from String to R fails
             """.trimIndent()
             )
+            .build()
     }
 
     /**
      * Function for getting typed header parameter
      */
-    private val getOrFailFunBuilder =
+    private val getOrFailFun =
         FunSpec.builder("getOrFail")
             .addModifiers(KModifier.PRIVATE)
             .receiver(ClassName("io.ktor.http", "Headers"))
@@ -383,6 +378,7 @@ class KtorControllerInterfaceGenerator(
                   BadRequestException - when the name is not present
             """.trimIndent()
             )
+            .build()
 
     private fun getMethodName(
         operation: Operation, verb: String, path: Map.Entry<String, Path>
@@ -420,3 +416,6 @@ private data class IncomingParametersByType(
 )
 
 private fun TypeName.simpleName(): String = this.toString().split(".").last()
+
+private fun TypeName.isUnit(): Boolean = this == Unit::class.asTypeName()
+private fun TypeName.isNotUnit(): Boolean = !isUnit()
