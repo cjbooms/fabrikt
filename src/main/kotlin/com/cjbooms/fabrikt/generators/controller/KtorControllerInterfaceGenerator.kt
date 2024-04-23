@@ -117,6 +117,18 @@ class KtorControllerInterfaceGenerator(
                             controllerFunBuilder.addParameter(param.toParameterSpecBuilder().build())
                         }
 
+                        val securityOption = operation.securitySupport(globalSecurity)
+                        val addAuth = securityOption.allowsAuthenticated && options.contains(ControllerCodeGenOptionType.AUTHENTICATION)
+                        if (addAuth) {
+                            controllerFunBuilder.addParameter(
+                                "principal",
+                                ClassName(
+                                    "io.ktor.server.auth",
+                                    "Principal"
+                                ).copy(nullable = securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL)
+                            ).build()
+                        }
+
                         controllerFunBuilder.addKdoc(operation.toKdoc(params))
 
                         controllerBuilder.addFunction(controllerFunBuilder.build())
@@ -143,7 +155,6 @@ class KtorControllerInterfaceGenerator(
     private fun buildRouteCode(operation: Operation, verb: String, path: Map.Entry<String, Path>): CodeBlock {
         val builder = CodeBlock.builder()
 
-        val globalSecurity = this.api.openApi3.securityRequirements.securitySupport()
         val securityOption = operation.securitySupport(globalSecurity)
 
         val addAuth = securityOption.allowsAuthenticated && options.contains(ControllerCodeGenOptionType.AUTHENTICATION)
@@ -179,6 +190,28 @@ class KtorControllerInterfaceGenerator(
                 path.key,
             )
             .indent()
+
+        if (addAuth) {
+            if (securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL) {
+                builder
+                    .addStatement(
+                        "val principal = %M.%M<%T>()",
+                        MemberName("io.ktor.server.application", "call"),
+                        MemberName("io.ktor.server.auth", "principal", isExtension = true),
+                        ClassName("io.ktor.server.auth", "Principal")
+                    )
+            } else {
+                builder
+                    .addStatement(
+                        "val principal = %M.%M<%T>() ?: throw %M(%S)", // should not happen as authenticate { ... } ensures principal is present
+                        MemberName("io.ktor.server.application", "call"),
+                        MemberName("io.ktor.server.auth", "principal", isExtension = true),
+                        ClassName("io.ktor.server.auth", "Principal"),
+                        MemberName("kotlin", "IllegalStateException"),
+                        "Principal not found"
+                    )
+            }
+        }
 
         pathParams.forEach { param ->
             builder.addStatement(
@@ -227,12 +260,10 @@ class KtorControllerInterfaceGenerator(
         }
 
         val methodParameters =
-            listOf(headerParams, pathParams, queryParams, bodyParams).flatten()
-                .joinToString(", ") { it.name }
-                .let {
-                    if (it.isNotEmpty()) "call, $it"
-                    else "call"
-                }
+            (listOf("call") + (listOf(headerParams, pathParams, queryParams, bodyParams).flatten().map { it.name })
+                .plus(if (addAuth) "principal" else null)
+                .filterNotNull())
+                .joinToString(", ")
 
         if (happyPathResponse.simpleName() == Unit::class.simpleName) {
             // When return type is Unit we leave it up to the controller implementation to respond if needed.
@@ -359,10 +390,7 @@ class KtorControllerInterfaceGenerator(
         operation, verb, path.value.pathString.isSingleResource()
     )
 
-    private val usedVerbs: List<String> =
-        api.openApi3.routeToPaths()
-            .flatMap { resourceToPaths -> resourceToPaths.value.flatMap { it.value.operations.keys } }
-            .distinct()
+    private val globalSecurity = this.api.openApi3.securityRequirements.securitySupport()
 
     data class KtorControllers(
         val controllers: Set<ControllerType>,
