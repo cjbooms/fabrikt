@@ -26,6 +26,11 @@ public interface BinaryDataController {
     public suspend fun postBinaryData(applicationOctetStream: ByteArray, call: ApplicationCall)
 
     public companion object {
+        /**
+         * Mounts all routes for the BinaryData resource
+         *
+         * - POST /binary-data
+         */
         public fun Route.binaryDataRoutes(controller: BinaryDataController) {
             post("/binary-data") {
                 val applicationOctetStream = call.receive<ByteArray>()

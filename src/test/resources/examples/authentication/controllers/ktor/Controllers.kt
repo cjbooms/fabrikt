@@ -33,6 +33,11 @@ public interface RequiredController {
     )
 
     public companion object {
+        /**
+         * Mounts all routes for the Required resource
+         *
+         * - GET /required
+         */
         public fun Route.requiredRoutes(controller: RequiredController) {
             authenticate("BasicAuth", optional = false) {
                 `get`("/required") {
@@ -89,6 +94,11 @@ public interface ProhibitedController {
     public suspend fun testPath(testString: String, call: ApplicationCall)
 
     public companion object {
+        /**
+         * Mounts all routes for the Prohibited resource
+         *
+         * - GET /prohibited
+         */
         public fun Route.prohibitedRoutes(controller: ProhibitedController) {
             `get`("/prohibited") {
                 val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
@@ -145,6 +155,11 @@ public interface OptionalController {
     )
 
     public companion object {
+        /**
+         * Mounts all routes for the Optional resource
+         *
+         * - GET /optional
+         */
         public fun Route.optionalRoutes(controller: OptionalController) {
             authenticate("BasicAuth", optional = true) {
                 `get`("/optional") {
@@ -200,6 +215,11 @@ public interface NoneController {
     public suspend fun testPath(testString: String, call: ApplicationCall)
 
     public companion object {
+        /**
+         * Mounts all routes for the None resource
+         *
+         * - GET /none
+         */
         public fun Route.noneRoutes(controller: NoneController) {
             `get`("/none") {
                 val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
@@ -256,6 +276,11 @@ public interface DefaultController {
     )
 
     public companion object {
+        /**
+         * Mounts all routes for the Default resource
+         *
+         * - GET /default
+         */
         public fun Route.defaultRoutes(controller: DefaultController) {
             authenticate("basicAuth", optional = false) {
                 `get`("/default") {

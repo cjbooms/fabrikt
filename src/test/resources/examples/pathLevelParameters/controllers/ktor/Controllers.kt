@@ -30,6 +30,11 @@ public interface ExampleController {
     )
 
     public companion object {
+        /**
+         * Mounts all routes for the Example resource
+         *
+         * - GET /example
+         */
         public fun Route.exampleRoutes(controller: ExampleController) {
             `get`("/example") {
                 val a = call.request.queryParameters.getOrFail<kotlin.String>("a")

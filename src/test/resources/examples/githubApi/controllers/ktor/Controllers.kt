@@ -40,6 +40,11 @@ public interface InternalEventsController {
     public suspend fun post(bulkEntityDetails: BulkEntityDetails, call: ApplicationCall)
 
     public companion object {
+        /**
+         * Mounts all routes for the InternalEvents resource
+         *
+         * - POST /internal/events Generate change events for a list of entities
+         */
         public fun Route.internalEventsRoutes(controller: InternalEventsController) {
             post("/internal/events") {
                 val bulkEntityDetails = call.receive<BulkEntityDetails>()
@@ -188,6 +193,14 @@ public interface ContributorsController {
     )
 
     public companion object {
+        /**
+         * Mounts all routes for the Contributors resource
+         *
+         * - GET /contributors Page through all the Contributor resources matching the query filters
+         * - POST /contributors Create a new Contributor
+         * - GET /contributors/{id} Get a Contributor by ID
+         * - PUT /contributors/{id} Update an existing Contributor
+         */
         public fun Route.contributorsRoutes(controller: ContributorsController) {
             `get`("/contributors") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
@@ -362,6 +375,14 @@ public interface OrganisationsController {
     )
 
     public companion object {
+        /**
+         * Mounts all routes for the Organisations resource
+         *
+         * - GET /organisations Page through all the Organisation resources matching the query filters
+         * - POST /organisations Create a new Organisation
+         * - GET /organisations/{id} Get a Organisation by ID
+         * - PUT /organisations/{id} Update an existing Organisation
+         */
         public fun Route.organisationsRoutes(controller: OrganisationsController) {
             `get`("/organisations") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
@@ -532,6 +553,18 @@ public interface OrganisationsContributorsController {
     )
 
     public companion object {
+        /**
+         * Mounts all routes for the OrganisationsContributors resource
+         *
+         * - GET /organisations/{parent-id}/contributors Page through all the Contributor resources for
+         * this parent Organisation matching the query filters
+         * - GET /organisations/{parent-id}/contributors/{id} Get a Contributor for this Organisation by
+         * ID
+         * - PUT /organisations/{parent-id}/contributors/{id} Add an existing Contributor to this
+         * Organisation
+         * - DELETE /organisations/{parent-id}/contributors/{id} Remove Contributor from this
+         * Organisation. Does not delete the underlying Contributor.
+         */
         public fun Route.organisationsContributorsRoutes(controller: OrganisationsContributorsController) {
             `get`("/organisations/{parent-id}/contributors") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
@@ -710,6 +743,14 @@ public interface RepositoriesController {
     )
 
     public companion object {
+        /**
+         * Mounts all routes for the Repositories resource
+         *
+         * - GET /repositories Page through all the Repository resources matching the query filters
+         * - POST /repositories Create a new Repository
+         * - GET /repositories/{id} Get a Repository by ID
+         * - PUT /repositories/{id} Update an existing Repository
+         */
         public fun Route.repositoriesRoutes(controller: RepositoriesController) {
             `get`("/repositories") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
@@ -894,6 +935,18 @@ public interface RepositoriesPullRequestsController {
     )
 
     public companion object {
+        /**
+         * Mounts all routes for the RepositoriesPullRequests resource
+         *
+         * - GET /repositories/{parent-id}/pull-requests Page through all the PullRequest resources for
+         * this parent Repository matching the query filters
+         * - POST /repositories/{parent-id}/pull-requests Create a new PullRequest for this parent
+         * Repository
+         * - GET /repositories/{parent-id}/pull-requests/{id} Get a PullRequest for this Repository by
+         * ID
+         * - PUT /repositories/{parent-id}/pull-requests/{id} Update the PullRequest owned by this
+         * Repository
+         */
         public fun Route.repositoriesPullRequestsRoutes(controller: RepositoriesPullRequestsController) {
             `get`("/repositories/{parent-id}/pull-requests") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")

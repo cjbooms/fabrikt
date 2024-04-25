@@ -22,6 +22,11 @@ public interface TestController {
     public suspend fun test(call: ApplicationCall)
 
     public companion object {
+        /**
+         * Mounts all routes for the Test resource
+         *
+         * - GET /test
+         */
         public fun Route.testRoutes(controller: TestController) {
             `get`("/test") {
                 controller.test(call)

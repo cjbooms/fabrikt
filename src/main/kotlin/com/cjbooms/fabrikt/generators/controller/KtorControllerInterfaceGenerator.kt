@@ -4,6 +4,7 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecuritySupport
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
@@ -19,6 +20,7 @@ import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSingleResource
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
+import com.cjbooms.fabrikt.util.capitalized
 import com.cjbooms.fabrikt.util.toUpperCase
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Path
@@ -59,6 +61,7 @@ class KtorControllerInterfaceGenerator(
                     "controller",
                     ClassName(packages.controllers, ControllerGeneratorUtils.controllerName(resourceName))
                 )
+                .addKdoc("Mounts all routes for the $resourceName resource\n\n")
 
             paths.forEach { path ->
                 path.value.operations
@@ -67,6 +70,7 @@ class KtorControllerInterfaceGenerator(
                         // add route handler
                         val routeCode = buildRouteCode(operation, verb, path)
                         routeFunBuilder.addCode(routeCode)
+                            routeFunBuilder.addKdoc("- ${verb.toUpperCase()} ${path.key} ${(operation.summary ?: operation.description).orEmpty()}\n")
 
                         // generate controller interface function
                         val controllerFun = buildControllerFun(operation, verb, path)

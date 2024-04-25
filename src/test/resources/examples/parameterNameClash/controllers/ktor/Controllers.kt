@@ -47,6 +47,12 @@ public interface ExampleController {
     )
 
     public companion object {
+        /**
+         * Mounts all routes for the Example resource
+         *
+         * - GET /example/{b}
+         * - POST /example
+         */
         public fun Route.exampleRoutes(controller: ExampleController) {
             `get`("/example/{b}") {
                 val pathB = call.parameters.getOrFail<kotlin.String>("b")
