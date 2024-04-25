@@ -110,8 +110,11 @@ class ModelGeneratorTest {
         val tempFolderContents =
             readFolder(tempDirectory.resolve(basePackage.replace(".", File.separator)).resolve("models"))
         tempFolderContents.forEach {
-            assertThat(expectedModels).containsKeys(it.key)
-            assertThat(expectedModels[it.key]).isEqualTo(it.value)
+            if (expectedModels.containsKey(it.key)) {
+                assertThat((it.value)).isEqualTo(expectedModels[it.key])
+            } else {
+                assertThat(it.value).isEqualTo("File not found in expected models")
+            }
         }
 
         tempDirectory.toFile().deleteRecursively()
@@ -156,20 +159,6 @@ class ModelGeneratorTest {
         val validationAnnotationsModel = models.files.first { it.name == "ValidationAnnotations" }
         assertThat(validationAnnotationsModel).isNotNull
         assertThat(Linter.lintString(validationAnnotationsModel.toString())).isEqualTo(expectedJakartaModel)
-    }
-
-    @Test
-    fun `sealed classes are correctly grouped into a single file`() {
-        val basePackage = "examples.polymorphicModels.sealed"
-        val spec = readTextResource("/examples/polymorphicModels/api.yaml")
-        val expectedModels = readTextResource("/examples/polymorphicModels/sealed/models/Models.kt")
-
-        val models = JacksonModelGenerator(
-            Packages(basePackage),
-            SourceApi(spec),
-        ).generate()
-
-        assertThat(Linter.lintString(models.files.first().toString())).isEqualTo(expectedModels)
     }
 
     @Test

@@ -9,7 +9,6 @@ import com.reprezen.kaizen.oasparser.model3.Parameter
 import com.reprezen.kaizen.oasparser.model3.Schema
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
@@ -53,28 +52,12 @@ data class Clients(val clients: Collection<ClientType>) : KotlinTypes(clients) {
     }
 }
 
-fun <T : GeneratedType> Collection<T>.toFileSpec(): Collection<FileSpec> = groupClasses(this)
+fun <T : GeneratedType> Collection<T>.toFileSpec(): Collection<FileSpec> = this
     .map {
-        val builder = FileSpec.builder(it.key.destinationPackage, it.key.className.simpleName)
-            .addType(it.key.spec)
-        it.value.forEach { additional ->
-            builder.addType(additional.spec)
-        }
-        builder.build()
+        FileSpec.builder(it.destinationPackage, it.className.simpleName)
+            .addType(it.spec)
+            .build()
     }
-
-private fun <T : GeneratedType> groupClasses(allModels: Collection<T>): Map<T, List<T>> {
-    val sealedClasses = allModels
-        .filter { it.spec.modifiers.contains(KModifier.SEALED) }
-        .associateWith { sealedClass ->
-            allModels.filter { maybeImpl -> maybeImpl.spec.superclass == sealedClass.className }
-        }
-    val otherClasses = allModels
-        .filterNot { modelType -> sealedClasses.keys.contains(modelType) }
-        .filterNot { modelType -> sealedClasses.values.flatten().contains(modelType) }
-        .associateWith { emptyList<T>() }
-    return sealedClasses.plus(otherClasses)
-}
 
 /**
  * The IncomingParameter class is intended to represent a given name and type
