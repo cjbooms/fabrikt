@@ -43,7 +43,7 @@ class CodeGenerator(
     private fun generateModels(): Collection<GeneratedFile> = sourceSet(models().files)
 
     private fun generateControllerInterfaces(): Collection<GeneratedFile> =
-        sourceSet(controllers()).plus(sourceSet(models().files))
+        sourceSet(controllers().files).plus(sourceSet(models().files))
 
     private fun generateClient(): Collection<GeneratedFile> {
         val clientGenerator = when (MutableSettings.clientTarget()) {
@@ -68,7 +68,7 @@ class CodeGenerator(
     private fun resources(models: Models): List<ResourceFile> =
         listOfNotNull(QuarkusReflectionModelGenerator(models).generate())
 
-    private fun controllers(): List<FileSpec> {
+    private fun controllers(): KotlinTypes {
         val generator =
             when (MutableSettings.controllerTarget()) {
                 ControllerCodeGenTargetType.SPRING -> SpringControllerInterfaceGenerator(
@@ -91,14 +91,6 @@ class CodeGenerator(
                     MutableSettings.controllerOptions(),
                 )
             }
-
-        val controllerFiles: Collection<FileSpec> = generator.generate().files
-        val libFiles: Collection<FileSpec> = generator.generateLibrary().map {
-            FileSpec.builder(it.className)
-                .addType(it.spec)
-                .build()
-        }
-
-        return controllerFiles.plus(libFiles)
+        return generator.generate()
     }
 }

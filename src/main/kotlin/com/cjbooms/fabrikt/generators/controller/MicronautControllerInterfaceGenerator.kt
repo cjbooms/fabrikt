@@ -13,7 +13,6 @@ import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports.SECURITY_RULE_IS_ANONYMOUS
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports.SECURITY_RULE_IS_AUTHENTICATED
 import com.cjbooms.fabrikt.model.BodyParameter
-import com.cjbooms.fabrikt.model.ControllerLibraryType
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.HeaderParam
 import com.cjbooms.fabrikt.model.KotlinTypes
@@ -53,8 +52,6 @@ class MicronautControllerInterfaceGenerator(
             }.toSet(),
             addAuthenticationParameter,
         )
-
-    override fun generateLibrary(): Collection<ControllerLibraryType> = emptySet()
 
     override fun controllerBuilder(
         className: String,

@@ -5,7 +5,6 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
-import com.cjbooms.fabrikt.model.ControllerLibraryType
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
@@ -68,8 +67,7 @@ class KtorControllerInterfaceGeneratorTest {
             api
         )
 
-        val library = ktorControllers.generateLibrary()
-        val controllers = ktorControllers.generate().toSingleFile(library)
+        val controllers = ktorControllers.generate().toSingleFile()
 
         assertThat(controllers).isEqualTo(expectedControllers)
     }
@@ -80,13 +78,11 @@ class KtorControllerInterfaceGeneratorTest {
         val api = SourceApi(readTextResource("/examples/authentication/api.yaml"))
         val expectedControllers = readTextResource("/examples/authentication/controllers/ktor/Controllers.kt")
 
-        val generator = KtorControllerInterfaceGenerator(
+        val controllers = KtorControllerInterfaceGenerator(
             Packages(basePackage),
             api,
             setOf(ControllerCodeGenOptionType.AUTHENTICATION),
-        )
-        val library = generator.generateLibrary()
-        val controllers = generator.generate().toSingleFile(library)
+        ).generate().toSingleFile()
 
         assertThat(controllers).isEqualTo(expectedControllers)
     }
@@ -176,15 +172,11 @@ class KtorControllerInterfaceGeneratorTest {
         ).isTrue()
     }
 
-    private fun KtorControllerInterfaceGenerator.KtorControllers.toSingleFile(extraSpecs: Collection<ControllerLibraryType>): String {
+    private fun KtorControllerInterfaceGenerator.KtorControllers.toSingleFile(): String {
         val destPackage = if (controllers.isNotEmpty()) controllers.first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
 
         controllers.forEach {
-            singleFileBuilder.addType(it.spec)
-        }
-
-        extraSpecs.forEach {
             singleFileBuilder.addType(it.spec)
         }
 
@@ -201,9 +193,8 @@ class KtorControllerInterfaceGeneratorTest {
             api
         )
         val controllers = generator.generate()
-        val lib = generator.generateLibrary()
 
-        val fileStr = controllers.toSingleFile(lib)
+        val fileStr = controllers.toSingleFile()
         val expectedControllers = readTextResource("/examples/binary/controllers/ktor/Controllers.kt")
 
         assertThat(fileStr.trim()).isEqualTo(expectedControllers.trim())
