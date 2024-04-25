@@ -9,6 +9,7 @@ import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.Securi
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
 import com.cjbooms.fabrikt.model.BodyParameter
+import com.cjbooms.fabrikt.model.ControllerLibraryType
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.HeaderParam
 import com.cjbooms.fabrikt.model.IncomingParameter
@@ -35,6 +36,8 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
+
+private const val CONTROLLER_RESULT_CLASS_NAME = "ControllerResult"
 
 /**
  * Generates controller interface and routing functions for Ktor.
@@ -317,6 +320,8 @@ class KtorControllerInterfaceGenerator(
 
         return kDoc.build()
     }
+
+    override fun generateLibrary(): Collection<ControllerLibraryType> = emptySet()
 
     /**
      * Function for getting a typed query parameter
