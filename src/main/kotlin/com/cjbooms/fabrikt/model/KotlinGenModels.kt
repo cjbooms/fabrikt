@@ -67,7 +67,9 @@ private fun <T : GeneratedType> groupClasses(allModels: Collection<T>): Map<T, L
     val sealedClasses = allModels
         .filter { it.spec.modifiers.contains(KModifier.SEALED) }
         .associateWith { sealedClass ->
-            allModels.filter { maybeImpl -> maybeImpl.spec.superclass == sealedClass.className }
+            allModels
+                .filterNot { it.spec.modifiers.contains(KModifier.SEALED) }
+                .filter { maybeImpl -> maybeImpl.spec.superclass == sealedClass.className }
         }
     val otherClasses = allModels
         .filterNot { modelType -> sealedClasses.keys.contains(modelType) }
