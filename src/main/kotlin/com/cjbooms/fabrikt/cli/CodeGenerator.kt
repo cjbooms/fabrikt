@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
 import com.cjbooms.fabrikt.generators.client.OpenFeignInterfaceGenerator
+import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
@@ -81,6 +82,12 @@ class CodeGenerator(
                     packages,
                     sourceApi,
                     MutableSettings.validationLibrary().annotations,
+                    MutableSettings.controllerOptions(),
+                )
+
+                ControllerCodeGenTargetType.KTOR -> KtorControllerInterfaceGenerator(
+                    packages,
+                    sourceApi,
                     MutableSettings.controllerOptions(),
                 )
             }

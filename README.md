@@ -30,6 +30,7 @@ The library currently has support for generating:
 
 * **Jackson annotated data classes**
 * **Spring MVC annotated controller interfaces**
+* **Ktor server routes and controller interfaces**
 * **OkHttp Client** - with the option for a resilience4j fault-tolerance wrapper
 
 ### Example Generation
@@ -212,6 +213,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               | CHOOSE ONE OF: |
 |                               |   `SPRING` - Generate for Spring framework. |
 |                               |   `MICRONAUT` - Generate for Micronaut framework. |
+|                               |   `KTOR` - Generate for Ktor server. |
 |   `--http-model-opts`         | Select the options for the http models that you want to be generated. |
 |                               | CHOOSE ANY OF: |
 |                               |   `X_EXTENSIBLE_ENUMS` - This option treats x-extensible-enums as enums |
@@ -228,7 +230,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |   `--targets`                 | Targets are the parts of the application that you want to be generated. |
 |                               | CHOOSE ANY OF: |
 |                               |   `HTTP_MODELS` - Jackson annotated data classes to represent the schema objects defined in the input. |
-|                               |   `CONTROLLERS` - Spring / Micronaut annotated HTTP controllers for each of the endpoints defined in the input. |
+|                               |   `CONTROLLERS` - Spring / Micronaut / Ktor HTTP controllers for each of the endpoints defined in the input. |
 |                               |   `CLIENT` - Simple http rest client. |
 |                               |   `QUARKUS_REFLECTION_CONFIG` - This options generates the reflection-config.json file for quarkus integration projects |
 |   `--type-overrides`          | Specify non-default kotlin types for certain OAS types. For example, generate `Instant` instead of `OffsetDateTime` |

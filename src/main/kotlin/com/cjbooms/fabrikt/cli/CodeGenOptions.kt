@@ -10,7 +10,7 @@ enum class CodeGenerationType(val description: String) {
         "Jackson annotated data classes to represent the schema objects defined in the input."
     ),
     CONTROLLERS(
-        "Spring / Micronaut annotated HTTP controllers for each of the endpoints defined in the input."
+        "Spring / Micronaut / Ktor HTTP controllers for each of the endpoints defined in the input."
     ),
     CLIENT(
         "Simple http rest client."
@@ -59,7 +59,8 @@ enum class ControllerCodeGenOptionType(val description: String) {
 
 enum class ControllerCodeGenTargetType(val description: String) {
     SPRING("Generate for Spring framework."),
-    MICRONAUT("Generate for Micronaut framework.");
+    MICRONAUT("Generate for Micronaut framework."),
+    KTOR("Generate for Ktor server.");
 
     override fun toString() = "`${super.toString()}` - $description"
 }

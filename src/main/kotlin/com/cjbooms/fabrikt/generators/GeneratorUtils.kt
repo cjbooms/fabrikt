@@ -8,6 +8,8 @@ import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
+import com.cjbooms.fabrikt.util.capitalized
+import com.cjbooms.fabrikt.util.decapitalized
 import com.reprezen.kaizen.oasparser.model3.MediaType
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Parameter
@@ -21,8 +23,6 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
-import com.cjbooms.fabrikt.util.capitalized
-import com.cjbooms.fabrikt.util.decapitalized
 import java.util.function.Predicate
 
 object GeneratorUtils {

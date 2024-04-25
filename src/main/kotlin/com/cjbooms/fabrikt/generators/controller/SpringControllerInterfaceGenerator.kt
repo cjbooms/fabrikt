@@ -36,7 +36,7 @@ class SpringControllerInterfaceGenerator(
     private val api: SourceApi,
     private val validationAnnotations: ValidationAnnotations,
     private val options: Set<ControllerCodeGenOptionType> = emptySet(),
-) : ControllerInterfaceGenerator(packages, api, validationAnnotations) {
+) : ControllerInterfaceGenerator, AnnotationBasedControllerInterfaceGenerator(packages, api, validationAnnotations) {
 
     private val addAuthenticationParameter: Boolean
         get() = options.any { it == ControllerCodeGenOptionType.AUTHENTICATION }
