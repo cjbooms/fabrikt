@@ -1,0 +1,10 @@
+package examples.singleAllOf.multipleFiles.models
+
+import com.fasterxml.jackson.`annotation`.JsonProperty
+import kotlin.String
+
+public data class Result(
+  @param:JsonProperty("foo")
+  @get:JsonProperty("foo")
+  public val foo: String? = null,
+)

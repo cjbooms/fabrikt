@@ -7,10 +7,12 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
+import com.cjbooms.fabrikt.model.KotlinSourceSet
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
+import com.cjbooms.fabrikt.util.ResourceHelper.readFolder
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
 import org.assertj.core.api.Assertions.assertThat
@@ -20,6 +22,9 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.stream.Stream
 
@@ -98,6 +103,47 @@ class ModelGeneratorTest {
 
         assertThat(models).isEqualTo(expectedModels)
     }
+
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `generate models generates correct single files`(testCaseName: String) {
+        MutableSettings.updateSettings()
+        MutableSettings.addOption(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS)
+        if (testCaseName == "instantDateTime") {
+            MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
+        }
+        if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface") {
+            MutableSettings.addOption(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF)
+        }
+        if (testCaseName == "mapExamplesNonNullValues") {
+            MutableSettings.addOption(ModelCodeGenOptionType.NON_NULL_MAP_VALUES)
+        }
+        val basePackage = "examples.${testCaseName.replace("/", ".")}.multipleFiles"
+        val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
+        val expectedModels = readFolder(Path.of("src/test/resources/examples/$testCaseName/multipleFiles/models/"))
+
+        val models = JacksonModelGenerator(
+            Packages(basePackage),
+            sourceApi,
+        ).generate()
+
+        val sourceSet = setOf(KotlinSourceSet(models.files, Paths.get("")))
+        val tempDirectory = Files.createTempDirectory("model_generator_test_${testCaseName.replace("/", ".")}")
+        sourceSet.forEach {
+            it.writeFileTo(tempDirectory.toFile())
+        }
+
+        val tempFolderContents =
+            readFolder(tempDirectory.resolve(basePackage.replace(".", File.separator)).resolve("models"))
+        tempFolderContents.forEach {
+            assertThat(expectedModels).containsKeys(it.key)
+            assertThat(expectedModels[it.key]).isEqualTo(it.value)
+        }
+
+        tempDirectory.toFile().deleteRecursively()
+    }
+
 
     @Test
     fun `generate models using jakarta validation`() {
