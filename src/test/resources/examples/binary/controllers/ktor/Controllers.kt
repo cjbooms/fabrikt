@@ -1,12 +1,14 @@
 package ie.zalando.controllers
 
 import io.ktor.http.Headers
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
 import io.ktor.server.request.receive
+import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.util.converters.DefaultConversionService
@@ -14,16 +16,20 @@ import io.ktor.util.reflect.typeInfo
 import kotlin.Any
 import kotlin.ByteArray
 import kotlin.String
+import kotlin.Suppress
 
 public interface BinaryDataController {
     /**
      * Route is expected to respond with [kotlin.ByteArray].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [ie.zalando.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param applicationOctetStream
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
-    public suspend fun postBinaryData(applicationOctetStream: ByteArray, call: ApplicationCall)
+    public suspend fun postBinaryData(
+        applicationOctetStream: ByteArray,
+        call: TypedApplicationCall<ByteArray>,
+    )
 
     public companion object {
         /**
@@ -34,7 +40,7 @@ public interface BinaryDataController {
         public fun Route.binaryDataRoutes(controller: BinaryDataController) {
             post("/binary-data") {
                 val applicationOctetStream = call.receive<ByteArray>()
-                controller.postBinaryData(applicationOctetStream, call)
+                controller.postBinaryData(applicationOctetStream, TypedApplicationCall.from(call))
             }
         }
 
@@ -69,5 +75,31 @@ public interface BinaryDataController {
          */
         private fun Headers.getOrFail(name: String): String = this[name] ?: throw
             BadRequestException("Header " + name + " is required")
+    }
+}
+
+/**
+ * Decorator for Ktor's ApplicationCall that provides type safe variants of the [respond] functions.
+ *
+ * It can be used as a drop-in replacement for [io.ktor.server.application.ApplicationCall].
+ *
+ * @param R The type of the response body
+ */
+public class TypedApplicationCall<R : Any> private constructor(
+    private val applicationCall: ApplicationCall,
+) : ApplicationCall by applicationCall {
+    @Suppress("unused")
+    public suspend inline fun <reified T : R> respondTyped(message: T) {
+        respond(message)
+    }
+
+    @Suppress("unused")
+    public suspend inline fun <reified T : R> respondTyped(status: HttpStatusCode, message: T) {
+        respond(status, message)
+    }
+
+    public companion object {
+        public fun <R : Any> from(applicationCall: ApplicationCall): TypedApplicationCall<R> =
+            TypedApplicationCall<R>(applicationCall)
     }
 }

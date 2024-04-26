@@ -2,17 +2,24 @@ package examples.githubApi.controllers
 
 import examples.githubApi.models.BulkEntityDetails
 import examples.githubApi.models.Contributor
+import examples.githubApi.models.ContributorQueryResult
+import examples.githubApi.models.EventResults
 import examples.githubApi.models.Organisation
+import examples.githubApi.models.OrganisationQueryResult
 import examples.githubApi.models.PullRequest
+import examples.githubApi.models.PullRequestQueryResult
 import examples.githubApi.models.Repository
+import examples.githubApi.models.RepositoryQueryResult
 import examples.githubApi.models.StatusQueryParam
 import io.ktor.http.Headers
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
 import io.ktor.server.request.receive
+import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.`get`
@@ -25,6 +32,7 @@ import kotlin.Any
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.List
 
 public interface InternalEventsController {
@@ -32,12 +40,15 @@ public interface InternalEventsController {
      * Generate change events for a list of entities
      *
      * Route is expected to respond with [examples.githubApi.models.EventResults].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [examples.githubApi.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param bulkEntityDetails
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
-    public suspend fun post(bulkEntityDetails: BulkEntityDetails, call: ApplicationCall)
+    public suspend fun post(
+        bulkEntityDetails: BulkEntityDetails,
+        call: TypedApplicationCall<EventResults>,
+    )
 
     public companion object {
         /**
@@ -48,7 +59,7 @@ public interface InternalEventsController {
         public fun Route.internalEventsRoutes(controller: InternalEventsController) {
             post("/internal/events") {
                 val bulkEntityDetails = call.receive<BulkEntityDetails>()
-                controller.post(bulkEntityDetails, call)
+                controller.post(bulkEntityDetails, TypedApplicationCall.from(call))
             }
         }
 
@@ -91,7 +102,7 @@ public interface ContributorsController {
      * Page through all the Contributor resources matching the query filters
      *
      * Route is expected to respond with [examples.githubApi.models.ContributorQueryResult].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [examples.githubApi.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param limit Upper bound for number of results to be returned from query api. A default limit
      * will be applied if this is not present
@@ -101,21 +112,21 @@ public interface ContributorsController {
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
     public suspend fun searchContributors(
         xFlowId: String?,
         limit: Int?,
         includeInactive: Boolean?,
         cursor: String?,
-        call: ApplicationCall,
+        call: TypedApplicationCall<ContributorQueryResult>,
     )
 
     /**
      * Create a new Contributor
      *
      * Route is expected to respond with status 201.
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [respond] to send the response.
      *
      * @param contributor
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
@@ -140,7 +151,7 @@ public interface ContributorsController {
      * Get a Contributor by ID
      *
      * Route is expected to respond with [examples.githubApi.models.Contributor].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [examples.githubApi.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param id The unique id for the resource
      * @param status Changes the behavior of GET | HEAD based on the value of the status property.
@@ -150,21 +161,21 @@ public interface ContributorsController {
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
     public suspend fun getContributor(
         xFlowId: String?,
         ifNoneMatch: String?,
         id: String,
         status: StatusQueryParam?,
-        call: ApplicationCall,
+        call: TypedApplicationCall<Contributor>,
     )
 
     /**
      * Update an existing Contributor
      *
      * Route is expected to respond with status 204.
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [respond] to send the response.
      *
      * @param contributor
      * @param id The unique id for the resource
@@ -208,7 +219,13 @@ public interface ContributorsController {
                 val includeInactive =
                     call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
                 val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
-                controller.searchContributors(xFlowId, limit, includeInactive, cursor, call)
+                controller.searchContributors(
+                    xFlowId,
+                    limit,
+                    includeInactive,
+                    cursor,
+                    TypedApplicationCall.from(call),
+                )
             }
             post("/contributors") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
@@ -222,7 +239,7 @@ public interface ContributorsController {
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
                     call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
-                controller.getContributor(xFlowId, ifNoneMatch, id, status, call)
+                controller.getContributor(xFlowId, ifNoneMatch, id, status, TypedApplicationCall.from(call))
             }
             put("/contributors/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -273,7 +290,7 @@ public interface OrganisationsController {
      * Page through all the Organisation resources matching the query filters
      *
      * Route is expected to respond with [examples.githubApi.models.OrganisationQueryResult].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [examples.githubApi.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param limit Upper bound for number of results to be returned from query api. A default limit
      * will be applied if this is not present
@@ -283,21 +300,21 @@ public interface OrganisationsController {
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
     public suspend fun `get`(
         xFlowId: String?,
         limit: Int?,
         includeInactive: Boolean?,
         cursor: String?,
-        call: ApplicationCall,
+        call: TypedApplicationCall<OrganisationQueryResult>,
     )
 
     /**
      * Create a new Organisation
      *
      * Route is expected to respond with status 201.
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [respond] to send the response.
      *
      * @param organisation
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
@@ -322,7 +339,7 @@ public interface OrganisationsController {
      * Get a Organisation by ID
      *
      * Route is expected to respond with [examples.githubApi.models.Organisation].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [examples.githubApi.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param id The unique id for the resource
      * @param status Changes the behavior of GET | HEAD based on the value of the status property.
@@ -332,21 +349,21 @@ public interface OrganisationsController {
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
     public suspend fun getById(
         xFlowId: String?,
         ifNoneMatch: String?,
         id: String,
         status: StatusQueryParam?,
-        call: ApplicationCall,
+        call: TypedApplicationCall<Organisation>,
     )
 
     /**
      * Update an existing Organisation
      *
      * Route is expected to respond with status 204.
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [respond] to send the response.
      *
      * @param organisation
      * @param id The unique id for the resource
@@ -390,7 +407,7 @@ public interface OrganisationsController {
                 val includeInactive =
                     call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
                 val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
-                controller.get(xFlowId, limit, includeInactive, cursor, call)
+                controller.get(xFlowId, limit, includeInactive, cursor, TypedApplicationCall.from(call))
             }
             post("/organisations") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
@@ -404,7 +421,7 @@ public interface OrganisationsController {
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
                     call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
-                controller.getById(xFlowId, ifNoneMatch, id, status, call)
+                controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall.from(call))
             }
             put("/organisations/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -456,7 +473,7 @@ public interface OrganisationsContributorsController {
      * filters
      *
      * Route is expected to respond with [examples.githubApi.models.ContributorQueryResult].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [examples.githubApi.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param parentId The unique id for the parent resource
      * @param limit Upper bound for number of results to be returned from query api. A default limit
@@ -467,7 +484,7 @@ public interface OrganisationsContributorsController {
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
     public suspend fun `get`(
         xFlowId: String?,
@@ -475,14 +492,14 @@ public interface OrganisationsContributorsController {
         limit: Int?,
         includeInactive: Boolean?,
         cursor: String?,
-        call: ApplicationCall,
+        call: TypedApplicationCall<ContributorQueryResult>,
     )
 
     /**
      * Get a Contributor for this Organisation by ID
      *
      * Route is expected to respond with [examples.githubApi.models.Contributor].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [examples.githubApi.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param parentId The unique id for the parent resource
      * @param id The unique id for the resource
@@ -491,21 +508,21 @@ public interface OrganisationsContributorsController {
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
     public suspend fun getById(
         xFlowId: String?,
         ifNoneMatch: String?,
         parentId: String,
         id: String,
-        call: ApplicationCall,
+        call: TypedApplicationCall<Contributor>,
     )
 
     /**
      * Add an existing Contributor to this Organisation
      *
      * Route is expected to respond with status 204.
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [respond] to send the response.
      *
      * @param parentId The unique id for the parent resource
      * @param id The unique id for the resource
@@ -537,7 +554,7 @@ public interface OrganisationsContributorsController {
      * Remove Contributor from this Organisation. Does not delete the underlying Contributor.
      *
      * Route is expected to respond with status 200.
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [respond] to send the response.
      *
      * @param parentId The unique id for the parent resource
      * @param id The unique id for the resource
@@ -573,14 +590,21 @@ public interface OrganisationsContributorsController {
                 val includeInactive =
                     call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
                 val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
-                controller.get(xFlowId, parentId, limit, includeInactive, cursor, call)
+                controller.get(
+                    xFlowId,
+                    parentId,
+                    limit,
+                    includeInactive,
+                    cursor,
+                    TypedApplicationCall.from(call),
+                )
             }
             `get`("/organisations/{parent-id}/contributors/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
-                controller.getById(xFlowId, ifNoneMatch, parentId, id, call)
+                controller.getById(xFlowId, ifNoneMatch, parentId, id, TypedApplicationCall.from(call))
             }
             put("/organisations/{parent-id}/contributors/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
@@ -637,7 +661,7 @@ public interface RepositoriesController {
      * Page through all the Repository resources matching the query filters
      *
      * Route is expected to respond with [examples.githubApi.models.RepositoryQueryResult].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [examples.githubApi.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param limit Upper bound for number of results to be returned from query api. A default limit
      * will be applied if this is not present
@@ -649,7 +673,7 @@ public interface RepositoriesController {
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
     public suspend fun `get`(
         xFlowId: String?,
@@ -658,14 +682,14 @@ public interface RepositoriesController {
         name: List<String>?,
         includeInactive: Boolean?,
         cursor: String?,
-        call: ApplicationCall,
+        call: TypedApplicationCall<RepositoryQueryResult>,
     )
 
     /**
      * Create a new Repository
      *
      * Route is expected to respond with status 201.
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [respond] to send the response.
      *
      * @param repository
      * @param xFlowId A custom header that will be passed onto any further requests and can be used
@@ -690,7 +714,7 @@ public interface RepositoriesController {
      * Get a Repository by ID
      *
      * Route is expected to respond with [examples.githubApi.models.Repository].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [examples.githubApi.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param id The unique id for the resource
      * @param status Changes the behavior of GET | HEAD based on the value of the status property.
@@ -700,21 +724,21 @@ public interface RepositoriesController {
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
     public suspend fun getById(
         xFlowId: String?,
         ifNoneMatch: String?,
         id: String,
         status: StatusQueryParam?,
-        call: ApplicationCall,
+        call: TypedApplicationCall<Repository>,
     )
 
     /**
      * Update an existing Repository
      *
      * Route is expected to respond with status 204.
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [respond] to send the response.
      *
      * @param repository
      * @param id The unique id for the resource
@@ -762,7 +786,15 @@ public interface RepositoriesController {
                 val includeInactive =
                     call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
                 val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
-                controller.get(xFlowId, limit, slug, name, includeInactive, cursor, call)
+                controller.get(
+                    xFlowId,
+                    limit,
+                    slug,
+                    name,
+                    includeInactive,
+                    cursor,
+                    TypedApplicationCall.from(call),
+                )
             }
             post("/repositories") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
@@ -776,7 +808,7 @@ public interface RepositoriesController {
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
                     call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
-                controller.getById(xFlowId, ifNoneMatch, id, status, call)
+                controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall.from(call))
             }
             put("/repositories/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -828,7 +860,7 @@ public interface RepositoriesPullRequestsController {
      * filters
      *
      * Route is expected to respond with [examples.githubApi.models.PullRequestQueryResult].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [examples.githubApi.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param parentId The unique id for the parent resource
      * @param limit Upper bound for number of results to be returned from query api. A default limit
@@ -839,7 +871,7 @@ public interface RepositoriesPullRequestsController {
      * @param cursor An encoded value which represents a point in the data from where pagination will
      * commence. The pagination direction (either forward or backward) will also be encoded within the
      * cursor value. The cursor value will always be generated server side
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
     public suspend fun `get`(
         xFlowId: String?,
@@ -847,14 +879,14 @@ public interface RepositoriesPullRequestsController {
         limit: Int?,
         includeInactive: Boolean?,
         cursor: String?,
-        call: ApplicationCall,
+        call: TypedApplicationCall<PullRequestQueryResult>,
     )
 
     /**
      * Create a new PullRequest for this parent Repository
      *
      * Route is expected to respond with status 201.
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [respond] to send the response.
      *
      * @param pullRequest
      * @param parentId The unique id for the parent resource
@@ -881,7 +913,7 @@ public interface RepositoriesPullRequestsController {
      * Get a PullRequest for this Repository by ID
      *
      * Route is expected to respond with [examples.githubApi.models.PullRequest].
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [examples.githubApi.controllers.TypedApplicationCall.respondTyped] to send the response.
      *
      * @param parentId The unique id for the parent resource
      * @param id The unique id for the resource
@@ -890,21 +922,21 @@ public interface RepositoriesPullRequestsController {
      * @param ifNoneMatch The RFC7232 If-None-Match header field in a request requires the server to
      * only operate on the resource if it does not match any of the provided entity-tags. If the provided
      * entity-tag is `*`, it is required that the resource does not exist at all.
-     * @param call The Ktor application call
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
     public suspend fun getById(
         xFlowId: String?,
         ifNoneMatch: String?,
         parentId: String,
         id: String,
-        call: ApplicationCall,
+        call: TypedApplicationCall<PullRequest>,
     )
 
     /**
      * Update the PullRequest owned by this Repository
      *
      * Route is expected to respond with status 204.
-     * Use [io.ktor.server.response.respond] to send the response.
+     * Use [respond] to send the response.
      *
      * @param pullRequest
      * @param parentId The unique id for the parent resource
@@ -955,7 +987,14 @@ public interface RepositoriesPullRequestsController {
                 val includeInactive =
                     call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
                 val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
-                controller.get(xFlowId, parentId, limit, includeInactive, cursor, call)
+                controller.get(
+                    xFlowId,
+                    parentId,
+                    limit,
+                    includeInactive,
+                    cursor,
+                    TypedApplicationCall.from(call),
+                )
             }
             post("/repositories/{parent-id}/pull-requests") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
@@ -969,7 +1008,7 @@ public interface RepositoriesPullRequestsController {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
-                controller.getById(xFlowId, ifNoneMatch, parentId, id, call)
+                controller.getById(xFlowId, ifNoneMatch, parentId, id, TypedApplicationCall.from(call))
             }
             put("/repositories/{parent-id}/pull-requests/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
@@ -1013,5 +1052,31 @@ public interface RepositoriesPullRequestsController {
          */
         private fun Headers.getOrFail(name: String): String = this[name] ?: throw
             BadRequestException("Header " + name + " is required")
+    }
+}
+
+/**
+ * Decorator for Ktor's ApplicationCall that provides type safe variants of the [respond] functions.
+ *
+ * It can be used as a drop-in replacement for [io.ktor.server.application.ApplicationCall].
+ *
+ * @param R The type of the response body
+ */
+public class TypedApplicationCall<R : Any> private constructor(
+    private val applicationCall: ApplicationCall,
+) : ApplicationCall by applicationCall {
+    @Suppress("unused")
+    public suspend inline fun <reified T : R> respondTyped(message: T) {
+        respond(message)
+    }
+
+    @Suppress("unused")
+    public suspend inline fun <reified T : R> respondTyped(status: HttpStatusCode, message: T) {
+        respond(status, message)
+    }
+
+    public companion object {
+        public fun <R : Any> from(applicationCall: ApplicationCall): TypedApplicationCall<R> =
+            TypedApplicationCall<R>(applicationCall)
     }
 }
