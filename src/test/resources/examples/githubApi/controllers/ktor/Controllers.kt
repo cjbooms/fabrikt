@@ -59,7 +59,7 @@ public interface InternalEventsController {
         public fun Route.internalEventsRoutes(controller: InternalEventsController) {
             post("/internal/events") {
                 val bulkEntityDetails = call.receive<BulkEntityDetails>()
-                controller.post(bulkEntityDetails, TypedApplicationCall.from(call))
+                controller.post(bulkEntityDetails, TypedApplicationCall(call))
             }
         }
 
@@ -224,7 +224,7 @@ public interface ContributorsController {
                     limit,
                     includeInactive,
                     cursor,
-                    TypedApplicationCall.from(call),
+                    TypedApplicationCall(call),
                 )
             }
             post("/contributors") {
@@ -239,7 +239,7 @@ public interface ContributorsController {
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
                     call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
-                controller.getContributor(xFlowId, ifNoneMatch, id, status, TypedApplicationCall.from(call))
+                controller.getContributor(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/contributors/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -407,7 +407,7 @@ public interface OrganisationsController {
                 val includeInactive =
                     call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
                 val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
-                controller.get(xFlowId, limit, includeInactive, cursor, TypedApplicationCall.from(call))
+                controller.get(xFlowId, limit, includeInactive, cursor, TypedApplicationCall(call))
             }
             post("/organisations") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
@@ -421,7 +421,7 @@ public interface OrganisationsController {
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
                     call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
-                controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall.from(call))
+                controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/organisations/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -596,7 +596,7 @@ public interface OrganisationsContributorsController {
                     limit,
                     includeInactive,
                     cursor,
-                    TypedApplicationCall.from(call),
+                    TypedApplicationCall(call),
                 )
             }
             `get`("/organisations/{parent-id}/contributors/{id}") {
@@ -604,7 +604,7 @@ public interface OrganisationsContributorsController {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
-                controller.getById(xFlowId, ifNoneMatch, parentId, id, TypedApplicationCall.from(call))
+                controller.getById(xFlowId, ifNoneMatch, parentId, id, TypedApplicationCall(call))
             }
             put("/organisations/{parent-id}/contributors/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
@@ -793,7 +793,7 @@ public interface RepositoriesController {
                     name,
                     includeInactive,
                     cursor,
-                    TypedApplicationCall.from(call),
+                    TypedApplicationCall(call),
                 )
             }
             post("/repositories") {
@@ -808,7 +808,7 @@ public interface RepositoriesController {
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
                     call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
-                controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall.from(call))
+                controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/repositories/{id}") {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
@@ -993,7 +993,7 @@ public interface RepositoriesPullRequestsController {
                     limit,
                     includeInactive,
                     cursor,
-                    TypedApplicationCall.from(call),
+                    TypedApplicationCall(call),
                 )
             }
             post("/repositories/{parent-id}/pull-requests") {
@@ -1008,7 +1008,7 @@ public interface RepositoriesPullRequestsController {
                 val id = call.parameters.getOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
-                controller.getById(xFlowId, ifNoneMatch, parentId, id, TypedApplicationCall.from(call))
+                controller.getById(xFlowId, ifNoneMatch, parentId, id, TypedApplicationCall(call))
             }
             put("/repositories/{parent-id}/pull-requests/{id}") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
@@ -1062,7 +1062,7 @@ public interface RepositoriesPullRequestsController {
  *
  * @param R The type of the response body
  */
-public class TypedApplicationCall<R : Any> private constructor(
+public class TypedApplicationCall<R : Any>(
     private val applicationCall: ApplicationCall,
 ) : ApplicationCall by applicationCall {
     @Suppress("unused")
@@ -1073,10 +1073,5 @@ public class TypedApplicationCall<R : Any> private constructor(
     @Suppress("unused")
     public suspend inline fun <reified T : R> respondTyped(status: HttpStatusCode, message: T) {
         respond(status, message)
-    }
-
-    public companion object {
-        public fun <R : Any> from(applicationCall: ApplicationCall): TypedApplicationCall<R> =
-            TypedApplicationCall<R>(applicationCall)
     }
 }

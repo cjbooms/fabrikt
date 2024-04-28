@@ -287,7 +287,7 @@ class KtorControllerInterfaceGenerator(
             )
         } else {
             builder.addStatement(
-                "controller.%L(%L%T.from(%M))", // construct TypedApplicationCall
+                "controller.%L(%L%T(%M))", // construct TypedApplicationCall
                 methodName,
                 methodParameters.let { if (it.isNotEmpty()) "$it, " else "" },
                 ClassName(packages.controllers, TYPED_APPLICATION_CALL_CLASS_NAME),
@@ -365,7 +365,6 @@ class KtorControllerInterfaceGenerator(
             .primaryConstructor(
                 FunSpec.constructorBuilder()
                     .addParameter("applicationCall", ClassName("io.ktor.server.application", "ApplicationCall"))
-                    .addModifiers(KModifier.PRIVATE)
                     .build()
             )
             .addProperty(
@@ -422,22 +421,6 @@ class KtorControllerInterfaceGenerator(
                             .addStatement(
                                 "%M(status, message)",
                                 MemberName("io.ktor.server.response", "respond", isExtension = true),
-                            )
-                            .build()
-                    )
-                    .build()
-            )
-            .addType(
-                TypeSpec.companionObjectBuilder()
-                    .addFunction(
-                        FunSpec.builder("from")
-                            .addTypeVariable(returnType)
-                            .addParameter("applicationCall", ClassName("io.ktor.server.application", "ApplicationCall"))
-                            .returns(ClassName(packages.controllers, TYPED_APPLICATION_CALL_CLASS_NAME).parameterizedBy(returnType))
-                            .addCode(
-                                CodeBlock.builder()
-                                    .addStatement("return %T(applicationCall)", ClassName(packages.controllers, TYPED_APPLICATION_CALL_CLASS_NAME).parameterizedBy(returnType))
-                                    .build()
                             )
                             .build()
                     )

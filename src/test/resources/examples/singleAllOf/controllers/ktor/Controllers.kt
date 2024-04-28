@@ -34,7 +34,7 @@ public interface TestController {
          */
         public fun Route.testRoutes(controller: TestController) {
             `get`("/test") {
-                controller.test(TypedApplicationCall.from(call))
+                controller.test(TypedApplicationCall(call))
             }
         }
 
@@ -79,7 +79,7 @@ public interface TestController {
  *
  * @param R The type of the response body
  */
-public class TypedApplicationCall<R : Any> private constructor(
+public class TypedApplicationCall<R : Any>(
     private val applicationCall: ApplicationCall,
 ) : ApplicationCall by applicationCall {
     @Suppress("unused")
@@ -90,10 +90,5 @@ public class TypedApplicationCall<R : Any> private constructor(
     @Suppress("unused")
     public suspend inline fun <reified T : R> respondTyped(status: HttpStatusCode, message: T) {
         respond(status, message)
-    }
-
-    public companion object {
-        public fun <R : Any> from(applicationCall: ApplicationCall): TypedApplicationCall<R> =
-            TypedApplicationCall<R>(applicationCall)
     }
 }

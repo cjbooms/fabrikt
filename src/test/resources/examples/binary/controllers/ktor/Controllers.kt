@@ -40,7 +40,7 @@ public interface BinaryDataController {
         public fun Route.binaryDataRoutes(controller: BinaryDataController) {
             post("/binary-data") {
                 val applicationOctetStream = call.receive<ByteArray>()
-                controller.postBinaryData(applicationOctetStream, TypedApplicationCall.from(call))
+                controller.postBinaryData(applicationOctetStream, TypedApplicationCall(call))
             }
         }
 
@@ -85,7 +85,7 @@ public interface BinaryDataController {
  *
  * @param R The type of the response body
  */
-public class TypedApplicationCall<R : Any> private constructor(
+public class TypedApplicationCall<R : Any>(
     private val applicationCall: ApplicationCall,
 ) : ApplicationCall by applicationCall {
     @Suppress("unused")
@@ -96,10 +96,5 @@ public class TypedApplicationCall<R : Any> private constructor(
     @Suppress("unused")
     public suspend inline fun <reified T : R> respondTyped(status: HttpStatusCode, message: T) {
         respond(status, message)
-    }
-
-    public companion object {
-        public fun <R : Any> from(applicationCall: ApplicationCall): TypedApplicationCall<R> =
-            TypedApplicationCall<R>(applicationCall)
     }
 }
