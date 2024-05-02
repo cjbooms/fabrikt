@@ -4,11 +4,11 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
-import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecuritySupport
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.happyPathResponse
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.securitySupport
 import com.cjbooms.fabrikt.model.BodyParameter
+import com.cjbooms.fabrikt.model.ControllerLibraryType
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.HeaderParam
 import com.cjbooms.fabrikt.model.IncomingParameter
@@ -20,10 +20,10 @@ import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSingleResource
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
-import com.cjbooms.fabrikt.util.capitalized
 import com.cjbooms.fabrikt.util.toUpperCase
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Path
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
@@ -31,10 +31,14 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
+
+private const val TYPED_APPLICATION_CALL_CLASS_NAME = "TypedApplicationCall"
 
 /**
  * Generates controller interface and routing functions for Ktor.
@@ -146,7 +150,15 @@ class KtorControllerInterfaceGenerator(
 
         builder.addKdoc(buildControllerFunKdoc(operation, params))
 
-        builder.addParameter("call", ClassName("io.ktor.server.application", "ApplicationCall"))
+        if (operation.happyPathResponse(packages.base).isUnit()) {
+            builder.addParameter("call", ClassName("io.ktor.server.application", "ApplicationCall"))
+        } else {
+            builder.addParameter(
+                "call",
+                ClassName(packages.controllers, TYPED_APPLICATION_CALL_CLASS_NAME)
+                    .parameterizedBy(operation.happyPathResponse(packages.base))
+            )
+        }
 
         return builder.build()
     }
@@ -264,10 +276,24 @@ class KtorControllerInterfaceGenerator(
             listOf(headerParams, pathParams, queryParams, bodyParams).asSequence().flatten().map { it.name }
                 .plus(if (addAuth) "principal" else null)
                 .filterNotNull()
-                .plus("call")
                 .joinToString(", ")
 
-        builder.addStatement("controller.$methodName($methodParameters)")
+        if (operation.happyPathResponse(packages.base).isUnit()) {
+            builder.addStatement(
+                "controller.%L(%L%M)",
+                methodName,
+                methodParameters.let { if (it.isNotEmpty()) "$it, " else "" },
+                MemberName("io.ktor.server.application", "call"),
+            )
+        } else {
+            builder.addStatement(
+                "controller.%L(%L%T(%M))", // construct TypedApplicationCall
+                methodName,
+                methodParameters.let { if (it.isNotEmpty()) "$it, " else "" },
+                ClassName(packages.controllers, TYPED_APPLICATION_CALL_CLASS_NAME),
+                MemberName("io.ktor.server.application", "call"),
+            )
+        }
 
         builder
             .unindent()
@@ -296,26 +322,113 @@ class KtorControllerInterfaceGenerator(
         val happyPathResponse = operation.happyPathResponse(packages.base)
         if (happyPathResponse.isUnit()) {
             kDoc.add("Route is expected to respond with status ${operation.responses.keys.first()}.\n")
-        } else if (operation.responses.isNotEmpty()) {
+            kDoc.add("Use [%M] to send the response.\n\n", MemberName("io.ktor.server.response", "respond", isExtension = true))
+        } else {
             kDoc.add(
-                "Route is expected to respond with [%L].\n",
+                "Route is expected to respond with [%L].\nUse [%M] to send the response.\n\n",
                 happyPathResponse.toString(),
+                MemberName(ClassName(packages.controllers, TYPED_APPLICATION_CALL_CLASS_NAME), "respondTyped")
             )
         }
-
-        // document how to send response
-        kDoc.add(
-            "Use [%M] to send the response.\n\n",
-            MemberName("io.ktor.server.response", "respond", isExtension = true)
-        )
 
         // document parameters
         parameters.forEach {
             kDoc.add("@param %L %L\n", it.name.toKCodeName(), it.description?.trimIndent().orEmpty()).build()
         }
-        kDoc.add("@param call The Ktor application call\n")
+        if (happyPathResponse.isUnit()) {
+            kDoc.add("@param call The Ktor application call\n")
+        } else {
+            kDoc.add("@param call Decorated ApplicationCall with additional typed respond methods\n",)
+        }
 
         return kDoc.build()
+    }
+
+    override fun generateLibrary(): Collection<ControllerLibraryType> = setOf(
+        buildTypedApplicationCall(),
+    )
+
+    /**
+     * Builds a typed ApplicationCall that provides type safe variants of the respond functions.
+     *
+     * Implemented as a decorator for Ktor's ApplicationCall and can be used as a drop-in replacement.
+     */
+    private fun buildTypedApplicationCall(): ControllerLibraryType {
+        val returnType = TypeVariableName("R", Any::class)
+
+        val messageType = TypeVariableName("T", returnType)
+            .copy(reified = true)
+
+        val spec = TypeSpec.classBuilder(TYPED_APPLICATION_CALL_CLASS_NAME)
+            .addTypeVariable(returnType)
+            .addSuperinterface(ClassName("io.ktor.server.application", "ApplicationCall"), delegate = CodeBlock.of("applicationCall"))
+            .primaryConstructor(
+                FunSpec.constructorBuilder()
+                    .addParameter("applicationCall", ClassName("io.ktor.server.application", "ApplicationCall"))
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("applicationCall", ClassName("io.ktor.server.application", "ApplicationCall"))
+                    .addModifiers(KModifier.PRIVATE)
+                    .initializer("applicationCall")
+                    .build()
+            )
+            .addKdoc(
+                CodeBlock.builder()
+                    .add("Decorator for Ktor's ApplicationCall that provides type safe variants of the [%M] functions.\n\n",
+                        MemberName("io.ktor.server.response", "respond", isExtension = true),
+                    )
+                    .add(
+                        "It can be used as a drop-in replacement for [%M].\n\n",
+                        MemberName("io.ktor.server.application", "ApplicationCall"),
+                    )
+                    .add("@param R The type of the response body\n\n")
+                    .build()
+            )
+            .addFunction(
+                FunSpec.builder("respondTyped")
+                    .addModifiers(KModifier.INLINE, KModifier.SUSPEND)
+                    .addTypeVariable(messageType)
+                    .addAnnotation(
+                        AnnotationSpec.builder(Suppress::class)
+                            .addMember("%S", "unused")
+                            .build()
+                    )
+                    .addParameter("message", messageType)
+                    .addCode(
+                        CodeBlock.builder()
+                            .addStatement(
+                                "%M(message)",
+                                MemberName("io.ktor.server.response", "respond", isExtension = true),
+                            )
+                            .build()
+                    )
+                    .build()
+            )
+            .addFunction(
+                FunSpec.builder("respondTyped")
+                    .addModifiers(KModifier.INLINE, KModifier.SUSPEND)
+                    .addTypeVariable(messageType)
+                    .addAnnotation(
+                        AnnotationSpec.builder(Suppress::class)
+                            .addMember("%S", "unused")
+                            .build()
+                    )
+                    .addParameter("status", ClassName("io.ktor.http", "HttpStatusCode"))
+                    .addParameter("message", messageType)
+                    .addCode(
+                        CodeBlock.builder()
+                            .addStatement(
+                                "%M(status, message)",
+                                MemberName("io.ktor.server.response", "respond", isExtension = true),
+                            )
+                            .build()
+                    )
+                    .build()
+            )
+            .build()
+
+        return ControllerLibraryType(spec, packages.base)
     }
 
     /**

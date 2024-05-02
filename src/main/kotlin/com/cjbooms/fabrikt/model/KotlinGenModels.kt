@@ -40,6 +40,9 @@ class ControllerType(spec: TypeSpec, basePackage: String) : GeneratedType(spec, 
     }
 }
 
+class ControllerLibraryType(spec: TypeSpec, basePackage: String) :
+    GeneratedType(spec, controllersPackage(basePackage))
+
 data class Models(val models: Collection<ModelType>) : KotlinTypes(models) {
     override val files: Collection<FileSpec> = models.toFileSpec()
 }
