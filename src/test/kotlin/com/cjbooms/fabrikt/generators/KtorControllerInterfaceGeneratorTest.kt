@@ -34,6 +34,7 @@ class KtorControllerInterfaceGeneratorTest {
         "singleAllOf",
         "pathLevelParameters",
         "parameterNameClash",
+        "requestBodyAsArray",
     )
 
     private fun setupGithubApiTestEnv() {

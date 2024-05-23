@@ -266,9 +266,10 @@ class KtorControllerInterfaceGenerator(
 
         bodyParams.forEach { param ->
             builder.addStatement(
-                "val ${param.name} = %M.%M<${param.type.simpleName()}>()",
+                "val ${param.name} = %M.%M<%T>()",
                 MemberName("io.ktor.server.application", "call"),
                 MemberName("io.ktor.server.request", "receive"),
+                param.type,
             )
         }
 
@@ -527,7 +528,4 @@ private data class IncomingParametersByType(
     val bodyParams: List<BodyParameter>,
 )
 
-private fun TypeName.simpleName(): String = this.toString().split(".").last()
-
 private fun TypeName.isUnit(): Boolean = this == Unit::class.asTypeName()
-private fun TypeName.isNotUnit(): Boolean = !isUnit()
