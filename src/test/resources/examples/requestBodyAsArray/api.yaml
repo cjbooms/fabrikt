@@ -1,0 +1,59 @@
+openapi: 3.0.1
+info:
+  title: Library Catalog API
+  description: An API to manage books in the library catalog.
+  version: 1.0.0
+paths:
+  /books/batch:
+    post:
+      summary: Add a batch of books to the catalog
+      description: Submit a batch of books to be added to the library catalog.
+      operationId: addBooksBatch
+      requestBody:
+        description: A list of books to be added to the catalog.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Book'
+      responses:
+        '201':
+          description: Books successfully added to the catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooksResponse'
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the book.
+          example: "The Great Gatsby"
+        author:
+          type: string
+          description: The author of the book.
+          example: "F. Scott Fitzgerald"
+        isbn:
+          type: string
+          description: The ISBN number of the book.
+          example: "978-0743273565"
+      required:
+        - title
+        - author
+        - isbn
+    BooksResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Books added successfully!"
+        bookIds:
+          type: array
+          items:
+            type: string
+          example: ["book_123456", "book_789012"]
