@@ -1,0 +1,23 @@
+openapi: 3.0.0
+components:
+  schemas:
+    RequiredButNullableObjectProperty:
+      type: object
+      nullable: false
+      required:
+        - code
+        - summary
+        - details
+      properties:
+        code:
+          type: string
+          nullable: false
+          minLength: 1
+          maxLength: 64
+        summary:
+          type: string
+          nullable: false
+          minLength: 1
+        details:
+          type: object
+          nullable: true
