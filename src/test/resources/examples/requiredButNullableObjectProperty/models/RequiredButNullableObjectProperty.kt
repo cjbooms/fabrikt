@@ -23,5 +23,5 @@ public data class RequiredButNullableObjectProperty(
   public val summary: String,
   @param:JsonProperty("details")
   @get:JsonProperty("details")
-  public val details: Map<String, Any>?,
+  public val details: Map<String, Any?>?,
 )
