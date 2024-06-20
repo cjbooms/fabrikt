@@ -8,6 +8,7 @@ components:
       properties:
         anArray:
           type: array
+          nullable: true
           items:
             type: string
             nullable: true
