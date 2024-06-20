@@ -30,7 +30,7 @@ The library currently has support for generating:
 
 * **Jackson annotated data classes**
 * **Spring MVC annotated controller interfaces**
-* **Ktor server routes and controller interfaces**
+* **Ktor server routes and controller interfaces ([examples](end2end-tests/ktor/src/test/kotlin/com/cjbooms/fabrikt/servers/ktor))**
 * **OkHttp Client** - with the option for a resilience4j fault-tolerance wrapper
 
 ### Example Generation

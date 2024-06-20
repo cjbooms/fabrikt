@@ -40,6 +40,8 @@ allprojects {
 
 val jacksonVersion by extra { "2.15.1" }
 val junitVersion by extra { "5.9.2" }
+val ktorVersion by extra { "2.3.9" }
+
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -70,8 +72,8 @@ dependencies {
     //testCompileOnly("io.micronaut.security:micronaut-security:3.8.7")
     testImplementation("com.squareup.okhttp3:okhttp:4.10.0")
     testImplementation("org.openapitools:jackson-databind-nullable:0.2.6")
-    testImplementation("io.ktor:ktor-server-core:2.3.9")
-    testImplementation("io.ktor:ktor-server-auth:2.3.9")
+    testImplementation("io.ktor:ktor-server-core:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-auth:$ktorVersion")
 
     testImplementation(platform("com.pinterest.ktlint:ktlint-bom:0.49.0"))
     testImplementation("com.pinterest:ktlint")

@@ -1,7 +1,7 @@
 val fabrikt: Configuration by configurations.creating
 
 val generationDir = "$buildDir/generated"
-val apiFile = "$buildDir/../../src/test/resources/examples/okHttpClient/api.yaml"
+val apiFile = "${rootProject.projectDir}/src/test/resources/examples/okHttpClient/api.yaml"
 
 sourceSets {
     main { java.srcDirs("$generationDir/src/main/kotlin") }
