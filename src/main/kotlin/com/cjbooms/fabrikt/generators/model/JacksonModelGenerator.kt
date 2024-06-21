@@ -167,23 +167,26 @@ class JacksonModelGenerator(
         .filterNot { it.schema.isOneOfPolymorphicTypes() }
         .flatMap {
             val properties = it.schema.topLevelProperties(HTTP_SETTINGS, api, it.schema)
-            if (properties.isNotEmpty() ||
+            when {
+                properties.isNotEmpty() ||
                 it.typeInfo is KotlinTypeInfo.Enum ||
-                it.schema.findOneOfSuperInterface(schemas.map { it.schema }).isNotEmpty()
-            ) {
-                val primaryModel = buildPrimaryModel(api, it, properties, schemas)
-                val inlinedModels = buildInLinedModels(properties, it.schema, it.schema.getDocumentUrl())
-                listOf(primaryModel) + inlinedModels
-            } else if (it.typeInfo is KotlinTypeInfo.Array) {
-                buildInlinedListDefinition(
-                    schema = it.schema,
-                    schemaName = it.schema.safeName(),
-                    enclosingSchema = it.schema,
-                    apiDocUrl = it.schema.getDocumentUrl(),
-                    enclosingSchemaInfoName = it.name,
-                )
-            } else {
-                emptyList()
+                it.schema.findOneOfSuperInterface(schemas.map { it.schema }).isNotEmpty() -> {
+                    val primaryModel = buildPrimaryModel(api, it, properties, schemas)
+                    val inlinedModels = buildInLinedModels(properties, it.schema, it.schema.getDocumentUrl())
+                    listOf(primaryModel) + inlinedModels
+                }
+                it.typeInfo is KotlinTypeInfo.Array -> {
+                    buildInlinedListDefinition(
+                            schema = it.schema,
+                            schemaName = it.schema.safeName(),
+                            enclosingSchema = it.schema,
+                            apiDocUrl = it.schema.getDocumentUrl(),
+                            enclosingSchemaInfoName = it.name,
+                    )
+                }
+                else -> {
+                    emptyList()
+                }
             }
         }.toMutableSet()
 
