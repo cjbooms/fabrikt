@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
@@ -225,6 +226,16 @@ class MicronautControllerGeneratorTest {
         val api = SourceApi(readTextResource("/examples/binary/api.yaml"))
         val controllers = MicronautControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate().toSingleFile()
         val expectedControllers = readTextResource("/examples/binary/controllers/micronaut/Controllers.kt")
+
+        assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
+    }
+
+    @Test
+    fun `ensure generates ByteArrayStream body parameter and response for string with format binary`() {
+        MutableSettings.addOption(CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM)
+        val api = SourceApi(readTextResource("/examples/byteArrayStream/api.yaml"))
+        val controllers = MicronautControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate().toSingleFile()
+        val expectedControllers = readTextResource("/examples/byteArrayStream/controllers/micronaut/Controllers.kt")
 
         assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
     }
