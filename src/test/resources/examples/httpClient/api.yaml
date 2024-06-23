@@ -122,6 +122,22 @@ paths:
       responses:
         204:
           description: "Operation successful"
+    delete:
+      summary: "DELETE example path 3"
+      response:
+        200:
+          description: "Operation successful"
+
+  /example-path-3/{path_param}/subresource/name:
+    patch:
+      summary: "PATCH example path 3"
+      parameters:
+        - $ref: "#/components/parameters/PathParam"
+      requestBody:
+        $ref: "#/components/requestBodies/PatchBody"
+      responses:
+        204:
+          description: "Operation successful"
 
 components:
   parameters:
@@ -224,7 +240,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/FirstModel"
-
+    PatchBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schema/FirstModelPatch"
 
   schemas:
     QueryResult:
@@ -290,11 +311,20 @@ components:
           second_model: "#/components/schemas/SecondModel"
           third_model: "#/components/schemas/ThirdModel"
 
+    FirstModelPatch:
+      - type: "object"
+        properties:
+          name:
+            description: "Same random name"
+            type: string
     FirstModel:
       allOf:
         - $ref: "#/components/schemas/Content"
         - type: "object"
           properties:
+            name:
+              description: "Same random name"
+              type: string
             extra_first_attr:
               description: "The attribute 1 for model 1"
               type: array

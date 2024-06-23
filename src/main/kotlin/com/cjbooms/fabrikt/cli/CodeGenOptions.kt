@@ -31,7 +31,8 @@ enum class ClientCodeGenOptionType(private val description: String) {
 
 enum class ClientCodeGenTargetType(val description: String) {
     OK_HTTP("Generate OkHttp client."),
-    OPEN_FEIGN("Generate OpenFeign client.");
+    OPEN_FEIGN("Generate OpenFeign client."),
+    JDK_HTTP("Generate JDK HTTP client.");
 
     override fun toString() = "`${super.toString()}` - $description"
 }
