@@ -64,7 +64,6 @@ class ModelGeneratorTest {
         "binary",
         "oneOfMarkerInterface",
         "requiredButNullableObjectProperty",
-        "nullableArrayItems",
     )
 
     @BeforeEach
