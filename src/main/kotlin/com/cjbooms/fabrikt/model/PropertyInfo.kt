@@ -77,12 +77,14 @@ sealed class PropertyInfo {
                 when (property.value.safeType()) {
                     OasType.Array.type ->
                         ListField(
-                            isRequired(api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
-                            property.key,
-                            property.value,
-                            settings.markAsInherited,
-                            this,
-                            if (property.value.isInlinedArrayDefinition() || property.value.itemsSchema.isInlinedEnumDefinition())
+                            isRequired = isRequired(
+                                api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional
+                            ),
+                            oasKey = property.key,
+                            schema = property.value,
+                            isInherited = settings.markAsInherited,
+                            parentSchema = this,
+                            enclosingSchema = if (property.value.isInlinedArrayDefinition() || property.value.itemsSchema.isInlinedEnumDefinition())
                                 enclosingSchema
                             else null
                         )
@@ -90,10 +92,7 @@ sealed class PropertyInfo {
                         if (property.value.isSimpleMapDefinition() || property.value.isSchemaLess())
                             MapField(
                                 isRequired = isRequired(
-                                    api,
-                                    property,
-                                    settings.markReadWriteOnlyOptional,
-                                    settings.markAllOptional
+                                    api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional
                                 ),
                                 oasKey = property.key,
                                 schema = property.value,
@@ -113,18 +112,22 @@ sealed class PropertyInfo {
                             )
                         else
                             ObjectRefField(
-                                isRequired(api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
-                                property.key,
-                                property.value,
-                                settings.markAsInherited,
-                                this
+                                isRequired = isRequired(
+                                    api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional
+                                ),
+                                oasKey = property.key,
+                                schema = property.value,
+                                isInherited = settings.markAsInherited,
+                                parentSchema = this
                             )
                     else ->
                         if (property.value.isWriteOnly && settings.excludeWriteOnly) {
                             null
                         } else {
                             Field(
-                                isRequired(api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional),
+                                isRequired = isRequired(
+                                    api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional
+                                ),
                                 oasKey = property.key,
                                 schema = property.value,
                                 isInherited = settings.markAsInherited,
