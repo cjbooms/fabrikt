@@ -15,5 +15,5 @@ jobs:
       - name: Publish to the Maven Central Repository
         run: ./gradlew clean -PsigningKey='${{ secrets.GPG_SIGNING_KEY }}' -PsigningPassword='${{ secrets.GPG_SIGNING_PASSWORD }}' publish
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USER_TOKEN_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_USER_TOKEN_PASSWORD }}
