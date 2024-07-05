@@ -24,6 +24,7 @@ jobs:
     - uses: actions/setup-java@v4
       with:
         java-version: '17'
+        distribution: 'temurin'
 
     # Runs a single command using the runners shell
     - name: Build Project
