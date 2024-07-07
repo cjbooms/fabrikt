@@ -1,4 +1,4 @@
-package examples.okHttpClient.client
+package examples.httpClient.client
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
