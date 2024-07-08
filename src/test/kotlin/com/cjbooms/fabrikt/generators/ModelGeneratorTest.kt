@@ -64,6 +64,7 @@ class ModelGeneratorTest {
         "binary",
         "oneOfMarkerInterface",
         "requiredButNullableObjectProperty",
+        "BugJens1"
     )
 
     @BeforeEach
@@ -80,7 +81,6 @@ class ModelGeneratorTest {
     @ParameterizedTest
     @MethodSource("testCases")
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
-        print("Testcase: $testCaseName")
         MutableSettings.updateSettings()
         MutableSettings.addOption(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS)
         if (testCaseName == "instantDateTime") {

@@ -1,0 +1,16 @@
+openapi: 3.0.0
+info:
+paths:
+components:
+  schemas:
+    200Result:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            properties:
+              id:
+                description: The name of a policy module
+                example: example2
+                type: string

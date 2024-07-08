@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.model
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getKeyIfSingleDiscriminatorValue
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.hasNoDiscriminator
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isArrayType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isDiscriminatorProperty
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInLinedObjectUnderAllOf
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedArrayDefinition
@@ -15,6 +16,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeType
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.cjbooms.fabrikt.util.NormalisedString.toEnumName
+import com.reprezen.jsonoverlay.Overlay
 import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
 
@@ -68,6 +70,17 @@ sealed class PropertyInfo {
             return settings.copy(markAsInherited = isInherited)
         }
 
+        private fun enclosingSchema(enclosingSchema: Schema?, property: Map.Entry<String, Schema>): Schema? =
+            enclosingSchema?.let {
+                if (property.value.isArrayType()
+                            && property.value.itemsSchema.name == null
+                            && property.value.itemsSchema.oneOfSchemas.isEmpty()
+                            && property.value.itemsSchema.allOfSchemas.isEmpty())
+                    it
+                else
+                    null
+            }
+
         private fun Schema.getInLinedProperties(
             settings: Settings,
             api: OpenApi3,
@@ -84,9 +97,7 @@ sealed class PropertyInfo {
                             schema = property.value,
                             isInherited = settings.markAsInherited,
                             parentSchema = this,
-                            enclosingSchema = if (property.value.isInlinedArrayDefinition() || property.value.itemsSchema.isInlinedEnumDefinition())
-                                enclosingSchema
-                            else null
+                            enclosingSchema = enclosingSchema(enclosingSchema, property)
                         )
                     OasType.Object.type ->
                         if (property.value.isSimpleMapDefinition() || property.value.isSchemaLess())

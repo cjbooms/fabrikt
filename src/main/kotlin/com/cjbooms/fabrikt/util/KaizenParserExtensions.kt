@@ -114,7 +114,7 @@ object KaizenParserExtensions {
 
     private fun Schema.isObjectType() = OasType.Object.type == type
 
-    private fun Schema.isArrayType() = OasType.Array.type == type
+    fun Schema.isArrayType() = OasType.Array.type == type
 
     fun Schema.isNotDefined() = !Overlay.of(this).isPresent &&
         type == null && !(hasAllOfSchemas() || hasOneOfSchemas() || hasAnyOfSchemas())
