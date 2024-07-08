@@ -11,6 +11,7 @@ import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Path
 import com.reprezen.kaizen.oasparser.model3.Schema
 import java.net.URI
+import java.util.logging.Logger
 
 object KaizenParserExtensions {
 
@@ -112,7 +113,11 @@ object KaizenParserExtensions {
     fun Schema.isSimpleType(): Boolean =
         !isOneOfSuperInterface() && ((simpleTypes.contains(type) && !isEnumDefinition()) || isSimpleMapDefinition() || isSimpleOneOfAnyDefinition())
 
-    private fun Schema.isObjectType() = OasType.Object.type == type
+    private fun Schema.isObjectType() =
+        OasType.Object.type == type || if (properties?.isNotEmpty() == true) {
+            Logger.getGlobal().warning("Schema '$name' has 'type: null' but defines properties. Assuming: 'type: object'")
+        true
+    } else false
 
     private fun Schema.isArrayType() = OasType.Array.type == type
 
