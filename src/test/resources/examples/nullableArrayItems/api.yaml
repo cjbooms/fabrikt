@@ -1,0 +1,14 @@
+openapi: 3.0.0
+components:
+  schemas:
+    NullableArrayItems:
+      type: object
+      required:
+        - anArray
+      properties:
+        anArray:
+          type: array
+          nullable: true
+          items:
+            type: string
+            nullable: true
