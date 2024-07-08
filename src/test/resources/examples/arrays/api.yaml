@@ -10,6 +10,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ArrayOfSomething"
+        absent-object-type-in-array:
+          type: array
+          items:
+            properties:
+              some-array-prop:
+                type: string
 
     ArrayOfSomething:
       type: array

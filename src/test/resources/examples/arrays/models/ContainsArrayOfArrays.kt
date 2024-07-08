@@ -9,4 +9,8 @@ public data class ContainsArrayOfArrays(
   @get:JsonProperty("array_of_arrays")
   @get:Valid
   public val arrayOfArrays: List<List<Something>>? = null,
+  @param:JsonProperty("absent-object-type-in-array")
+  @get:JsonProperty("absent-object-type-in-array")
+  @get:Valid
+  public val absentObjectTypeInArray: List<ContainsArrayOfArraysAbsentObjectTypeInArray>? = null,
 )
