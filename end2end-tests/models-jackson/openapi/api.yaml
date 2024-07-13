@@ -5,6 +5,163 @@ info:
   version:
 components:
   schemas:
+
+    # Maps
+    MapHolder:
+      type: object
+      properties:
+        wild_card:
+          type: object
+        string_map:
+          $ref: '#/components/schemas/StringMap'
+        typed_object_map:
+          $ref: '#/components/schemas/TypedObjectMap'
+        object_map:
+          $ref: '#/components/schemas/ObjectMap'
+        inlined_string_map:
+          type: object
+          additionalProperties:
+            type: string
+        inlined_object_map:
+          type: object
+          additionalProperties:
+            type: object
+        inlined_unknown_map:
+          type: object
+          additionalProperties: true
+        inlined_typed_object_map:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              code:
+                type: integer
+              text:
+                type: string
+        complex_object_with_untyped_map:
+          $ref: '#/components/schemas/ComplexObjectWithUntypedMap'
+        complex_object_with_typed_map:
+          $ref: '#/components/schemas/ComplexObjectWithTypedMap'
+        inlined_complex_object_with_untyped_map:
+          type: object
+          properties:
+            text:
+              type: string
+            code:
+              type: integer
+          additionalProperties: true
+        inlined_complex_object_with_typed_map:
+          type: object
+          properties:
+            text:
+              type: string
+            code:
+              type: integer
+          additionalProperties:
+            type: object
+            properties:
+              other_text:
+                type: string
+              other_number:
+                type: integer
+      additionalProperties:
+        type: object
+        minProperties: 1
+        additionalProperties:
+          $ref: '#/components/schemas/ExternalObjectFour'
+
+    ExternalObjectFour:
+      type: object
+      properties:
+        blah:
+          type: string
+
+    ComplexObjectWithUntypedMap:
+      type: object
+      properties:
+        text:
+          type: string
+        code:
+          type: integer
+      additionalProperties:
+        type: object
+
+    ComplexObjectWithTypedMap:
+      type: object
+      properties:
+        text:
+          type: string
+        code:
+          type: integer
+      additionalProperties:
+        type: object
+        properties:
+          other_text:
+            type: string
+          other_number:
+            type: integer
+
+    ComplexObjectWithRefTypedMap:
+      type: object
+      properties:
+        text:
+          type: string
+        code:
+          type: integer
+      additionalProperties:
+        $ref: '#/components/schemas/SomeRef'
+
+    SomeRef:
+      type: object
+      properties:
+        other_text:
+          type: string
+        other_number:
+          type: integer
+
+    ComplexObjectWithMapsOfMaps:
+      type: object
+      required:
+        - errors
+      properties:
+        list-others:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasicObject'
+        map-of-maps:
+          type: object
+          additionalProperties:
+            type: object
+            minProperties: 1
+            additionalProperties:
+              $ref: '#/components/schemas/BasicObject'
+
+    BasicObject:
+      type: object
+      properties:
+        one:
+          type: string
+    StringMap:
+      type: object
+      additionalProperties:
+        type: string
+
+    TypedObjectMap:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          code:
+            type: integer
+          text:
+            type: string
+
+    ObjectMap:
+      type: object
+      additionalProperties:
+        type: object
+
+    # Enums
     EnumHolder:
       type: object
       properties:
