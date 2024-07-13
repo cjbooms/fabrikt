@@ -5,13 +5,17 @@ components:
       type: object
       required:
       - name
-      - requiredNullable
+      - requiredNullableString
+      - requiredNullableUntypedObject
       properties:
         name:
           type: string
         gender:
           type: string
           format: uuid
-        requiredNullable:
+        requiredNullableString:
           type: string
+          nullable: true
+        requiredNullableUntypedObject:
+          type: object
           nullable: true
