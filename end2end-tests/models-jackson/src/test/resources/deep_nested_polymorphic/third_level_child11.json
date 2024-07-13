@@ -2,7 +2,6 @@
   "rootField1" : "root field 1",
   "rootField2" : false,
   "firstLevelField1" : "first level field 1",
-  "firstLevelField2" : null,
   "metadata" : {
     "obj" : {
       "filed1" : "field 1",

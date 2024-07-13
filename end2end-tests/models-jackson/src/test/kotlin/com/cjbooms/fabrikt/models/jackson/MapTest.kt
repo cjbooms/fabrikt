@@ -1,22 +1,12 @@
 package com.cjbooms.fabrikt.models.jackson
 
+import com.cjbooms.fabrikt.models.jackson.Helpers.mapper
 import com.example.models.*
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.kotlin.KotlinFeature
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class MapTest {
-    private val objectMapper = run {
-        val kotlinModule = KotlinModule.Builder()
-            .enable(KotlinFeature.NullIsSameAsDefault)
-            .build()
-        JsonMapper.builder()
-            .addModule(kotlinModule)
-            .build()
-    }
-
+    private val objectMapper = mapper()
     private val writer = objectMapper.writerWithDefaultPrettyPrinter()
 
     @Test

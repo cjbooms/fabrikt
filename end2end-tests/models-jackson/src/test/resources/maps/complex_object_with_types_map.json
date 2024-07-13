@@ -1,17 +1,6 @@
 {
-  "wild_card" : null,
-  "string_map" : null,
-  "typed_object_map" : null,
-  "object_map" : null,
-  "inlined_string_map" : null,
-  "inlined_object_map" : null,
-  "inlined_unknown_map" : null,
-  "inlined_typed_object_map" : null,
-  "complex_object_with_untyped_map" : null,
   "complex_object_with_typed_map" : {
     "text" : "text",
     "code" : 1
-  },
-  "inlined_complex_object_with_untyped_map" : null,
-  "inlined_complex_object_with_typed_map" : null
+  }
 }

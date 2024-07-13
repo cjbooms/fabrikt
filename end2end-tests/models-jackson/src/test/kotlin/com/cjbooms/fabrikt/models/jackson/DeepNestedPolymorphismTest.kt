@@ -1,12 +1,12 @@
 package com.cjbooms.fabrikt.models.jackson
 
+import com.cjbooms.fabrikt.models.jackson.Helpers.mapper
 import com.example.models.*
-import com.fasterxml.jackson.module.kotlin.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class DeepNestedPolymorphismTest {
-    private val objectMapper = jsonMapper()
+    private val objectMapper = mapper()
     private val writer = objectMapper.writerWithDefaultPrettyPrinter()
 
     @Test

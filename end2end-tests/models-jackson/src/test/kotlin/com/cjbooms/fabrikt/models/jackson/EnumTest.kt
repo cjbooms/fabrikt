@@ -1,14 +1,14 @@
 package com.cjbooms.fabrikt.models.jackson
 
+import com.cjbooms.fabrikt.models.jackson.Helpers.mapper
 import com.example.models.EnumHolder
 import com.example.models.EnumHolderInlinedEnum
 import com.example.models.EnumObject
-import com.fasterxml.jackson.module.kotlin.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class EnumTest {
-    private val objectMapper = jsonMapper()
+    private val objectMapper = mapper()
     private val writer = objectMapper.writerWithDefaultPrettyPrinter()
 
     @Test
