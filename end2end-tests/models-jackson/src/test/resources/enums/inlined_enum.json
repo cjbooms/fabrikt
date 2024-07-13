@@ -1,0 +1,8 @@
+{
+  "array_of_enums" : null,
+  "inlined_enum" : "inlined_one",
+  "inlined_extensible_enum" : null,
+  "enum_ref" : null,
+  "extensible_enum_ref" : null,
+  "list_enums" : null
+}
