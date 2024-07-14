@@ -35,7 +35,11 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     object UntypedObject : KotlinTypeInfo(Any::class)
     object AnyType : KotlinTypeInfo(Any::class)
     data class Object(val simpleClassName: String) : KotlinTypeInfo(GeneratedType::class, simpleClassName)
-    data class Array(val parameterizedType: KotlinTypeInfo) : KotlinTypeInfo(List::class)
+    data class Array(
+        val parameterizedType: KotlinTypeInfo,
+        val isParameterizedTypeNullable: kotlin.Boolean = false
+    ) : KotlinTypeInfo(List::class)
+
     data class Map(val parameterizedType: KotlinTypeInfo) : KotlinTypeInfo(Map::class)
     object UnknownAdditionalProperties : KotlinTypeInfo(Any::class)
     object UntypedObjectAdditionalProperties : KotlinTypeInfo(Any::class)
@@ -77,7 +81,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Array ->
                     if (schema.itemsSchema.isNotDefined())
                         throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")
-                    else Array(from(schema.itemsSchema, oasKey, enclosingSchema))
+                    else Array(from(schema.itemsSchema, oasKey, enclosingSchema), schema.itemsSchema.isNullable)
 
                 OasType.Object -> Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
                 OasType.Map ->

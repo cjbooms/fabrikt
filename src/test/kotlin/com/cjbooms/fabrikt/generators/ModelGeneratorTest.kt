@@ -63,7 +63,6 @@ class ModelGeneratorTest {
         "openapi310",
         "binary",
         "oneOfMarkerInterface",
-        "requiredButNullableObjectProperty",
     )
 
     @BeforeEach

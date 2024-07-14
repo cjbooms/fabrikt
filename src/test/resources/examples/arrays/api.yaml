@@ -16,6 +16,12 @@ components:
             properties:
               some-array-prop:
                 type: string
+        a-nullable-array:
+          type: array
+          nullable: true
+          items:
+            type: string
+            nullable: true
 
     ArrayOfSomething:
       type: array

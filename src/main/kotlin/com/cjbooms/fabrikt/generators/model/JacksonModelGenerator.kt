@@ -86,6 +86,7 @@ class JacksonModelGenerator(
                     toModelType(
                         basePackage,
                         typeInfo.parameterizedType,
+                        typeInfo.isParameterizedTypeNullable
                     ),
                 )
 
