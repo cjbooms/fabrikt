@@ -201,6 +201,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               | CHOOSE ANY OF: |
 |                               |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+" (only for OkHttp clients) |
 |                               |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated client functions (only for OpenFeign clients) |
+|                               |   `SPRING_RESPONSE_ENTITY_WRAPPER` - This option adds the Spring-ResponseEntity generic around the response to be able to get response headers and status (only for OpenFeign clients). |
 |   `--http-client-target`      | Optionally select the target client that you want to be generated. Defaults to OK_HTTP |
 |                               | CHOOSE ONE OF: |
 |                               |   `OK_HTTP` - Generate OkHttp client. |
