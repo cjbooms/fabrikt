@@ -9,6 +9,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterfaceWithDiscriminator
 import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.reprezen.kaizen.oasparser.model3.Schema
+import java.io.ByteArrayInputStream
 import java.math.BigDecimal
 import java.net.URI
 import java.time.LocalDate
@@ -31,6 +32,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     object Uuid : KotlinTypeInfo(UUID::class)
     object Uri : KotlinTypeInfo(URI::class)
     object ByteArray : KotlinTypeInfo(kotlin.ByteArray::class)
+    object InputStream : KotlinTypeInfo(java.io.InputStream::class)
     object Boolean : KotlinTypeInfo(kotlin.Boolean::class)
     object UntypedObject : KotlinTypeInfo(Any::class)
     object AnyType : KotlinTypeInfo(Any::class)
@@ -70,7 +72,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Uuid -> Uuid
                 OasType.Uri -> Uri
                 OasType.Base64String -> ByteArray
-                OasType.Binary -> ByteArray
+                OasType.Binary -> getOverridableByteArray()
                 OasType.Double -> Double
                 OasType.Float -> Float
                 OasType.Number -> Numeric
@@ -114,6 +116,14 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 CodeGenTypeOverride.DATETIME_AS_INSTANT in typeOverrides -> Instant
                 CodeGenTypeOverride.DATETIME_AS_LOCALDATETIME in typeOverrides -> LocalDateTime
                 else -> DateTime
+            }
+        }
+
+        private fun getOverridableByteArray(): KotlinTypeInfo {
+            val typeOverrides = MutableSettings.typeOverrides()
+            return when {
+                CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM in typeOverrides -> InputStream
+                else -> ByteArray
             }
         }
     }
