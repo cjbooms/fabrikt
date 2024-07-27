@@ -239,4 +239,20 @@ class SpringControllerGeneratorTest {
 
         assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
     }
+
+    @Test
+    fun `controller functions are wrapped by CompletionStage`() {
+        val basePackage = "examples.completionStage"
+        val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
+        val expectedControllers = readTextResource("/examples/githubApi/controllers/spring-completion-stage/Controllers.kt")
+
+        val controllers = SpringControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            JavaxValidationAnnotations,
+            setOf(ControllerCodeGenOptionType.COMPLETION_STAGE),
+        ).generate().toSingleFile()
+
+        assertThat(controllers).isEqualTo(expectedControllers)
+    }
 }
