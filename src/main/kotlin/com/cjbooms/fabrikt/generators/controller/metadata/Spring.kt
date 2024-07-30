@@ -19,6 +19,8 @@ object SpringImports {
         const val DATE_TIME_FORMAT = "org.springframework.format.annotation"
 
         const val SPRING_AUTHENTICATION = "$SPRING_BASE.security.core"
+
+        const val JAVA_UTIL_CONCURRENT = "java.util.concurrent"
     }
 
     val CONTROLLER = ClassName(Packages.STEREOTYPE, "Controller")
@@ -40,6 +42,8 @@ object SpringImports {
     val DATE_TIME_FORMAT = ClassName(Packages.DATE_TIME_FORMAT, "DateTimeFormat")
 
     val AUTHENTICATION = ClassName(Packages.SPRING_AUTHENTICATION, "Authentication")
+
+    val COMPLETION_STAGE = ClassName(Packages.JAVA_UTIL_CONCURRENT, "CompletionStage")
 
     object DateTimeFormat {
         val ISO_DATE = "${DATE_TIME_FORMAT.simpleName}.ISO.DATE"

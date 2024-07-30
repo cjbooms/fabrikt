@@ -71,15 +71,24 @@ class SpringControllerInterfaceGenerator(
         val globalSecurity = api.openApi3.securityRequirements.securitySupport()
 
         // Main method builder
-        val funcSpec = FunSpec
+        val baseFunSpec = FunSpec
             .builder(methodName)
             .addModifiers(KModifier.ABSTRACT)
             .addKdoc(op.toKdoc(parameters))
             .addSpringFunAnnotation(op, verb, path.pathString)
             .addSuspendModifier()
-            .returns(SpringImports.RESPONSE_ENTITY.parameterizedBy(returnType))
 
-        parameters
+        val funcSpec = if (options.contains(ControllerCodeGenOptionType.COMPLETION_STAGE)) {
+            baseFunSpec.returns(
+                SpringImports.COMPLETION_STAGE.parameterizedBy(
+                    SpringImports.RESPONSE_ENTITY.parameterizedBy(returnType)
+                )
+            )
+        } else {
+            baseFunSpec.returns(SpringImports.RESPONSE_ENTITY.parameterizedBy(returnType))
+        }
+
+            parameters
             .map {
                 when (it) {
                     is BodyParameter ->
