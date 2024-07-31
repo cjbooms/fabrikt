@@ -46,7 +46,7 @@ public interface InternalEventsController {
         method = [RequestMethod.POST],
         consumes = ["application/json"],
     )
-    public fun post(@RequestBody @Valid bulkEntityDetails: BulkEntityDetails): CompletionStage<ResponseEntity<EventResults>>
+    public fun post(@RequestBody @Valid bulkEntityDetails: BulkEntityDetails): ResponseEntity<EventResults>
 }
 
 @Controller

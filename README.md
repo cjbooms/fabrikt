@@ -10,6 +10,7 @@ This library was built to take advantage of the complex modeling features availa
  - GraalVM Native Reflection Registration
  - Json Merge Patch (via `JsonNullable`) (add `x-json-merge-patch: true` to schemas)
  - Override Jackson Include NonNull (via `JsonInclude`) (add `x-jackson-include-non-null: true` to schemas)
+ - Generate CompletionStage wrapped controllers (add `x-async-support: true` to path)
 
 More than just bootstrapping, this library can be permanently integrated into a gradle or maven build and will ensure contract and code always match, even as APIs evolve in complexity. 
 
