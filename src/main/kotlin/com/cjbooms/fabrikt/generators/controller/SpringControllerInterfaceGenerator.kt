@@ -79,7 +79,8 @@ class SpringControllerInterfaceGenerator(
             .addSpringFunAnnotation(op, verb, path.pathString)
             .addSuspendModifier()
 
-        val asyncSupport = op.extensions.containsKey(EXTENSION_ASYNC_SUPPORT)
+        val asyncSupport =
+            op.extensions.containsKey(EXTENSION_ASYNC_SUPPORT) && op.extensions[EXTENSION_ASYNC_SUPPORT] == true
         val funcSpec = if (options.contains(ControllerCodeGenOptionType.COMPLETION_STAGE) || asyncSupport) {
             baseFunSpec.returns(
                 SpringImports.COMPLETION_STAGE.parameterizedBy(
@@ -90,7 +91,7 @@ class SpringControllerInterfaceGenerator(
             baseFunSpec.returns(SpringImports.RESPONSE_ENTITY.parameterizedBy(returnType))
         }
 
-            parameters
+        parameters
             .map {
                 when (it) {
                     is BodyParameter ->
@@ -99,6 +100,7 @@ class SpringControllerInterfaceGenerator(
                             .addAnnotation(SpringAnnotations.requestBodyBuilder().build())
                             .maybeAddAnnotation(validationAnnotations.parameterValid())
                             .build()
+
                     is RequestParameter ->
                         it
                             .toParameterSpecBuilder()

@@ -152,7 +152,8 @@ class SpringControllerGeneratorTest {
     @Test
     fun `ensure that subresource specific controllers are created`() {
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate()
+        val controllers =
+            SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate()
 
         assertThat(controllers.files).size().isEqualTo(6)
         assertThat(controllers.files.map { it.name }).containsAll(
@@ -225,7 +226,9 @@ class SpringControllerGeneratorTest {
     @Test
     fun `controller parameters should have spring DateTimeFormat annotations`() {
         val api = SourceApi(readTextResource("/examples/springFormatDateAndDateTime/api.yaml"))
-        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate().toSingleFile()
+        val controllers =
+            SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate()
+                .toSingleFile()
         val expectedControllers = readTextResource("/examples/springFormatDateAndDateTime/controllers/Controllers.kt")
 
         assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
@@ -234,7 +237,9 @@ class SpringControllerGeneratorTest {
     @Test
     fun `ensure generates ByteArray body parameter and response for string with format binary`() {
         val api = SourceApi(readTextResource("/examples/binary/api.yaml"))
-        val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate().toSingleFile()
+        val controllers =
+            SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate()
+                .toSingleFile()
         val expectedControllers = readTextResource("/examples/binary/controllers/spring/Controllers.kt")
 
         assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
@@ -244,7 +249,8 @@ class SpringControllerGeneratorTest {
     fun `controller functions are wrapped by CompletionStage`() {
         val basePackage = "examples.completionStage"
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val expectedControllers = readTextResource("/examples/githubApi/controllers/spring-completion-stage/Controllers.kt")
+        val expectedControllers =
+            readTextResource("/examples/githubApi/controllers/spring-completion-stage/Controllers.kt")
 
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
@@ -257,10 +263,11 @@ class SpringControllerGeneratorTest {
     }
 
     @Test
-    fun `controller functions with x-async-support extension are wrapped by CompletionStage`() {
+    fun `controller functions with x-async-support=true extension are wrapped by CompletionStage`() {
         val basePackage = "examples.completionStage"
-        val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val expectedControllers = readTextResource("/examples/githubApi/controllers/spring-completion-stage/Controllers.kt")
+        val api = SourceApi(readTextResource("/examples/githubApi/api_async.yaml"))
+        val expectedControllers =
+            readTextResource("/examples/githubApi/controllers/spring-completion-stage/Controllers.kt")
 
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
