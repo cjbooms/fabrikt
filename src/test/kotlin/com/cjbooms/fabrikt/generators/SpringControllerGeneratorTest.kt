@@ -255,4 +255,20 @@ class SpringControllerGeneratorTest {
 
         assertThat(controllers).isEqualTo(expectedControllers)
     }
+
+    @Test
+    fun `controller functions with x-async-support extension are wrapped by CompletionStage`() {
+        val basePackage = "examples.completionStage"
+        val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
+        val expectedControllers = readTextResource("/examples/githubApi/controllers/spring-completion-stage/Controllers.kt")
+
+        val controllers = SpringControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            JavaxValidationAnnotations,
+            emptySet(),
+        ).generate().toSingleFile()
+
+        assertThat(controllers).isEqualTo(expectedControllers)
+    }
 }

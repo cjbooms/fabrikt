@@ -15,6 +15,7 @@ paths:
     post:
       tags:
         - events
+      x-async-support: true
       summary: Generate change events for a list of entities
       requestBody:
         $ref: '#/components/requestBodies/BulkEventGenerationBody'
@@ -42,6 +43,7 @@ paths:
       summary: Page through all the Contributor resources matching the query filters
       tags:
       - contributor
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IncludeInactive'
@@ -70,6 +72,7 @@ paths:
       summary: Create a new Contributor
       tags:
       - contributor
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdempotencyKey'
@@ -95,6 +98,7 @@ paths:
       summary: Get a Contributor by ID
       tags:
       - contributor
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdPathParam'
@@ -125,6 +129,7 @@ paths:
       summary: Validate that a Contributor exists
       tags:
       - contributor
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdPathParam'
@@ -148,6 +153,7 @@ paths:
       summary: Update an existing Contributor
       tags:
       - contributor
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdPathParam'
@@ -171,6 +177,7 @@ paths:
       summary: Page through all the Organisation resources matching the query filters
       tags:
       - organisation
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IncludeInactive'
@@ -198,6 +205,7 @@ paths:
       summary: Create a new Organisation
       tags:
       - organisation
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdempotencyKey'
@@ -222,6 +230,7 @@ paths:
       summary: Get a Organisation by ID
       tags:
       - organisation
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdPathParam'
@@ -252,6 +261,7 @@ paths:
       summary: Validate that a Organisation exists
       tags:
       - organisation
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdPathParam'
@@ -275,6 +285,7 @@ paths:
       summary: Update an existing Organisation
       tags:
       - organisation
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdPathParam'
@@ -300,6 +311,7 @@ paths:
       tags:
       - organisation
       - contributor
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/ParentIdPathParam'
@@ -330,6 +342,7 @@ paths:
       tags:
       - organisation
       - contributor
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/ParentIdPathParam'
       - $ref: '#/components/parameters/FlowId'
@@ -361,6 +374,7 @@ paths:
       tags:
       - organisation
       - contributor
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/ParentIdPathParam'
       - $ref: '#/components/parameters/FlowId'
@@ -385,6 +399,7 @@ paths:
       tags:
       - organisation
       - contributor
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/ParentIdPathParam'
       - $ref: '#/components/parameters/FlowId'
@@ -408,6 +423,7 @@ paths:
       tags:
       - organisation
       - contributor
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/ParentIdPathParam'
       - $ref: '#/components/parameters/FlowId'
@@ -428,6 +444,7 @@ paths:
       summary: Page through all the Repository resources matching the query filters
       tags:
       - repository
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/SlugQueryParam'
@@ -457,6 +474,7 @@ paths:
       summary: Create a new Repository
       tags:
       - repository
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdempotencyKey'
@@ -481,6 +499,7 @@ paths:
       summary: Get a Repository by ID
       tags:
       - repository
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdPathParam'
@@ -511,6 +530,7 @@ paths:
       summary: Validate that a Repository exists
       tags:
       - repository
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdPathParam'
@@ -534,6 +554,7 @@ paths:
       summary: Update an existing Repository
       tags:
       - repository
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/IdPathParam'
@@ -559,6 +580,7 @@ paths:
       tags:
       - repository
       - pullrequest
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/FlowId'
       - $ref: '#/components/parameters/ParentIdPathParam'
@@ -588,6 +610,7 @@ paths:
       tags:
       - repository
       - pullrequest
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/ParentIdPathParam'
       - $ref: '#/components/parameters/FlowId'
@@ -614,6 +637,7 @@ paths:
       tags:
       - repository
       - pullrequest
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/ParentIdPathParam'
       - $ref: '#/components/parameters/FlowId'
@@ -645,6 +669,7 @@ paths:
       tags:
       - repository
       - pullrequest
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/ParentIdPathParam'
       - $ref: '#/components/parameters/FlowId'
@@ -669,6 +694,7 @@ paths:
       tags:
       - repository
       - pullrequest
+      x-async-support: true
       parameters:
       - $ref: '#/components/parameters/ParentIdPathParam'
       - $ref: '#/components/parameters/FlowId'

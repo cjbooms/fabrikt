@@ -39,6 +39,7 @@ class SpringControllerInterfaceGenerator(
     private val options: Set<ControllerCodeGenOptionType> = emptySet(),
 ) : ControllerInterfaceGenerator, AnnotationBasedControllerInterfaceGenerator(packages, api, validationAnnotations) {
 
+    private val EXTENSION_ASYNC_SUPPORT = "x-async-support"
     private val addAuthenticationParameter: Boolean
         get() = options.any { it == ControllerCodeGenOptionType.AUTHENTICATION }
 
@@ -78,7 +79,8 @@ class SpringControllerInterfaceGenerator(
             .addSpringFunAnnotation(op, verb, path.pathString)
             .addSuspendModifier()
 
-        val funcSpec = if (options.contains(ControllerCodeGenOptionType.COMPLETION_STAGE)) {
+        val asyncSupport = op.extensions.containsKey(EXTENSION_ASYNC_SUPPORT)
+        val funcSpec = if (options.contains(ControllerCodeGenOptionType.COMPLETION_STAGE) || asyncSupport) {
             baseFunSpec.returns(
                 SpringImports.COMPLETION_STAGE.parameterizedBy(
                     SpringImports.RESPONSE_ENTITY.parameterizedBy(returnType)
