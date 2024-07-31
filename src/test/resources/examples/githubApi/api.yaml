@@ -15,6 +15,7 @@ paths:
     post:
       tags:
         - events
+      x-async-support: false
       summary: Generate change events for a list of entities
       requestBody:
         $ref: '#/components/requestBodies/BulkEventGenerationBody'

@@ -79,9 +79,10 @@ class SpringControllerInterfaceGenerator(
             .addSpringFunAnnotation(op, verb, path.pathString)
             .addSuspendModifier()
 
-        val asyncSupport =
-            op.extensions.containsKey(EXTENSION_ASYNC_SUPPORT) && op.extensions[EXTENSION_ASYNC_SUPPORT] == true
-        val funcSpec = if (options.contains(ControllerCodeGenOptionType.COMPLETION_STAGE) || asyncSupport) {
+        val explicitAsyncSupport = op.extensions[EXTENSION_ASYNC_SUPPORT] as? Boolean
+        val asyncSupport = explicitAsyncSupport ?: options.contains(ControllerCodeGenOptionType.COMPLETION_STAGE)
+
+        val funcSpec = if (asyncSupport) {
             baseFunSpec.returns(
                 SpringImports.COMPLETION_STAGE.parameterizedBy(
                     SpringImports.RESPONSE_ENTITY.parameterizedBy(returnType)
