@@ -1,6 +1,7 @@
 package examples.defaultValues.models
 
 import com.fasterxml.jackson.`annotation`.JsonProperty
+import java.math.BigDecimal
 import java.net.URI
 import java.util.Base64
 import javax.validation.constraints.NotNull
@@ -18,6 +19,10 @@ public data class PersonWithDefaults(
   @get:JsonProperty("integer_default")
   @get:NotNull
   public val integerDefault: Int = 18,
+  @param:JsonProperty("decimal_default")
+  @get:JsonProperty("decimal_default")
+  @get:NotNull
+  public val decimalDefault: BigDecimal = BigDecimal(0.1),
   @param:JsonProperty("enum_default")
   @get:JsonProperty("enum_default")
   @get:NotNull
