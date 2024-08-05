@@ -18,9 +18,9 @@ sealed class OasDefault {
             CodeBlock.of("%S", strValue)
     }
 
-    data class BigDecimalValue(val numericValue: Number) : OasDefault() {
+    data class BigDecimalValue(val decimalValue: Number) : OasDefault() {
         override fun getDefault(): CodeBlock =
-            CodeBlock.of("%T($numericValue)", BigDecimal::class)
+            CodeBlock.of("%T($decimalValue)", BigDecimal::class)
     }
 
     data class NumberValue(val numericValue: Number) : OasDefault() {
