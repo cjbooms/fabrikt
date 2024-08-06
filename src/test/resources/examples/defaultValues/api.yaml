@@ -12,6 +12,9 @@ components:
         integer_default:
           type: integer
           default: 18
+        decimal_default:
+          type: number
+          default: 0.1
         enum_default:
           type: string
           enum:
