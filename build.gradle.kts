@@ -34,6 +34,7 @@ val projectLicenseUrl = "https://opensource.org/licenses/Apache-2.0"
 
 allprojects {
     repositories {
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
         mavenCentral()
     }
 }
@@ -55,6 +56,7 @@ dependencies {
     implementation("com.reprezen.kaizen:openapi-parser:4.0.4") { exclude(group = "junit") }
     implementation("com.reprezen.jsonoverlay:jsonoverlay:4.0.4")
     implementation("com.squareup:kotlinpoet:1.14.2") { exclude(module = "kotlin-stdlib-jre7") }
+    implementation("dev.kord.codegen:kotlinpoet:main-SNAPSHOT")
     implementation("com.google.flogger:flogger:0.7.4")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")

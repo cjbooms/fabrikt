@@ -21,6 +21,7 @@ import com.cjbooms.fabrikt.model.ResourceFile
 import com.cjbooms.fabrikt.model.ResourceSourceSet
 import com.cjbooms.fabrikt.model.SourceApi
 import com.squareup.kotlinpoet.FileSpec
+import dev.kord.codegen.kotlinpoet.FileSpec
 import java.nio.file.Path
 
 class CodeGenerator(
@@ -94,9 +95,9 @@ class CodeGenerator(
 
         val controllerFiles: Collection<FileSpec> = generator.generate().files
         val libFiles: Collection<FileSpec> = generator.generateLibrary().map {
-            FileSpec.builder(it.className)
-                .addType(it.spec)
-                .build()
+            FileSpec(it.className) {
+                addType(it.spec)
+            }
         }
 
         return controllerFiles.plus(libFiles)

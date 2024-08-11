@@ -31,6 +31,8 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
+import dev.kord.codegen.kotlinpoet.CodeBlock
+import dev.kord.codegen.kotlinpoet.PropertySpec
 import java.nio.file.Path
 
 class OkHttpEnhancedClientGenerator(
@@ -89,10 +91,10 @@ class OkHttpEnhancedClientGenerator(
             "CircuitBreakerRegistry".toClassName("io.github.resilience4j.circuitbreaker")
 
         val configurableCircuitBreakerNameProperty =
-            PropertySpec.builder("circuitBreakerName", String::class.asTypeName())
-                .mutable()
-                .initializer("%S", apiClientClassName.simpleName.toKCodeName())
-                .build()
+            PropertySpec<String>("circuitBreakerName") {
+                mutable(true)
+                initializer("%S", apiClientClassName.simpleName.toKCodeName())
+            }
 
         val clientProperty = PropertySpec.builder("apiClient", apiClientClassName, KModifier.PRIVATE)
             .initializer("%T(objectMapper, baseUrl, client)", apiClientClassName)
@@ -146,12 +148,12 @@ class OkHttpEnhancedClientGenerator(
     }
 
     private fun addClientKDoc(): CodeBlock =
-        CodeBlock.builder()
-            .add("The circuit breaker registry should have the proper configuration to correctly action on circuit breaker ")
-            .add("transitions based on the client exceptions [ApiClientException], [ApiServerException] and [IOException].\n")
-            .add("\n@see ApiClientException")
-            .add("\n@see ApiServerException")
-            .build()
+        CodeBlock {
+            add("The circuit breaker registry should have the proper configuration to correctly action on circuit breaker ")
+            add("transitions based on the client exceptions [ApiClientException], [ApiServerException] and [IOException].\n")
+            add("\n@see ApiClientException")
+            add("\n@see ApiServerException")
+        }
 
     private fun applyTemplateIfOptionIsEnabled(
         options: Set<ClientCodeGenOptionType>,
