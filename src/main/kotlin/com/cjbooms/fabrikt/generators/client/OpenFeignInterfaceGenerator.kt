@@ -7,6 +7,7 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.TypeFactory
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_HEADERS_PARAMETER_NAME
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_QUERY_PARAMETERS_PARAMETER_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.addIncomingParameters
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.deriveClientParameters
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.getReturnType
@@ -92,6 +93,15 @@ class OpenFeignInterfaceGenerator(
                     TypeFactory.createMapOfStringToNonNullType(String::class.asTypeName()),
                 )
                     .addAnnotation(OpenFeignAnnotations.HEADER_MAP)
+                    .defaultValue("emptyMap()")
+                    .build(),
+            )
+            .addParameter(
+                ParameterSpec.builder(
+                    ADDITIONAL_QUERY_PARAMETERS_PARAMETER_NAME,
+                    TypeFactory.createMapOfStringToNonNullType(String::class.asTypeName()),
+                )
+                    .addAnnotation(OpenFeignAnnotations.QUERY_MAP)
                     .defaultValue("emptyMap()")
                     .build(),
             )

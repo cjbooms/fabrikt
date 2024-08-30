@@ -28,13 +28,14 @@ public class HelloClient(
     @Throws(ApiException::class)
     public fun helloWorld(
         parameter: ExternalParameter,
-        additionalHeaders: Map<String, String> =
-            emptyMap(),
+        additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<ContainingExternalReference> {
         val httpUrl: HttpUrl = "$baseUrl/hello"
             .pathParam("{parameter}" to parameter)
             .toHttpUrl()
             .newBuilder()
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()

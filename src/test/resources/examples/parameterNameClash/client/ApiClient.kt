@@ -33,12 +33,14 @@ public class ExampleClient(
         pathB: String,
         queryB: String,
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example/{b}"
             .pathParam("{b}" to pathB)
             .toHttpUrl()
             .newBuilder()
             .queryParam("b", queryB)
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
@@ -65,11 +67,13 @@ public class ExampleClient(
         bodySomeObject: SomeObject,
         querySomeObject: String,
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()
             .queryParam("someObject", querySomeObject)
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()

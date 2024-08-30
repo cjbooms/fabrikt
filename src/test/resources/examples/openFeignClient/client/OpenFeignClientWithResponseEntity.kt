@@ -6,6 +6,7 @@ import examples.openFeignClient.models.QueryResult
 import feign.HeaderMap
 import feign.Headers
 import feign.Param
+import feign.QueryMap
 import feign.RequestLine
 import org.springframework.http.ResponseEntity
 import kotlin.Boolean
@@ -38,6 +39,7 @@ public interface ExamplePath1Client {
         @Param("headerParam1") headerParam1: String? = null,
         @Param("headerParam2") headerParam2: String? = null,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ResponseEntity<QueryResult>
 
     /**
@@ -51,6 +53,7 @@ public interface ExamplePath1Client {
         content: Content,
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ResponseEntity<Unit>
 }
 
@@ -75,6 +78,7 @@ public interface ExamplePath2Client {
         @Param("queryParam2") queryParam2: Int? = null,
         @Param("ifNoneMatch") ifNoneMatch: String? = null,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ResponseEntity<Content>
 
     /**
@@ -91,6 +95,7 @@ public interface ExamplePath2Client {
         @Param("queryParam3") queryParam3: Boolean? = null,
         @Param("ifNoneMatch") ifNoneMatch: String? = null,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ResponseEntity<Unit>
 
     /**
@@ -107,6 +112,7 @@ public interface ExamplePath2Client {
         @Param("pathParam") pathParam: String,
         @Param("ifMatch") ifMatch: String,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ResponseEntity<Unit>
 }
 
@@ -128,5 +134,6 @@ public interface ExamplePath3SubresourceClient {
         @Param("ifMatch") ifMatch: String,
         @Param("csvListQueryParam") csvListQueryParam: List<String>? = null,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ResponseEntity<Unit>
 }

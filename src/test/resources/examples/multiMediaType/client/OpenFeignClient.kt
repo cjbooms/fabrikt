@@ -7,6 +7,7 @@ import examples.multiMediaType.models.SuccessResponse
 import feign.HeaderMap
 import feign.Headers
 import feign.Param
+import feign.QueryMap
 import feign.RequestLine
 import kotlin.Int
 import kotlin.String
@@ -33,6 +34,7 @@ public interface ExamplePath1Client {
         @Param("queryParam2") queryParam2: Int? = null,
         @Param("acceptHeader") acceptHeader: String = "application/vnd.custom.media+xml",
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     ): QueryResult
 }
 
@@ -55,6 +57,7 @@ public interface ExamplePath2Client {
         @Param("queryParam2") queryParam2: Int? = null,
         @Param("accept") accept: ContentType? = null,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     ): QueryResult
 }
 
@@ -72,8 +75,8 @@ public interface MultipleResponseSchemasClient {
     )
     public fun getMultipleResponseSchemas(
         @Param("accept") accept: ContentType? = null,
-        @HeaderMap
-        additionalHeaders: Map<String, String> = emptyMap(),
+        @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     ): JsonNode
 }
 
@@ -87,5 +90,7 @@ public interface DifferentSuccessAndErrorResponseSchemaClient {
     public fun getDifferentSuccessAndErrorResponseSchema(
         @HeaderMap
         additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): SuccessResponse
 }

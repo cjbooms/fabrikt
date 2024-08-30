@@ -30,12 +30,14 @@ public class ExampleClient(
         a: String,
         b: String,
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()
             .queryParam("a", a)
             .queryParam("b", b)
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
