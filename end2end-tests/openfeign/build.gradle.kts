@@ -1,7 +1,7 @@
 val fabrikt: Configuration by configurations.creating
 
 val generationDir = "$buildDir/generated"
-val apiFile = "$projectDir/openapi/api.yaml"
+val apiFile = "${rootProject.projectDir}/src/test/resources/examples/okHttpClient/api.yaml"
 
 sourceSets {
     main { java.srcDirs("$generationDir/src/main/kotlin") }
@@ -21,6 +21,10 @@ val jacksonVersion: String by rootProject.extra
 val junitVersion: String by rootProject.extra
 
 dependencies {
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("io.github.openfeign:feign-core:13.3")
+    implementation("io.github.openfeign:feign-jackson:13.3")
+    implementation("io.github.openfeign:feign-okhttp:13.3")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
     implementation("javax.validation:validation-api:2.0.1.Final")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
@@ -32,6 +36,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("org.wiremock:wiremock:3.3.1")
+    testImplementation("com.marcinziolo:kotlin-wiremock:2.1.1")
 }
 
 tasks {
@@ -47,8 +53,8 @@ tasks {
             "--base-package", "com.example",
             "--api-file", apiFile,
             "--targets", "http_models",
+            "--targets", "client",
             "--http-client-target", "open_feign",
-
         )
         dependsOn(":jar")
         dependsOn(":shadowJar")
