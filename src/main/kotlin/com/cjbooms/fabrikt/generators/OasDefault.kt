@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.util.NormalisedString.toEnumName
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeName
+import java.math.BigDecimal
 import java.net.URI
 import java.util.Base64
 
@@ -17,7 +18,12 @@ sealed class OasDefault {
             CodeBlock.of("%S", strValue)
     }
 
-    data class NumericValue(val numericValue: Number) : OasDefault() {
+    data class BigDecimalValue(val decimalValue: Number) : OasDefault() {
+        override fun getDefault(): CodeBlock =
+            CodeBlock.of("%T($decimalValue)", BigDecimal::class)
+    }
+
+    data class NumberValue(val numericValue: Number) : OasDefault() {
         override fun getDefault(): CodeBlock =
             CodeBlock.of("%L", numericValue)
     }
@@ -69,7 +75,11 @@ sealed class OasDefault {
                     }
                 }
 
-                is Number -> OasDefault.NumericValue(default)
+                is Number ->
+                    when (typeInfo) {
+                        is KotlinTypeInfo.Numeric -> OasDefault.BigDecimalValue(default)
+                        else -> OasDefault.NumberValue(default)
+                    }
                 is Boolean -> OasDefault.BooleanValue(default)
                 else -> null
             }

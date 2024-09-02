@@ -10,6 +10,7 @@ This library was built to take advantage of the complex modeling features availa
  - GraalVM Native Reflection Registration
  - Json Merge Patch (via `JsonNullable`) (add `x-json-merge-patch: true` to schemas)
  - Override Jackson Include NonNull (via `JsonInclude`) (add `x-jackson-include-non-null: true` to schemas)
+ - Generate CompletionStage wrapped controllers (add `x-async-support: true` to path)
 
 More than just bootstrapping, this library can be permanently integrated into a gradle or maven build and will ensure contract and code always match, even as APIs evolve in complexity. 
 
@@ -30,7 +31,7 @@ The library currently has support for generating:
 
 * **Jackson annotated data classes**
 * **Spring MVC annotated controller interfaces**
-* **Ktor server routes and controller interfaces**
+* **Ktor server routes and controller interfaces ([examples](end2end-tests/ktor/src/test/kotlin/com/cjbooms/fabrikt/servers/ktor))**
 * **OkHttp Client** - with the option for a resilience4j fault-tolerance wrapper
 
 ### Example Generation
@@ -201,6 +202,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               | CHOOSE ANY OF: |
 |                               |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+" (only for OkHttp clients) |
 |                               |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated client functions (only for OpenFeign clients) |
+|                               |   `SPRING_RESPONSE_ENTITY_WRAPPER` - This option adds the Spring-ResponseEntity generic around the response to be able to get response headers and status (only for OpenFeign clients). |
 |   `--http-client-target`      | Optionally select the target client that you want to be generated. Defaults to OK_HTTP |
 |                               | CHOOSE ONE OF: |
 |                               |   `OK_HTTP` - Generate OkHttp client. |
@@ -209,6 +211,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               | CHOOSE ANY OF: |
 |                               |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions |
 |                               |   `AUTHENTICATION` - This option adds the authentication parameter to the generated controller functions |
+|                               |   `COMPLETION_STAGE` - This option makes generated controller functions have Type CompletionStage<T> (works only with Spring Controller generator) |
 |   `--http-controller-target`  | Optionally select the target framework for the controllers that you want to be generated. Defaults to Spring Controllers |
 |                               | CHOOSE ONE OF: |
 |                               |   `SPRING` - Generate for Spring framework. |

@@ -58,6 +58,15 @@ class OpenFeignClientGeneratorTest {
         )
     }
 
+    @Test
+    fun `correct Open Feign interfaces are generated with response entity wrapper`() {
+        runTestCase(
+            testCaseName = "openFeignClient",
+            clientFileName = "OpenFeignClientWithResponseEntity.kt",
+            options = setOf(ClientCodeGenOptionType.SPRING_RESPONSE_ENTITY_WRAPPER),
+        )
+    }
+
     private fun runTestCase(
         testCaseName: String,
         clientFileName: String = "OpenFeignClient.kt",

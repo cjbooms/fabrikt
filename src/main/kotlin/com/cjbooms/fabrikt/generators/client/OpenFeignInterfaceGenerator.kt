@@ -12,6 +12,7 @@ import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.deriveClientPa
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.getReturnType
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.metadata.OpenFeignAnnotations
+import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports.RESPONSE_ENTITY
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Clients
 import com.cjbooms.fabrikt.model.GeneratedFile
@@ -31,8 +32,11 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.buildCodeBlock
+
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 
 class OpenFeignInterfaceGenerator(
     private val packages: Packages,
@@ -91,7 +95,11 @@ class OpenFeignInterfaceGenerator(
                     .defaultValue("emptyMap()")
                     .build(),
             )
-            .returns(operation.getReturnType(packages))
+            .returns(
+                operation
+                    .getReturnType(packages)
+                    .optionallyParameterizeWithResponseEntity(options)
+            )
             .build()
     }
 
@@ -262,6 +270,16 @@ class OpenFeignInterfaceGenerator(
     private fun FunSpec.Builder.addSuspendModifier(options: Set<ClientCodeGenOptionType>): FunSpec.Builder {
         if (options.contains(ClientCodeGenOptionType.SUSPEND_MODIFIER)) {
             this.addModifiers(KModifier.SUSPEND)
+        }
+        return this
+    }
+
+    /**
+     * Adds a ResponseEntity around the returned object so that we can get headers and statuscodes
+     */
+    private fun TypeName.optionallyParameterizeWithResponseEntity(options: Set<ClientCodeGenOptionType>): TypeName {
+        if (options.contains(ClientCodeGenOptionType.SPRING_RESPONSE_ENTITY_WRAPPER)) {
+            return RESPONSE_ENTITY.parameterizedBy(this)
         }
         return this
     }

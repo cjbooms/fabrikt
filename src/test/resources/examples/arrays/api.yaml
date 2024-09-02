@@ -10,6 +10,18 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ArrayOfSomething"
+        absent-object-type-in-array:
+          type: array
+          items:
+            properties:
+              some-array-prop:
+                type: string
+        a-nullable-array:
+          type: array
+          nullable: true
+          items:
+            type: string
+            nullable: true
 
     ArrayOfSomething:
       type: array
