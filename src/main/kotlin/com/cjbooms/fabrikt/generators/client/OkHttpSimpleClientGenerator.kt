@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.TypeFactory
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_HEADERS_PARAMETER_NAME
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_QUERY_PARAMETERS_PARAMETER_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.addIncomingParameters
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.deriveClientParameters
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
@@ -61,6 +62,14 @@ class OkHttpSimpleClientGenerator(
                         .addParameter(
                             ParameterSpec.builder(
                                 ADDITIONAL_HEADERS_PARAMETER_NAME,
+                                TypeFactory.createMapOfStringToNonNullType(String::class.asTypeName())
+                            )
+                                .defaultValue("emptyMap()")
+                                .build()
+                        )
+                        .addParameter(
+                            ParameterSpec.builder(
+                                ADDITIONAL_QUERY_PARAMETERS_PARAMETER_NAME,
                                 TypeFactory.createMapOfStringToNonNullType(String::class.asTypeName())
                             )
                                 .defaultValue("emptyMap()")
@@ -179,6 +188,7 @@ data class SimpleClientOperationStatement(
                     )
                 }
             }
+        this.add("\n.also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }")
         return this.add("\n.build()\n")
     }
 

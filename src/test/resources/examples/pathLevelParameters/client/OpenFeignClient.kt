@@ -2,6 +2,7 @@ package examples.pathLevelParameters.client
 
 import feign.HeaderMap
 import feign.Param
+import feign.QueryMap
 import feign.RequestLine
 import kotlin.String
 import kotlin.Suppress
@@ -20,5 +21,6 @@ public interface ExampleClient {
         @Param("a") a: String,
         @Param("b") b: String,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     )
 }

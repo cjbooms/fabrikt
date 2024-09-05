@@ -24,10 +24,14 @@ public class ExampleClient(
      *
      */
     @Throws(ApiException::class)
-    public fun putExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
+    public fun putExample(
+        additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
+    ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
@@ -47,10 +51,14 @@ public class ExampleClient(
      *
      */
     @Throws(ApiException::class)
-    public fun postExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
+    public fun postExample(
+        additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
+    ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
@@ -70,10 +78,14 @@ public class ExampleClient(
      *
      */
     @Throws(ApiException::class)
-    public fun patchExample(additionalHeaders: Map<String, String> = emptyMap()): ApiResponse<Unit> {
+    public fun patchExample(
+        additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
+    ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example"
             .toHttpUrl()
             .newBuilder()
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()

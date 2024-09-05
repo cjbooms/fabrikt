@@ -38,12 +38,14 @@ public class ExamplePath1Client(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
             .queryParam("explode_list_query_param", explodeListQueryParam, true)
             .queryParam("query_param2", queryParam2)
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
@@ -70,11 +72,13 @@ public class ExamplePath1Client(
         content: Content,
         explodeListQueryParam: List<String>? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
             .queryParam("explode_list_query_param", explodeListQueryParam, true)
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
@@ -112,6 +116,7 @@ public class ExamplePath2Client(
         queryParam2: Int? = null,
         ifNoneMatch: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Content> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
@@ -119,6 +124,7 @@ public class ExamplePath2Client(
             .newBuilder()
             .queryParam("limit", limit)
             .queryParam("query_param2", queryParam2)
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
@@ -148,12 +154,14 @@ public class ExamplePath2Client(
         queryParam3: Boolean? = null,
         ifNoneMatch: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
             .toHttpUrl()
             .newBuilder()
             .queryParam("query_param3", queryParam3)
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
@@ -183,11 +191,13 @@ public class ExamplePath2Client(
         pathParam: String,
         ifMatch: String,
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
             .pathParam("{path_param}" to pathParam)
             .toHttpUrl()
             .newBuilder()
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
@@ -226,12 +236,14 @@ public class ExamplePath3SubresourceClient(
         ifMatch: String,
         csvListQueryParam: List<String>? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-3/{path_param}/subresource"
             .pathParam("{path_param}" to pathParam)
             .toHttpUrl()
             .newBuilder()
             .queryParam("csv_list_query_param", csvListQueryParam, false)
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()

@@ -37,12 +37,14 @@ public class ExamplePath1Client(
         queryParam2: Int? = null,
         acceptHeader: String = "application/vnd.custom.media+xml",
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-1"
             .toHttpUrl()
             .newBuilder()
             .queryParam("explode_list_query_param", explodeListQueryParam, true)
             .queryParam("query_param2", queryParam2)
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
@@ -79,12 +81,14 @@ public class ExamplePath2Client(
         queryParam2: Int? = null,
         accept: ContentType? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
         val httpUrl: HttpUrl = "$baseUrl/example-path-2"
             .toHttpUrl()
             .newBuilder()
             .queryParam("explode_list_query_param", explodeListQueryParam, true)
             .queryParam("query_param2", queryParam2)
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
@@ -117,10 +121,12 @@ public class MultipleResponseSchemasClient(
     public fun getMultipleResponseSchemas(
         accept: ContentType? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<JsonNode> {
         val httpUrl: HttpUrl = "$baseUrl/multiple-response-schemas"
             .toHttpUrl()
             .newBuilder()
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()
@@ -151,10 +157,12 @@ public class DifferentSuccessAndErrorResponseSchemaClient(
     public fun getDifferentSuccessAndErrorResponseSchema(
         additionalHeaders: Map<String, String> =
             emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<SuccessResponse> {
         val httpUrl: HttpUrl = "$baseUrl/different-success-and-error-response-schema"
             .toHttpUrl()
             .newBuilder()
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 
         val headerBuilder = Headers.Builder()

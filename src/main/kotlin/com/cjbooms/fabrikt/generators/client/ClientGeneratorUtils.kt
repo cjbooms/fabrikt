@@ -28,6 +28,7 @@ object ClientGeneratorUtils {
     const val ACCEPT_HEADER_NAME = "Accept"
     const val ACCEPT_HEADER_VARIABLE_NAME = "acceptHeader"
     const val ADDITIONAL_HEADERS_PARAMETER_NAME = "additionalHeaders"
+    const val ADDITIONAL_QUERY_PARAMETERS_PARAMETER_NAME = "additionalQueryParameters"
 
     /**
      * Gives the Kotlin return type for an API call based on the Content-Types specified in the Operation.

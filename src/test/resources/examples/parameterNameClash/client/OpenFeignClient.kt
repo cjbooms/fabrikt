@@ -3,6 +3,7 @@ package examples.parameterNameClash.client
 import examples.parameterNameClash.models.SomeObject
 import feign.HeaderMap
 import feign.Param
+import feign.QueryMap
 import feign.RequestLine
 import kotlin.String
 import kotlin.Suppress
@@ -21,6 +22,7 @@ public interface ExampleClient {
         @Param("pathB") pathB: String,
         @Param("queryB") queryB: String,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     )
 
     /**
@@ -34,5 +36,6 @@ public interface ExampleClient {
         bodySomeObject: SomeObject,
         @Param("querySomeObject") querySomeObject: String,
         @HeaderMap additionalHeaders: Map<String, String> = emptyMap(),
+        @QueryMap additionalQueryParameters: Map<String, String> = emptyMap(),
     )
 }
