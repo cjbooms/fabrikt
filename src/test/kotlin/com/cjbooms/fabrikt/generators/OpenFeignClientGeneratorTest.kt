@@ -75,7 +75,7 @@ class OpenFeignClientGeneratorTest {
         val packages = Packages("examples.$testCaseName")
         val sourceApi = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
 
-        val expectedModel = readTextResource("/examples/$testCaseName/models/Models.kt")
+        val expectedModel = readTextResource("/examples/$testCaseName/models/ClientModels.kt")
         val expectedClient = readTextResource("/examples/$testCaseName/client/$clientFileName")
 
         val models = JacksonModelGenerator(
