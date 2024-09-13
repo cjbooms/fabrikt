@@ -240,6 +240,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               | CHOOSE ANY OF: |
 |                               |   `DATETIME_AS_INSTANT` - Use `Instant` as the datetime type. Defaults to `OffsetDateTime` |
 |                               |   `DATETIME_AS_LOCALDATETIME` - Use `LocalDateTime` as the datetime type. Defaults to `OffsetDateTime` |
+|                               |   `BYTEARRAY_AS_INPUTSTREAM` - Use `InputStream` as ByteArray type. Defaults to `ByteArray` |
 |   `--validation-library`      | Specify which validation library to use for annotations in generated model classes. Default: JAVAX_VALIDATION |
 |                               | CHOOSE ONE OF: |
 |                               |   `JAVAX_VALIDATION` - Use `javax.validation` annotations in generated model classes (default) |

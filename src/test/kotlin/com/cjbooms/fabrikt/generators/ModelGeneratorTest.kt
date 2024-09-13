@@ -63,6 +63,7 @@ class ModelGeneratorTest {
         "openapi310",
         "binary",
         "oneOfMarkerInterface",
+        "byteArrayStream",
     )
 
     @BeforeEach
@@ -90,6 +91,9 @@ class ModelGeneratorTest {
         }
         if (testCaseName == "mapExamplesNonNullValues") {
             MutableSettings.addOption(ModelCodeGenOptionType.NON_NULL_MAP_VALUES)
+        }
+        if (testCaseName == "byteArrayStream") {
+            MutableSettings.addOption(CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM)
         }
         val basePackage = "examples.${testCaseName.replace("/", ".")}"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!

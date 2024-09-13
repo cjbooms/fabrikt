@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
@@ -206,6 +207,23 @@ class KtorControllerInterfaceGeneratorTest {
 
         val fileStr = controllers.toSingleFile(lib)
         val expectedControllers = readTextResource("/examples/binary/controllers/ktor/Controllers.kt")
+
+        assertThat(fileStr.trim()).isEqualTo(expectedControllers.trim())
+    }
+
+    @Test
+    fun `ensure generates ByteArrayStream body parameter and response for string with format binary`() {
+        MutableSettings.addOption(CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM)
+        val api = SourceApi(readTextResource("/examples/byteArrayStream/api.yaml"))
+        val generator = KtorControllerInterfaceGenerator(
+            Packages(basePackage),
+            api
+        )
+        val controllers = generator.generate()
+        val lib = generator.generateLibrary()
+
+        val fileStr = controllers.toSingleFile(lib)
+        val expectedControllers = readTextResource("/examples/byteArrayStream/controllers/ktor/Controllers.kt")
 
         assertThat(fileStr.trim()).isEqualTo(expectedControllers.trim())
     }
