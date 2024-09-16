@@ -9,6 +9,7 @@ import kotlin.Boolean
 import kotlin.ByteArray
 import kotlin.Int
 import kotlin.String
+import kotlin.collections.List
 
 public data class PersonWithDefaults(
   @param:JsonProperty("required_so_default_ignored")
@@ -48,4 +49,7 @@ public data class PersonWithDefaults(
   @get:JsonProperty("byte_type")
   @get:NotNull
   public val byteType: ByteArray = Base64.getDecoder().decode("U3dhZ2dlciByb2Nrcw=="),
+  @param:JsonProperty("array_default")
+  @get:JsonProperty("array_default")
+  public val arrayDefault: List<String>? = null,
 )

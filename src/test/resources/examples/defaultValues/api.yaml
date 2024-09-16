@@ -46,3 +46,8 @@ components:
           type: string
           format: byte
           default: U3dhZ2dlciByb2Nrcw==
+        array_default:
+          type: array
+          default: []
+          items:
+            type: string
