@@ -46,8 +46,19 @@ components:
           type: string
           format: byte
           default: U3dhZ2dlciByb2Nrcw==
-        array_default:
+        ignored_array_default:
           type: array
           default: []
           items:
             type: string
+        ignored_object:
+          type: object
+          properties:
+            name:
+              type: string
+            age:
+              type: integer
+          default:
+            name: "John Doe"
+            age: 30
+

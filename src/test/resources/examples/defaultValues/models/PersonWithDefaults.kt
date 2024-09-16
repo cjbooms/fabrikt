@@ -4,6 +4,7 @@ import com.fasterxml.jackson.`annotation`.JsonProperty
 import java.math.BigDecimal
 import java.net.URI
 import java.util.Base64
+import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import kotlin.Boolean
 import kotlin.ByteArray
@@ -49,7 +50,11 @@ public data class PersonWithDefaults(
   @get:JsonProperty("byte_type")
   @get:NotNull
   public val byteType: ByteArray = Base64.getDecoder().decode("U3dhZ2dlciByb2Nrcw=="),
-  @param:JsonProperty("array_default")
-  @get:JsonProperty("array_default")
-  public val arrayDefault: List<String>? = null,
+  @param:JsonProperty("ignored_array_default")
+  @get:JsonProperty("ignored_array_default")
+  public val ignoredArrayDefault: List<String>? = null,
+  @param:JsonProperty("ignored_object")
+  @get:JsonProperty("ignored_object")
+  @get:Valid
+  public val ignoredObject: PersonWithDefaultsIgnoredObject? = null,
 )
