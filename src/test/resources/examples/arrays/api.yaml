@@ -16,6 +16,11 @@ components:
             properties:
               some-array-prop:
                 type: string
+        array_with_empty_default:
+          type: array
+          default: []
+          items:
+            type: string
         a-nullable-array:
           type: array
           nullable: true
