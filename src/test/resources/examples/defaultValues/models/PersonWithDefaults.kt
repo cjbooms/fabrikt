@@ -53,8 +53,8 @@ public data class PersonWithDefaults(
   @param:JsonProperty("ignored_array_default")
   @get:JsonProperty("ignored_array_default")
   public val ignoredArrayDefault: List<String>? = null,
-  @param:JsonProperty("ignored_object")
-  @get:JsonProperty("ignored_object")
+  @param:JsonProperty("ignored_object_default")
+  @get:JsonProperty("ignored_object_default")
   @get:Valid
-  public val ignoredObject: PersonWithDefaultsIgnoredObject? = null,
+  public val ignoredObjectDefault: PersonWithDefaultsIgnoredObjectDefault? = null,
 )

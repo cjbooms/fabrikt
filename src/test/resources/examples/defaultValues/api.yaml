@@ -51,7 +51,7 @@ components:
           default: []
           items:
             type: string
-        ignored_object:
+        ignored_object_default:
           type: object
           properties:
             name:

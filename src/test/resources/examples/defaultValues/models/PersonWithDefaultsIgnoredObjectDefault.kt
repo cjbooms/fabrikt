@@ -4,7 +4,7 @@ import com.fasterxml.jackson.`annotation`.JsonProperty
 import kotlin.Int
 import kotlin.String
 
-public data class PersonWithDefaultsIgnoredObject(
+public data class PersonWithDefaultsIgnoredObjectDefault(
   @param:JsonProperty("name")
   @get:JsonProperty("name")
   public val name: String? = null,
