@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
+import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType.Companion.toOasType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getEnumValues
@@ -15,6 +16,8 @@ import java.net.URI
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
+import java.util.logging.Level
+import java.util.logging.Logger
 import kotlin.reflect.KClass
 
 sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassName: String? = null) {
@@ -61,6 +64,8 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         }
 
     companion object {
+        private val logger = Logger.getGlobal()
+        
         fun from(schema: Schema, oasKey: String = "", enclosingSchema: EnclosingSchemaInfo? = null): KotlinTypeInfo =
             when (schema.toOasType(oasKey)) {
                 OasType.Date -> Date
@@ -120,8 +125,19 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         }
 
         private fun getOverridableByteArray(): KotlinTypeInfo {
+            val types: Set<CodeGenerationType> = MutableSettings.generationTypes()
             val typeOverrides = MutableSettings.typeOverrides()
             return when {
+                CodeGenerationType.CLIENT in types && CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM in typeOverrides -> {
+                    logger.log(
+                        Level.WARNING,
+                        """
+                            Client code generation does not support streaming, yet. The override flag 
+                            'BYTEARRAY_AS_INPUTSTREAM' is ignored. If generating server side code, please consider 
+                            splitting the client & server in different fabrikt executions. Defaulting to `ByteArray`...
+                        """.trimIndent())
+                    ByteArray
+                }
                 CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM in typeOverrides -> InputStream
                 else -> ByteArray
             }

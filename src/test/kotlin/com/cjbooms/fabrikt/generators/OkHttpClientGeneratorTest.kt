@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ClientCodeGenTargetType
+import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
@@ -36,7 +37,8 @@ class OkHttpClientGeneratorTest {
         "multiMediaType",
         "okHttpClientPostWithoutRequestBody",
         "pathLevelParameters",
-        "parameterNameClash"
+        "parameterNameClash",
+        "byteArrayStream",
     )
 
     @BeforeEach
@@ -45,6 +47,7 @@ class OkHttpClientGeneratorTest {
             genTypes = setOf(CodeGenerationType.CLIENT),
             clientTarget = ClientCodeGenTargetType.OK_HTTP,
             modelOptions = setOf(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS),
+            typeOverrides = setOf(CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM)
         )
         ModelNameRegistry.clear()
     }
@@ -56,7 +59,7 @@ class OkHttpClientGeneratorTest {
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
-        val expectedModel = readTextResource("/examples/$testCaseName/models/Models.kt")
+        val expectedModel = readTextResource("/examples/$testCaseName/models/ClientModels.kt")
         val expectedClient = readTextResource("/examples/$testCaseName/client/ApiClient.kt")
 
         val models = JacksonModelGenerator(
@@ -135,7 +138,7 @@ class OkHttpClientGeneratorTest {
         val apiLocation = javaClass.getResource("/examples/externalReferences/aggressive/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
-        val expectedModel = readTextResource("/examples/externalReferences/aggressive/models/Models.kt")
+        val expectedModel = readTextResource("/examples/externalReferences/aggressive/models/ClientModels.kt")
         val expectedClient = readTextResource("/examples/externalReferences/aggressive/client/ApiClient.kt")
         val expectedClientCode = readTextResource("/examples/externalReferences/aggressive/client/ApiService.kt")
         MutableSettings.updateSettings(
