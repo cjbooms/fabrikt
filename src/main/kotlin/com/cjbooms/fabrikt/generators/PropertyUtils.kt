@@ -205,9 +205,10 @@ object PropertyUtils {
     }
 
     fun PropertyInfo.isNullable() = when (this) {
-        is PropertyInfo.Field, is PropertyInfo.ListField, is PropertyInfo.MapField,
+        is PropertyInfo.Field -> !isRequired && schema.default == null || schema.isNullable
+        is PropertyInfo.ListField, is PropertyInfo.MapField,
         is PropertyInfo.ObjectRefField, is PropertyInfo.ObjectInlinedField ->
-            !isRequired && schema.default == null || schema.isNullable
+            !isRequired || schema.isNullable
         else -> !isRequired
     }
 
