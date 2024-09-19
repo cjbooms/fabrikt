@@ -7,7 +7,8 @@
 * [Examples](#examples)
 * [Usage Instructions](#usage-instructions)
   * [Command Line](#command-line)
-  * [Gradle](#gradle)
+  * [Gradle w/ custom task](#gradle-w-custom-task)
+  * [Gradle w/ plugin](#gradle-w-plugin)
   * [Maven](#maven)
 * [Configuration Options](#configuration-options)
 * [Building Locally](#building-locally)
@@ -90,7 +91,7 @@ java -jar fabrikt.jar \
     --http-client-opts resilience4j
 ```
 
-### Gradle
+### Gradle w/ custom task
 
 Here is an example of a Gradle task with code generated to the `build/generated` directory, and execution linked to the compile task. 
 
@@ -132,6 +133,28 @@ tasks {
 dependencies {
      fabrikt("com.cjbooms:fabrikt:+") // This should be pinned  
      ...
+}
+```
+
+### Gradle w/ plugin
+
+The [Fabrikt Gradle plugin](https://github.com/acanda/fabrikt-gradle-plugin) serves as a convenient wrapper for Fabrikt, 
+allowing seamless integration of code generation into a Gradle build.
+
+**Note:** Since the plugin is maintained separately from the Fabrikt library, please refer to the
+[Configuration](https://github.com/acanda/fabrikt-gradle-plugin?tab=readme-ov-file#configuration) section of the 
+plugin's README for the most up-to-date information on how to use it.
+
+```kotlin
+plugins {
+    id("ch.acanda.gradle.fabrikt") version "1.1.0" // find latest version: https://github.com/acanda/fabrikt-gradle-plugin/releases
+}
+
+fabrikt {
+    generate("dog") {
+        apiFile = file("src/main/openapi/dog.yaml")
+        basePackage = "com.example.api"
+    }
 }
 ```
 
