@@ -145,9 +145,12 @@ allowing seamless integration of code generation into a Gradle build.
 [Configuration](https://github.com/acanda/fabrikt-gradle-plugin?tab=readme-ov-file#configuration) section of the 
 plugin's README for the most up-to-date information on how to use it.
 
+Latest version of the plugin: [![Gradle Plugin Portal Version](https://img.shields.io/gradle-plugin-portal/v/ch.acanda.gradle.fabrikt?style=flat)](https://plugins.gradle.org/plugin/ch.acanda.gradle.fabrikt)
+
 ```kotlin
 plugins {
-    id("ch.acanda.gradle.fabrikt") version "1.1.0" // find latest version: https://github.com/acanda/fabrikt-gradle-plugin/releases
+    // find latest version: https://github.com/acanda/fabrikt-gradle-plugin/releases
+    id("ch.acanda.gradle.fabrikt") version "1.2.0"
 }
 
 fabrikt {
