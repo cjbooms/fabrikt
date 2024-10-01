@@ -8,11 +8,11 @@ import com.beust.jcommander.ParameterException
 import com.beust.jcommander.converters.PathConverter
 import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.util.NormalisedString.isValidJavaPackage
+import com.cjbooms.fabrikt.util.toUpperCase
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.system.exitProcess
-import com.cjbooms.fabrikt.util.toUpperCase
 
 class CodeGenArgs {
 
@@ -98,6 +98,12 @@ class CodeGenArgs {
         converter = ModelCodeGenOptionConverter::class
     )
     var modelOptions: Set<ModelCodeGenOptionType> = emptySet()
+
+    @Parameter(
+        names = ["--http-model-suffix"],
+        description = "Specify custom suffix for all generated model classes. Defaults to no suffix."
+    )
+    var modelSuffix: String = ""
 
     @Parameter(
         names = ["--http-client-opts"],

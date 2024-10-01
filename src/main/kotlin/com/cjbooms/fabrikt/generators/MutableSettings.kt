@@ -7,6 +7,7 @@ object MutableSettings {
     private lateinit var controllerOptions: MutableSet<ControllerCodeGenOptionType>
     private lateinit var controllerTarget: ControllerCodeGenTargetType
     private lateinit var modelOptions: MutableSet<ModelCodeGenOptionType>
+    private lateinit var modelSuffix: String
     private lateinit var clientOptions: MutableSet<ClientCodeGenOptionType>
     private lateinit var clientTarget: ClientCodeGenTargetType
     private lateinit var typeOverrides: MutableSet<CodeGenTypeOverride>
@@ -18,6 +19,7 @@ object MutableSettings {
         controllerOptions: Set<ControllerCodeGenOptionType> = emptySet(),
         controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.SPRING,
         modelOptions: Set<ModelCodeGenOptionType> = emptySet(),
+        modelSuffix: String = "",
         clientOptions: Set<ClientCodeGenOptionType> = emptySet(),
         clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.OK_HTTP,
         typeOverrides: Set<CodeGenTypeOverride> = emptySet(),
@@ -28,6 +30,7 @@ object MutableSettings {
         this.controllerOptions = controllerOptions.toMutableSet()
         this.controllerTarget = controllerTarget
         this.modelOptions = modelOptions.toMutableSet()
+        this.modelSuffix = modelSuffix
         this.clientOptions = clientOptions.toMutableSet()
         this.clientTarget = clientTarget
         this.typeOverrides = typeOverrides.toMutableSet()
@@ -42,6 +45,7 @@ object MutableSettings {
     fun controllerOptions() = this.controllerOptions.toSet()
     fun controllerTarget() = this.controllerTarget
     fun modelOptions() = this.modelOptions.toSet()
+    fun modelSuffix() = this.modelSuffix
     fun clientOptions() = this.clientOptions.toSet()
     fun clientTarget() = this.clientTarget
     fun typeOverrides() = this.typeOverrides.toSet()
