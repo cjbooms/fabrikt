@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.util
 
+import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.EnclosingSchemaInfo
 import com.cjbooms.fabrikt.model.EnclosingSchemaInfoName
 import com.cjbooms.fabrikt.model.EnclosingSchemaInfoOasModel
@@ -59,6 +60,8 @@ object ModelNameRegistry {
         if (valueSuffix) {
             append("Value")
         }
+        val modelClassNameSuffix = MutableSettings.modelSuffix()
+        append(modelClassNameSuffix)
     }
 
     private fun EnclosingSchemaInfo.toModelClassName() =

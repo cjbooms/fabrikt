@@ -207,6 +207,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               |   `INCLUDE_COMPANION_OBJECT` - This option adds a companion object to the generated models. |
 |                               |   `SEALED_INTERFACES_FOR_ONE_OF` - This option enables the generation of interfaces for discriminated oneOf types |
 |                               |   `NON_NULL_MAP_VALUES` - This option makes map values non-null. The default (since v15) and most spec compliant is make map values nullable |
+|   `--http-model-suffix`       | Specify custom suffix for all generated model classes. Defaults to no suffix. |
 |   `--output-directory`        | Allows the generation dir to be overridden. Defaults to current dir |
 |   `--resources-path`          | Allows the path for generated resources to be overridden. Defaults to `src/main/resources` |
 |   `--src-path`                | Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin` |

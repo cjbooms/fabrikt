@@ -125,6 +125,29 @@ class ModelGeneratorTest {
     }
 
     @Test
+    fun `generate models with suffix`() {
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.HTTP_MODELS),
+            modelSuffix = "Dto"
+        )
+        val basePackage = "examples.modelSuffix"
+        val apiLocation = javaClass.getResource("/examples/modelSuffix/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
+        val expectedModels = readFolder(Path.of("src/test/resources/examples/modelSuffix/models/"))
+
+        val models = JacksonModelGenerator(
+            Packages(basePackage),
+            sourceApi,
+        ).generate()
+
+        models.files.forEach { file ->
+            val key = "${file.name}.kt"
+            val content = file.toString()
+            assertThat(content).isEqualTo(expectedModels[key])
+        }
+    }
+
+    @Test
     fun `generate models using jakarta validation`() {
         val basePackage = "examples.jakartaValidationAnnotations"
         val spec = readTextResource("/examples/jakartaValidationAnnotations/api.yaml")
