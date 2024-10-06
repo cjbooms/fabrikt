@@ -173,17 +173,18 @@ class KtorControllerInterfaceGenerator(
 
         val addAuth = securityOption.allowsAuthenticated && options.contains(ControllerCodeGenOptionType.AUTHENTICATION)
         if (addAuth) {
-            // Using the key from the first security requirement as the auth name
-            val authName = if (operation.hasSecurityRequirements()) {
-                operation.securityRequirements.first().requirements.keys.first()
+            val authNames = if (operation.hasSecurityRequirements()) {
+                operation.securityRequirements
+                    .filter { it.requirements.isNotEmpty() }
+                    .joinToString(", ") { "\"" + it.requirements.keys.first() + "\"" }
             } else {
                 // Fall back to the global security requirements
-                this.api.openApi3.securityRequirements.first().requirements.keys.first()
+                "\"" + this.api.openApi3.securityRequirements.first().requirements.keys.first() + "\""
             }
 
             builder
                 .addStatement(
-                    "%M(\"$authName\", optional = %L) {",
+                    "%M($authNames, optional = %L) {",
                     MemberName("io.ktor.server.auth", "authenticate"),
                     securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL,
                 )
