@@ -13,10 +13,7 @@ import io.ktor.client.request.header
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.Authentication
-import io.ktor.server.auth.Principal
-import io.ktor.server.auth.UserIdPrincipal
-import io.ktor.server.auth.basic
+import io.ktor.server.auth.*
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
@@ -209,6 +206,12 @@ class KtorAuthenticationTest {
             // which uses top level security in OpenAPI spec
             basic("basicAuth") {
                 validate {
+                    UserIdPrincipal("defaultAuth") // always authenticate
+                }
+            }
+
+            bearer("BearerAuth") {
+                authenticate {
                     UserIdPrincipal("defaultAuth") // always authenticate
                 }
             }
