@@ -42,7 +42,7 @@ public interface RequiredController {
          * - GET /required
          */
         public fun Route.requiredRoutes(controller: RequiredController) {
-            authenticate("BasicAuth", optional = false) {
+            authenticate("BasicAuth", "BearerAuth", optional = false) {
                 `get`("/required") {
                     val principal = call.principal<Principal>() ?: throw
                         IllegalStateException("Principal not found")

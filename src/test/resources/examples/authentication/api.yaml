@@ -9,6 +9,7 @@ paths:
       operationId: testPath
       security:
         - BasicAuth: [ ]
+        - BearerAuth: [ ]
       parameters:
         - in: query
           name: testString
@@ -78,5 +79,8 @@ components:
     BasicAuth:
       type: http
       scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
 security:
   - basicAuth: [ ]
