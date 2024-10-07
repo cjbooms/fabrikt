@@ -176,11 +176,11 @@ class KtorControllerInterfaceGenerator(
             val authNames = if (operation.hasSecurityRequirements()) {
                 operation.securityRequirements
                     .filter { it.requirements.isNotEmpty() }
-                    .joinToString(", ") { "\"" + it.requirements.keys.first() + "\"" }
+                    .map { it.requirements.keys.first() }
             } else {
                 // Fall back to the global security requirements
-                "\"" + this.api.openApi3.securityRequirements.first().requirements.keys.first() + "\""
-            }
+                listOf(this.api.openApi3.securityRequirements.first().requirements.keys.first())
+            }.joinToString(", ") { "\"$it\"" }
 
             builder
                 .addStatement(
