@@ -36,6 +36,7 @@ class KtorControllerInterfaceGeneratorTest {
         "pathLevelParameters",
         "parameterNameClash",
         "requestBodyAsArray",
+        "longMinimumMaximum"
     )
 
     private fun setupGithubApiTestEnv() {
@@ -56,7 +57,7 @@ class KtorControllerInterfaceGeneratorTest {
     }
 
     // @Test
-    // fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("singleAllOf")
+    // fun `debug single test`() = `correct controllers are generated for different OpenApi Specifications`("insert testcase here")
 
     @ParameterizedTest
     @MethodSource("testCases")

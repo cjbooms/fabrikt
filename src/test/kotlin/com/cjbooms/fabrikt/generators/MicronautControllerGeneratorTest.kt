@@ -38,6 +38,7 @@ class MicronautControllerGeneratorTest {
         "singleAllOf",
         "pathLevelParameters",
         "parameterNameClash",
+        "longMinimumMaximum",
     )
 
     private fun setupGithubApiTestEnv(validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations) {
@@ -55,7 +56,7 @@ class MicronautControllerGeneratorTest {
     }
 
     // @Test
-    // fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("singleAllOf")
+    // fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("insert testcase here")
 
     @ParameterizedTest
     @MethodSource("testCases")
