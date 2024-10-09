@@ -48,8 +48,8 @@ abstract class AnnotationBasedControllerInterfaceGenerator(
     }
 
     fun ParameterSpec.Builder.addValidationAnnotations(parameter: RequestParameter): ParameterSpec.Builder {
-        if (parameter.minimum != null) this.maybeAddAnnotation(validationAnnotations.min(parameter.minimum.toInt()))
-        if (parameter.maximum != null) this.maybeAddAnnotation(validationAnnotations.max(parameter.maximum.toInt()))
+        if (parameter.minimum != null) this.maybeAddAnnotation(validationAnnotations.min(parameter.minimum.toLong()))
+        if (parameter.maximum != null) this.maybeAddAnnotation(validationAnnotations.max(parameter.maximum.toLong()))
         if (parameter.typeInfo.isComplexType) this.maybeAddAnnotation(validationAnnotations.parameterValid())
         return this
     }

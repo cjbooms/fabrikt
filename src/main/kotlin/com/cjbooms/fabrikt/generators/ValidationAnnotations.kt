@@ -7,8 +7,8 @@ interface ValidationAnnotations {
     val nonNullAnnotation: AnnotationSpec?
     fun fieldValid(): AnnotationSpec?
     fun parameterValid(): AnnotationSpec?
-    fun min(value: Int): AnnotationSpec?
-    fun max(value: Int): AnnotationSpec?
+    fun min(value: Long): AnnotationSpec?
+    fun max(value: Long): AnnotationSpec?
     fun regexPattern(pattern: String): AnnotationSpec?
     fun lengthRestriction(min: Int?, max: Int?): AnnotationSpec?
     fun minRestriction(min: Number, exclusive: Boolean): AnnotationSpec?
@@ -39,12 +39,12 @@ abstract class PackageValidationAnnotations(packageName: String) : ValidationAnn
         .builder(validClass)
         .build()
 
-    override fun min(value: Int) = AnnotationSpec
+    override fun min(value: Long) = AnnotationSpec
         .builder(minClass)
         .addMember("%L", value)
         .build()
 
-    override fun max(value: Int) = AnnotationSpec
+    override fun max(value: Long) = AnnotationSpec
         .builder(maxClass)
         .addMember("%L", value)
         .build()
@@ -91,9 +91,9 @@ object NoValidationAnnotations : ValidationAnnotations {
 
     override fun parameterValid(): AnnotationSpec? = null
 
-    override fun min(value: Int): AnnotationSpec? = null
+    override fun min(value: Long): AnnotationSpec? = null
 
-    override fun max(value: Int): AnnotationSpec? = null
+    override fun max(value: Long): AnnotationSpec? = null
 
     override fun regexPattern(pattern: String): AnnotationSpec? = null
 
