@@ -1,4 +1,4 @@
-package examples.longMinimumMaximum.controllers
+package examples.jakartaValidationAnnotations.controllers
 
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.`annotation`.Controller

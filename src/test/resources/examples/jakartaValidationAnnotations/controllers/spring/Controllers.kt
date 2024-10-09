@@ -1,4 +1,4 @@
-package examples.longMinimumMaximum.controllers
+package examples.jakartaValidationAnnotations.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller

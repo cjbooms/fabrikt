@@ -1,4 +1,4 @@
-package examples.longMinimumMaximum.controllers
+package examples.jakartaValidationAnnotations.controllers
 
 import io.ktor.http.Headers
 import io.ktor.http.HttpStatusCode

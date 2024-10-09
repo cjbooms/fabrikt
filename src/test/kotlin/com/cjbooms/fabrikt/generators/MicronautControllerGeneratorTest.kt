@@ -38,7 +38,7 @@ class MicronautControllerGeneratorTest {
         "singleAllOf",
         "pathLevelParameters",
         "parameterNameClash",
-        "longMinimumMaximum",
+        "jakartaValidationAnnotations",
     )
 
     private fun setupGithubApiTestEnv(validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations) {

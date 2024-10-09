@@ -36,7 +36,7 @@ class KtorControllerInterfaceGeneratorTest {
         "pathLevelParameters",
         "parameterNameClash",
         "requestBodyAsArray",
-        "longMinimumMaximum"
+        "jakartaValidationAnnotations",
     )
 
     private fun setupGithubApiTestEnv() {

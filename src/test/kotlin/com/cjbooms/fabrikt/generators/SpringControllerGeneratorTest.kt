@@ -37,7 +37,7 @@ class SpringControllerGeneratorTest {
         "singleAllOf",
         "pathLevelParameters",
         "parameterNameClash",
-        "longMinimumMaximum"
+        "jakartaValidationAnnotations",
     )
 
     private fun setupGithubApiTestEnv(annotations: ValidationAnnotations = JavaxValidationAnnotations) {
