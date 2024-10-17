@@ -4,6 +4,9 @@ import com.cjbooms.fabrikt.generators.JakartaAnnotations
 import com.cjbooms.fabrikt.generators.JavaxValidationAnnotations
 import com.cjbooms.fabrikt.generators.NoValidationAnnotations
 import com.cjbooms.fabrikt.generators.ValidationAnnotations
+import com.cjbooms.fabrikt.model.SerializationAnnotations
+import com.cjbooms.fabrikt.model.JacksonAnnotations
+import com.cjbooms.fabrikt.model.KotlinxSerializationAnnotations
 
 enum class CodeGenerationType(val description: String) {
     HTTP_MODELS(
@@ -83,6 +86,13 @@ enum class ValidationLibrary(val description: String, val annotations: Validatio
 enum class ExternalReferencesResolutionMode(val description: String) {
     TARGETED("Generate models only for directly referenced schemas in external API files."),
     AGGRESSIVE("Referencing any schema in an external API file triggers generation of every external schema in that file.");
+
+    override fun toString() = "`${super.toString()}` - $description"
+}
+
+enum class SerializationLibrary(val description: String, val serializationAnnotations: SerializationAnnotations) {
+    JACKSON("Use Jackson for serialization and deserialization", JacksonAnnotations),
+    KOTLINX_SERIALIZATION("**!EXPERIMENTAL!** Use kotlinx.serialization for serialization and deserialization", KotlinxSerializationAnnotations);
 
     override fun toString() = "`${super.toString()}` - $description"
 }
