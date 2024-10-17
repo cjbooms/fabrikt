@@ -13,6 +13,7 @@ object MutableSettings {
     private lateinit var typeOverrides: MutableSet<CodeGenTypeOverride>
     private lateinit var validationLibrary: ValidationLibrary
     private lateinit var externalRefResolutionMode: ExternalReferencesResolutionMode
+    private lateinit var serializationLibrary: SerializationLibrary
 
     fun updateSettings(
         genTypes: Set<CodeGenerationType> = emptySet(),
@@ -25,6 +26,7 @@ object MutableSettings {
         typeOverrides: Set<CodeGenTypeOverride> = emptySet(),
         validationLibrary: ValidationLibrary = ValidationLibrary.JAVAX_VALIDATION,
         externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.TARGETED,
+        serializationLibrary: SerializationLibrary = SerializationLibrary.JACKSON,
     ) {
         this.generationTypes = genTypes.toMutableSet()
         this.controllerOptions = controllerOptions.toMutableSet()
@@ -36,6 +38,7 @@ object MutableSettings {
         this.typeOverrides = typeOverrides.toMutableSet()
         this.validationLibrary = validationLibrary
         this.externalRefResolutionMode = externalRefResolutionMode
+        this.serializationLibrary = serializationLibrary
     }
 
     fun addOption(option: ModelCodeGenOptionType) = modelOptions.add(option)
@@ -51,4 +54,5 @@ object MutableSettings {
     fun typeOverrides() = this.typeOverrides.toSet()
     fun validationLibrary() = this.validationLibrary
     fun externalRefResolutionMode() = this.externalRefResolutionMode
+    fun serializationLibrary() = this.serializationLibrary
 }
