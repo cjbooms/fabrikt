@@ -19,6 +19,7 @@ import com.cjbooms.fabrikt.generators.ValidationAnnotations
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.JSON_VALUE
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.basePolymorphicType
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.polymorphicSubTypes
+import com.cjbooms.fabrikt.model.SerializationAnnotations
 import com.cjbooms.fabrikt.model.Destinations.modelsPackage
 import com.cjbooms.fabrikt.model.GeneratedType
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
@@ -43,6 +44,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterface
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSubType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isPolymorphicSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleType
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeyForSchemaName
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeys
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.ModelNameRegistry
@@ -67,13 +69,15 @@ import java.io.Serializable
 import java.net.MalformedURLException
 import java.net.URL
 
-class JacksonModelGenerator(
+class JacksonModelGenerator( // TODO: Rename to ModelGenerator
     private val packages: Packages,
     private val sourceApi: SourceApi,
 ) {
     private val options = MutableSettings.modelOptions()
     private val validationAnnotations: ValidationAnnotations = MutableSettings.validationLibrary().annotations
+    private val serializationAnnotations: SerializationAnnotations = MutableSettings.serializationLibrary().serializationAnnotations
     private val externalRefResolutionMode: ExternalReferencesResolutionMode = MutableSettings.externalRefResolutionMode()
+
     companion object {
         fun toModelType(basePackage: String, typeInfo: KotlinTypeInfo, isNullable: Boolean = false): TypeName {
             val className =
@@ -467,6 +471,12 @@ class JacksonModelGenerator(
         for (oneOfInterface in oneOfInterfaces) {
             classBuilder
                 .addSuperinterface(generatedType(packages.base, ModelNameRegistry.getOrRegister(oneOfInterface)))
+
+            // determine the mapping key for this schema as a subtype of the oneOf interface
+            val mappingKey = oneOfInterface.discriminator.mappingKeyForSchemaName(schemaName)
+            if (mappingKey != null) {
+                serializationAnnotations.addSubtypeMappingAnnotation(classBuilder, mappingKey)
+            }
         }
 
         if (!generateObject) {
@@ -484,6 +494,9 @@ class JacksonModelGenerator(
                 )
             }
         }
+
+        serializationAnnotations.addClassAnnotation(classBuilder)
+
         return classBuilder.build()
     }
 
@@ -530,7 +543,8 @@ class JacksonModelGenerator(
             .addModifiers(KModifier.SEALED)
 
         if (discriminator != null && discriminator.propertyName != null) {
-            interfaceBuilder.addAnnotation(basePolymorphicType(discriminator.propertyName))
+            serializationAnnotations.addClassAnnotation(interfaceBuilder)
+            serializationAnnotations.addBasePolymorphicTypeAnnotation(interfaceBuilder, discriminator.propertyName)
             val membersAndMappingsConsistent = members.all { member ->
                 discriminator.mappings.any { (_, ref) -> ref.endsWith("/${member.name}") }
             }
@@ -544,7 +558,7 @@ class JacksonModelGenerator(
                 .mapValues { (_, value) ->
                     toModelType(packages.base, KotlinTypeInfo.from(value.schema, value.name))
                 }
-            interfaceBuilder.addAnnotation(polymorphicSubTypes(mappings, enumDiscriminator = null))
+            serializationAnnotations.addPolymorphicSubTypesAnnotation(interfaceBuilder, mappings)
         }
 
         for (oneOfSuperInterface in oneOfSuperInterfaces) {
@@ -704,6 +718,7 @@ class JacksonModelGenerator(
                 constructorBuilder = constructorBuilder,
                 classSettings = classType,
                 validationAnnotations = validationAnnotations,
+                serializationAnnotations = serializationAnnotations,
             )
         }
         if (constructorBuilder.parameters.isNotEmpty() && classBuilder.modifiers.isEmpty()) {

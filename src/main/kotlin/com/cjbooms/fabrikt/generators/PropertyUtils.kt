@@ -2,6 +2,8 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.generators.TypeFactory.maybeMakeMapValueNullable
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
+import com.cjbooms.fabrikt.model.SerializationAnnotations
+import com.cjbooms.fabrikt.model.JacksonAnnotations
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PropertyInfo
 import com.squareup.kotlinpoet.AnnotationSpec
@@ -40,6 +42,7 @@ object PropertyUtils {
         constructorBuilder: FunSpec.Builder,
         classSettings: ClassSettings = ClassSettings(ClassSettings.PolymorphyType.NONE),
         validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations,
+        serializationAnnotations: SerializationAnnotations = JacksonAnnotations,
     ) {
         val wrappedType =
             if (classSettings.isMergePatchPattern && !this.isRequired) {
@@ -53,8 +56,11 @@ object PropertyUtils {
         val property = PropertySpec.builder(name, wrappedType)
 
         if (this is PropertyInfo.AdditionalProperties) {
+            if (!serializationAnnotations.supportsAdditionalProperties)
+                return // not all serialization implementations support additional properties
+
             property.initializer(name)
-            property.addAnnotation(JacksonMetadata.ignore)
+            serializationAnnotations.addIgnore(property)
             val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
             constructorParameter.defaultValue("mutableMapOf()")
             constructorBuilder.addParameter(constructorParameter.build())
@@ -66,21 +72,19 @@ object PropertyUtils {
                 } else {
                     parameterizedType
                 }.maybeMakeMapValueNullable()
-            classBuilder.addFunction(
-                FunSpec.builder("get")
-                    .returns(Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), value))
-                    .addStatement("return $name")
-                    .addAnnotation(JacksonMetadata.anyGetter)
-                    .build(),
-            )
-            classBuilder.addFunction(
-                FunSpec.builder("set")
-                    .addParameter("name", String::class)
-                    .addParameter("value", value)
-                    .addStatement("$name[name] = value")
-                    .addAnnotation(JacksonMetadata.anySetter)
-                    .build(),
-            )
+
+            val getterSpecBuilder = FunSpec.builder("get")
+                .returns(Map::class.asTypeName().parameterizedBy(String::class.asTypeName(), value))
+                .addStatement("return $name")
+            serializationAnnotations.addGetter(getterSpecBuilder)
+            classBuilder.addFunction(getterSpecBuilder.build())
+
+            val setterSpecBuilder = FunSpec.builder("set")
+                .addParameter("name", String::class)
+                .addParameter("value", value)
+                .addStatement("$name[name] = value")
+            serializationAnnotations.addSetter(setterSpecBuilder)
+            classBuilder.addFunction(setterSpecBuilder.build())
         } else {
             when (classSettings.polymorphyType) {
                 ClassSettings.PolymorphyType.SUPER -> {
@@ -99,20 +103,20 @@ object PropertyUtils {
                             property.addModifiers(KModifier.OVERRIDE)
                             classBuilder.addSuperclassConstructorParameter(name)
                         }
-                        property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
+                        serializationAnnotations.addParameter(property, oasKey)
                     }
-                    property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
+                    serializationAnnotations.addProperty(property, oasKey)
                     property.addValidationAnnotations(this, validationAnnotations)
                 }
 
                 ClassSettings.PolymorphyType.NONE -> {
-                    property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
-                    property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
+                    serializationAnnotations.addParameter(property, oasKey)
+                    serializationAnnotations.addProperty(property, oasKey)
                     property.addValidationAnnotations(this, validationAnnotations)
                 }
 
                 ClassSettings.PolymorphyType.ONE_OF -> {
-                    property.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
+                    serializationAnnotations.addProperty(property, oasKey)
                     property.addValidationAnnotations(this, validationAnnotations)
                 }
             }
@@ -121,7 +125,7 @@ object PropertyUtils {
                 this as PropertyInfo.Field
                 if (classSettings.polymorphyType in listOf(ClassSettings.PolymorphyType.SUB, ClassSettings.PolymorphyType.ONE_OF)) {
                     property.initializer(name)
-                    property.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
+                    serializationAnnotations.addParameter(property, oasKey)
                     val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
                     val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName)
                     when (val discriminator = discriminators.first()) {
