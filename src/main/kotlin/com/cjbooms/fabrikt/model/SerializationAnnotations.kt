@@ -21,4 +21,5 @@ sealed interface SerializationAnnotations {
     fun addBasePolymorphicTypeAnnotation(typeSpecBuilder: TypeSpec.Builder, propertyName: String): TypeSpec.Builder
     fun addPolymorphicSubTypesAnnotation(typeSpecBuilder: TypeSpec.Builder, mappings: Map<String, TypeName>): TypeSpec.Builder
     fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String): TypeSpec.Builder
+    fun addEnumValueAnnotation(propSpecBuilder: PropertySpec.Builder): PropertySpec.Builder
 }

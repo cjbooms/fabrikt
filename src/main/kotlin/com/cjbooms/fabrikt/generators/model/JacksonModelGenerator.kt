@@ -65,6 +65,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
+import kotlinx.serialization.SerialName
 import java.io.Serializable
 import java.net.MalformedURLException
 import java.net.URL
@@ -401,20 +402,21 @@ class JacksonModelGenerator( // TODO: Rename to ModelGenerator
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
+
         enum.entries.forEach {
             classBuilder.addEnumConstant(
                 it.toEnumName(),
                 TypeSpec.anonymousClassBuilder()
                     .addSuperclassConstructorParameter(CodeBlock.of("\"$it\""))
+                    .addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("%S", it).build())
                     .build(),
             )
         }
-        classBuilder.addProperty(
-            PropertySpec.builder("value", String::class)
-                .addAnnotation(JSON_VALUE)
-                .initializer("value")
-                .build(),
-        )
+
+        val valuePropSpecBuilder = PropertySpec.builder("value", String::class).initializer("value")
+        serializationAnnotations.addEnumValueAnnotation(valuePropSpecBuilder)
+        classBuilder.addProperty(valuePropSpecBuilder.build())
+
         val companion = TypeSpec.companionObjectBuilder()
             .addProperty(
                 PropertySpec.builder("mapping", createMapOfStringToNonNullType(enumType))
@@ -430,6 +432,7 @@ class JacksonModelGenerator( // TODO: Rename to ModelGenerator
                     .build(),
             )
             .build()
+
         return classBuilder.addType(companion).build()
     }
 

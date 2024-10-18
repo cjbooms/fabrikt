@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
+import com.cjbooms.fabrikt.generators.model.JacksonMetadata.JSON_VALUE
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.basePolymorphicType
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.polymorphicSubTypes
 import com.squareup.kotlinpoet.FunSpec
@@ -35,7 +36,9 @@ object JacksonAnnotations : SerializationAnnotations {
     override fun addPolymorphicSubTypesAnnotation(typeSpecBuilder: TypeSpec.Builder, mappings: Map<String, TypeName>) =
         typeSpecBuilder.addAnnotation(polymorphicSubTypes(mappings, enumDiscriminator = null))
 
-    override fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String): TypeSpec.Builder =
     override fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String) =
         typeSpecBuilder
+
+    override fun addEnumValueAnnotation(propSpecBuilder: PropertySpec.Builder) =
+        propSpecBuilder.addAnnotation(JSON_VALUE)
 }

@@ -44,4 +44,8 @@ object KotlinxSerializationAnnotations : SerializationAnnotations {
     override fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String): TypeSpec.Builder {
         return typeSpecBuilder.addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("%S", mapping).build())
     }
+
+    override fun addEnumValueAnnotation(propSpecBuilder: PropertySpec.Builder): PropertySpec.Builder {
+        return propSpecBuilder // not applicable
+    }
 }
