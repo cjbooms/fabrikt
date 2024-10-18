@@ -11,22 +11,22 @@ import com.squareup.kotlinpoet.TypeSpec
 object JacksonAnnotations : SerializationAnnotations {
     override val supportsAdditionalProperties = true
 
-    override fun addIgnore(propertySpecBuilder: PropertySpec.Builder): PropertySpec.Builder =
+    override fun addIgnore(propertySpecBuilder: PropertySpec.Builder) =
         propertySpecBuilder.addAnnotation(JacksonMetadata.ignore)
 
-    override fun addGetter(funSpecBuilder: FunSpec.Builder): FunSpec.Builder =
+    override fun addGetter(funSpecBuilder: FunSpec.Builder) =
         funSpecBuilder.addAnnotation(JacksonMetadata.anyGetter)
 
-    override fun addSetter(funSpecBuilder: FunSpec.Builder): FunSpec.Builder =
+    override fun addSetter(funSpecBuilder: FunSpec.Builder) =
         funSpecBuilder.addAnnotation(JacksonMetadata.anySetter)
 
-    override fun addProperty(propertySpecBuilder: PropertySpec.Builder, oasKey: String): PropertySpec.Builder =
+    override fun addProperty(propertySpecBuilder: PropertySpec.Builder, oasKey: String) =
         propertySpecBuilder.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
 
-    override fun addParameter(propertySpecBuilder: PropertySpec.Builder, oasKey: String): PropertySpec.Builder =
+    override fun addParameter(propertySpecBuilder: PropertySpec.Builder, oasKey: String) =
         propertySpecBuilder.addAnnotation(JacksonMetadata.jacksonParameterAnnotation(oasKey))
 
-    override fun addClassAnnotation(typeSpecBuilder: TypeSpec.Builder): TypeSpec.Builder =
+    override fun addClassAnnotation(typeSpecBuilder: TypeSpec.Builder) =
         typeSpecBuilder
 
     override fun addBasePolymorphicTypeAnnotation(typeSpecBuilder: TypeSpec.Builder, propertyName: String) =
@@ -36,5 +36,6 @@ object JacksonAnnotations : SerializationAnnotations {
         typeSpecBuilder.addAnnotation(polymorphicSubTypes(mappings, enumDiscriminator = null))
 
     override fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String): TypeSpec.Builder =
+    override fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String) =
         typeSpecBuilder
 }
