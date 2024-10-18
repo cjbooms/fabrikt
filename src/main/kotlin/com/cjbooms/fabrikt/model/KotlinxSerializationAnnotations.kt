@@ -16,7 +16,6 @@ object KotlinxSerializationAnnotations : SerializationAnnotations {
      * Currently, the generated code does not support additional properties.
      */
     override val supportsAdditionalProperties = false
-
     override fun addIgnore(propertySpecBuilder: PropertySpec.Builder) =
         propertySpecBuilder // not applicable
 
@@ -41,11 +40,12 @@ object KotlinxSerializationAnnotations : SerializationAnnotations {
     override fun addPolymorphicSubTypesAnnotation(typeSpecBuilder: TypeSpec.Builder, mappings: Map<String, TypeName>) =
         typeSpecBuilder // not applicable
 
-    override fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String): TypeSpec.Builder {
-        return typeSpecBuilder.addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("%S", mapping).build())
-    }
+    override fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String) =
+        typeSpecBuilder.addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("%S", mapping).build())
 
-    override fun addEnumValueAnnotation(propSpecBuilder: PropertySpec.Builder): PropertySpec.Builder {
-        return propSpecBuilder // not applicable
-    }
+    override fun addEnumPropertyAnnotation(propSpecBuilder: PropertySpec.Builder) =
+        propSpecBuilder // not applicable
+
+    override fun addEnumConstantAnnotation(enumSpecBuilder: TypeSpec.Builder, enumValue: String) =
+        enumSpecBuilder.addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("%S", enumValue).build())
 }

@@ -11,7 +11,6 @@ import com.squareup.kotlinpoet.TypeSpec
 
 object JacksonAnnotations : SerializationAnnotations {
     override val supportsAdditionalProperties = true
-
     override fun addIgnore(propertySpecBuilder: PropertySpec.Builder) =
         propertySpecBuilder.addAnnotation(JacksonMetadata.ignore)
 
@@ -39,6 +38,9 @@ object JacksonAnnotations : SerializationAnnotations {
     override fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String) =
         typeSpecBuilder
 
-    override fun addEnumValueAnnotation(propSpecBuilder: PropertySpec.Builder) =
+    override fun addEnumPropertyAnnotation(propSpecBuilder: PropertySpec.Builder) =
         propSpecBuilder.addAnnotation(JSON_VALUE)
+
+    override fun addEnumConstantAnnotation(enumSpecBuilder: TypeSpec.Builder, enumValue: String) =
+        enumSpecBuilder // not applicable
 }

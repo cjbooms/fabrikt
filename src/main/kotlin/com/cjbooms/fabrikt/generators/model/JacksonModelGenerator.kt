@@ -16,7 +16,6 @@ import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfStringToType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfMapsStringToStringType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfStringToType
 import com.cjbooms.fabrikt.generators.ValidationAnnotations
-import com.cjbooms.fabrikt.generators.model.JacksonMetadata.JSON_VALUE
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.basePolymorphicType
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.polymorphicSubTypes
 import com.cjbooms.fabrikt.model.SerializationAnnotations
@@ -65,7 +64,6 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
-import kotlinx.serialization.SerialName
 import java.io.Serializable
 import java.net.MalformedURLException
 import java.net.URL
@@ -404,17 +402,17 @@ class JacksonModelGenerator( // TODO: Rename to ModelGenerator
             .addMicronautReflectionAnnotation()
 
         enum.entries.forEach {
+            val enumConstantBuilder = TypeSpec.anonymousClassBuilder()
+                .addSuperclassConstructorParameter(CodeBlock.of("\"$it\""))
+            serializationAnnotations.addEnumConstantAnnotation(enumConstantBuilder, it)
             classBuilder.addEnumConstant(
                 it.toEnumName(),
-                TypeSpec.anonymousClassBuilder()
-                    .addSuperclassConstructorParameter(CodeBlock.of("\"$it\""))
-                    .addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("%S", it).build())
-                    .build(),
+                enumConstantBuilder.build(),
             )
         }
 
         val valuePropSpecBuilder = PropertySpec.builder("value", String::class).initializer("value")
-        serializationAnnotations.addEnumValueAnnotation(valuePropSpecBuilder)
+        serializationAnnotations.addEnumPropertyAnnotation(valuePropSpecBuilder)
         classBuilder.addProperty(valuePropSpecBuilder.build())
 
         val companion = TypeSpec.companionObjectBuilder()
