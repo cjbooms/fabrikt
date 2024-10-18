@@ -56,6 +56,7 @@ dependencies {
     implementation("com.reprezen.jsonoverlay:jsonoverlay:4.0.4")
     implementation("com.squareup:kotlinpoet:1.14.2") { exclude(module = "kotlin-stdlib-jre7") }
     implementation("com.google.flogger:flogger:0.7.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")

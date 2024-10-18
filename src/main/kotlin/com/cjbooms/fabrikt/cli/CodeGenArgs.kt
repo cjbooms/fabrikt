@@ -153,6 +153,13 @@ class CodeGenArgs {
         converter = ExternalReferencesResolutionModeConverter::class
     )
     var externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.TARGETED
+
+    @Parameter(
+        names = ["--serialization-library"],
+        description = "Specify which serialization library to use for annotations in generated model classes. Default: JACKSON",
+        converter = SerializationLibraryOptionConverter::class
+    )
+    var serializationLibrary: SerializationLibrary = SerializationLibrary.JACKSON
 }
 
 class CodeGenerationTypesConverter : IStringConverter<CodeGenerationType> {
@@ -191,6 +198,10 @@ class TypeCodeGenOptionsConverter: IStringConverter<CodeGenTypeOverride> {
 
 class ExternalReferencesResolutionModeConverter: IStringConverter<ExternalReferencesResolutionMode> {
     override fun convert(value: String): ExternalReferencesResolutionMode = convertToEnumValue(value)
+}
+
+class SerializationLibraryOptionConverter : IStringConverter<SerializationLibrary> {
+    override fun convert(value: String): SerializationLibrary = convertToEnumValue(value)
 }
 
 class PackageNameValidator : IValueValidator<String> {
