@@ -27,11 +27,13 @@ components:
           type: string
         model:
           type: string
+          format: uuid
     Pet:
       type: object
       required:
         - id
         - name
+        - dateOfBirth
       properties:
         id:
           type: integer
@@ -40,6 +42,18 @@ components:
           type: string
         tag:
           type: string
+        dateOfBirth:
+          type: string
+          format: date
+        lastFedAt:
+          type: string
+          format: date-time
+        earTagUuid:
+          type: string
+          format: uuid
+        imageUrl:
+          type: string
+          format: uri
     Pets:
       type: array
       maxItems: 100

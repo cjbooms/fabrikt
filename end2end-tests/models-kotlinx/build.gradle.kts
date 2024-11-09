@@ -20,6 +20,8 @@ java {
 
 val jacksonVersion: String by rootProject.extra
 val junitVersion: String by rootProject.extra
+val kotlinxSerializationVersion: String by rootProject.extra
+val kotlinxDateTimeVersion: String by rootProject.extra
 
 dependencies {
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
@@ -28,7 +30,8 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDateTimeVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
