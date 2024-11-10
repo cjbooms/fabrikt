@@ -92,7 +92,7 @@ enum class ExternalReferencesResolutionMode(val description: String) {
 
 enum class SerializationLibrary(val description: String, val serializationAnnotations: SerializationAnnotations) {
     JACKSON("Use Jackson for serialization and deserialization", JacksonAnnotations),
-    KOTLINX_SERIALIZATION("**!EXPERIMENTAL!** Use kotlinx.serialization for serialization and deserialization", KotlinxSerializationAnnotations);
+    KOTLINX_SERIALIZATION("Use kotlinx.serialization for serialization and deserialization", KotlinxSerializationAnnotations);
 
     override fun toString() = "`${super.toString()}` - $description"
 }
