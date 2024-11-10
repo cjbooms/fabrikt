@@ -34,37 +34,8 @@ class KotlinSerializationModelGeneratorTest {
 
     @Suppress("unused")
     private fun testCases(): Stream<String> = Stream.of(
-//        "arrays",
-//        "anyOfOneOfAllOf",
-//        "deepNestedSharingReferences",
-//        "defaultValues",
-//        "duplicatePropertyHandling",
-//        "enumExamples",
-//        "enumPolymorphicDiscriminator",
-//        "externalReferences/targeted",
         "githubApi",
-//        "inLinedObject",
-//        "customExtensions",
-//        "mapExamples",
-//        "mapExamplesNonNullValues",
-//        "mixingCamelSnakeLispCase",
-//        "oneOfPolymorphicModels",
-//        "optionalVsRequired",
-//        "polymorphicModels",
-//        "nestedPolymorphicModels",
-//        "requiredReadOnly",
-//        "validationAnnotations",
-//        "wildCardTypes",
-//        "singleAllOf",
-//        "inlinedAggregatedObjects",
-//        "responsesSchema",
-//        "webhook",
-//        "instantDateTime",
         "discriminatedOneOf",
-//        "openapi310",
-//        "binary",
-//        "oneOfMarkerInterface",
-//        "byteArrayStream",
     )
 
     @BeforeEach
@@ -83,18 +54,8 @@ class KotlinSerializationModelGeneratorTest {
     @MethodSource("testCases")
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         print("Testcase: $testCaseName")
-        MutableSettings.addOption(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS)
-        if (testCaseName == "instantDateTime") {
-            MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
-        }
         if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface") {
             MutableSettings.addOption(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF)
-        }
-        if (testCaseName == "mapExamplesNonNullValues") {
-            MutableSettings.addOption(ModelCodeGenOptionType.NON_NULL_MAP_VALUES)
-        }
-        if (testCaseName == "byteArrayStream") {
-            MutableSettings.addOption(CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM)
         }
         val basePackage = "examples.${testCaseName.replace("/", ".")}"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!

@@ -14,6 +14,8 @@ object KotlinxSerializationAnnotations : SerializationAnnotations {
      * research and work due to Any type in the map (val properties: MutableMap<String, Any?>)
      *
      * Currently, the generated code does not support additional properties.
+     *
+     * See also https://github.com/Kotlin/kotlinx.serialization/issues/1978
      */
     override val supportsAdditionalProperties = false
     override fun addIgnore(propertySpecBuilder: PropertySpec.Builder) =

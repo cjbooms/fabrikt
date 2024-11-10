@@ -24,10 +24,10 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
 
     object Text : KotlinTypeInfo(String::class)
     object Date : KotlinTypeInfo(LocalDate::class)
+    object KotlinxLocalDate : KotlinTypeInfo(kotlinx.datetime.LocalDate::class)
     object DateTime : KotlinTypeInfo(OffsetDateTime::class)
     object Instant : KotlinTypeInfo(java.time.Instant::class)
     object KotlinxInstant : KotlinTypeInfo(kotlinx.datetime.Instant::class)
-    object KotlinxLocalDate : KotlinTypeInfo(kotlinx.datetime.LocalDate::class)
     object LocalDateTime : KotlinTypeInfo(java.time.LocalDateTime::class)
     object Double : KotlinTypeInfo(kotlin.Double::class)
     object Float : KotlinTypeInfo(kotlin.Float::class)
@@ -71,7 +71,6 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         fun from(schema: Schema, oasKey: String = "", enclosingSchema: EnclosingSchemaInfo? = null): KotlinTypeInfo =
             when (schema.toOasType(oasKey)) {
                 OasType.Date -> {
-                    // TODO: Discuss if we should these override in a more scalable/elegant way
                     if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) KotlinxLocalDate
                     else Date
                 }

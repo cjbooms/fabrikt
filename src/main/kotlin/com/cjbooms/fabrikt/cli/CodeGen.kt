@@ -69,8 +69,9 @@ object CodeGen {
             clientTarget,
             typeOverrides,
             validationLibrary,
-            externalRefResolutionMode
-        , serializationLibrary)
+            externalRefResolutionMode,
+            serializationLibrary,
+        )
 
         val suppliedApi = pathToApi.toFile().readText()
         val baseDir = pathToApi.parent
