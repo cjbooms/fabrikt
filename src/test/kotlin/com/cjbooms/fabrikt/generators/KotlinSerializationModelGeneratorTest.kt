@@ -42,7 +42,7 @@ class KotlinSerializationModelGeneratorTest {
 //        "enumExamples",
 //        "enumPolymorphicDiscriminator",
 //        "externalReferences/targeted",
-//        "githubApi",
+        "githubApi",
 //        "inLinedObject",
 //        "customExtensions",
 //        "mapExamples",
