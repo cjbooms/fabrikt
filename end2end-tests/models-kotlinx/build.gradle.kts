@@ -18,18 +18,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-val jacksonVersion: String by rootProject.extra
 val junitVersion: String by rootProject.extra
 val kotlinxSerializationVersion: String by rootProject.extra
 val kotlinxDateTimeVersion: String by rootProject.extra
 
 dependencies {
-    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
-    implementation("javax.validation:validation-api:2.0.1.Final")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDateTimeVersion")
 
