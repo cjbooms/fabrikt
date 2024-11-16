@@ -44,6 +44,9 @@ object PropertyUtils {
         validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations,
         serializationAnnotations: SerializationAnnotations = JacksonAnnotations,
     ) {
+        if (this.typeInfo is KotlinTypeInfo.UntypedObject && !serializationAnnotations.supportsAdditionalProperties)
+            throw UnsupportedOperationException("Untyped objects not supported by selected serialization library (${this.oasKey}: ${this.schema})")
+
         val wrappedType =
             if (classSettings.isMergePatchPattern && !this.isRequired) {
                 ClassName(
