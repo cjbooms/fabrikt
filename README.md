@@ -53,6 +53,7 @@ The library currently has support for generating:
 
 * Models
   * **Jackson** annotated **data classes**
+  * **Kotlinx.serialization** annotated **data classes**
 * Clients
   * **OkHttp Client** - with the option for a resilience4j fault-tolerance wrapper
   * **OpenFeign** annotated client interfaces
