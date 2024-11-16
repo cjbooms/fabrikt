@@ -57,7 +57,7 @@ object PropertyUtils {
 
         if (this is PropertyInfo.AdditionalProperties) {
             if (!serializationAnnotations.supportsAdditionalProperties)
-                return // not all serialization implementations support additional properties
+                throw UnsupportedOperationException("Additional properties not supported by selected serialization library")
 
             property.initializer(name)
             serializationAnnotations.addIgnore(property)

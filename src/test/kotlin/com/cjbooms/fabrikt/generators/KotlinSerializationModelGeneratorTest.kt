@@ -1,21 +1,14 @@
 package com.cjbooms.fabrikt.generators
 
-import com.beust.jcommander.ParameterException
-import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary
-import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
 import com.cjbooms.fabrikt.model.KotlinSourceSet
-import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
-import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readFolder
-import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
-import com.squareup.kotlinpoet.FileSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -83,5 +76,17 @@ class KotlinSerializationModelGeneratorTest {
         }
 
         tempDirectory.toFile().deleteRecursively()
+    }
+
+    @Test
+    fun `schemas configured with additionalProperties results in UnsupportedOperationException`() {
+        val basePackage = "examples.additionalProperties"
+        val apiLocation = javaClass.getResource("/examples/additionalProperties/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
+
+        val e = assertThrows<UnsupportedOperationException> {
+            JacksonModelGenerator(Packages(basePackage), sourceApi,).generate()
+        }
+        assertThat(e.message).isEqualTo("Additional properties not supported by selected serialization library")
     }
 }
