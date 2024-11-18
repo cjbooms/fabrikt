@@ -1,0 +1,98 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+servers:
+  - url: http://petstore.swagger.io/v1
+paths: {}
+components:
+  schemas:
+    TransportationDevice:
+      type: object
+      required:
+        - deviceType
+        - make
+        - model
+      properties:
+        deviceType:
+          type: string
+          enum:
+            - bike
+            - skateboard
+            - rollerskates
+            - Ho_ver-boaRD
+        make:
+          type: string
+        model:
+          type: string
+          format: uuid
+    Pet:
+      type: object
+      required:
+        - id
+        - name
+        - dateOfBirth
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        tag:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        lastFedAt:
+          type: string
+          format: date-time
+        earTagUuid:
+          type: string
+          format: uuid
+        imageUrl:
+          type: string
+          format: uri
+    Pets:
+      type: array
+      maxItems: 100
+      items:
+        $ref: "#/components/schemas/Pet"
+    Phone:
+      oneOf:
+        - $ref: "#/components/schemas/LandlinePhone"
+        - $ref: "#/components/schemas/MobilePhone"
+      discriminator:
+        propertyName: type
+        mapping:
+          landline: '#/components/schemas/LandlinePhone'
+          mobile: '#/components/schemas/MobilePhone'
+    LandlinePhone:
+      type: object
+      required:
+        - number
+        - area_code
+      properties:
+        number:
+          type: string
+        area_code:
+          type: string
+    MobilePhone:
+      type: object
+      required:
+        - number
+      properties:
+        number:
+          type: string
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

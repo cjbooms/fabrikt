@@ -53,8 +53,9 @@ The library currently has support for generating:
 
 * Models
   * **Jackson** annotated **data classes**
+  * **Kotlinx.serialization** annotated **data classes**
 * Clients
-  * **OkHttp Client** - with the option for a resilience4j fault-tolerance wrapper
+  * **OkHttp Client (w/ Jackson Models)** - with the option for a resilience4j fault-tolerance wrapper
   * **OpenFeign** annotated client interfaces
 * Controllers
   * **Spring MVC** annotated controller interfaces
@@ -210,6 +211,10 @@ This section documents the available CLI parameters for controlling what gets ge
 |   `--http-model-suffix`       | Specify custom suffix for all generated model classes. Defaults to no suffix. |
 |   `--output-directory`        | Allows the generation dir to be overridden. Defaults to current dir |
 |   `--resources-path`          | Allows the path for generated resources to be overridden. Defaults to `src/main/resources` |
+|   `--serialization-library`   | Specify which serialization library to use for annotations in generated model classes. Default: JACKSON |
+|                               | CHOOSE ONE OF: |
+|                               |   `JACKSON` - Use Jackson for serialization and deserialization |
+|                               |   `KOTLINX_SERIALIZATION` - Use kotlinx.serialization for serialization and deserialization |
 |   `--src-path`                | Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin` |
 |   `--targets`                 | Targets are the parts of the application that you want to be generated. |
 |                               | CHOOSE ANY OF: |

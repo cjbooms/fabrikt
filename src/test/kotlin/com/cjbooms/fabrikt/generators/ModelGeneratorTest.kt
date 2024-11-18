@@ -33,6 +33,7 @@ class ModelGeneratorTest {
 
     @Suppress("unused")
     private fun testCases(): Stream<String> = Stream.of(
+        "additionalProperties",
         "arrays",
         "anyOfOneOfAllOf",
         "deepNestedSharingReferences",
@@ -64,6 +65,7 @@ class ModelGeneratorTest {
         "binary",
         "oneOfMarkerInterface",
         "byteArrayStream",
+        "untypedObject",
     )
 
     @BeforeEach

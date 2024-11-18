@@ -214,6 +214,9 @@ object KaizenParserExtensions {
         }
     }
 
+    fun Discriminator.mappingKeyForSchemaName(schemaName: String): String? =
+        mappings.filter { it.value.endsWith(schemaName) }.keys.firstOrNull()
+
     fun Schema.isInLinedObjectUnderAllOf(): Boolean =
         Overlay.of(this).pathFromRoot
             .splitToSequence("/")

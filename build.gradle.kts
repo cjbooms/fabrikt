@@ -41,6 +41,8 @@ allprojects {
 val jacksonVersion by extra { "2.15.1" }
 val junitVersion by extra { "5.9.2" }
 val ktorVersion by extra { "2.3.9" }
+val kotlinxSerializationVersion by extra { "1.6.3" }
+val kotlinxDateTimeVersion by extra { "0.6.1" }
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -56,6 +58,9 @@ dependencies {
     implementation("com.reprezen.jsonoverlay:jsonoverlay:4.0.4")
     implementation("com.squareup:kotlinpoet:1.14.2") { exclude(module = "kotlin-stdlib-jre7") }
     implementation("com.google.flogger:flogger:0.7.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDateTimeVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")

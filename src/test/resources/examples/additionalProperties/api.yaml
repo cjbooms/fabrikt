@@ -1,0 +1,12 @@
+openapi: 3.0.0
+
+components:
+  schemas:
+    Result:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+      additionalProperties: true
