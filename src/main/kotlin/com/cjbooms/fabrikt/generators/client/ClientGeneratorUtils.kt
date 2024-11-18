@@ -9,7 +9,7 @@ import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleSuccessResponseS
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.OasDefault
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
+import com.cjbooms.fabrikt.generators.model.ModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.HeaderParam
 import com.cjbooms.fabrikt.model.IncomingParameter

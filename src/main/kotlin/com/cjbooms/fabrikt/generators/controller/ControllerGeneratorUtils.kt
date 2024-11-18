@@ -1,6 +1,6 @@
 package com.cjbooms.fabrikt.generators.controller
 
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
+import com.cjbooms.fabrikt.generators.model.ModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase

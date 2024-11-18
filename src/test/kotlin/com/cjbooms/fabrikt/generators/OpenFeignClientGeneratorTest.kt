@@ -6,7 +6,7 @@ import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OpenFeignInterfaceGenerator
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
+import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
@@ -78,7 +78,7 @@ class OpenFeignClientGeneratorTest {
         val expectedModel = readTextResource("/examples/$testCaseName/models/ClientModels.kt")
         val expectedClient = readTextResource("/examples/$testCaseName/client/$clientFileName")
 
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             packages,
             sourceApi,
         ).generate().toSingleFile()
