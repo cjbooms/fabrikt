@@ -68,7 +68,7 @@ import java.io.Serializable
 import java.net.MalformedURLException
 import java.net.URL
 
-class JacksonModelGenerator( // TODO: Rename to ModelGenerator
+class ModelGenerator(
     private val packages: Packages,
     private val sourceApi: SourceApi,
 ) {

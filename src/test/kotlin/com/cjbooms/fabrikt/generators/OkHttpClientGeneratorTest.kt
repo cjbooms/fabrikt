@@ -10,7 +10,7 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OkHttpEnhancedClientGenerator
 import com.cjbooms.fabrikt.generators.client.OkHttpSimpleClientGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
+import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SimpleFile
@@ -62,7 +62,7 @@ class OkHttpClientGeneratorTest {
         val expectedModel = readTextResource("/examples/$testCaseName/models/ClientModels.kt")
         val expectedClient = readTextResource("/examples/$testCaseName/client/ApiClient.kt")
 
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             packages,
             sourceApi
         ).generate().toSingleFile()
@@ -145,7 +145,7 @@ class OkHttpClientGeneratorTest {
             externalRefResolutionMode = ExternalReferencesResolutionMode.AGGRESSIVE,
         )
 
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             packages,
             sourceApi,
         ).generate().toSingleFile()

@@ -1,6 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator.Companion.toModelType
+import com.cjbooms.fabrikt.generators.model.ModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.IncomingParameter
 import com.cjbooms.fabrikt.model.KotlinTypeInfo

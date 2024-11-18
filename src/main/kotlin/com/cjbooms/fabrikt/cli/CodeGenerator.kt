@@ -11,11 +11,10 @@ import com.cjbooms.fabrikt.generators.client.OpenFeignInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
+import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.KotlinSourceSet
-import com.cjbooms.fabrikt.model.KotlinTypes
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.ResourceFile
 import com.cjbooms.fabrikt.model.ResourceSourceSet
@@ -63,7 +62,7 @@ class CodeGenerator(
     private fun resourceSet(resFiles: Collection<ResourceFile>) = setOf(ResourceSourceSet(resFiles, resourcesPath))
 
     private fun models(): Models =
-        JacksonModelGenerator(packages, sourceApi).generate()
+        ModelGenerator(packages, sourceApi).generate()
 
     private fun resources(models: Models): List<ResourceFile> =
         listOfNotNull(QuarkusReflectionModelGenerator(models).generate())

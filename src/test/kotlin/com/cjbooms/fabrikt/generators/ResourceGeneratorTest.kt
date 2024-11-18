@@ -2,7 +2,7 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
+import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
 import com.cjbooms.fabrikt.model.ResourceFile
 import com.cjbooms.fabrikt.model.SourceApi
@@ -43,7 +43,7 @@ class ResourceGeneratorTest {
             genTypes = setOf(CodeGenerationType.QUARKUS_REFLECTION_CONFIG),
         )
 
-        val models = JacksonModelGenerator(Packages(basePackage), sourceApi).generate()
+        val models = ModelGenerator(Packages(basePackage), sourceApi).generate()
 
         val resources = QuarkusReflectionModelGenerator(models).generate()?.toSingleFile()
 

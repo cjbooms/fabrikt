@@ -4,7 +4,7 @@ import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
+import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.model.KotlinSourceSet
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.ModelNameRegistry
@@ -54,7 +54,7 @@ class KotlinSerializationModelGeneratorTest {
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
         val expectedModels = readFolder(Path.of("src/test/resources/examples/$testCaseName/models/kotlinx/"))
 
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             Packages(basePackage),
             sourceApi,
         ).generate()
@@ -85,7 +85,7 @@ class KotlinSerializationModelGeneratorTest {
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
         val e = assertThrows<UnsupportedOperationException> {
-            JacksonModelGenerator(Packages(basePackage), sourceApi,).generate()
+            ModelGenerator(Packages(basePackage), sourceApi,).generate()
         }
         assertThat(e.message).isEqualTo("Additional properties not supported by selected serialization library")
     }
@@ -97,7 +97,7 @@ class KotlinSerializationModelGeneratorTest {
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
         val e = assertThrows<UnsupportedOperationException> {
-            val models = JacksonModelGenerator(Packages(basePackage), sourceApi,).generate()
+            val models = ModelGenerator(Packages(basePackage), sourceApi,).generate()
             val sourceSet = setOf(KotlinSourceSet(models.files, Paths.get("")))
             println(sourceSet)
         }

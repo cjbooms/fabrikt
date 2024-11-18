@@ -6,7 +6,7 @@ import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.model.JacksonModelGenerator
+import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.model.KotlinSourceSet
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
@@ -102,7 +102,7 @@ class ModelGeneratorTest {
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
         val expectedModels = readFolder(Path.of("src/test/resources/examples/$testCaseName/models/"))
 
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             Packages(basePackage),
             sourceApi,
         ).generate()
@@ -137,7 +137,7 @@ class ModelGeneratorTest {
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
         val expectedModels = readFolder(Path.of("src/test/resources/examples/modelSuffix/models/"))
 
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             Packages(basePackage),
             sourceApi,
         ).generate()
@@ -158,7 +158,7 @@ class ModelGeneratorTest {
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
             validationLibrary = ValidationLibrary.JAKARTA_VALIDATION
         )
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
         ).generate()
@@ -179,7 +179,7 @@ class ModelGeneratorTest {
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
             validationLibrary = ValidationLibrary.NO_VALIDATION
         )
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
         ).generate()
@@ -198,7 +198,7 @@ class ModelGeneratorTest {
         MutableSettings.updateSettings(
             modelOptions = setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION),
         )
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
         )
@@ -241,7 +241,7 @@ class ModelGeneratorTest {
     private fun assertExceptionWithMessage(path: String, expectedMessage: String) {
         val spec = readTextResource(path)
         val exception = assertThrows<ParameterException> {
-            JacksonModelGenerator(Packages("blah"), SourceApi(spec))
+            ModelGenerator(Packages("blah"), SourceApi(spec))
                 .generate()
                 .toSingleFile()
         }
@@ -257,7 +257,7 @@ class ModelGeneratorTest {
             modelOptions = setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION),
         )
 
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
         )
@@ -276,7 +276,7 @@ class ModelGeneratorTest {
             modelOptions = setOf(ModelCodeGenOptionType.MICRONAUT_INTROSPECTION),
         )
 
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
         )
@@ -295,7 +295,7 @@ class ModelGeneratorTest {
             modelOptions = setOf(ModelCodeGenOptionType.MICRONAUT_REFLECTION),
         )
 
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
         )
@@ -314,7 +314,7 @@ class ModelGeneratorTest {
             modelOptions = setOf(ModelCodeGenOptionType.INCLUDE_COMPANION_OBJECT),
         )
 
-        val models = JacksonModelGenerator(
+        val models = ModelGenerator(
             Packages(basePackage),
             SourceApi(spec),
         )
