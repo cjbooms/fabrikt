@@ -55,7 +55,7 @@ The library currently has support for generating:
   * **Jackson** annotated **data classes**
   * **Kotlinx.serialization** annotated **data classes**
 * Clients
-  * **OkHttp Client** - with the option for a resilience4j fault-tolerance wrapper
+  * **OkHttp Client (w/ Jackson Models)** - with the option for a resilience4j fault-tolerance wrapper
   * **OpenFeign** annotated client interfaces
 * Controllers
   * **Spring MVC** annotated controller interfaces
