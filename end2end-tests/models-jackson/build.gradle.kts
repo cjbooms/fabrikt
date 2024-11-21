@@ -46,7 +46,8 @@ tasks {
             "--output-directory", generationDir,
             "--base-package", "com.example",
             "--api-file", apiFile,
-            "--targets", "http_models"
+            "--targets", "http_models",
+            "--external-ref-resolution", "TARGETED"
         )
         dependsOn(":jar")
         dependsOn(":shadowJar")
