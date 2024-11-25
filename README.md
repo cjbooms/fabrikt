@@ -170,12 +170,9 @@ The [exec-maven-plugin](http://www.mojohaus.org/exec-maven-plugin/examples/examp
 ## Getting the Most from Fabrikt
 
 ### 1. Prefer components to inline schemas
-
 While inline schemas are perfectly valid they are not supported by Fabrikt in all circumstances.
 This is especially true for request bodies and non-trivial parameters. Instead, define your schemas in the
-components section of the OpenAPI spec (`components.parameters` & `components.requestBodies`).
-
-(https://github.com/cjbooms/fabrikt/issues/187, https://github.com/cjbooms/fabrikt/issues/20)
+components section of the OpenAPI spec (`components.parameters` & `components.requestBodies`). [#20](https://github.com/cjbooms/fabrikt/issues/20), [#187](https://github.com/cjbooms/fabrikt/issues/187)
 
 ### 2. Use `oneOf` with discriminator for polymorphism
 `oneOf` along with the flag `SEALED_INTERFACES_FOR_ONE_OF` will generate polymorphic models with sealed interfaces.
