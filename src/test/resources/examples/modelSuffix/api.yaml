@@ -1,5 +1,46 @@
 openapi: 3.0.0
+
+paths:
+  /example:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/ModeParameter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RootType'
+    post:
+      requestBody:
+        $ref: '#/components/requestBodies/CreateRootTypeRequestBody'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RootType'
+
 components:
+  parameters:
+    ModeParameter:
+      name: mode
+      in: query
+      required: true
+      schema:
+        type: string
+        enum:
+          - mode1
+          - mode2
+          - mode3
+  requestBodies:
+    CreateRootTypeRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RootType'
   schemas:
     # Deep nested polymorphism
     RootDiscriminator:

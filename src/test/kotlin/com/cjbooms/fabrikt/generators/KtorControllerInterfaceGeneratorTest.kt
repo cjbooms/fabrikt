@@ -37,6 +37,7 @@ class KtorControllerInterfaceGeneratorTest {
         "parameterNameClash",
         "requestBodyAsArray",
         "jakartaValidationAnnotations",
+        "modelSuffix",
     )
 
     private fun setupGithubApiTestEnv() {
@@ -65,6 +66,10 @@ class KtorControllerInterfaceGeneratorTest {
         val basePackage = "examples.$testCaseName"
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
         val expectedControllers = readTextResource("/examples/$testCaseName/controllers/ktor/Controllers.kt")
+
+        if (testCaseName == "modelSuffix") {
+            MutableSettings.updateSettings(modelSuffix = "Dto")
+        }
 
         val ktorControllers = KtorControllerInterfaceGenerator(
             Packages(basePackage),
