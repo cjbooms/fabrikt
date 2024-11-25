@@ -38,6 +38,7 @@ class SpringControllerGeneratorTest {
         "pathLevelParameters",
         "parameterNameClash",
         "jakartaValidationAnnotations",
+        "modelSuffix",
     )
 
     private fun setupGithubApiTestEnv(annotations: ValidationAnnotations = JavaxValidationAnnotations) {
@@ -60,6 +61,10 @@ class SpringControllerGeneratorTest {
         val basePackage = "examples.$testCaseName"
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
         val expectedControllers = readTextResource("/examples/$testCaseName/controllers/spring/Controllers.kt")
+
+        if (testCaseName == "modelSuffix") {
+            MutableSettings.updateSettings(modelSuffix = "Dto")
+        }
 
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),

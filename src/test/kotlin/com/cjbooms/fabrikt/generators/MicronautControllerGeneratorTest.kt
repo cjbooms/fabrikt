@@ -39,6 +39,7 @@ class MicronautControllerGeneratorTest {
         "pathLevelParameters",
         "parameterNameClash",
         "jakartaValidationAnnotations",
+        "modelSuffix",
     )
 
     private fun setupGithubApiTestEnv(validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations) {
@@ -64,6 +65,10 @@ class MicronautControllerGeneratorTest {
         val basePackage = "examples.$testCaseName"
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
         val expectedControllers = readTextResource("/examples/$testCaseName/controllers/micronaut/Controllers.kt")
+
+        if (testCaseName == "modelSuffix") {
+            MutableSettings.updateSettings(modelSuffix = "Dto")
+        }
 
         val controllers = MicronautControllerInterfaceGenerator(
             Packages(basePackage),
