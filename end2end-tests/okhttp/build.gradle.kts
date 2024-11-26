@@ -9,7 +9,7 @@ sourceSets {
 }
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.8.20" // Apply the Kotlin JVM plugin to add support for Kotlin.
+    kotlin("jvm")
 }
 
 java {
