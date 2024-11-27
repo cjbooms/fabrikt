@@ -10,6 +10,7 @@
   * [Gradle w/ custom task](#gradle-w-custom-task)
   * [Gradle w/ plugin](#gradle-w-plugin)
   * [Maven](#maven)
+* [Getting the Most from Fabrikt](#getting-the-most-from-fabrikt)
 * [Configuration Options](#configuration-options)
 * [Building Locally](#building-locally)
 * [Publishing](#publishing)
@@ -165,6 +166,17 @@ fabrikt {
 ### Maven
 
 The [exec-maven-plugin](http://www.mojohaus.org/exec-maven-plugin/examples/example-exec-using-plugin-dependencies.html) is capable of downloading the Fabrikt library from Maven Central and executing its main method with defined arguments.
+
+## Getting the Most from Fabrikt
+
+### 1. Prefer components to inline schemas
+While inline schemas are perfectly valid they are not supported by Fabrikt in all circumstances.
+This is especially true for request bodies and non-trivial parameters. Instead, define your schemas in the
+components section of the OpenAPI spec (`components.parameters` & `components.requestBodies`). [#20](https://github.com/cjbooms/fabrikt/issues/20), [#187](https://github.com/cjbooms/fabrikt/issues/187)
+
+### 2. Use `oneOf` with discriminator for polymorphism
+`oneOf` along with the flag `SEALED_INTERFACES_FOR_ONE_OF` will generate polymorphic models with sealed interfaces.
+The `discriminator` property is used by Fabrikt to determine the subtypes to be generated.
 
 ## Configuration Options
 

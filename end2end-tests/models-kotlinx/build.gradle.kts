@@ -9,8 +9,8 @@ sourceSets {
 }
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.8.20" // Apply the Kotlin JVM plugin to add support for Kotlin.
-    kotlin("plugin.serialization") version "1.8.20"
+    kotlin("jvm")
+    kotlin("plugin.serialization") version "2.0.20"
 }
 
 java {
