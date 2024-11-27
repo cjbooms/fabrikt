@@ -59,6 +59,7 @@ components:
       maxItems: 100
       items:
         $ref: "#/components/schemas/Pet"
+    # Polymorphic type with type as discriminator
     Phone:
       oneOf:
         - $ref: "#/components/schemas/LandlinePhone"
@@ -91,6 +92,59 @@ components:
           type: string
         number:
           type: string
+    # Polymorphic type with moduleType as discriminator
+    Module:
+      oneOf:
+        - $ref: "#/components/schemas/ModuleA"
+        - $ref: "#/components/schemas/ModuleB"
+      discriminator:
+        propertyName: moduleType
+        mapping:
+          a: '#/components/schemas/ModuleA'
+          b: '#/components/schemas/ModuleB'
+    ModuleA:
+      type: object
+      required:
+          - moduleType
+      properties:
+        moduleType:
+          type: string
+    ModuleB:
+      type: object
+      required:
+        - moduleType
+      properties:
+        moduleType:
+          type: string
+    # Polymorphic type with enum as discriminator
+    State:
+      oneOf:
+        - $ref: "#/components/schemas/StateA"
+        - $ref: "#/components/schemas/StateB"
+      discriminator:
+        propertyName: status
+        mapping:
+          a: '#/components/schemas/StateA'
+          b: '#/components/schemas/StateB'
+    StateA:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/Status'
+    StateB:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/Status'
+    Status:
+      type: string
+      enum:
+        - a
+        - b
     Error:
       type: object
       required:

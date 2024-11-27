@@ -1,14 +1,19 @@
 package com.cjbooms.fabrikt.model
 
 import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 object KotlinxSerializationAnnotations : SerializationAnnotations {
+    private const val DEFAULT_JSON_CLASS_DISCRIMINATOR = "type"
+
     /**
      * Polymorphic class discriminators are added as annotations in kotlinx serialization.
      * Including them in the class definition causes compilation errors since the property name
@@ -44,8 +49,18 @@ object KotlinxSerializationAnnotations : SerializationAnnotations {
     override fun addClassAnnotation(typeSpecBuilder: TypeSpec.Builder) =
         typeSpecBuilder.addAnnotation(AnnotationSpec.builder(Serializable::class).build())
 
+    @OptIn(ExperimentalSerializationApi::class)
     override fun addBasePolymorphicTypeAnnotation(typeSpecBuilder: TypeSpec.Builder, propertyName: String) =
-        typeSpecBuilder // not applicable
+        if (propertyName != DEFAULT_JSON_CLASS_DISCRIMINATOR) {
+            typeSpecBuilder.addAnnotation(
+                AnnotationSpec.builder(JsonClassDiscriminator::class).addMember("%S", propertyName).build()
+            )
+            val experimentalSerializationApiAnnotation = AnnotationSpec.builder(
+                // necessary because ExperimentalSerializationApi "can only be used as an annotation or as an argument to @OptIn"
+                ClassName("kotlinx.serialization", "ExperimentalSerializationApi")
+            ).build()
+            typeSpecBuilder.addAnnotation(experimentalSerializationApiAnnotation)
+        } else typeSpecBuilder
 
     override fun addPolymorphicSubTypesAnnotation(typeSpecBuilder: TypeSpec.Builder, mappings: Map<String, TypeName>) =
         typeSpecBuilder // not applicable
