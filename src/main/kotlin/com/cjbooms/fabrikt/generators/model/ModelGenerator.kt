@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.ClassSettings
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toObjectTypeSpec
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.PropertyUtils.addToClass
 import com.cjbooms.fabrikt.generators.PropertyUtils.isNullable
@@ -498,7 +499,14 @@ class ModelGenerator(
 
         serializationAnnotations.addClassAnnotation(classBuilder)
 
-        return classBuilder.build()
+        val classTypeSpec = classBuilder.build()
+
+        return if (classBuilder.propertySpecs.isNotEmpty()) {
+            classTypeSpec
+        } else {
+            // properties have been filtered out in generation process so return an object instead
+            classTypeSpec.toObjectTypeSpec()
+        }
     }
 
     private fun polymorphicSuperSubType(
