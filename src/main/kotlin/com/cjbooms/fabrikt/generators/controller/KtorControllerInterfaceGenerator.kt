@@ -136,18 +136,6 @@ class KtorControllerInterfaceGenerator(
             builder.addParameter(param.toParameterSpecBuilder().build())
         }
 
-        val securityOption = operation.securitySupport(globalSecurity)
-        val addAuth = securityOption.allowsAuthenticated && options.contains(ControllerCodeGenOptionType.AUTHENTICATION)
-        if (addAuth) {
-            builder.addParameter(
-                "principal",
-                ClassName(
-                    "io.ktor.server.auth",
-                    "Principal"
-                ).copy(nullable = securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL)
-            ).build()
-        }
-
         builder.addKdoc(buildControllerFunKdoc(operation, params))
 
         if (operation.happyPathResponse(packages.base).isUnit()) {
@@ -204,28 +192,6 @@ class KtorControllerInterfaceGenerator(
             )
             .indent()
 
-        if (addAuth) {
-            if (securityOption == SecuritySupport.AUTHENTICATION_OPTIONAL) {
-                builder
-                    .addStatement(
-                        "val principal = %M.%M<%T>()",
-                        MemberName("io.ktor.server.application", "call"),
-                        MemberName("io.ktor.server.auth", "principal", isExtension = true),
-                        ClassName("io.ktor.server.auth", "Principal")
-                    )
-            } else {
-                builder
-                    .addStatement(
-                        "val principal = %M.%M<%T>() ?: throw %M(%S)", // should not happen as authenticate { ... } ensures principal is present
-                        MemberName("io.ktor.server.application", "call"),
-                        MemberName("io.ktor.server.auth", "principal", isExtension = true),
-                        ClassName("io.ktor.server.auth", "Principal"),
-                        MemberName("kotlin", "IllegalStateException"),
-                        "Principal not found"
-                    )
-            }
-        }
-
         pathParams.forEach { param ->
             builder.addStatement(
                 "val ${param.name} = %M.parameters.%M<${param.type}>(\"${param.originalName}\")",
@@ -276,8 +242,6 @@ class KtorControllerInterfaceGenerator(
 
         val methodParameters =
             listOf(headerParams, pathParams, queryParams, bodyParams).asSequence().flatten().map { it.name }
-                .plus(if (addAuth) "principal" else null)
-                .filterNotNull()
                 .joinToString(", ")
 
         if (operation.happyPathResponse(packages.base).isUnit()) {

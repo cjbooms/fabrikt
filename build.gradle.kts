@@ -40,7 +40,7 @@ allprojects {
 
 val jacksonVersion by extra { "2.15.1" }
 val junitVersion by extra { "5.9.2" }
-val ktorVersion by extra { "2.3.9" }
+val ktorVersion by extra { "3.0.1" }
 val kotlinxSerializationVersion by extra { "1.7.3" }
 val kotlinxDateTimeVersion by extra { "0.6.1" }
 

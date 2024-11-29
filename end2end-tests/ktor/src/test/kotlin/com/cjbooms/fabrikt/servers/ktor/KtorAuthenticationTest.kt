@@ -41,10 +41,9 @@ class KtorAuthenticationTest {
                     optionalRoutes(object : OptionalController {
                         override suspend fun testPath(
                             testString: String,
-                            principal: Principal?,
                             call: ApplicationCall
                         ) {
-                            principalCaptureSlot.captured = principal as? UserIdPrincipal
+                            principalCaptureSlot.captured = call.principal<UserIdPrincipal>()
                             call.respond(HttpStatusCode.OK)
                         }
                     })
@@ -70,10 +69,9 @@ class KtorAuthenticationTest {
                     optionalRoutes(object : OptionalController {
                         override suspend fun testPath(
                             testString: String,
-                            principal: Principal?,
                             call: ApplicationCall
                         ) {
-                            principalCaptureSlot.captured = principal as? UserIdPrincipal
+                            principalCaptureSlot.captured = call.principal<UserIdPrincipal>()
                             call.respond(HttpStatusCode.OK)
                         }
                     })
@@ -97,8 +95,8 @@ class KtorAuthenticationTest {
 
                 routing {
                     requiredRoutes(object : RequiredController {
-                        override suspend fun testPath(testString: String, principal: Principal, call: ApplicationCall) {
-                            principalCaptureSlot.captured = principal as UserIdPrincipal
+                        override suspend fun testPath(testString: String, call: ApplicationCall) {
+                            principalCaptureSlot.captured = call.principal<UserIdPrincipal>()
                             call.respond(HttpStatusCode.OK)
                         }
                     })
@@ -122,8 +120,8 @@ class KtorAuthenticationTest {
 
                 routing {
                     requiredRoutes(object : RequiredController {
-                        override suspend fun testPath(testString: String, principal: Principal, call: ApplicationCall) {
-                            principalCaptureSlot.captured = principal as UserIdPrincipal // should not get called
+                        override suspend fun testPath(testString: String, call: ApplicationCall) {
+                            principalCaptureSlot.captured = call.principal<UserIdPrincipal>() // should not get called
                             call.respond(HttpStatusCode.OK)
                         }
                     })
@@ -170,8 +168,8 @@ class KtorAuthenticationTest {
 
                 routing {
                     defaultRoutes(object : DefaultController {
-                        override suspend fun testPath(testString: String, principal: Principal, call: ApplicationCall) {
-                            principalCaptureSlot.captured = principal as UserIdPrincipal
+                        override suspend fun testPath(testString: String, call: ApplicationCall) {
+                            principalCaptureSlot.captured = call.principal<UserIdPrincipal>()
                             call.respond(HttpStatusCode.OK)
                         }
                     })

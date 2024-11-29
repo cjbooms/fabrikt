@@ -5,9 +5,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.Principal
 import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.principal
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
 import io.ktor.server.response.respond
@@ -17,7 +15,6 @@ import io.ktor.server.util.getOrFail
 import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
-import kotlin.IllegalStateException
 import kotlin.String
 import kotlin.Suppress
 
@@ -29,11 +26,7 @@ public interface RequiredController {
      * @param testString
      * @param call The Ktor application call
      */
-    public suspend fun testPath(
-        testString: String,
-        principal: Principal,
-        call: ApplicationCall,
-    )
+    public suspend fun testPath(testString: String, call: ApplicationCall)
 
     public companion object {
         /**
@@ -44,10 +37,8 @@ public interface RequiredController {
         public fun Route.requiredRoutes(controller: RequiredController) {
             authenticate("BasicAuth", "BearerAuth", optional = false) {
                 `get`("/required") {
-                    val principal = call.principal<Principal>() ?: throw
-                        IllegalStateException("Principal not found")
                     val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                    controller.testPath(testString, principal, call)
+                    controller.testPath(testString, call)
                 }
             }
         }
@@ -151,11 +142,7 @@ public interface OptionalController {
      * @param testString
      * @param call The Ktor application call
      */
-    public suspend fun testPath(
-        testString: String,
-        principal: Principal?,
-        call: ApplicationCall,
-    )
+    public suspend fun testPath(testString: String, call: ApplicationCall)
 
     public companion object {
         /**
@@ -166,9 +153,8 @@ public interface OptionalController {
         public fun Route.optionalRoutes(controller: OptionalController) {
             authenticate("BasicAuth", optional = true) {
                 `get`("/optional") {
-                    val principal = call.principal<Principal>()
                     val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                    controller.testPath(testString, principal, call)
+                    controller.testPath(testString, call)
                 }
             }
         }
@@ -272,11 +258,7 @@ public interface DefaultController {
      * @param testString
      * @param call The Ktor application call
      */
-    public suspend fun testPath(
-        testString: String,
-        principal: Principal,
-        call: ApplicationCall,
-    )
+    public suspend fun testPath(testString: String, call: ApplicationCall)
 
     public companion object {
         /**
@@ -287,10 +269,8 @@ public interface DefaultController {
         public fun Route.defaultRoutes(controller: DefaultController) {
             authenticate("basicAuth", optional = false) {
                 `get`("/default") {
-                    val principal = call.principal<Principal>() ?: throw
-                        IllegalStateException("Principal not found")
                     val testString = call.request.queryParameters.getOrFail<kotlin.String>("testString")
-                    controller.testPath(testString, principal, call)
+                    controller.testPath(testString, call)
                 }
             }
         }
