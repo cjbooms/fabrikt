@@ -62,6 +62,7 @@ class ModelGeneratorTest {
         "instantDateTime",
         "discriminatedOneOf",
         "openapi310",
+        "openapi310OptionalObject",
         "binary",
         "oneOfMarkerInterface",
         "byteArrayStream",

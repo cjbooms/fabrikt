@@ -1,0 +1,16 @@
+openapi: 3.1.0
+components:
+  schemas:
+    NullableObject:
+      type: object
+      properties:
+        field:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/TheObject'
+    TheObject:
+      required:
+        - name
+      properties:
+        name:
+          type: string
