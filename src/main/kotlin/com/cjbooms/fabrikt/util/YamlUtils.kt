@@ -77,6 +77,13 @@ object YamlUtils {
                         (node as ObjectNode).replace("type", nonNullType)
                         requiresNullable = true
                     }
+                    if (key == "oneOf" && maybeTypeArray.isArray && maybeTypeArray.size() == 2 && maybeTypeArray.any { it.isObject && it.has("type") && it.get("type") == NULL_TYPE }) {
+                        val nonNullOption = maybeTypeArray.first { !it.has("type") || it.get("type") != NULL_TYPE }
+                        (node as ObjectNode).putArray("allOf")
+                        (node.get("allOf") as ArrayNode).insert(0, nonNullOption)
+                        node.remove("oneOf")
+                        requiresNullable = true
+                    }
                     downgradeNullableSyntax(maybeTypeArray)
                 }
                 if (requiresNullable) {
