@@ -15,7 +15,7 @@ public enum class EnumHolderInlinedExtensibleEnum(
 
   public companion object {
     private val mapping: Map<String, EnumHolderInlinedExtensibleEnum> =
-        values().associateBy(EnumHolderInlinedExtensibleEnum::value)
+        entries.associateBy(EnumHolderInlinedExtensibleEnum::value)
 
     public fun fromValue(`value`: String): EnumHolderInlinedExtensibleEnum? = mapping[value]
   }

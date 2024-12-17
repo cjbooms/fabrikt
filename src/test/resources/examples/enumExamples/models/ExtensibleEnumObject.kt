@@ -14,7 +14,7 @@ public enum class ExtensibleEnumObject(
 
   public companion object {
     private val mapping: Map<String, ExtensibleEnumObject> =
-        values().associateBy(ExtensibleEnumObject::value)
+        entries.associateBy(ExtensibleEnumObject::value)
 
     public fun fromValue(`value`: String): ExtensibleEnumObject? = mapping[value]
   }

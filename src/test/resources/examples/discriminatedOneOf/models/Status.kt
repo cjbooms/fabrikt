@@ -13,7 +13,7 @@ public enum class Status(
   ;
 
   public companion object {
-    private val mapping: Map<String, Status> = values().associateBy(Status::value)
+    private val mapping: Map<String, Status> = entries.associateBy(Status::value)
 
     public fun fromValue(`value`: String): Status? = mapping[value]
   }

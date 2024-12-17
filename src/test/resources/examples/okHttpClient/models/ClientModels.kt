@@ -55,7 +55,7 @@ public enum class ContentModelType(
 
     public companion object {
         private val mapping: Map<String, ContentModelType> =
-            values().associateBy(ContentModelType::value)
+            entries.associateBy(ContentModelType::value)
 
         public fun fromValue(`value`: String): ContentModelType? = mapping[value]
     }
@@ -71,7 +71,7 @@ public enum class ContentThirdAttr(
 
     public companion object {
         private val mapping: Map<String, ContentThirdAttr> =
-            values().associateBy(ContentThirdAttr::value)
+            entries.associateBy(ContentThirdAttr::value)
 
         public fun fromValue(`value`: String): ContentThirdAttr? = mapping[value]
     }

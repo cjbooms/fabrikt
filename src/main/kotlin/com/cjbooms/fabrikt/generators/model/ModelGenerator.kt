@@ -418,7 +418,7 @@ class ModelGenerator(
         val companion = TypeSpec.companionObjectBuilder()
             .addProperty(
                 PropertySpec.builder("mapping", createMapOfStringToNonNullType(enumType))
-                    .initializer("values().associateBy(%T::value)", enumType)
+                    .initializer("entries.associateBy(%T::value)", enumType)
                     .addModifiers(KModifier.PRIVATE)
                     .build(),
             )

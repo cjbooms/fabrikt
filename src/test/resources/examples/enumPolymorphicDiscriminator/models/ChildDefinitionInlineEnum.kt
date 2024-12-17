@@ -15,7 +15,7 @@ public enum class ChildDefinitionInlineEnum(
 
   public companion object {
     private val mapping: Map<String, ChildDefinitionInlineEnum> =
-        values().associateBy(ChildDefinitionInlineEnum::value)
+        entries.associateBy(ChildDefinitionInlineEnum::value)
 
     public fun fromValue(`value`: String): ChildDefinitionInlineEnum? = mapping[value]
   }

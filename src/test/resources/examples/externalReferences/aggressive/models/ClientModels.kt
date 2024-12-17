@@ -86,7 +86,7 @@ public enum class ExternalObjectThreeEnum(
 
     public companion object {
         private val mapping: Map<String, ExternalObjectThreeEnum> =
-            values().associateBy(ExternalObjectThreeEnum::value)
+            entries.associateBy(ExternalObjectThreeEnum::value)
 
         public fun fromValue(`value`: String): ExternalObjectThreeEnum? = mapping[value]
     }
@@ -120,7 +120,7 @@ public enum class ExternalParameter(
 
     public companion object {
         private val mapping: Map<String, ExternalParameter> =
-            values().associateBy(ExternalParameter::value)
+            entries.associateBy(ExternalParameter::value)
 
         public fun fromValue(`value`: String): ExternalParameter? = mapping[value]
     }

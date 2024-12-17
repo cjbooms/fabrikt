@@ -14,7 +14,7 @@ public enum class EnumHolderArrayOfEnums(
 
   public companion object {
     private val mapping: Map<String, EnumHolderArrayOfEnums> =
-        values().associateBy(EnumHolderArrayOfEnums::value)
+        entries.associateBy(EnumHolderArrayOfEnums::value)
 
     public fun fromValue(`value`: String): EnumHolderArrayOfEnums? = mapping[value]
   }

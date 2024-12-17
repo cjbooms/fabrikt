@@ -14,7 +14,7 @@ public enum class OrganisationStatus(
 
   public companion object {
     private val mapping: Map<String, OrganisationStatus> =
-        values().associateBy(OrganisationStatus::value)
+        entries.associateBy(OrganisationStatus::value)
 
     public fun fromValue(`value`: String): OrganisationStatus? = mapping[value]
   }

@@ -14,7 +14,7 @@ public enum class StateBMode(
   ;
 
   public companion object {
-    private val mapping: Map<String, StateBMode> = values().associateBy(StateBMode::value)
+    private val mapping: Map<String, StateBMode> = entries.associateBy(StateBMode::value)
 
     public fun fromValue(`value`: String): StateBMode? = mapping[value]
   }

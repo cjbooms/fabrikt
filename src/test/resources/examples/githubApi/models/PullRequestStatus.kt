@@ -14,7 +14,7 @@ public enum class PullRequestStatus(
 
   public companion object {
     private val mapping: Map<String, PullRequestStatus> =
-        values().associateBy(PullRequestStatus::value)
+        entries.associateBy(PullRequestStatus::value)
 
     public fun fromValue(`value`: String): PullRequestStatus? = mapping[value]
   }

@@ -13,7 +13,7 @@ public enum class RootDiscriminator(
 
   public companion object {
     private val mapping: Map<String, RootDiscriminator> =
-        values().associateBy(RootDiscriminator::value)
+        entries.associateBy(RootDiscriminator::value)
 
     public fun fromValue(`value`: String): RootDiscriminator? = mapping[value]
   }

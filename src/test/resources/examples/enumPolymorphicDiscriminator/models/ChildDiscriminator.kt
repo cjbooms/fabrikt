@@ -16,7 +16,7 @@ public enum class ChildDiscriminator(
 
   public companion object {
     private val mapping: Map<String, ChildDiscriminator> =
-        values().associateBy(ChildDiscriminator::value)
+        entries.associateBy(ChildDiscriminator::value)
 
     public fun fromValue(`value`: String): ChildDiscriminator? = mapping[value]
   }
