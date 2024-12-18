@@ -15,7 +15,7 @@ public enum class StatusQueryParam(
 
   public companion object {
     private val mapping: Map<String, StatusQueryParam> =
-        values().associateBy(StatusQueryParam::value)
+        entries.associateBy(StatusQueryParam::value)
 
     public fun fromValue(`value`: String): StatusQueryParam? = mapping[value]
   }

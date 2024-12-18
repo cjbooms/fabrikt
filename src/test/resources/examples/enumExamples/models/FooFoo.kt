@@ -13,7 +13,7 @@ public enum class FooFoo(
   ;
 
   public companion object {
-    private val mapping: Map<String, FooFoo> = values().associateBy(FooFoo::value)
+    private val mapping: Map<String, FooFoo> = entries.associateBy(FooFoo::value)
 
     public fun fromValue(`value`: String): FooFoo? = mapping[value]
   }

@@ -15,7 +15,7 @@ public enum class EnumHolderDtoInlinedEnumDto(
 
   public companion object {
     private val mapping: Map<String, EnumHolderDtoInlinedEnumDto> =
-        values().associateBy(EnumHolderDtoInlinedEnumDto::value)
+        entries.associateBy(EnumHolderDtoInlinedEnumDto::value)
 
     public fun fromValue(`value`: String): EnumHolderDtoInlinedEnumDto? = mapping[value]
   }

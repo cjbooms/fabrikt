@@ -14,7 +14,7 @@ public enum class FooBarsDtoFooDto(
 
   public companion object {
     private val mapping: Map<String, FooBarsDtoFooDto> =
-        values().associateBy(FooBarsDtoFooDto::value)
+        entries.associateBy(FooBarsDtoFooDto::value)
 
     public fun fromValue(`value`: String): FooBarsDtoFooDto? = mapping[value]
   }

@@ -74,7 +74,7 @@ public enum class DogBreed(
     ;
 
     public companion object {
-        private val mapping: Map<String, DogBreed> = values().associateBy(DogBreed::value)
+        private val mapping: Map<String, DogBreed> = entries.associateBy(DogBreed::value)
 
         public fun fromValue(`value`: String): DogBreed? = mapping[value]
     }

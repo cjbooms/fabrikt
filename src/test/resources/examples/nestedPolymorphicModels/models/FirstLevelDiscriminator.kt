@@ -14,7 +14,7 @@ public enum class FirstLevelDiscriminator(
 
   public companion object {
     private val mapping: Map<String, FirstLevelDiscriminator> =
-        values().associateBy(FirstLevelDiscriminator::value)
+        entries.associateBy(FirstLevelDiscriminator::value)
 
     public fun fromValue(`value`: String): FirstLevelDiscriminator? = mapping[value]
   }

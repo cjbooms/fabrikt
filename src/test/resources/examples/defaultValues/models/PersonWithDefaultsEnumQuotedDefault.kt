@@ -14,7 +14,7 @@ public enum class PersonWithDefaultsEnumQuotedDefault(
 
   public companion object {
     private val mapping: Map<String, PersonWithDefaultsEnumQuotedDefault> =
-        values().associateBy(PersonWithDefaultsEnumQuotedDefault::value)
+        entries.associateBy(PersonWithDefaultsEnumQuotedDefault::value)
 
     public fun fromValue(`value`: String): PersonWithDefaultsEnumQuotedDefault? = mapping[value]
   }

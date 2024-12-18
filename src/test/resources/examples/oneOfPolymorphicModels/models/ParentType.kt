@@ -13,7 +13,7 @@ public enum class ParentType(
   ;
 
   public companion object {
-    private val mapping: Map<String, ParentType> = values().associateBy(ParentType::value)
+    private val mapping: Map<String, ParentType> = entries.associateBy(ParentType::value)
 
     public fun fromValue(`value`: String): ParentType? = mapping[value]
   }

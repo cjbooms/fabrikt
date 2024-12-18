@@ -15,7 +15,7 @@ public enum class ModeParameterDto(
 
   public companion object {
     private val mapping: Map<String, ModeParameterDto> =
-        values().associateBy(ModeParameterDto::value)
+        entries.associateBy(ModeParameterDto::value)
 
     public fun fromValue(`value`: String): ModeParameterDto? = mapping[value]
   }

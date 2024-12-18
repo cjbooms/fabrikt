@@ -14,7 +14,7 @@ public enum class RepositoryVisibility(
 
   public companion object {
     private val mapping: Map<String, RepositoryVisibility> =
-        values().associateBy(RepositoryVisibility::value)
+        entries.associateBy(RepositoryVisibility::value)
 
     public fun fromValue(`value`: String): RepositoryVisibility? = mapping[value]
   }

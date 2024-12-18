@@ -14,7 +14,7 @@ public enum class ContentType(
   ;
 
   public companion object {
-    private val mapping: Map<String, ContentType> = values().associateBy(ContentType::value)
+    private val mapping: Map<String, ContentType> = entries.associateBy(ContentType::value)
 
     public fun fromValue(`value`: String): ContentType? = mapping[value]
   }

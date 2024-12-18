@@ -15,7 +15,7 @@ public enum class ExternalObjectThreeEnum(
 
   public companion object {
     private val mapping: Map<String, ExternalObjectThreeEnum> =
-        values().associateBy(ExternalObjectThreeEnum::value)
+        entries.associateBy(ExternalObjectThreeEnum::value)
 
     public fun fromValue(`value`: String): ExternalObjectThreeEnum? = mapping[value]
   }

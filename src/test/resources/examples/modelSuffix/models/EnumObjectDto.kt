@@ -17,7 +17,7 @@ public enum class EnumObjectDto(
   ;
 
   public companion object {
-    private val mapping: Map<String, EnumObjectDto> = values().associateBy(EnumObjectDto::value)
+    private val mapping: Map<String, EnumObjectDto> = entries.associateBy(EnumObjectDto::value)
 
     public fun fromValue(`value`: String): EnumObjectDto? = mapping[value]
   }
