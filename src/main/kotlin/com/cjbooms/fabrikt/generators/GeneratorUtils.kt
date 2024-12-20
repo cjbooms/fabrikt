@@ -219,4 +219,33 @@ object GeneratorUtils {
     }
 
     private fun isNullable(parameter: Parameter): Boolean = !parameter.isRequired && parameter.schema.default == null
+
+    /**
+     * Converts a TypeSpec to an object by copying over all properties, functions, etc.
+     */
+    fun TypeSpec.toObjectTypeSpec(): TypeSpec {
+        require(name != null) { "Name must be set to convert to object" }
+
+        val objectBuilder = TypeSpec.objectBuilder(name!!)
+            .addAnnotations(annotations)
+            .addModifiers(modifiers)
+            .superclass(superclass)
+            .addProperties(propertySpecs)
+            .addFunctions(funSpecs)
+            .addKdoc(kdoc)
+
+        for ((typeName, _) in superinterfaces) {
+            objectBuilder.addSuperinterface(typeName)
+        }
+
+        if (initializerBlock.isNotEmpty()) {
+            objectBuilder.addInitializerBlock(initializerBlock)
+        }
+
+        for (nestedType in typeSpecs) {
+            objectBuilder.addType(nestedType)
+        }
+
+        return objectBuilder.build()
+    }
 }

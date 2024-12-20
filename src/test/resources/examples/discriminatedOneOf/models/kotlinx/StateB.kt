@@ -10,7 +10,4 @@ public data class StateB(
   @SerialName("mode")
   @get:NotNull
   public val mode: StateBMode,
-  @SerialName("status")
-  @get:NotNull
-  public val status: Status = Status.B,
 ) : State

@@ -127,18 +127,22 @@ object PropertyUtils {
             if (isDiscriminatorFieldWithSingleKnownValue(classSettings, schemaName)) {
                 this as PropertyInfo.Field
                 if (classSettings.polymorphyType in listOf(ClassSettings.PolymorphyType.SUB, ClassSettings.PolymorphyType.ONE_OF)) {
-                    property.initializer(name)
-                    serializationAnnotations.addParameter(property, oasKey)
-                    val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
-                    val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName)
-                    when (val discriminator = discriminators.first()) {
-                        is PropertyInfo.DiscriminatorKey.EnumKey ->
-                            constructorParameter.defaultValue("%T.%L", wrappedType, discriminator.enumKey)
+                    if (!serializationAnnotations.supportsBackingPropertyForDiscriminator) {
+                        return // Skip adding the property to the class
+                    } else {
+                        property.initializer(name)
+                        serializationAnnotations.addParameter(property, oasKey)
+                        val constructorParameter: ParameterSpec.Builder = ParameterSpec.builder(name, wrappedType)
+                        val discriminators = maybeDiscriminator.getDiscriminatorMappings(schemaName)
+                        when (val discriminator = discriminators.first()) {
+                            is PropertyInfo.DiscriminatorKey.EnumKey ->
+                                constructorParameter.defaultValue("%T.%L", wrappedType, discriminator.enumKey)
 
-                        is PropertyInfo.DiscriminatorKey.StringKey ->
-                            constructorParameter.defaultValue("%S", discriminator.stringValue)
+                            is PropertyInfo.DiscriminatorKey.StringKey ->
+                                constructorParameter.defaultValue("%S", discriminator.stringValue)
+                        }
+                        constructorBuilder.addParameter(constructorParameter.build())
                     }
-                    constructorBuilder.addParameter(constructorParameter.build())
                 }
             } else {
                 property.initializer(name)

@@ -71,9 +71,12 @@ components:
     LandlinePhone:
       type: object
       required:
+        - type
         - number
         - area_code
       properties:
+        type:
+          type: string
         number:
           type: string
         area_code:
@@ -81,8 +84,11 @@ components:
     MobilePhone:
       type: object
       required:
+        - type
         - number
       properties:
+        type:
+          type: string
         number:
           type: string
     Error:
