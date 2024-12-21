@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.cli.MemberVisibility
 import com.cjbooms.fabrikt.generators.TypeFactory.maybeMakeMapValueNullable
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.SerializationAnnotations
@@ -43,6 +44,7 @@ object PropertyUtils {
         classSettings: ClassSettings = ClassSettings(ClassSettings.PolymorphyType.NONE),
         validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations,
         serializationAnnotations: SerializationAnnotations = JacksonAnnotations,
+        memberVisibility: MemberVisibility
     ) {
         if (this.typeInfo is KotlinTypeInfo.UntypedObject && !serializationAnnotations.supportsAdditionalProperties)
             throw UnsupportedOperationException("Untyped objects not supported by selected serialization library (${this.oasKey}: ${this.schema})")
@@ -171,6 +173,10 @@ object PropertyUtils {
                 }
                 constructorBuilder.addParameter(constructorParameter.build())
             }
+        }
+
+        if (memberVisibility == MemberVisibility.INTERNAL) {
+            property.addModifiers(KModifier.INTERNAL)
         }
 
         classBuilder.addProperty(property.build())

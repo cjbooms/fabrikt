@@ -96,3 +96,8 @@ enum class SerializationLibrary(val description: String, val serializationAnnota
 
     override fun toString() = "`${super.toString()}` - $description"
 }
+
+enum class MemberVisibility(val description: String) {
+    PUBLIC("Generate models with public visibility"),
+    INTERNAL("Generate models with internal visibility")
+}

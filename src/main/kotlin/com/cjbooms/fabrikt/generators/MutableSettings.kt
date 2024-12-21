@@ -14,6 +14,7 @@ object MutableSettings {
     private lateinit var validationLibrary: ValidationLibrary
     private lateinit var externalRefResolutionMode: ExternalReferencesResolutionMode
     private lateinit var serializationLibrary: SerializationLibrary
+    private lateinit var memberVisibility: MemberVisibility
 
     fun updateSettings(
         genTypes: Set<CodeGenerationType> = emptySet(),
@@ -27,6 +28,7 @@ object MutableSettings {
         validationLibrary: ValidationLibrary = ValidationLibrary.JAVAX_VALIDATION,
         externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.TARGETED,
         serializationLibrary: SerializationLibrary = SerializationLibrary.JACKSON,
+        generatedMemberVisibility: MemberVisibility = MemberVisibility.PUBLIC
     ) {
         this.generationTypes = genTypes.toMutableSet()
         this.controllerOptions = controllerOptions.toMutableSet()
@@ -39,11 +41,12 @@ object MutableSettings {
         this.validationLibrary = validationLibrary
         this.externalRefResolutionMode = externalRefResolutionMode
         this.serializationLibrary = serializationLibrary
+        this.memberVisibility = generatedMemberVisibility
     }
 
     fun addOption(option: ModelCodeGenOptionType) = modelOptions.add(option)
     fun addOption(override: CodeGenTypeOverride) = typeOverrides.add(override)
-
+    fun addOption(visibility: MemberVisibility) { memberVisibility = visibility }
     fun generationTypes() = this.generationTypes.toSet()
     fun controllerOptions() = this.controllerOptions.toSet()
     fun controllerTarget() = this.controllerTarget
@@ -55,4 +58,5 @@ object MutableSettings {
     fun validationLibrary() = this.validationLibrary
     fun externalRefResolutionMode() = this.externalRefResolutionMode
     fun serializationLibrary() = this.serializationLibrary
+    fun memberVisibility() = this.memberVisibility
 }

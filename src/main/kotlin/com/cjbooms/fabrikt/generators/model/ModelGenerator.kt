@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.generators.model
 
 import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
+import com.cjbooms.fabrikt.cli.MemberVisibility
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF
 import com.cjbooms.fabrikt.configurations.Packages
@@ -77,6 +78,7 @@ class ModelGenerator(
     private val validationAnnotations: ValidationAnnotations = MutableSettings.validationLibrary().annotations
     private val serializationAnnotations: SerializationAnnotations = MutableSettings.serializationLibrary().serializationAnnotations
     private val externalRefResolutionMode: ExternalReferencesResolutionMode = MutableSettings.externalRefResolutionMode()
+    private val memberVisibility = MutableSettings.memberVisibility()
 
     companion object {
         fun toModelType(basePackage: String, typeInfo: KotlinTypeInfo, isNullable: Boolean = false): TypeName {
@@ -401,6 +403,7 @@ class ModelGenerator(
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
+            .addVisibility()
 
         enum.entries.forEach {
             val enumConstantBuilder = TypeSpec.anonymousClassBuilder()
@@ -413,6 +416,7 @@ class ModelGenerator(
         }
 
         val valuePropSpecBuilder = PropertySpec.builder("value", String::class).initializer("value")
+            .addVisibility()
         serializationAnnotations.addEnumPropertyAnnotation(valuePropSpecBuilder)
         classBuilder.addProperty(valuePropSpecBuilder.build())
 
@@ -426,10 +430,12 @@ class ModelGenerator(
             .addFunction(
                 FunSpec.builder("fromValue")
                     .addParameter(ParameterSpec.builder("value", String::class).build())
+                    .addVisibility()
                     .returns(enumType.copy(nullable = true))
                     .addStatement("return mapping[value]")
                     .build(),
             )
+            .addVisibility()
             .build()
 
         return classBuilder.addType(companion).build()
@@ -470,6 +476,8 @@ class ModelGenerator(
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
             .addCompanionObject()
+            .addVisibility()
+
         for (oneOfInterface in oneOfInterfaces) {
             classBuilder
                 .addSuperinterface(generatedType(packages.base, ModelNameRegistry.getOrRegister(oneOfInterface)))
@@ -578,6 +586,7 @@ class ModelGenerator(
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
+            .addVisibility()
 
         return interfaceBuilder.build()
     }
@@ -728,6 +737,7 @@ class ModelGenerator(
                 classSettings = classType,
                 validationAnnotations = validationAnnotations,
                 serializationAnnotations = serializationAnnotations,
+                memberVisibility = memberVisibility
             )
         }
         if (constructorBuilder.parameters.isNotEmpty() && classBuilder.modifiers.isEmpty()) {
@@ -794,6 +804,14 @@ class ModelGenerator(
         return this
     }
 
+    private fun TypeSpec.Builder.addVisibility(): TypeSpec.Builder {
+        if (memberVisibility == MemberVisibility.INTERNAL) {
+            this.addModifiers(KModifier.INTERNAL)
+        }
+
+        return this
+    }
+
     private fun TypeSpec.Builder.addOptionalAnnotation(
         optionType: ModelCodeGenOptionType,
         type: ClassName,
@@ -812,4 +830,26 @@ class ModelGenerator(
             ExternalReferencesResolutionMode.TARGETED -> this.filter { apiSchema -> externalReferences.value.contains(apiSchema.name) }
             else -> this
         }
+
+    private fun PropertySpec.Builder.addVisibility(): PropertySpec.Builder {
+        when (memberVisibility) {
+            MemberVisibility.PUBLIC -> this.addModifiers(KModifier.PUBLIC)
+            MemberVisibility.INTERNAL -> this.addModifiers(KModifier.INTERNAL)
+        }
+
+        return this
+    }
+
+    private fun FunSpec.Builder.addVisibility(): FunSpec.Builder {
+        when (memberVisibility) {
+            MemberVisibility.PUBLIC -> this.addModifiers(KModifier.PUBLIC)
+            MemberVisibility.INTERNAL -> this.addModifiers(KModifier.INTERNAL)
+        }
+
+        return this
+    }
+
 }
+
+
+
