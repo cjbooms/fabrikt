@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.generators
 import com.beust.jcommander.ParameterException
 import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.MemberVisibility
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
@@ -67,6 +68,7 @@ class ModelGeneratorTest {
         "oneOfMarkerInterface",
         "byteArrayStream",
         "untypedObject",
+        "internalVisibility"
     )
 
     @BeforeEach
@@ -89,7 +91,7 @@ class ModelGeneratorTest {
         if (testCaseName == "instantDateTime") {
             MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
         }
-        if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface") {
+        if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface" || testCaseName == "internalVisibility") {
             MutableSettings.addOption(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF)
         }
         if (testCaseName == "mapExamplesNonNullValues") {
@@ -97,6 +99,9 @@ class ModelGeneratorTest {
         }
         if (testCaseName == "byteArrayStream") {
             MutableSettings.addOption(CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM)
+        }
+        if (testCaseName == "internalVisibility") {
+            MutableSettings.addOption(MemberVisibility.INTERNAL)
         }
         val basePackage = "examples.${testCaseName.replace("/", ".")}"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
