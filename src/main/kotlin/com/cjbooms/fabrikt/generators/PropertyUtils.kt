@@ -171,9 +171,8 @@ object PropertyUtils {
             }
         }
 
-        when (memberVisibility) {
-            MemberVisibility.PUBLIC -> property.addModifiers(KModifier.PUBLIC)
-            MemberVisibility.INTERNAL -> property.addModifiers(KModifier.INTERNAL)
+        if (memberVisibility == MemberVisibility.INTERNAL) {
+            property.addModifiers(KModifier.INTERNAL)
         }
 
         classBuilder.addProperty(property.build())

@@ -797,10 +797,10 @@ class ModelGenerator(
     }
 
     private fun TypeSpec.Builder.addVisibility(): TypeSpec.Builder {
-        when (memberVisibility) {
-            MemberVisibility.PUBLIC -> this.addModifiers(KModifier.PUBLIC)
-            MemberVisibility.INTERNAL -> this.addModifiers(KModifier.INTERNAL)
+        if (memberVisibility == MemberVisibility.INTERNAL) {
+            this.addModifiers(KModifier.INTERNAL)
         }
+
         return this
     }
 
