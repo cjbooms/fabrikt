@@ -168,12 +168,6 @@ fun main() {
                         }
                         script { unsafe { +"Prism.highlightAll();" } } // trigger syntax highlighting
                     }
-                    call.respondHtmlFragmentDiv {
-                        generatedFiles.forEach {
-                            addFile(it)
-                        }
-                        script { unsafe { +"Prism.highlightAll();" } } // trigger syntax highlighting
-                    }
                 }.onFailure { error ->
                     call.respondHtmlFragmentDiv {
                             fileView("// Error: ${error.message}")
