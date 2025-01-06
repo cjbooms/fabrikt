@@ -33,15 +33,15 @@ fun generateCodeSynchronized(
     MutableSettings.updateSettings(
         genTypes = genTypes,
         controllerOptions = controllerOptions,
-        controllerTarget = controllerTarget ?: ControllerCodeGenTargetType.SPRING, // TODO: Find out where to define defaults
+        controllerTarget = controllerTarget ?: ControllerCodeGenTargetType.default,
         modelOptions = modelOptions,
         modelSuffix = modelSuffix ?: "",
         clientOptions = clientOptions,
-        clientTarget = clientTarget ?: ClientCodeGenTargetType.OK_HTTP,
+        clientTarget = clientTarget ?: ClientCodeGenTargetType.default,
         typeOverrides = typeOverrides,
-        validationLibrary = validationLibrary ?: ValidationLibrary.JAVAX_VALIDATION,
-        externalRefResolutionMode = externalRefResolutionMode ?: ExternalReferencesResolutionMode.TARGETED,
-        serializationLibrary = serializationLibrary ?: SerializationLibrary.JACKSON
+        validationLibrary = validationLibrary ?: ValidationLibrary.default,
+        externalRefResolutionMode = externalRefResolutionMode ?: ExternalReferencesResolutionMode.default,
+        serializationLibrary = serializationLibrary ?: SerializationLibrary.default
     )
 
     val packages = Packages("com.example")

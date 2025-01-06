@@ -54,22 +54,23 @@ fun FlowContent.specForm(prefill: String? = "") = div {
         div("h3 mt3 mb1") { +"Model Options" }
         enumSelectBox("serializationLibrary", SerializationLibrary.values(), SerializationLibrary.JACKSON.name)
         enumCheckboxes("modelOptions", ModelCodeGenOptionType.values())
+        enumSelectBox("serializationLibrary", SerializationLibrary.values(), SerializationLibrary.default.name)
         inputBox("modelSuffix", "Dto")
         enumCheckboxes("typeOverrides", CodeGenTypeOverride.values())
 
         div("h3 mt3 mb1") { +"Client Options" }
-        enumSelectBox("clientTarget", ClientCodeGenTargetType.values(), ClientCodeGenTargetType.OK_HTTP.name)
+        enumSelectBox("clientTarget", ClientCodeGenTargetType.values(), ClientCodeGenTargetType.default.name)
         enumCheckboxes("clientOptions", ClientCodeGenOptionType.values())
 
         div("h3 mt3 mb1") { +"Server Options" }
-        enumSelectBox("controllerTarget", ControllerCodeGenTargetType.values(), ControllerCodeGenTargetType.SPRING.name)
+        enumSelectBox("controllerTarget", ControllerCodeGenTargetType.values(), ControllerCodeGenTargetType.default.name)
         enumCheckboxes("controllerOptions", ControllerCodeGenOptionType.values())
 
         div("h3 mt3 mb1") { +"Validation Options" }
-        enumSelectBox("validationLibrary", ValidationLibrary.values(), ValidationLibrary.JAVAX_VALIDATION.name)
+        enumSelectBox("validationLibrary", ValidationLibrary.values(), ValidationLibrary.default.name)
 
         div("h3 mt3 mb1") { +"External References" }
-        enumSelectBox("externalRefResolutionMode", ExternalReferencesResolutionMode.values(), ExternalReferencesResolutionMode.TARGETED.name)
+        enumSelectBox("externalRefResolutionMode", ExternalReferencesResolutionMode.values(), ExternalReferencesResolutionMode.default.name)
     }
 
     // enable Ace editor and connect with backing field
