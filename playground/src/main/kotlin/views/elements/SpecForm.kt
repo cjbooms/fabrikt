@@ -52,9 +52,8 @@ fun FlowContent.specForm(prefill: String? = "") = div {
         enumCheckboxes("genTypes", CodeGenerationType.values(), setOf(CodeGenerationType.HTTP_MODELS.name))
 
         div("h3 mt3 mb1") { +"Model Options" }
-        enumSelectBox("serializationLibrary", SerializationLibrary.values(), SerializationLibrary.JACKSON.name)
-        enumCheckboxes("modelOptions", ModelCodeGenOptionType.values())
         enumSelectBox("serializationLibrary", SerializationLibrary.values(), SerializationLibrary.default.name)
+        enumCheckboxes("modelOptions", ModelCodeGenOptionType.values(), setOf(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF.name))
         inputBox("modelSuffix", "Dto")
         enumCheckboxes("typeOverrides", CodeGenTypeOverride.values())
 
