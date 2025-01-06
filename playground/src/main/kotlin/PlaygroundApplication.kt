@@ -8,12 +8,18 @@ import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary
 import com.cjbooms.fabrikt.cli.ValidationLibrary
+import com.cjbooms.fabrikt.model.GeneratedFile
+import com.cjbooms.fabrikt.model.KotlinSourceSet
+import com.cjbooms.fabrikt.model.ResourceFile
+import com.cjbooms.fabrikt.model.ResourceSourceSet
+import com.cjbooms.fabrikt.model.SimpleFile
 import data.sampleOpenApiSpec
-import io.ktor.server.application.call
+import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.html.respondHtml
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
@@ -28,7 +34,7 @@ import kotlinx.html.stream.appendHTML
 import kotlinx.html.style
 import kotlinx.html.unsafe
 import lib.generateCodeSynchronized
-import views.addFile
+import views.elements.fileViewForFile
 import views.elements.codeView
 import views.elements.fileView
 import views.elements.specForm
@@ -38,6 +44,8 @@ import views.respondHtmlFragmentDiv
 
 fun main() {
     embeddedServer(Netty, port = System.getenv("PORT")?.toIntOrNull() ?: 8080) {
+        install(CallLogging)
+
         routing {
             staticResources("/static", "static")
 
@@ -158,12 +166,15 @@ fun main() {
                         externalRefResolutionMode,
                     )
                 }.onSuccess { generatedFiles ->
+                    val fileNames = generatedFiles.fileNames()
+
                     call.respondHtmlFragmentDiv {
                         if (generatedFiles.isEmpty()) {
                             fileView("// No files generated. Try adjusting your settings.")
                         } else {
+                            fileList(fileNames)
                             generatedFiles.forEach {
-                                addFile(it)
+                                fileViewForFile(it)
                             }
                         }
                         script { unsafe { +"Prism.highlightAll();" } } // trigger syntax highlighting
@@ -178,3 +189,12 @@ fun main() {
         }
     }.start(wait = true)
 }
+
+private fun List<GeneratedFile>.fileNames(): List<String> = this.map { generatedFile ->
+    when (generatedFile) {
+        is KotlinSourceSet -> generatedFile.files.map { it.name }
+        is SimpleFile -> listOf(generatedFile.path.fileName.toString())
+        is ResourceFile -> listOf(generatedFile.fileName)
+        is ResourceSourceSet -> generatedFile.files.map { it.fileName }
+    }
+}.flatten()

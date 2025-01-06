@@ -18,24 +18,6 @@ The playground is built with these amazing Open Source libraries ♥️
 * [Normalize.css](https://github.com/necolas/normalize.css) for default styling
 * [BassCSS](https://basscss.com/) for utility CSS
 
-## Developing Locally
-
-Use Ktor's Auto Reload feature when developing locally; this way the server is automatically reloaded when you make 
-changes to the code.
-
-In one terminal run:
-```shell
-./gradlew -t :playground:build
-```
-
-In another terminal run:
-```shell
-./gradlew :playground:run
-```
-
-Then point your browser to [http://localhost:8080](http://localhost:8080). The changes you make should now be reflected 
-in the browser as soon as Gradle building the changed files.
-
 ## Building and Deploying
 
 1. Build the jar 
