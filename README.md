@@ -35,10 +35,6 @@ as well as HTTP clients and controllers for a number of popular frameworks (see 
 
 More than just bootstrapping, this library can be permanently integrated into a gradle or maven build and will ensure contract and code always match, even as APIs evolve in complexity. 
 
-The team that built this tool initially contributed to the Kotlin code generation ability in [OpenApiTools](https://github.com/OpenAPITools/openapi-generator), but reached the limits of what could be achieved with template-based generation. This library leverages the rich OpenAPI 3 model provided by [KaiZen-OpenApi-Parser](https://github.com/RepreZen/KaiZen-OpenApi-Parser) and uses [Kotlin Poet](https://square.github.io/kotlinpoet/) to programmatically construct Kotlin classes for maximum flexibility. 
-
-It was built at [Zalando Tech](https://opensource.zalando.com/) and is battle-tested in production there. It is particularly well-suited to API's built according to Zalando's [REST API guidelines](https://opensource.zalando.com/restful-api-guidelines/).
-
 The library is [available on Maven Central](https://search.maven.org/artifact/com.cjbooms/fabrikt) at the following coordinates:
 
 ```xml
@@ -47,6 +43,11 @@ The library is [available on Maven Central](https://search.maven.org/artifact/co
   <artifactId>fabrikt</artifactId>
 </dependency>
 ```
+### Try Fabrikt Online
+
+Try with your own API spec and see how it can help you generate code for your API clients and servers.
+
+Fabrikt Playground (fabrikt.fly.dev)
 
 ## Features
 
