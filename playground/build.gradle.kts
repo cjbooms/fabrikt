@@ -45,3 +45,12 @@ tasks.withType<Jar> {
         attributes["Main-Class"] = "PlaygroundApplicationKt"
     }
 }
+
+tasks.withType<CreateStartScripts> {
+    dependsOn(tasks.shadowJar)
+}
+
+tasks.named("shadowJar") {
+    dependsOn(":shadowJar")
+}
+
