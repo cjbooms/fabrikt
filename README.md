@@ -18,6 +18,12 @@
 
 ---
 
+## Try Fabrikt in the Playground
+
+Try with your own API spec and see how it can help you generate code for your API clients and servers.
+
+[Fabrikt Playground (fabrikt.fly.dev)](https://fabrikt.fly.dev)
+
 ## Introduction
 
 This library was built to take advantage of the complex modeling features available in OpenAPI 3. It generates Kotlin data classes with advanced support for features such as: 
