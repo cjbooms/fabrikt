@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for playground-green-sea-9337 on 2024-12-03T06:55:25+01:00
+# fly.toml app configuration file generated for fabrikt on 2025-01-10T13:45:20+01:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'playground-green-sea-9337'
+app = 'fabrikt' # --> https://fabrikt.fly.dev
 primary_region = 'ams'
 
 [build]
