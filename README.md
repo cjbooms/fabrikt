@@ -18,7 +18,7 @@
 
 ---
 
-## Try Fabrikt in the Playground
+## Try Fabrikt Online
 
 Try with your own API spec and see how it can help you generate code for your API clients and servers.
 
