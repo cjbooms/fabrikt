@@ -35,6 +35,13 @@ as well as HTTP clients and controllers for a number of popular frameworks (see 
 
 More than just bootstrapping, this library can be permanently integrated into your build tool and will ensure contract and code always match, even as APIs evolve in complexity. 
 
+## Try Fabrikt Online
+Try with your own API spec and see how it can help you generate code for your API clients and servers.
+
+Fabrikt Playground (fabrikt.fly.dev)
+
+## Coordinates
+
 The library is [available on Maven Central](https://search.maven.org/artifact/com.cjbooms/fabrikt) at the following coordinates:
 
 ```xml
@@ -43,12 +50,6 @@ The library is [available on Maven Central](https://search.maven.org/artifact/co
   <artifactId>fabrikt</artifactId>
 </dependency>
 ```
-
-### Try Fabrikt Online
-Try with your own API spec and see how it can help you generate code for your API clients and servers.
-
-Fabrikt Playground (fabrikt.fly.dev)
-
 
 ## Features
 
