@@ -34,6 +34,7 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    dependsOn("shadowJar")
 }
 
 kotlin {
