@@ -32,16 +32,12 @@ data class GenerationSettings(
          * Can be used for both query and form parameters.
          */
         fun Parameters.receiveGenerationSettings() = GenerationSettings(
-            genTypes = this.getAll("genTypes")?.map { CodeGenerationType.valueOf(it) }?.toSet() ?: setOf(
-                CodeGenerationType.HTTP_MODELS
-            ),
+            genTypes = this.getAll("genTypes")?.map { CodeGenerationType.valueOf(it) }?.toSet() ?: emptySet(),
 
             serializationLibrary = this["serializationLibrary"]?.let { SerializationLibrary.valueOf(it) }
                 ?: SerializationLibrary.default,
 
-            modelOptions = this.getAll("modelOptions")?.map { ModelCodeGenOptionType.valueOf(it) }?.toSet() ?: setOf(
-                ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF
-            ),
+            modelOptions = this.getAll("modelOptions")?.map { ModelCodeGenOptionType.valueOf(it) }?.toSet() ?: emptySet(),
 
             controllerTarget = this["controllerTarget"]?.let { ControllerCodeGenTargetType.valueOf(it) }
                 ?: ControllerCodeGenTargetType.default,

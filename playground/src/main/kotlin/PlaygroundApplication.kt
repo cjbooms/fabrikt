@@ -49,6 +49,15 @@ fun main() {
             get("/") {
                 val generationSettings = call.queryParameters.receiveGenerationSettings()
                     .copy(inputSpec = sampleOpenApiSpec) // set the sample spec
+                    .run {
+                        // if no settings in query params we configure default
+                        // to ensure something is generated with just the sample spec
+                        if (call.queryParameters.isEmpty()) {
+                            copy(genTypes = setOf(CodeGenerationType.HTTP_MODELS))
+                        } else {
+                            this
+                        }
+                    }
 
                 call.respondHtml {
                     mainLayout {
