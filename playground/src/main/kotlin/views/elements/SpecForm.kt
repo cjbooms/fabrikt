@@ -14,7 +14,6 @@ import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.div
 import kotlinx.html.form
-import kotlinx.html.h2
 import kotlinx.html.hidden
 import kotlinx.html.id
 import kotlinx.html.script
@@ -22,8 +21,9 @@ import kotlinx.html.style
 import kotlinx.html.submitInput
 import kotlinx.html.textArea
 import kotlinx.html.unsafe
+import lib.GenerationSettings
 
-fun FlowContent.specForm(prefill: String? = "") = div {
+fun FlowContent.specForm(settings: GenerationSettings) = div {
     // editor (used by Ace)
     div {
         id = "editor" + ""
@@ -36,7 +36,7 @@ fun FlowContent.specForm(prefill: String? = "") = div {
             id = "spec"
             name = "spec"
             hidden = true
-            +"$prefill"
+            +settings.inputSpec
         }
 
         // submit button
@@ -49,27 +49,27 @@ fun FlowContent.specForm(prefill: String? = "") = div {
 
         // configuration options
         div("h3 mt3 mb1") { +"What to generate" }
-        enumCheckboxes("genTypes", CodeGenerationType.values(), setOf(CodeGenerationType.HTTP_MODELS.name))
+        enumCheckboxes("genTypes", CodeGenerationType.values(), settings.genTypes.map { it.name }.toSet())
 
         div("h3 mt3 mb1") { +"Model Options" }
-        enumSelectBox("serializationLibrary", SerializationLibrary.values(), SerializationLibrary.default.name)
-        enumCheckboxes("modelOptions", ModelCodeGenOptionType.values(), setOf(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF.name))
-        inputBox("modelSuffix", "Dto")
-        enumCheckboxes("typeOverrides", CodeGenTypeOverride.values())
+        enumSelectBox("serializationLibrary", SerializationLibrary.values(), settings.serializationLibrary.name)
+        enumCheckboxes("modelOptions", ModelCodeGenOptionType.values(), settings.modelOptions.map { it.name }.toSet())
+        inputBox("modelSuffix", "Dto", settings.modelSuffix)
+        enumCheckboxes("typeOverrides", CodeGenTypeOverride.values(), settings.typeOverrides.map { it.name }.toSet())
 
         div("h3 mt3 mb1") { +"Client Options" }
-        enumSelectBox("clientTarget", ClientCodeGenTargetType.values(), ClientCodeGenTargetType.default.name)
-        enumCheckboxes("clientOptions", ClientCodeGenOptionType.values())
+        enumSelectBox("clientTarget", ClientCodeGenTargetType.values(), settings.clientTarget.name)
+        enumCheckboxes("clientOptions", ClientCodeGenOptionType.values(), settings.clientOptions.map { it.name }.toSet())
 
         div("h3 mt3 mb1") { +"Server Options" }
-        enumSelectBox("controllerTarget", ControllerCodeGenTargetType.values(), ControllerCodeGenTargetType.default.name)
-        enumCheckboxes("controllerOptions", ControllerCodeGenOptionType.values())
+        enumSelectBox("controllerTarget", ControllerCodeGenTargetType.values(), settings.controllerTarget.name)
+        enumCheckboxes("controllerOptions", ControllerCodeGenOptionType.values(), settings.controllerOptions.map { it.name }.toSet())
 
         div("h3 mt3 mb1") { +"Validation Options" }
-        enumSelectBox("validationLibrary", ValidationLibrary.values(), ValidationLibrary.default.name)
+        enumSelectBox("validationLibrary", ValidationLibrary.values(), settings.validationLibrary.name)
 
         div("h3 mt3 mb1") { +"External References" }
-        enumSelectBox("externalRefResolutionMode", ExternalReferencesResolutionMode.values(), ExternalReferencesResolutionMode.default.name)
+        enumSelectBox("externalRefResolutionMode", ExternalReferencesResolutionMode.values(), settings.externalRefResolutionMode.name)
     }
 
     // enable Ace editor and connect with backing field

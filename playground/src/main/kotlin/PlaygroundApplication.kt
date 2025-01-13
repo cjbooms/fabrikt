@@ -1,13 +1,5 @@
-import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
-import com.cjbooms.fabrikt.cli.ClientCodeGenTargetType
-import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
-import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
-import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
-import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
-import com.cjbooms.fabrikt.cli.SerializationLibrary
-import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.model.GeneratedFile
 import com.cjbooms.fabrikt.model.KotlinSourceSet
 import com.cjbooms.fabrikt.model.ResourceFile
@@ -21,6 +13,7 @@ import io.ktor.server.http.content.staticResources
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.request.receiveParameters
+import io.ktor.server.response.header
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
@@ -34,6 +27,7 @@ import kotlinx.html.stream.appendHTML
 import kotlinx.html.style
 import kotlinx.html.unsafe
 import lib.generateCodeSynchronized
+import lib.GenerationSettings.Companion.receiveGenerationSettings
 import views.elements.fileViewForFile
 import views.elements.codeView
 import views.elements.fileView
@@ -53,13 +47,16 @@ fun main() {
              * GET endpoint to render the playground
              */
             get("/") {
+                val generationSettings = call.queryParameters.receiveGenerationSettings()
+                    .copy(inputSpec = sampleOpenApiSpec) // set the sample spec
+
                 call.respondHtml {
                     mainLayout {
                         columnPanel(
                             flexSizes = listOf(1.0, 1.0, 0.5),
                             // first column
                             {
-                                specForm(sampleOpenApiSpec)
+                                specForm(generationSettings)
                             },
                             // second column
                             {
@@ -93,11 +90,11 @@ fun main() {
              * Loaded via AJAX with HTMX.
              */
             post("/generate") {
-                val body = call.receiveParameters()
+                val generationSettings = call.receiveParameters().receiveGenerationSettings()
 
                 // validate input
-                val inputSpec = body["spec"]
-                if (inputSpec.isNullOrBlank()) {
+                val inputSpec = generationSettings.inputSpec
+                if (inputSpec.isBlank()) {
                     return@post call.respondText {
                         buildString { appendHTML().div {
                             fileView("// Error: No spec provided")
@@ -106,66 +103,12 @@ fun main() {
                     }
                 }
 
-                // parse input
-                val serializationLibraryInput = body["serializationLibrary"]
-                val serializationLibrary: SerializationLibrary? = if (serializationLibraryInput != null) {
-                    SerializationLibrary.valueOf(serializationLibraryInput)
-                } else null
-
-                val genTypes: Set<CodeGenerationType> =
-                    body.getAll("genTypes")?.map { CodeGenerationType.valueOf(it) }?.toSet()
-                        ?: emptySet()
-
-                val modelOptions: Set<ModelCodeGenOptionType> =
-                    body.getAll("modelOptions")?.map { ModelCodeGenOptionType.valueOf(it) }?.toSet() ?: emptySet()
-
-                val controllerTargetInput = body["controllerTarget"]
-                val controllerTarget: ControllerCodeGenTargetType? = if (!controllerTargetInput.isNullOrBlank()) {
-                    ControllerCodeGenTargetType.valueOf(controllerTargetInput)
-                } else null
-
-                val controllerOptions = body.getAll("controllerOptions")?.map{ ControllerCodeGenOptionType.valueOf(it) }?.toSet()
-                    ?: emptySet()
-
-                val modelSuffix = body["modelSuffix"]
-
-                val clientOptions = body.getAll("clientOptions")?.map { ClientCodeGenOptionType.valueOf(it) }?.toSet()
-                    ?: emptySet()
-
-                val clientTargetInput = body["clientTarget"]
-                val clientTarget = if (!clientTargetInput.isNullOrBlank()) {
-                    ClientCodeGenTargetType.valueOf(clientTargetInput)
-                } else null
-
-                val typeOverrides = body.getAll("typeOverrides")?.map { CodeGenTypeOverride.valueOf(it) }?.toSet()
-                    ?: emptySet()
-
-                val validationLibraryInput = body["validationLibrary"]
-                val validationLibrary = if (!validationLibraryInput.isNullOrBlank()) {
-                    ValidationLibrary.valueOf(validationLibraryInput)
-                } else null
-
-                val externalRefResolutionModeInput = body["externalRefResolutionMode"]
-                val externalRefResolutionMode = if (!externalRefResolutionModeInput.isNullOrBlank()) {
-                    ExternalReferencesResolutionMode.valueOf(externalRefResolutionModeInput)
-                } else null
-
                 runCatching {
-                    generateCodeSynchronized(
-                        genTypes,
-                        serializationLibrary,
-                        modelOptions,
-                        controllerTarget,
-                        inputSpec,
-                        controllerOptions,
-                        modelSuffix,
-                        clientOptions,
-                        clientTarget,
-                        typeOverrides,
-                        validationLibrary,
-                        externalRefResolutionMode,
-                    )
+                    generateCodeSynchronized(generationSettings)
                 }.onSuccess { generatedFiles ->
+                    val pathParams: String = generationSettings.toQueryParams()
+                    call.response.header("HX-Replace-Url", "/?$pathParams")
+
                     val fileNames = generatedFiles.fileNames()
 
                     call.respondHtmlFragmentDiv {
