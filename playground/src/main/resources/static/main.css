@@ -52,3 +52,7 @@ a, a:visited, a:hover, a:active {
     width: 100%;
     cursor: pointer;
 }
+
+.htmx-request: {
+    cursor: wait;
+}
