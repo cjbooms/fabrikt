@@ -34,9 +34,10 @@ More than just bootstrapping, this library can be permanently integrated into yo
 
 ### Try Fabrikt Online
 
-Try Fabrikt with your own API spec and see how it can help you generate code for your API clients and servers.
+Try Fabrikt with your own API spec in the [Fabrikt Playground](https://fabrikt.fly.dev) and see how it can help you generate code for your API clients and servers.
 
-[Fabrikt Playground](https://fabrikt.fly.dev)
+<img width="1200" alt="Screenshot 2025-01-14 at 15 34 37" src="https://github.com/user-attachments/assets/c01ed5cd-da1b-4520-80eb-d37130bae202" />
+
 
 ### Coordinates
 
