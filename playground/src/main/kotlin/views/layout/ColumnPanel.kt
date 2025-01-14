@@ -1,10 +1,11 @@
 package views.layout
 
+import kotlinx.html.DIV
 import kotlinx.html.FlowContent
 import kotlinx.html.div
 import kotlinx.html.style
 
-fun FlowContent.columnPanel(flexSizes: List<Double> = listOf(), vararg content: FlowContent.() -> Unit) {
+fun FlowContent.columnPanel(flexSizes: List<Double> = listOf(), vararg content: DIV.() -> Unit) {
     div {
         style = "display: flex; flex-direction: row; height: 100vh; overflow: hidden; position: fixed; width: 100%;"
         content.forEachIndexed { index, it ->

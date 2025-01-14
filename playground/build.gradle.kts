@@ -2,6 +2,7 @@ plugins {
     application
     kotlin("jvm")
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.palantir.git-version") version "3.0.0"
 }
 
 application {
@@ -55,3 +56,35 @@ tasks.named("shadowJar") {
     dependsOn(":shadowJar")
 }
 
+val gitVersion: groovy.lang.Closure<*> by extra
+version = gitVersion.call()
+
+val generatedDir = layout.buildDirectory.dir("generated/version")
+
+tasks.register("generateVersionFile") {
+    val versionCode = gitVersion.call().toString()
+    val outputDir = generatedDir.get().asFile
+    inputs.property("gitVersion", versionCode)
+    outputs.dir(outputDir)
+    doLast {
+        val file = outputDir.resolve("Version.kt")
+        file.parentFile.mkdirs()
+        file.writeText(
+            """
+            object Version {
+                const val GIT_VERSION = "$versionCode"
+            }
+            """.trimIndent()
+        )
+    }
+}
+
+sourceSets {
+    main {
+        java.srcDir(generatedDir)
+    }
+}
+
+tasks.named("compileKotlin") {
+    dependsOn("generateVersionFile")
+}

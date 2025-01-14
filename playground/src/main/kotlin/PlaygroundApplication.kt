@@ -19,6 +19,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import kotlinx.html.a
+import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.h3
 import kotlinx.html.p
@@ -73,17 +74,24 @@ fun main() {
                             },
                             // third column
                             {
-                                h3 {
-                                    style = "margin-top: 0;"
-                                    +"Happy with what you see?"
-                                }
-                                p {
-                                    +"Embed Fabrikt in your project and start generating code from OpenAPI specs today!"
-                                }
-                                p {
-                                    a(href = "https://github.com/cjbooms/fabrikt", target = "_blank") {
-                                        +"Fabrikt on GitHub"
+                                classes = classes + "flex flex-column justify-between"
+                                div {
+                                    h3 {
+                                        style = "margin-top: 0;"
+                                        +"Happy with what you see?"
                                     }
+                                    p {
+                                        +"Embed Fabrikt in your project and start generating code from OpenAPI specs today!"
+                                    }
+                                    p {
+                                        a(href = "https://github.com/cjbooms/fabrikt", target = "_blank") {
+                                            +"Fabrikt on GitHub"
+                                        }
+                                    }
+                                }
+                                div {
+                                    style = "color: #999;"
+                                    +"Fabrikt version: ${Version.GIT_VERSION}"
                                 }
                             }
                         )
