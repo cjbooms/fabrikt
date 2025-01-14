@@ -53,6 +53,6 @@ a, a:visited, a:hover, a:active {
     cursor: pointer;
 }
 
-.htmx-request: {
+.htmx-request {
     cursor: wait;
 }
