@@ -10,6 +10,7 @@
   * [Maven](#maven)
 * [Getting the Most from Fabrikt](#getting-the-most-from-fabrikt)
 * [Configuration Options](#configuration-options)
+* [Original Motivation](#original-motivation)
 * [Building Locally](#building-locally)
 * [Publishing](#publishing)
 * [Specific Features](#specific-features)
@@ -242,6 +243,16 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               |   `JAVAX_VALIDATION` - Use `javax.validation` annotations in generated model classes (default) |
 |                               |   `JAKARTA_VALIDATION` - Use `jakarta.validation` annotations in generated model classes |
 |                               |   `NO_VALIDATION` - Use no validation annotations in generated model classes |
+
+## Original Motivation
+
+The team that built the first version of this tool initially contributed to the Kotlin code generation ability in
+[OpenApiTools](https://github.com/OpenAPITools/openapi-generator), but reached the limits of what could be achieved with
+template-based generation. This library leverages the rich OpenAPI 3 model provided by
+[KaiZen-OpenApi-Parser](https://github.com/RepreZen/KaiZen-OpenApi-Parser) and uses [Kotlin Poet](https://square.github.io/kotlinpoet/) to
+programmatically construct Kotlin classes for maximum flexibility.
+
+The initial version was built at [Zalando Tech](https://opensource.zalando.com/) and is battle-tested in production there
 
 ## Building Locally
 
