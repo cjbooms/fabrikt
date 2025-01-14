@@ -38,6 +38,10 @@ enum class ClientCodeGenTargetType(val description: String) {
     OPEN_FEIGN("Generate OpenFeign client.");
 
     override fun toString() = "`${super.toString()}` - $description"
+
+    companion object {
+        val default = OK_HTTP
+    }
 }
 
 enum class ModelCodeGenOptionType(val description: String) {
@@ -67,6 +71,10 @@ enum class ControllerCodeGenTargetType(val description: String) {
     KTOR("Generate for Ktor server.");
 
     override fun toString() = "`${super.toString()}` - $description"
+
+    companion object {
+        val default = SPRING
+    }
 }
 
 enum class CodeGenTypeOverride(val description: String) {
@@ -81,6 +89,10 @@ enum class ValidationLibrary(val description: String, val annotations: Validatio
     JAKARTA_VALIDATION("Use `jakarta.validation` annotations in generated model classes", JakartaAnnotations),
     NO_VALIDATION("Use no validation annotations in generated model classes", NoValidationAnnotations);
     override fun toString() = "`${super.toString()}` - $description"
+
+    companion object {
+        val default = JAVAX_VALIDATION
+    }
 }
 
 enum class ExternalReferencesResolutionMode(val description: String) {
@@ -88,6 +100,10 @@ enum class ExternalReferencesResolutionMode(val description: String) {
     AGGRESSIVE("Referencing any schema in an external API file triggers generation of every external schema in that file.");
 
     override fun toString() = "`${super.toString()}` - $description"
+
+    companion object {
+        val default = TARGETED
+    }
 }
 
 enum class SerializationLibrary(val description: String, val serializationAnnotations: SerializationAnnotations) {
@@ -95,4 +111,8 @@ enum class SerializationLibrary(val description: String, val serializationAnnota
     KOTLINX_SERIALIZATION("Use kotlinx.serialization for serialization and deserialization", KotlinxSerializationAnnotations);
 
     override fun toString() = "`${super.toString()}` - $description"
+
+    companion object {
+        val default = JACKSON
+    }
 }

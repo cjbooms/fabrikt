@@ -1,0 +1,58 @@
+body {
+    font-family: "Roboto", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 14px;
+}
+
+h1 {
+    font-size: 20px;
+}
+
+h2 {
+    font-size: 18px;
+}
+
+h3 {
+    font-size: 16px;
+}
+
+.ace_editor, .ace_editor div {
+    font-family:monospace;
+    font-size: 14px;
+}
+
+pre {
+    margin-top: 0 !important;
+}
+
+a, a:visited, a:hover, a:active {
+    color: #3BAFDA;
+}
+
+.panel::-webkit-scrollbar {
+    width: 5px;
+}
+
+.panel::-webkit-scrollbar-track {
+    background: #F1F1F1;
+}
+
+.panel::-webkit-scrollbar-thumb {
+    background: #3BAFDA;
+}
+
+.panel::-webkit-scrollbar-thumb:hover {
+    background: #3BAFDA;
+}
+
+.btn-generate {
+    background-color: #3399CC;
+    color: white;
+    width: 100%;
+    cursor: pointer;
+}
+
+.htmx-request {
+    cursor: wait;
+}

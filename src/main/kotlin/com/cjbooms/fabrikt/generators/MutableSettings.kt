@@ -18,15 +18,15 @@ object MutableSettings {
     fun updateSettings(
         genTypes: Set<CodeGenerationType> = emptySet(),
         controllerOptions: Set<ControllerCodeGenOptionType> = emptySet(),
-        controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.SPRING,
+        controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.default,
         modelOptions: Set<ModelCodeGenOptionType> = emptySet(),
         modelSuffix: String = "",
         clientOptions: Set<ClientCodeGenOptionType> = emptySet(),
-        clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.OK_HTTP,
+        clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.default,
         typeOverrides: Set<CodeGenTypeOverride> = emptySet(),
-        validationLibrary: ValidationLibrary = ValidationLibrary.JAVAX_VALIDATION,
-        externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.TARGETED,
-        serializationLibrary: SerializationLibrary = SerializationLibrary.JACKSON,
+        validationLibrary: ValidationLibrary = ValidationLibrary.default,
+        externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.default,
+        serializationLibrary: SerializationLibrary = SerializationLibrary.default,
     ) {
         this.generationTypes = genTypes.toMutableSet()
         this.controllerOptions = controllerOptions.toMutableSet()
