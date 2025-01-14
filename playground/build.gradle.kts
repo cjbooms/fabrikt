@@ -88,3 +88,9 @@ sourceSets {
 tasks.named("compileKotlin") {
     dependsOn("generateVersionFile")
 }
+
+tasks.named("shadowJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class) {
+    archiveBaseName.set("playground")
+    archiveClassifier.set("all")
+    archiveVersion.set("")
+}
