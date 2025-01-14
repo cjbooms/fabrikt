@@ -252,7 +252,7 @@ template-based generation. This library leverages the rich OpenAPI 3 model provi
 [KaiZen-OpenApi-Parser](https://github.com/RepreZen/KaiZen-OpenApi-Parser) and uses [Kotlin Poet](https://square.github.io/kotlinpoet/) to
 programmatically construct Kotlin classes for maximum flexibility.
 
-The initial version was built at [Zalando Tech](https://opensource.zalando.com/) and is battle-tested in production there
+This project was started by engineers from [Zalando Tech](https://opensource.zalando.com/) and is battle-tested heavily in production there.
 
 ## Building Locally
 
