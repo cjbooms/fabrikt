@@ -33,8 +33,8 @@ object JacksonAnnotations : SerializationAnnotations {
     override fun addBasePolymorphicTypeAnnotation(typeSpecBuilder: TypeSpec.Builder, propertyName: String) =
         typeSpecBuilder.addAnnotation(basePolymorphicType(propertyName))
 
-    override fun addPolymorphicSubTypesAnnotation(typeSpecBuilder: TypeSpec.Builder, mappings: Map<String, TypeName>) =
-        typeSpecBuilder.addAnnotation(polymorphicSubTypes(mappings, enumDiscriminator = null))
+    override fun addPolymorphicSubTypesAnnotation(typeSpecBuilder: TypeSpec.Builder, mappings: Map<String, TypeName>, enumDiscriminator: KotlinTypeInfo.Enum?) =
+        typeSpecBuilder.addAnnotation(polymorphicSubTypes(mappings, enumDiscriminator))
 
     override fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String) =
         typeSpecBuilder

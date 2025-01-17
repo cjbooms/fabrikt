@@ -24,7 +24,7 @@ sealed interface SerializationAnnotations {
     fun addParameter(propertySpecBuilder: PropertySpec.Builder, oasKey: String): PropertySpec.Builder
     fun addClassAnnotation(typeSpecBuilder: TypeSpec.Builder): TypeSpec.Builder
     fun addBasePolymorphicTypeAnnotation(typeSpecBuilder: TypeSpec.Builder, propertyName: String): TypeSpec.Builder
-    fun addPolymorphicSubTypesAnnotation(typeSpecBuilder: TypeSpec.Builder, mappings: Map<String, TypeName>): TypeSpec.Builder
+    fun addPolymorphicSubTypesAnnotation(typeSpecBuilder: TypeSpec.Builder, mappings: Map<String, TypeName>, enumDiscriminator: KotlinTypeInfo.Enum?): TypeSpec.Builder
     fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String): TypeSpec.Builder
     fun addEnumPropertyAnnotation(propSpecBuilder: PropertySpec.Builder): PropertySpec.Builder
     fun addEnumConstantAnnotation(enumSpecBuilder: TypeSpec.Builder, enumValue: String): TypeSpec.Builder

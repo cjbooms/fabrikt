@@ -1,11 +1,11 @@
 package com.cjbooms.fabrikt.models.kotlinx
 
-import com.example.models.LandlinePhone
-import com.example.models.Module
-import com.example.models.ModuleA
-import com.example.models.Phone
-import com.example.models.State
-import com.example.models.StateA
+import com.example.discriminatedoneof.models.LandlinePhone
+import com.example.discriminatedoneof.models.Module
+import com.example.discriminatedoneof.models.ModuleA
+import com.example.discriminatedoneof.models.Phone
+import com.example.discriminatedoneof.models.State
+import com.example.discriminatedoneof.models.StateA
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import org.assertj.core.api.Assertions.assertThat

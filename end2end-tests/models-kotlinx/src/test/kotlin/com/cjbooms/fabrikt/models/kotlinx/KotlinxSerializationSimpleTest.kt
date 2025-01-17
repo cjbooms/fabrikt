@@ -1,6 +1,6 @@
 package com.cjbooms.fabrikt.models.kotlinx
 
-import com.example.models.Pet
+import com.example.sample.models.Pet
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.encodeToString

@@ -59,7 +59,6 @@ object JacksonMetadata {
     fun polymorphicSubTypes(typePairs: Map<String, TypeName>, enumDiscriminator: KotlinTypeInfo.Enum?): AnnotationSpec {
         val codeBuilder = CodeBlock.builder()
         typePairs.forEach { (name, type) ->
-            if (codeBuilder.isNotEmpty()) codeBuilder.add(",")
             val maybeSchemaEnumValue = enumDiscriminator?.entries?.firstOrNull {
                 // lowercase to cover UPPER_SNAKE_CASE
                 it.pascalCase() == name || it.toLowerCase().pascalCase() == name

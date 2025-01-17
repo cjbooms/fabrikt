@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.SerializationAnnotations
 import com.cjbooms.fabrikt.model.JacksonAnnotations
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.model.KotlinxSerializationAnnotations
 import com.cjbooms.fabrikt.model.PropertyInfo
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
@@ -43,6 +44,7 @@ object PropertyUtils {
         classSettings: ClassSettings = ClassSettings(ClassSettings.PolymorphyType.NONE),
         validationAnnotations: ValidationAnnotations = JavaxValidationAnnotations,
         serializationAnnotations: SerializationAnnotations = JacksonAnnotations,
+        modifiers: Set<KModifier>,
     ) {
         if (this.typeInfo is KotlinTypeInfo.UntypedObject && !serializationAnnotations.supportsAdditionalProperties)
             throw UnsupportedOperationException("Untyped objects not supported by selected serialization library (${this.oasKey}: ${this.schema})")
@@ -92,10 +94,16 @@ object PropertyUtils {
             when (classSettings.polymorphyType) {
                 ClassSettings.PolymorphyType.SUPER -> {
                     if (this is PropertyInfo.Field && isPolymorphicDiscriminator) {
+                        if (!serializationAnnotations.supportsAdditionalProperties) {
+                            return // Skip adding the property to the class
+                        }
+                        property.addModifiers(KModifier.ABSTRACT)
+                    } else if (serializationAnnotations == KotlinxSerializationAnnotations) {
                         property.addModifiers(KModifier.ABSTRACT)
                     } else {
                         property.addModifiers(KModifier.OPEN)
                     }
+//                    serializationAnnotations.addProperty(property, oasKey)
                 }
 
                 ClassSettings.PolymorphyType.SUB -> {
@@ -108,7 +116,7 @@ object PropertyUtils {
                         }
                         serializationAnnotations.addParameter(property, oasKey)
                     }
-                    serializationAnnotations.addProperty(property, oasKey)
+                        serializationAnnotations.addProperty(property, oasKey)
                     property.addValidationAnnotations(this, validationAnnotations)
                 }
 

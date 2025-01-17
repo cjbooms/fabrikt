@@ -1,0 +1,30 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+servers:
+  - url: http://petstore.swagger.io/v1
+paths: {}
+components:
+  schemas:
+    TransportationDevice:
+      type: object
+      required:
+        - deviceType
+        - make
+        - model
+      properties:
+        deviceType:
+          type: string
+          enum:
+            - bike
+            - skateboard
+            - rollerskates
+            - Ho_ver-boaRD
+        make:
+          type: string
+        model:
+          type: string
+          format: uuid

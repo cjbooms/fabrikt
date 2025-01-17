@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.generators
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary
+import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.model.KotlinSourceSet
@@ -28,13 +29,14 @@ class KotlinSerializationModelGeneratorTest {
     @Suppress("unused")
     private fun testCases(): Stream<String> = Stream.of(
         "discriminatedOneOf",
+        "polymorphicModels",
     )
 
     @BeforeEach
     fun init() {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
-            serializationLibrary = SerializationLibrary.KOTLINX_SERIALIZATION
+            serializationLibrary = SerializationLibrary.KOTLINX_SERIALIZATION,
         )
         ModelNameRegistry.clear()
     }

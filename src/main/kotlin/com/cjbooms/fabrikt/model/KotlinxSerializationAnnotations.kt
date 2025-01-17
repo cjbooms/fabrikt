@@ -62,7 +62,11 @@ object KotlinxSerializationAnnotations : SerializationAnnotations {
             typeSpecBuilder.addAnnotation(experimentalSerializationApiAnnotation)
         } else typeSpecBuilder
 
-    override fun addPolymorphicSubTypesAnnotation(typeSpecBuilder: TypeSpec.Builder, mappings: Map<String, TypeName>) =
+    override fun addPolymorphicSubTypesAnnotation(
+        typeSpecBuilder: TypeSpec.Builder,
+        mappings: Map<String, TypeName>,
+        enumDiscriminator: KotlinTypeInfo.Enum?
+    ): TypeSpec.Builder =
         typeSpecBuilder // not applicable
 
     override fun addSubtypeMappingAnnotation(typeSpecBuilder: TypeSpec.Builder, mapping: String) =

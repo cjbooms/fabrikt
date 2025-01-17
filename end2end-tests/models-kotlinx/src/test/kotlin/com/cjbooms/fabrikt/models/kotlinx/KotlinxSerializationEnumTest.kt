@@ -1,7 +1,7 @@
 package com.cjbooms.fabrikt.models.kotlinx
 
-import com.example.models.TransportationDevice
-import com.example.models.TransportationDeviceDeviceType
+import com.example.enums.models.TransportationDevice
+import com.example.enums.models.TransportationDeviceDeviceType
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -47,7 +47,7 @@ class KotlinxSerializationEnumTest {
         val exception = assertThrows<SerializationException> {
             Json.decodeFromString<TransportationDevice>(json)
         }
-        assertThat(exception.message).isEqualTo("com.example.models.TransportationDeviceDeviceType does not contain element with name 'car' at path \$.deviceType")
+        assertThat(exception.message).isEqualTo("com.example.enums.models.TransportationDeviceDeviceType does not contain element with name 'car' at path $.deviceType")
     }
 
     @Test
@@ -58,7 +58,7 @@ class KotlinxSerializationEnumTest {
         val exception = assertThrows<SerializationException> {
             Json.decodeFromString<TransportationDevice>(json)
         }
-        assertThat(exception.message).contains("Fields [make, model] are required for type with serial name 'com.example.models.TransportationDevice', but they were missing at path: \$")
+        assertThat(exception.message).contains("Fields [make, model] are required for type with serial name 'com.example.enums.models.TransportationDevice', but they were missing at path: \$")
     }
 
     @Test

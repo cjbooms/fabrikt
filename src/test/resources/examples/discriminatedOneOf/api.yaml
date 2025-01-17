@@ -1,19 +1,76 @@
-openapi: 3.0.0
+openapi: "3.0.0"
 info:
-paths:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+servers:
+  - url: http://petstore.swagger.io/v1
+paths: {}
 components:
   schemas:
-    SomeObj:
+    # Polymorphic type with type as discriminator
+    Phone:
+      oneOf:
+        - $ref: "#/components/schemas/LandlinePhone"
+        - $ref: "#/components/schemas/MobilePhone"
+      discriminator:
+        propertyName: type
+        mapping:
+          landline: '#/components/schemas/LandlinePhone'
+          mobile: '#/components/schemas/MobilePhone'
+    LandlinePhone:
       type: object
       required:
-        - state
+        - type
+        - number
+        - area_code
       properties:
-        state:
-          $ref: '#/components/schemas/State'
+        type:
+          type: string
+        number:
+          type: string
+        area_code:
+          type: string
+    MobilePhone:
+      type: object
+      required:
+        - type
+        - number
+      properties:
+        type:
+          type: string
+        number:
+          type: string
+    # Polymorphic type with moduleType as discriminator
+    Module:
+      oneOf:
+        - $ref: "#/components/schemas/ModuleA"
+        - $ref: "#/components/schemas/ModuleB"
+      discriminator:
+        propertyName: moduleType
+        mapping:
+          a: '#/components/schemas/ModuleA'
+          b: '#/components/schemas/ModuleB'
+    ModuleA:
+      type: object
+      required:
+        - moduleType
+      properties:
+        moduleType:
+          type: string
+    ModuleB:
+      type: object
+      required:
+        - moduleType
+      properties:
+        moduleType:
+          type: string
+    # Polymorphic type with enum as discriminator
     State:
       oneOf:
-        - $ref: '#/components/schemas/StateA'
-        - $ref: '#/components/schemas/StateB'
+        - $ref: "#/components/schemas/StateA"
+        - $ref: "#/components/schemas/StateB"
       discriminator:
         propertyName: status
         mapping:
