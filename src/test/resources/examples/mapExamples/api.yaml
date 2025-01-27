@@ -108,7 +108,7 @@ components:
           type: integer
       additionalProperties:
         $ref: '#/components/schemas/SomeRef'
-        
+
     SomeRef:
       type: object
       properties:
@@ -116,7 +116,7 @@ components:
           type: string
         other_number:
           type: integer
-          
+
     ComplexObjectWithMapsOfMaps:
       type: object
       required:
@@ -133,10 +133,10 @@ components:
             minProperties: 1
             additionalProperties:
               $ref: '#/components/schemas/BasicObject'
-          
+
     BasicObject:
       type: object
-      properties: 
+      properties:
         one:
           type: string
     StringMap:
@@ -159,3 +159,29 @@ components:
       additionalProperties:
         type: object
 
+
+    BasicObjectWithStringMap:
+      type: object
+      properties:
+        one:
+          type: string
+      additionalProperties:
+        type: string
+
+
+    BasicObjectWithNumberMap:
+      type: object
+      properties:
+        one:
+          type: string
+      additionalProperties:
+        type: integer
+
+
+    BasicObjectWithBooleanMap:
+      type: object
+      properties:
+        one:
+          type: string
+      additionalProperties:
+        type: boolean

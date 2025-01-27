@@ -131,6 +131,12 @@ class ModelGenerator(
                         typeInfo.parameterizedType,
                     ),
                 )
+                is KotlinTypeInfo.SimpleTypedAdditionalProperties -> createMutableMapOfStringToType(
+                    toModelType(
+                        basePackage,
+                        typeInfo.parameterizedType,
+                    ),
+                )
 
                 else -> className
             }

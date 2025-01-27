@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isMapTypeAdditionalProper
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleMapDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleOneOfAnyDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isStringDefinitionWithFormat
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUnknownAdditionalProperties
@@ -48,17 +49,24 @@ sealed class OasType(
 
     object TypedObjectAdditionalProperties :
         OasType("object", specialization = Specialization.TYPED_OBJECT_ADDITIONAL_PROPERTIES)
+    object SimpleTypedAdditionalProperties :
+        OasType(WILD_CARD_TYPE, specialization = Specialization.SIMPLE_TYPED_ADDITIONAL_PROPERTIES)
 
     object TypedMapAdditionalProperties :
         OasType("object", specialization = Specialization.TYPED_MAP_ADDITIONAL_PROPERTIES)
 
     companion object {
         private const val WILD_CARD_TYPE: String = "wildcard"
+        const val ADDITIONAL_PROPERTIES_VALUE: String = "additionalPropertiesValue"
         fun Schema.toOasType(oasKey: String): OasType =
             values(OasType::class)
                 .filter {
                     it.type == safeType() ||
-                        it.type == WILD_CARD_TYPE && getSpecialization(oasKey) == Specialization.ONE_OF_ANY
+                        it.type == WILD_CARD_TYPE &&
+                        listOf(
+                            Specialization.ONE_OF_ANY,
+                            Specialization.SIMPLE_TYPED_ADDITIONAL_PROPERTIES
+                        ).contains(getSpecialization(oasKey))
                 }
                 .filter { it.specialization == getSpecialization(oasKey) }
                 .filter { it.format == format || it.format == null }
@@ -87,6 +95,8 @@ sealed class OasType(
                 isUnknownAdditionalProperties(oasKey) -> Specialization.UNKNOWN_ADDITIONAL_PROPERTIES
                 isSimpleOneOfAnyDefinition() -> Specialization.ONE_OF_ANY
                 isSchemaLess() -> Specialization.UNTYPED_OBJECT
+                oasKey != ADDITIONAL_PROPERTIES_VALUE && isSimpleTypedAdditionalProperties(oasKey) ->
+                    Specialization.SIMPLE_TYPED_ADDITIONAL_PROPERTIES
                 else -> Specialization.NONE
             }
     }
@@ -96,6 +106,7 @@ sealed class OasType(
         MAP,
         UNKNOWN_ADDITIONAL_PROPERTIES,
         TYPED_OBJECT_ADDITIONAL_PROPERTIES,
+        SIMPLE_TYPED_ADDITIONAL_PROPERTIES,
         TYPED_MAP_ADDITIONAL_PROPERTIES,
         UNTYPED_OBJECT_ADDITIONAL_PROPERTIES,
         UNTYPED_OBJECT,

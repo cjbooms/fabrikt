@@ -103,6 +103,9 @@ object KaizenParserExtensions {
     fun Schema.isTypedAdditionalProperties(oasKey: String) = type == OasType.Object.type &&
         (getSchemaNameInParent() == "additionalProperties" || oasKey == "additionalProperties") && properties?.isEmpty() != true
 
+    fun Schema.isSimpleTypedAdditionalProperties(oasKey: String) = isSimpleType() &&
+        (getSchemaNameInParent() == "additionalProperties" || oasKey == "additionalProperties") && properties?.isEmpty() == true
+
     fun Schema.isMapTypeAdditionalProperties(oasKey: String) = type == OasType.Object.type &&
         (oasKey == "additionalProperties") && properties?.isEmpty() == true &&
         hasAdditionalProperties()

@@ -53,6 +53,8 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     data class GeneratedTypedAdditionalProperties(val simpleClassName: String) :
         KotlinTypeInfo(GeneratedType::class, simpleClassName)
 
+    data class SimpleTypedAdditionalProperties(val parameterizedType: KotlinTypeInfo) : KotlinTypeInfo(Map::class)
+
     data class MapTypeAdditionalProperties(val parameterizedType: KotlinTypeInfo) :
         KotlinTypeInfo(Map::class)
 
@@ -106,11 +108,14 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
 
                 OasType.Object -> Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
                 OasType.Map ->
-                    Map(from(schema.additionalPropertiesSchema, "", enclosingSchema))
+                    Map(from(schema.additionalPropertiesSchema, OasType.ADDITIONAL_PROPERTIES_VALUE, enclosingSchema))
 
                 OasType.TypedObjectAdditionalProperties -> GeneratedTypedAdditionalProperties(
                     ModelNameRegistry.getOrRegister(schema, valueSuffix = schema.isInlinedTypedAdditionalProperties())
                 )
+
+                OasType.SimpleTypedAdditionalProperties ->
+                    SimpleTypedAdditionalProperties(from(schema, OasType.ADDITIONAL_PROPERTIES_VALUE))
 
                 OasType.UntypedObjectAdditionalProperties -> UntypedObjectAdditionalProperties
                 OasType.UntypedObject -> UntypedObject

@@ -69,11 +69,18 @@ object PropertyUtils {
             constructorBuilder.addParameter(constructorParameter.build())
 
             val value =
-                if (typeInfo is KotlinTypeInfo.MapTypeAdditionalProperties) {
-                    Map::class.asTypeName()
-                        .parameterizedBy(String::class.asTypeName(), parameterizedType.maybeMakeMapValueNullable())
-                } else {
-                    parameterizedType
+                when (typeInfo) {
+                    is KotlinTypeInfo.MapTypeAdditionalProperties -> {
+                        Map::class.asTypeName()
+                            .parameterizedBy(String::class.asTypeName(), parameterizedType.maybeMakeMapValueNullable())
+                    }
+                    is KotlinTypeInfo.SimpleTypedAdditionalProperties -> {
+                        (typeInfo as KotlinTypeInfo.SimpleTypedAdditionalProperties).parameterizedType.modelKClass.asTypeName()
+                            .maybeMakeMapValueNullable()
+                    }
+                    else -> {
+                        parameterizedType
+                    }
                 }.maybeMakeMapValueNullable()
 
             val getterSpecBuilder = FunSpec.builder("get")
