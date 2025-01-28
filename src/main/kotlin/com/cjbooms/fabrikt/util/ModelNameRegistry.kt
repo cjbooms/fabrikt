@@ -1,9 +1,6 @@
 package com.cjbooms.fabrikt.util
 
 import com.cjbooms.fabrikt.generators.MutableSettings
-import com.cjbooms.fabrikt.model.EnclosingSchemaInfo
-import com.cjbooms.fabrikt.model.EnclosingSchemaInfoName
-import com.cjbooms.fabrikt.model.EnclosingSchemaInfoOasModel
 import com.cjbooms.fabrikt.model.SchemaInfo
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
@@ -26,11 +23,11 @@ object ModelNameRegistry {
      */
     private fun register(
         schema: Schema,
-        enclosingSchema: EnclosingSchemaInfo? = null,
+        enclosingSchema: Schema? = null,
         valueSuffix: Boolean = false,
         schemaInfoName: String? = null,
     ): String {
-        val modelClassName = schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueSuffix)
+        val modelClassName = schema.toModelClassName(schemaInfoName, enclosingSchema, valueSuffix)
         var suggestion = modelClassName
         while (allocatedNames.contains(suggestion)) {
             suggestion += SUFFIX
@@ -49,10 +46,11 @@ object ModelNameRegistry {
 
     private fun Schema.toModelClassName(
         schemaInfoName: String? = null,
-        enclosingClassName: String? = null,
+        enclosingSchema: Schema? = null,
         valueSuffix: Boolean = false,
     ): String = buildString {
-        if (enclosingClassName != null) {
+        val enclosingClassName = enclosingSchema?.toModelClassName()
+        if (enclosingClassName != null && enclosingSchema.type != "array") {
             append(enclosingClassName)
         }
         val modelClassName = schemaInfoName?.toModelClassName() ?: safeName().toModelClassName()
@@ -64,20 +62,13 @@ object ModelNameRegistry {
         append(modelClassNameSuffix)
     }
 
-    private fun EnclosingSchemaInfo.toModelClassName() =
-        when (this) {
-            is EnclosingSchemaInfoName -> this.name
-            is EnclosingSchemaInfoOasModel -> this.schema.toModelClassName()
-            else -> ""
-        }
-
     private fun resolveTag(
         schema: Schema,
-        enclosingSchema: EnclosingSchemaInfo? = null,
+        enclosingSchema: Schema? = null,
         valueSuffix: Boolean = false,
         schemaInfoName: String? = null,
     ): String =
-        resolveTag(schema, schema.toModelClassName(schemaInfoName, enclosingSchema?.toModelClassName(), valueSuffix))
+        resolveTag(schema, schema.toModelClassName(schemaInfoName, enclosingSchema, valueSuffix))
 
     private fun resolveTag(schema: Schema, modelClassName: String): String {
         val overlay = Overlay.of(schema)
@@ -92,7 +83,7 @@ object ModelNameRegistry {
 
     fun getOrRegister(
         schema: Schema,
-        enclosingSchema: EnclosingSchemaInfo? = null,
+        enclosingSchema: Schema? = null,
         valueSuffix: Boolean = false,
     ) = this[resolveTag(schema, enclosingSchema, valueSuffix)]
         .getOrElse { register(schema, enclosingSchema, valueSuffix) }

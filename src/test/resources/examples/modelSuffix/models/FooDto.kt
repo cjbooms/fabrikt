@@ -4,7 +4,7 @@ import com.fasterxml.jackson.`annotation`.JsonValue
 import kotlin.String
 import kotlin.collections.Map
 
-public enum class FooFooDto(
+public enum class FooDto(
   @JsonValue
   public val `value`: String,
 ) {
@@ -13,8 +13,8 @@ public enum class FooFooDto(
   ;
 
   public companion object {
-    private val mapping: Map<String, FooFooDto> = entries.associateBy(FooFooDto::value)
+    private val mapping: Map<String, FooDto> = entries.associateBy(FooDto::value)
 
-    public fun fromValue(`value`: String): FooFooDto? = mapping[value]
+    public fun fromValue(`value`: String): FooDto? = mapping[value]
   }
 }

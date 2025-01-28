@@ -167,7 +167,7 @@ sealed class PropertyInfo {
         val enclosingSchema: Schema? = null
     ) : PropertyInfo() {
         override val typeInfo: KotlinTypeInfo =
-            KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toEnclosingSchemaInfo())
+            KotlinTypeInfo.from(schema, oasKey, enclosingSchema)
         val pattern: String? = schema.safeField(Schema::getPattern)
         val maxLength: Int? = schema.safeField(Schema::getMaxLength)
         val minLength: Int? = schema.safeField(Schema::getMinLength)
@@ -194,9 +194,9 @@ sealed class PropertyInfo {
     ) : PropertyInfo(), CollectionValidation {
         override val typeInfo: KotlinTypeInfo =
             if (isInherited) {
-                KotlinTypeInfo.from(schema, oasKey, parentSchema.toEnclosingSchemaInfo())
+                KotlinTypeInfo.from(schema, oasKey, parentSchema)
             } else {
-                KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toEnclosingSchemaInfo())
+                KotlinTypeInfo.from(schema, oasKey, enclosingSchema)
             }
         override val minItems: Int? = schema.minItems
         override val maxItems: Int? = schema.maxItems
@@ -232,9 +232,9 @@ sealed class PropertyInfo {
     ) : PropertyInfo() {
         override val typeInfo: KotlinTypeInfo =
             if (isInherited) {
-                KotlinTypeInfo.from(schema, oasKey, parentSchema.toEnclosingSchemaInfo())
+                KotlinTypeInfo.from(schema, oasKey, parentSchema)
             } else {
-                KotlinTypeInfo.from(schema, oasKey, enclosingSchema?.toEnclosingSchemaInfo())
+                KotlinTypeInfo.from(schema, oasKey, enclosingSchema)
             }
     }
 

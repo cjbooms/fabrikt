@@ -70,7 +70,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     companion object {
         private val logger = Logger.getGlobal()
         
-        fun from(schema: Schema, oasKey: String = "", enclosingSchema: EnclosingSchemaInfo? = null): KotlinTypeInfo =
+        fun from(schema: Schema, oasKey: String = "", enclosingSchema: Schema? = null): KotlinTypeInfo =
             when (schema.toOasType(oasKey)) {
                 OasType.Date -> {
                     if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) KotlinxLocalDate
