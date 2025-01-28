@@ -1,4 +1,4 @@
-package examples.queryParameters.controllers
+package examples.unsupportedInlinedDefinitions.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -6,8 +6,8 @@ import org.springframework.validation.`annotation`.Validated
 import org.springframework.web.bind.`annotation`.RequestMapping
 import org.springframework.web.bind.`annotation`.RequestMethod
 import org.springframework.web.bind.`annotation`.RequestParam
-import kotlin.String
-import kotlin.Unit
+import kotlin.Any
+import kotlin.collections.List
 
 @Controller
 @Validated
@@ -16,19 +16,16 @@ public interface ExampleController {
     /**
      *
      *
-     * @param a
-     * @param b
+     * @param inlineEnum
+     * @param inlineObj
      */
     @RequestMapping(
         value = ["/example"],
-        produces = [],
+        produces = ["application/json"],
         method = [RequestMethod.GET],
     )
     public fun `get`(
-        @RequestParam(value = "a", required = true) a: String,
-        @RequestParam(
-            value = "b",
-            required = true,
-        ) b: String,
-    ): ResponseEntity<Unit>
+        @RequestParam(value = "inline_enum.", required = false) inlineEnum: Any?,
+        @RequestParam(value = "inline_obj.", required = false) inlineObj: Any?,
+    ): ResponseEntity<List<Any>>
 }

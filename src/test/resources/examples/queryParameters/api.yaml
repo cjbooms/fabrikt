@@ -10,15 +10,6 @@ paths:
         required: true
         schema:
           type: string
-      - name: inline_enum.
-        in: query
-        required: false
-        schema:
-          type: string
-          enum:
-            - active
-            - inactive
-            - archived
     get:
       parameters:
         - in: query

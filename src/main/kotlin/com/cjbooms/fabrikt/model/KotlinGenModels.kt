@@ -4,7 +4,6 @@ import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.Destinations.clientPackage
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.Destinations.modelsPackage
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedParameterInlinedUnderPaths
 import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
 import com.reprezen.kaizen.oasparser.model3.Parameter
 import com.reprezen.kaizen.oasparser.model3.Schema
@@ -94,7 +93,7 @@ class RequestParameter(
         description = description,
         type = type,
         originalName = parameter.name,
-        typeInfo = toSafeParameterType(parameter.schema, oasName),
+        typeInfo = KotlinTypeInfo.from(parameter.schema, oasName),
         minimum = parameter.schema.minimum,
         maximum = parameter.schema.maximum,
         parameterLocation = RequestParameterLocation(parameter.`in`),
@@ -102,14 +101,4 @@ class RequestParameter(
         explode = parameter.explode,
         defaultValue = parameter.schema.default
     )
-    companion object {
-        /**
-         * Defaults to Any for complex schemas inlined under the parameter section.
-         * Necessary until support for generating models like these is added.
-         *
-         */
-        fun toSafeParameterType(schema: Schema, oasName: String = "") =
-            if (schema.isComplexTypedParameterInlinedUnderPaths()) KotlinTypeInfo.AnyType
-            else KotlinTypeInfo.from(schema, oasName)
-    }
 }

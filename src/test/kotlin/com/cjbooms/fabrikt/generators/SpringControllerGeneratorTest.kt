@@ -40,6 +40,7 @@ class SpringControllerGeneratorTest {
         "parameterNameClash",
         "jakartaValidationAnnotations",
         "modelSuffix",
+        "unsupportedInlinedDefinitions",
     )
 
     private fun setupGithubApiTestEnv(annotations: ValidationAnnotations = JavaxValidationAnnotations) {
@@ -54,7 +55,7 @@ class SpringControllerGeneratorTest {
     }
 
     @Test
-    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("queryParameters")
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("unsupportedInlinedDefinitions")
 
     @ParameterizedTest
     @MethodSource("testCases")

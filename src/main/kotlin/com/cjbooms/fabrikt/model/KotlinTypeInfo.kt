@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.cli.SerializationLibrary.KOTLINX_SERIALIZATION
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType.Companion.toOasType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getEnumValues
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUnsupportedComplexInlinedDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterfaceWithDiscriminator
@@ -69,17 +70,26 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
 
     companion object {
         private val logger = Logger.getGlobal()
-        
-        fun from(schema: Schema, oasKey: String = "", enclosingSchema: Schema? = null): KotlinTypeInfo =
-            when (schema.toOasType(oasKey)) {
+
+        fun from(schema: Schema, oasKey: String = "", enclosingSchema: Schema? = null): KotlinTypeInfo {
+            if (schema.isUnsupportedComplexInlinedDefinition()) {
+                /*
+                 * Defaults to Any for complex schemas inlined under the paths section.
+                 * Necessary until support for generating inlined models like these is added.
+                 */
+                return AnyType
+            }
+            return when (schema.toOasType(oasKey)) {
                 OasType.Date -> {
                     if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) KotlinxLocalDate
                     else Date
                 }
+
                 OasType.DateTime -> {
                     if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) KotlinxInstant
                     else getOverridableDateTimeType()
                 }
+
                 OasType.Text -> Text
                 OasType.Enum ->
                     Enum(schema.getEnumValues(), ModelNameRegistry.getOrRegister(schema, enclosingSchema))
@@ -88,10 +98,12 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) Text // could possibly be Kotlin native UUID once that becomes stable
                     else Uuid
                 }
+
                 OasType.Uri -> {
                     if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) Text // no native URI in kotlin and thus not in kotlinx.serialization either
                     else Uri
                 }
+
                 OasType.Base64String -> ByteArray
                 OasType.Binary -> getOverridableByteArray()
                 OasType.Double -> Double
@@ -133,6 +145,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                         AnyType
                     }
             }
+        }
 
         private fun getOverridableDateTimeType(): KotlinTypeInfo {
             val typeOverrides = MutableSettings.typeOverrides()

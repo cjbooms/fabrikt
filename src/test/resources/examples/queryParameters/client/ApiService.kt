@@ -3,7 +3,6 @@ package examples.queryParameters.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import okhttp3.OkHttpClient
-import kotlin.Any
 import kotlin.String
 import kotlin.Suppress
 import kotlin.Unit
@@ -33,10 +32,9 @@ public class ExampleService(
     public fun getExample(
         a: String,
         b: String,
-        inlineEnum: Any? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExample(a, b, inlineEnum, additionalHeaders)
+            apiClient.getExample(a, b, additionalHeaders)
         }
 }
