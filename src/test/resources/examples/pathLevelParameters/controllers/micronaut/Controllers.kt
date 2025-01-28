@@ -1,4 +1,4 @@
-package examples.queryParameters.controllers
+package examples.pathLevelParameters.controllers
 
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.`annotation`.Controller

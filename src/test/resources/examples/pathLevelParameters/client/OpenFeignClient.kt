@@ -1,4 +1,4 @@
-package examples.queryParameters.client
+package examples.pathLevelParameters.client
 
 import feign.HeaderMap
 import feign.Param

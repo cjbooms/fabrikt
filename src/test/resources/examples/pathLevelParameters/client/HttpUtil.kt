@@ -1,4 +1,4 @@
-package examples.queryParameters.client
+package examples.pathLevelParameters.client
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper

@@ -1,4 +1,4 @@
-package examples.queryParameters.client
+package examples.pathLevelParameters.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef

@@ -1,4 +1,4 @@
-package examples.queryParameters.client
+package examples.pathLevelParameters.client
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry

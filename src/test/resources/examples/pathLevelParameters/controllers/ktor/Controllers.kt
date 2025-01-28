@@ -1,4 +1,4 @@
-package examples.queryParameters.controllers
+package examples.pathLevelParameters.controllers
 
 import io.ktor.http.Headers
 import io.ktor.http.HttpStatusCode

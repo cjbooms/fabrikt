@@ -1,4 +1,4 @@
-package examples.queryParameters.controllers
+package examples.pathLevelParameters.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller

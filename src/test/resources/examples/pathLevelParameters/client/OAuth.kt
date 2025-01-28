@@ -1,4 +1,4 @@
-package examples.queryParameters.client
+package examples.pathLevelParameters.client
 
 import okhttp3.Authenticator
 import okhttp3.Interceptor
