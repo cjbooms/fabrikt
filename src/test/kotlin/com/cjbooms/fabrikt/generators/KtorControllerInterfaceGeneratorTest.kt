@@ -33,7 +33,7 @@ class KtorControllerInterfaceGeneratorTest {
     private fun testCases(): Stream<String> = Stream.of(
         "githubApi",
         "singleAllOf",
-        "pathLevelParameters",
+        "queryParameters",
         "parameterNameClash",
         "requestBodyAsArray",
         "jakartaValidationAnnotations",

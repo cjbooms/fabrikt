@@ -1,4 +1,4 @@
-package examples.pathLevelParameters.controllers
+package examples.queryParameters.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -18,6 +18,7 @@ public interface ExampleController {
      *
      * @param a
      * @param b
+     * @param inlineEnum
      */
     @RequestMapping(
         value = ["/example"],
@@ -26,9 +27,7 @@ public interface ExampleController {
     )
     public fun `get`(
         @RequestParam(value = "a", required = true) a: String,
-        @RequestParam(
-            value = "b",
-            required = true,
-        ) b: String,
+        @RequestParam(value = "b", required = true) b: String,
+        @RequestParam(value = "inline_enum.", required = false) inlineEnum: Any?,
     ): ResponseEntity<Unit>
 }

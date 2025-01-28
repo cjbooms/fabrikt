@@ -36,7 +36,7 @@ class SpringControllerGeneratorTest {
         "arrays",
         "githubApi",
         "singleAllOf",
-        "pathLevelParameters",
+        "queryParameters",
         "parameterNameClash",
         "jakartaValidationAnnotations",
         "modelSuffix",
@@ -53,8 +53,8 @@ class SpringControllerGeneratorTest {
         ModelNameRegistry.clear()
     }
 
-    // @Test
-    // fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("singleAllOf")
+    @Test
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("queryParameters")
 
     @ParameterizedTest
     @MethodSource("testCases")
