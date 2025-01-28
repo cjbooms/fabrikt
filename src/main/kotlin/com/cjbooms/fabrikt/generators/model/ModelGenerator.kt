@@ -30,7 +30,6 @@ import com.cjbooms.fabrikt.model.PropertyInfo.Companion.HTTP_SETTINGS
 import com.cjbooms.fabrikt.model.PropertyInfo.Companion.topLevelProperties
 import com.cjbooms.fabrikt.model.SchemaInfo
 import com.cjbooms.fabrikt.model.SourceApi
-import com.cjbooms.fabrikt.model.toEnclosingSchemaInfo
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.findOneOfSuperInterface
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getDiscriminatorForInLinedObjectUnderAllOf
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSchemaRefName
@@ -192,7 +191,6 @@ class ModelGenerator(
                             schemaName = it.schema.safeName(),
                             enclosingSchema = it.schema,
                             apiDocUrl = it.schema.getDocumentUrl(),
-                            enclosingSchemaInfoName = it.name,
                     )
                 }
                 else -> {
@@ -278,7 +276,7 @@ class ModelGenerator(
                     } else {
                         val props = it.schema.topLevelProperties(HTTP_SETTINGS, sourceApi.openApi3, enclosingSchema)
                         val currentModel = standardDataClass(
-                            ModelNameRegistry.getOrRegister(it.schema, enclosingSchema.toEnclosingSchemaInfo()),
+                            ModelNameRegistry.getOrRegister(it.schema, enclosingSchema),
                             it.name,
                             props,
                             it.schema.extensions,
@@ -331,11 +329,8 @@ class ModelGenerator(
         schemaName: String,
         enclosingSchema: Schema,
         apiDocUrl: String,
-        enclosingSchemaInfoName: String? = null,
     ): Collection<TypeSpec> =
         schema.itemsSchema.let { items ->
-            val enclosingSchemaInfo = enclosingSchemaInfoName?.toEnclosingSchemaInfo()
-                ?: enclosingSchema.toEnclosingSchemaInfo()
             when {
                 items.isInlinedObjectDefinition() ->
                     items.topLevelProperties(HTTP_SETTINGS, sourceApi.openApi3, enclosingSchema).let { props ->
@@ -344,7 +339,7 @@ class ModelGenerator(
                             enclosingSchema = enclosingSchema,
                             apiDocUrl = apiDocUrl,
                         ) + standardDataClass(
-                            modelName = ModelNameRegistry.getOrRegister(schema, enclosingSchemaInfo),
+                            modelName = ModelNameRegistry.getOrRegister(schema, enclosingSchema),
                             schemaName = schemaName,
                             properties = props,
                             extensions = schema.extensions,
@@ -355,7 +350,7 @@ class ModelGenerator(
                 items.isInlinedEnumDefinition() ->
                     setOf(
                         buildEnumClass(
-                            KotlinTypeInfo.from(items, "items", enclosingSchemaInfo) as KotlinTypeInfo.Enum,
+                            KotlinTypeInfo.from(items, "items", enclosingSchema) as KotlinTypeInfo.Enum,
                         ),
                     )
 

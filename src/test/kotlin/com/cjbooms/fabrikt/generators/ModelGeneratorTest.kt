@@ -77,8 +77,8 @@ class ModelGeneratorTest {
         ModelNameRegistry.clear()
     }
 
-    // @Test
-    // fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("insert test case")
+    @Test
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("enumExamples")
 
     @ParameterizedTest
     @MethodSource("testCases")
