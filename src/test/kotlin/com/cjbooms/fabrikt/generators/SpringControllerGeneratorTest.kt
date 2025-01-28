@@ -36,7 +36,7 @@ class SpringControllerGeneratorTest {
         "arrays",
         "githubApi",
         "singleAllOf",
-        "queryParameters",
+        "pathLevelParameters",
         "parameterNameClash",
         "jakartaValidationAnnotations",
         "modelSuffix",

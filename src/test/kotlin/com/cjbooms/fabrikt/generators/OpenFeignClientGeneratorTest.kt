@@ -29,7 +29,7 @@ class OpenFeignClientGeneratorTest {
     private fun fullApiTestCases(): Stream<String> = Stream.of(
         "openFeignClient",
         "multiMediaType",
-        "queryParameters",
+        "pathLevelParameters",
         "parameterNameClash",
     )
 

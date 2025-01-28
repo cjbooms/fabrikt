@@ -36,7 +36,7 @@ class OkHttpClientGeneratorTest {
         "okHttpClient",
         "multiMediaType",
         "okHttpClientPostWithoutRequestBody",
-        "queryParameters",
+        "pathLevelParameters",
         "parameterNameClash",
         "byteArrayStream",
     )
