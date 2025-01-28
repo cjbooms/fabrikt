@@ -1,4 +1,4 @@
-package examples.pathLevelParameters.client
+package examples.queryParameters.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
@@ -7,6 +7,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import kotlin.Any
 import kotlin.String
 import kotlin.Suppress
 import kotlin.Unit
@@ -24,11 +25,13 @@ public class ExampleClient(
      *
      * @param a
      * @param b
+     * @param inlineEnum
      */
     @Throws(ApiException::class)
     public fun getExample(
         a: String,
         b: String,
+        inlineEnum: Any? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
@@ -37,6 +40,7 @@ public class ExampleClient(
             .newBuilder()
             .queryParam("a", a)
             .queryParam("b", b)
+            .queryParam("inline_enum.", inlineEnum)
             .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 

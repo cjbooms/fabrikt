@@ -1,4 +1,4 @@
-package examples.pathLevelParameters.client
+package examples.queryParameters.client
 
 import okhttp3.Headers
 

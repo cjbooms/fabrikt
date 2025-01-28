@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.IncomingParameter
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.RequestParameter
+import com.cjbooms.fabrikt.model.RequestParameter.Companion.toSafeParameterType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
 import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
@@ -177,10 +178,10 @@ object GeneratorUtils {
         val parameters = mergeParameters(pathParameters, parameters)
             .map {
                 RequestParameter(
-                    it.name,
-                    it.description,
-                    toModelType(basePackage, KotlinTypeInfo.from(it.schema), isNullable(it)),
-                    it
+                    oasName = it.name,
+                    description = it.description,
+                    type = toModelType(basePackage, toSafeParameterType(it.schema), isNullable(it)),
+                    parameter = it
                 )
             }
             .sortedBy { it.type.isNullable }

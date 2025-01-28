@@ -1,4 +1,4 @@
-package examples.pathLevelParameters.controllers
+package examples.queryParameters.controllers
 
 import io.ktor.http.Headers
 import io.ktor.http.HttpStatusCode
@@ -24,11 +24,13 @@ public interface ExampleController {
      *
      * @param a
      * @param b
+     * @param inlineEnum
      * @param call The Ktor application call
      */
     public suspend fun `get`(
         a: String,
         b: String,
+        inlineEnum: Any?,
         call: ApplicationCall,
     )
 
@@ -42,7 +44,8 @@ public interface ExampleController {
             `get`("/example") {
                 val a = call.request.queryParameters.getOrFail<kotlin.String>("a")
                 val b = call.request.queryParameters.getOrFail<kotlin.String>("b")
-                controller.get(a, b, call)
+                val inlineEnum = call.request.queryParameters.getTyped<kotlin.Any>("inline_enum.")
+                controller.get(a, b, inlineEnum, call)
             }
         }
 
