@@ -42,8 +42,6 @@ object KaizenParserExtensions {
     fun Schema.isUnsupportedComplexInlinedDefinition() =
         Overlay.of(this).pathFromRoot.contains("paths") &&
             name == null &&
-            //Overlay.of(this).pathFromRoot.contains("parameters") &&
-            //safeName() == "parameters" &&
             (isObjectType() || isEnumDefinition())
 
     fun Schema.isInlinedObjectDefinition() =

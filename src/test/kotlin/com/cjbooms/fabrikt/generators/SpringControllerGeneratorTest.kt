@@ -54,8 +54,8 @@ class SpringControllerGeneratorTest {
         ModelNameRegistry.clear()
     }
 
-    @Test
-    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("unsupportedInlinedDefinitions")
+    // @Test
+    // fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("singleAllOf")
 
     @ParameterizedTest
     @MethodSource("testCases")
