@@ -40,6 +40,7 @@ class SpringControllerGeneratorTest {
         "parameterNameClash",
         "jakartaValidationAnnotations",
         "modelSuffix",
+        "unsupportedInlinedDefinitions",
     )
 
     private fun setupGithubApiTestEnv(annotations: ValidationAnnotations = JavaxValidationAnnotations) {

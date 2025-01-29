@@ -39,6 +39,11 @@ object KaizenParserExtensions {
     fun Schema.isPolymorphicSuperType(): Boolean = discriminator?.propertyName != null ||
         getDiscriminatorForInLinedObjectUnderAllOf()?.propertyName != null
 
+    fun Schema.isUnsupportedComplexInlinedDefinition() =
+        Overlay.of(this).pathFromRoot.contains("paths") &&
+            name == null &&
+            (isObjectType() || isEnumDefinition())
+
     fun Schema.isInlinedObjectDefinition() =
         (isObjectType() || isAggregatedObject()) && !isSchemaLess() && (
             Overlay.of(this).pathFromRoot.contains("properties") ||

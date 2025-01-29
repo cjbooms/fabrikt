@@ -1,0 +1,50 @@
+openapi: 3.0.0
+info:
+  version: '1'
+  title: pathLevelParameters
+paths:
+  /example:
+    parameters:
+      - name: inline_enum.
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+            - active
+            - inactive
+            - archived
+    get:
+      parameters:
+        - name: inline_obj.
+          in: query
+          required: false
+          schema:
+            type: object
+            properties:
+              test:
+                type: string
+
+      responses:
+        200:
+          description: An unsupported inlined response.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Unique identifier for the item.
+                    name:
+                      type: string
+                      description: Name of the item.
+                    status:
+                      type: string
+                      description: Status of the item.
+                      enum:
+                        - active
+                        - inactive
+                        - archived
