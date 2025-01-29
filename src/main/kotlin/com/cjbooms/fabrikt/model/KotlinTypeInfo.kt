@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.cli.SerializationLibrary.KOTLINX_SERIALIZATION
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType.Companion.toOasType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getEnumValues
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUnsupportedComplexInlinedDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
@@ -77,7 +78,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                  * Defaults to Any for complex schemas inlined under the paths section.
                  * Necessary until support for generating inlined models like these is added.
                  */
-                return AnyType
+                return if (schema.isEnumDefinition()) Text else AnyType
             }
             return when (schema.toOasType(oasKey)) {
                 OasType.Date -> {
@@ -167,9 +168,11 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                             Client code generation does not support streaming, yet. The override flag 
                             'BYTEARRAY_AS_INPUTSTREAM' is ignored. If generating server side code, please consider 
                             splitting the client & server in different fabrikt executions. Defaulting to `ByteArray`...
-                        """.trimIndent())
+                        """.trimIndent()
+                    )
                     ByteArray
                 }
+
                 CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM in typeOverrides -> InputStream
                 else -> ByteArray
             }
