@@ -53,6 +53,16 @@ class OpenFeignInterfaceGenerator(
 
             val clientType = TypeSpec.interfaceBuilder(simpleClientName(resourceName))
                 .addAnnotation(AnnotationSpec.builder(Suppress::class).addMember("%S", "unused").build())
+                .apply {
+                    if (options.contains(ClientCodeGenOptionType.SPRING_CLOUD_OPENFEIGN_STARTER_ANNOTATION)) {
+                        addAnnotation(
+                            OpenFeignAnnotations.feignClientBuilder()
+                                .addMember("configuration = %S", api.openApi3.info.getExtension("x-feign-client-name"))
+                                .addMember("contextId = %S", resourceName)
+                                .build()
+                        )
+                    }
+                }
                 .addFunctions(funcSpecs)
                 .build()
 
