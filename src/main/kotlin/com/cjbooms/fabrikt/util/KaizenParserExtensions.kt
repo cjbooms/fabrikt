@@ -91,7 +91,7 @@ object KaizenParserExtensions {
 
     @Suppress("UNCHECKED_CAST")
     fun Schema.getEnumValues(): List<String> = when {
-        this.hasEnums() -> this.enums.map { it.toString() }.filterNot { it.isBlank() }
+        this.hasEnums() -> this.enums.filterNotNull().map { it.toString() }.filterNot { it.isBlank() }
         !MutableSettings.modelOptions().contains(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS) -> emptyList()
         else -> extensions[EXTENSIBLE_ENUM_KEY]?.let { it as List<String?> }?.filterNotNull()
             ?.filterNot { it.isBlank() } ?: emptyList()

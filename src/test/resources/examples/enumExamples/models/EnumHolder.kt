@@ -22,4 +22,7 @@ public data class EnumHolder(
   @param:JsonProperty("list_enums")
   @get:JsonProperty("list_enums")
   public val listEnums: List<ContentType>? = null,
+  @param:JsonProperty("nullable_ref")
+  @get:JsonProperty("nullable_ref")
+  public val nullableRef: NullableEnum? = null,
 )
