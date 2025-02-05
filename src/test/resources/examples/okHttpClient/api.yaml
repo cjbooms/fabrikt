@@ -9,6 +9,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/ListQueryParamExploded"
         - $ref: "#/components/parameters/QueryParam2"
+        - $ref: "#/components/parameters/ListQueryParamInt"
       responses:
         200:
           description: "successful operation"
@@ -169,6 +170,15 @@ components:
           type: "string"
       required: false
       allowEmptyValue: false
+
+    ListQueryParamInt:
+      name: "int_list_query_param"
+      in: "query"
+      schema:
+        type: "array"
+        items:
+          type: "integer"
+      required: false
 
     PaginationLimitParam:
       name: limit

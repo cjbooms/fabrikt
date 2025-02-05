@@ -32,11 +32,13 @@ public class ExamplePath1Client(
      *
      * @param explodeListQueryParam
      * @param queryParam2
+     * @param intListQueryParam
      */
     @Throws(ApiException::class)
     public fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
+        intListQueryParam: List<Int>? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
@@ -45,6 +47,7 @@ public class ExamplePath1Client(
             .newBuilder()
             .queryParam("explode_list_query_param", explodeListQueryParam, true)
             .queryParam("query_param2", queryParam2)
+            .queryParam("int_list_query_param", intListQueryParam, true)
             .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
             .build()
 

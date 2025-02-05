@@ -21,9 +21,9 @@ fun <T : Any> FormBody.Builder.formParam(key: String, value: T?): FormBody.Build
 }
 
 @Suppress("unused")
-fun HttpUrl.Builder.queryParam(key: String, values: List<String>?, explode: Boolean = true) = this.apply {
+fun HttpUrl.Builder.queryParam(key: String, values: List<Any>?, explode: Boolean = true) = this.apply {
     if (values != null) {
-        if (explode) values.forEach { addQueryParameter(key, it) }
+        if (explode) values.forEach { addQueryParameter(key, it.toString()) }
         else addQueryParameter(key, values.joinToString(","))
     }
 }

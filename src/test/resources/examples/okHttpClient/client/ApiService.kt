@@ -38,10 +38,11 @@ public class ExamplePath1Service(
     public fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
+        intListQueryParam: List<Int>? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExamplePath1(explodeListQueryParam, queryParam2, additionalHeaders)
+            apiClient.getExamplePath1(explodeListQueryParam, queryParam2, intListQueryParam, additionalHeaders)
         }
 
     @Throws(ApiException::class)
