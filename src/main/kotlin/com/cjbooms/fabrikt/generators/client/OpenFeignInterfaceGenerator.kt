@@ -57,7 +57,7 @@ class OpenFeignInterfaceGenerator(
                     if (options.contains(ClientCodeGenOptionType.SPRING_CLOUD_OPENFEIGN_STARTER_ANNOTATION)) {
                         addAnnotation(
                             OpenFeignAnnotations.feignClientBuilder()
-                                .addMember("configuration = %S", api.openApi3.info.getExtension("x-feign-client-name"))
+                                .addMember("name = %S", api.openApi3.info.getExtension("x-feign-client-name"))
                                 .addMember("contextId = %S", resourceName)
                                 .build()
                         )
