@@ -105,8 +105,14 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     else Uri
                 }
 
-                OasType.Base64String -> ByteArray
-                OasType.Binary -> getOverridableByteArray()
+                OasType.Base64String -> {
+                    if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) Text // no native ByteArray in kotlinx.serialization
+                    else ByteArray
+                }
+                OasType.Binary -> {
+                    if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) Text // no native Binary in kotlinx.serialization
+                    else getOverridableByteArray()
+                }
                 OasType.Double -> Double
                 OasType.Float -> Float
                 OasType.Number -> Numeric

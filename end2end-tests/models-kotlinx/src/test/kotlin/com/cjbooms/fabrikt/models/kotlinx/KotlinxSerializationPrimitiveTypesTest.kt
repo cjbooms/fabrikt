@@ -78,6 +78,8 @@ class KotlinxSerializationPrimitiveTypesTest {
             number = BigDecimal("109288282772724.4225837838838383888"),
             numberFloat = 1.23f,
             numberDouble = 4.56,
+            byte = "AETdqhOI3C8/jA184vF3FyUNGesJ9x22cn2TqiQLYpFzvy5Moyie3K1MAy8DVy62HxURtRHwP2SjdV7B+HZQzuCwMsJLxhbNj0okOzdV2EOAr2JV3htYH+vNVJE9NHwzyYTkOA5ZuYpEDZMEL+SqjyeSRXaLimqDbkew6hg1QdU=",
+            binary = "AETdqhOI3C8/jA184vF3FyUNGesJ9x22cn2TqiQLYpFzvy5Moyie3K1MAy8DVy62HxURtRHwP2SjdV7B+HZQzuCwMsJLxhbNj0okOzdV2EOAr2JV3htYH+vNVJE9NHwzyYTkOA5ZuYpEDZMEL+SqjyeSRXaLimqDbkew6hg1QdU="
         )
 
         val result = jsonWithCustomSerializers.encodeToString(content)
@@ -106,6 +108,8 @@ class KotlinxSerializationPrimitiveTypesTest {
             number = BigDecimal("109288282772724.4225837838838383888"),
             numberFloat = 1.23f,
             numberDouble = 4.56,
+            byte = "AETdqhOI3C8/jA184vF3FyUNGesJ9x22cn2TqiQLYpFzvy5Moyie3K1MAy8DVy62HxURtRHwP2SjdV7B+HZQzuCwMsJLxhbNj0okOzdV2EOAr2JV3htYH+vNVJE9NHwzyYTkOA5ZuYpEDZMEL+SqjyeSRXaLimqDbkew6hg1QdU=",
+            binary = "AETdqhOI3C8/jA184vF3FyUNGesJ9x22cn2TqiQLYpFzvy5Moyie3K1MAy8DVy62HxURtRHwP2SjdV7B+HZQzuCwMsJLxhbNj0okOzdV2EOAr2JV3htYH+vNVJE9NHwzyYTkOA5ZuYpEDZMEL+SqjyeSRXaLimqDbkew6hg1QdU="
         )
 
         assertThat(content.integer).isEqualTo(expectedContent.integer)
@@ -120,6 +124,8 @@ class KotlinxSerializationPrimitiveTypesTest {
         assertThat(content.number).isEqualTo(expectedContent.number)
         assertThat(content.numberFloat).isEqualTo(expectedContent.numberFloat)
         assertThat(content.numberDouble).isEqualTo(expectedContent.numberDouble)
+        assertThat(content.byte).isEqualTo(expectedContent.byte)
+        assertThat(content.binary).isEqualTo(expectedContent.binary)
     }
 
     @Test

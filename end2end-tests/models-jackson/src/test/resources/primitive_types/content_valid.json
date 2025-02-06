@@ -1,0 +1,16 @@
+{
+  "integer" : 1,
+  "integer32" : 2147483647,
+  "integer64" : 9223372036854775807,
+  "boolean" : true,
+  "string" : "example",
+  "stringUuid" : "123e4567-e89b-12d3-a456-426614174000",
+  "stringUri" : "https://example.org",
+  "stringDate" : "2020-02-04",
+  "stringDateTime" : "2024-11-04T12:00:00Z",
+  "number" : 109288282772724.4225837838838383888,
+  "numberFloat" : 1.23,
+  "numberDouble" : 4.56,
+  "byte" : "AETdqhOI3C8/jA184vF3FyUNGesJ9x22cn2TqiQLYpFzvy5Moyie3K1MAy8DVy62HxURtRHwP2SjdV7B+HZQzuCwMsJLxhbNj0okOzdV2EOAr2JV3htYH+vNVJE9NHwzyYTkOA5ZuYpEDZMEL+SqjyeSRXaLimqDbkew6hg1QdU=",
+  "binary" : "AETdqhOI3C8/jA184vF3FyUNGesJ9x22cn2TqiQLYpFzvy5Moyie3K1MAy8DVy62HxURtRHwP2SjdV7B+HZQzuCwMsJLxhbNj0okOzdV2EOAr2JV3htYH+vNVJE9NHwzyYTkOA5ZuYpEDZMEL+SqjyeSRXaLimqDbkew6hg1QdU="
+}
