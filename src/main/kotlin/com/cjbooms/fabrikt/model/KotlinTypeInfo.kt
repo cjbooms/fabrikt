@@ -109,7 +109,10 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Binary -> getOverridableByteArray()
                 OasType.Double -> Double
                 OasType.Float -> Float
-                OasType.Number -> Numeric
+                OasType.Number -> {
+                    if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) Double
+                    else Numeric
+                }
                 OasType.Int32 -> Integer
                 OasType.Int64 -> BigInt
                 OasType.Integer -> Integer
