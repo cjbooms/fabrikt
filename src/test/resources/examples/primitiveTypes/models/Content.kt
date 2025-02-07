@@ -7,7 +7,6 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 import kotlin.Boolean
-import kotlin.ByteArray
 import kotlin.Double
 import kotlin.Float
 import kotlin.Int
@@ -51,10 +50,4 @@ public data class Content(
   @param:JsonProperty("numberDouble")
   @get:JsonProperty("numberDouble")
   public val numberDouble: Double? = null,
-  @param:JsonProperty("base64")
-  @get:JsonProperty("base64")
-  public val base64: ByteArray? = null,
-  @param:JsonProperty("binary")
-  @get:JsonProperty("binary")
-  public val binary: ByteArray? = null,
 )

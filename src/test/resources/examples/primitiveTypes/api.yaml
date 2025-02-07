@@ -38,9 +38,3 @@ components:
         numberDouble:
           type: number
           format: double
-        base64:
-          type: string
-          format: byte
-        binary:
-          type: string
-          format: binary

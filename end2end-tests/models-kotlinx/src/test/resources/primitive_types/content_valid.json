@@ -10,7 +10,5 @@
     "stringDateTime": "2024-11-04T12:00:00Z",
     "number": 109288282772724.4225837838838383888,
     "numberFloat": 1.23,
-    "numberDouble": 4.56,
-    "base64": "AQID",
-    "binary": "BAUG"
+    "numberDouble": 4.56
 }

@@ -40,8 +40,4 @@ public data class Content(
   public val numberFloat: Float? = null,
   @SerialName("numberDouble")
   public val numberDouble: Double? = null,
-  @SerialName("base64")
-  public val base64: String? = null,
-  @SerialName("binary")
-  public val binary: String? = null,
 )
