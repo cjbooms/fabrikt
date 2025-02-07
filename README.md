@@ -239,6 +239,12 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               | CHOOSE ANY OF: |
 |                               |   `DATETIME_AS_INSTANT` - Use `Instant` as the datetime type. Defaults to `OffsetDateTime` |
 |                               |   `DATETIME_AS_LOCALDATETIME` - Use `LocalDateTime` as the datetime type. Defaults to `OffsetDateTime` |
+|                               |   `BYTE_AS_STRING` - Ignore string format `byte` and use `String` as the type |
+|                               |   `BINARY_AS_STRING` - Ignore string format `binary` and use `String` as the type |
+|                               |   `URI_AS_STRING` - Ignore string format `uri` and use `String` as the type |
+|                               |   `UUID_AS_STRING` - Ignore string format `uuid` and use `String` as the type |
+|                               |   `DATE_AS_STRING` - Ignore string format `date` and use `String` as the type |
+|                               |   `DATETIME_AS_STRING` - Ignore string format `date-time` and use `String` as the type |
 |                               |   `BYTEARRAY_AS_INPUTSTREAM` - Use `InputStream` as ByteArray type. Defaults to `ByteArray` |
 |   `--validation-library`      | Specify which validation library to use for annotations in generated model classes. Default: JAVAX_VALIDATION |
 |                               | CHOOSE ONE OF: |

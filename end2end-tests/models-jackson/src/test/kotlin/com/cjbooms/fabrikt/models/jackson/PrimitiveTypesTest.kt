@@ -20,25 +20,25 @@ class PrimitiveTypesTest {
         .registerModule(JavaTimeModule())
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
+    private val content = Content(
+        integer = 1,
+        integer32 = 2147483647,
+        integer64 = 9223372036854775807,
+        boolean = true,
+        string = "example",
+        stringUuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
+        stringUri = URI("https://example.org"),
+        stringDate = LocalDate.parse("2020-02-04"),
+        stringDateTime = OffsetDateTime.parse("2024-11-04T12:00:00Z"),
+        number = BigDecimal("109288282772724.4225837838838383888"),
+        numberFloat = 1.23f,
+        numberDouble = 4.56,
+        byte = javaClass.getResource("/primitive_types/test.bin")!!.readBytes(),
+        binary = javaClass.getResource("/primitive_types/test.bin")!!.readBytes()
+    )
+
     @Test
     fun `must serialize Content`() {
-        val content = Content(
-            integer = 1,
-            integer32 = 2147483647,
-            integer64 = 9223372036854775807,
-            boolean = true,
-            string = "example",
-            stringUuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
-            stringUri = URI("https://example.org"),
-            stringDate = LocalDate.parse("2020-02-04"),
-            stringDateTime = OffsetDateTime.parse("2024-11-04T12:00:00Z"),
-            number = BigDecimal("109288282772724.4225837838838383888"),
-            numberFloat = 1.23f,
-            numberDouble = 4.56,
-            byte = javaClass.getResource("/primitive_types/test.bin")!!.readBytes(),
-            binary = javaClass.getResource("/primitive_types/test.bin")!!.readBytes()
-        )
-
         val result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(content)
 
         val expected = javaClass.getResource("/primitive_types/content_valid.json")!!.readText()
@@ -49,40 +49,22 @@ class PrimitiveTypesTest {
     @Test
     fun `must deserialize Content`() {
         val jsonString = javaClass.getResource("/primitive_types/content_valid.json")!!.readText()
-        val binFileContent = javaClass.getResource("/primitive_types/test.bin")!!.readBytes()
 
         val obj = objectMapper.readValue<Content>(jsonString)
 
-        val expectedContent = Content(
-            integer = 1,
-            integer32 = 2147483647,
-            integer64 = 9223372036854775807,
-            boolean = true,
-            string = "example",
-            stringUuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
-            stringUri = URI("https://example.org"),
-            stringDate = LocalDate.parse("2020-02-04"),
-            stringDateTime = OffsetDateTime.parse("2024-11-04T12:00:00Z"),
-            number = BigDecimal("109288282772724.4225837838838383888"),
-            numberFloat = 1.23f,
-            numberDouble = 4.56,
-            byte = binFileContent,
-            binary = binFileContent
-        )
-
-        assertThat(obj.integer).isEqualTo(expectedContent.integer)
-        assertThat(obj.integer32).isEqualTo(expectedContent.integer32)
-        assertThat(obj.integer64).isEqualTo(expectedContent.integer64)
-        assertThat(obj.boolean).isEqualTo(expectedContent.boolean)
-        assertThat(obj.string).isEqualTo(expectedContent.string)
-        assertThat(obj.stringUuid).isEqualTo(expectedContent.stringUuid)
-        assertThat(obj.stringUri).isEqualTo(expectedContent.stringUri)
-        assertThat(obj.stringDate).isEqualTo(expectedContent.stringDate)
-        assertThat(obj.stringDateTime).isEqualTo(expectedContent.stringDateTime)
-        assertThat(obj.number).isEqualTo(expectedContent.number)
-        assertThat(obj.numberFloat).isEqualTo(expectedContent.numberFloat)
-        assertThat(obj.numberDouble).isEqualTo(expectedContent.numberDouble)
-        assertThat(obj.byte).isEqualTo(expectedContent.byte)
-        assertThat(obj.binary).isEqualTo(expectedContent.binary)
+        assertThat(obj.integer).isEqualTo(content.integer)
+        assertThat(obj.integer32).isEqualTo(content.integer32)
+        assertThat(obj.integer64).isEqualTo(content.integer64)
+        assertThat(obj.boolean).isEqualTo(content.boolean)
+        assertThat(obj.string).isEqualTo(content.string)
+        assertThat(obj.stringUuid).isEqualTo(content.stringUuid)
+        assertThat(obj.stringUri).isEqualTo(content.stringUri)
+        assertThat(obj.stringDate).isEqualTo(content.stringDate)
+        assertThat(obj.stringDateTime).isEqualTo(content.stringDateTime)
+        assertThat(obj.number).isEqualTo(content.number)
+        assertThat(obj.numberFloat).isEqualTo(content.numberFloat)
+        assertThat(obj.numberDouble).isEqualTo(content.numberDouble)
+        assertThat(obj.byte).isEqualTo(content.byte)
+        assertThat(obj.binary).isEqualTo(content.binary)
     }
 }
