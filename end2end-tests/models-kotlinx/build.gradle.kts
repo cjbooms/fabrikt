@@ -1,7 +1,6 @@
 val fabrikt: Configuration by configurations.creating
 
 val generationDir = "$buildDir/generated"
-val apiFile = "$projectDir/openapi/api.yaml"
 
 sourceSets {
     main { java.srcDirs("$generationDir/src/main/kotlin") }
@@ -32,18 +31,17 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.24.2")
 }
 
-tasks {
-
-    val generateCode by creating(JavaExec::class) {
-        inputs.files(apiFile)
+fun createGenerateCodeTask(name: String, apiFilePath: String, basePackage: String) =
+    tasks.create(name, JavaExec::class) {
+        inputs.files(file(apiFilePath))
         outputs.dir(generationDir)
         outputs.cacheIf { true }
         classpath = rootProject.files("./build/libs/fabrikt-${rootProject.version}.jar")
         mainClass.set("com.cjbooms.fabrikt.cli.CodeGen")
         args = listOf(
             "--output-directory", generationDir,
-            "--base-package", "com.example",
-            "--api-file", apiFile,
+            "--base-package", basePackage,
+            "--api-file", apiFilePath,
             "--validation-library", "NO_VALIDATION",
             "--targets", "http_models",
             "--serialization-library", "KOTLINX_SERIALIZATION",
@@ -53,15 +51,26 @@ tasks {
         dependsOn(":shadowJar")
     }
 
+tasks {
+    val generateCodeTask = createGenerateCodeTask(
+        "generateCode",
+        "$projectDir/openapi/api.yaml",
+        "com.example"
+    )
+    val generatePrimitiveTypesCodeTask = createGenerateCodeTask(
+        "generatePrimitiveTypesCode",
+        "${rootProject.projectDir}/src/test/resources/examples/primitiveTypes/api.yaml",
+        "com.example.primitives"
+    )
+
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
-        dependsOn(generateCode)
+        dependsOn(generateCodeTask)
+        dependsOn(generatePrimitiveTypesCodeTask)
     }
-
 
     withType<Test> {
         useJUnitPlatform()
         jvmArgs = listOf("--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.base/java.util=ALL-UNNAMED")
-
     }
 }

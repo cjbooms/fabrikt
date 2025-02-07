@@ -1,5 +1,6 @@
 package examples.primitiveTypes.models
 
+import java.math.BigDecimal
 import kotlin.Boolean
 import kotlin.ByteArray
 import kotlin.Double
@@ -9,6 +10,7 @@ import kotlin.Long
 import kotlin.String
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -32,14 +34,17 @@ public data class Content(
   public val stringDate: LocalDate? = null,
   @SerialName("stringDateTime")
   public val stringDateTime: Instant? = null,
+  @Contextual
   @SerialName("number")
-  public val number: Double? = null,
+  public val number: BigDecimal? = null,
   @SerialName("numberFloat")
   public val numberFloat: Float? = null,
   @SerialName("numberDouble")
   public val numberDouble: Double? = null,
+  @Contextual
   @SerialName("base64")
   public val base64: ByteArray? = null,
+  @Contextual
   @SerialName("binary")
   public val binary: ByteArray? = null,
 )

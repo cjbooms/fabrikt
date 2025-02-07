@@ -21,7 +21,7 @@ object JacksonAnnotations : SerializationAnnotations {
     override fun addSetter(funSpecBuilder: FunSpec.Builder) =
         funSpecBuilder.addAnnotation(JacksonMetadata.anySetter)
 
-    override fun addProperty(propertySpecBuilder: PropertySpec.Builder, oasKey: String) =
+    override fun addProperty(propertySpecBuilder: PropertySpec.Builder, oasKey: String, kotlinTypeInfo: KotlinTypeInfo): PropertySpec.Builder =
         propertySpecBuilder.addAnnotation(JacksonMetadata.jacksonPropertyAnnotation(oasKey))
 
     override fun addParameter(propertySpecBuilder: PropertySpec.Builder, oasKey: String) =
