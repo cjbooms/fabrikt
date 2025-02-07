@@ -120,6 +120,12 @@ class CodeGenArgs {
     var clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.OK_HTTP
 
     @Parameter(
+        names = ["--openfeign-client-name"],
+        description = "Specify openfeign client name for spring-cloud-starter-openfeign. Required when using openfeign target.",
+    )
+    var openfeignClientName: String? = null
+
+    @Parameter(
         names = ["--src-path"],
         description = "Allows the path for generated source files to be overridden. Defaults to `src/main/kotlin`",
         converter = PathConverter::class

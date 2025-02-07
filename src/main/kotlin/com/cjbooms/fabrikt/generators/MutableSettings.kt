@@ -10,6 +10,7 @@ object MutableSettings {
     private lateinit var modelSuffix: String
     private lateinit var clientOptions: MutableSet<ClientCodeGenOptionType>
     private lateinit var clientTarget: ClientCodeGenTargetType
+    private var openfeignClientName: String? = null
     private lateinit var typeOverrides: MutableSet<CodeGenTypeOverride>
     private lateinit var validationLibrary: ValidationLibrary
     private lateinit var externalRefResolutionMode: ExternalReferencesResolutionMode
@@ -23,6 +24,7 @@ object MutableSettings {
         modelSuffix: String = "",
         clientOptions: Set<ClientCodeGenOptionType> = emptySet(),
         clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.default,
+        openfeignClientName: String? = null,
         typeOverrides: Set<CodeGenTypeOverride> = emptySet(),
         validationLibrary: ValidationLibrary = ValidationLibrary.default,
         externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.default,
@@ -35,6 +37,7 @@ object MutableSettings {
         this.modelSuffix = modelSuffix
         this.clientOptions = clientOptions.toMutableSet()
         this.clientTarget = clientTarget
+        this.openfeignClientName = openfeignClientName
         this.typeOverrides = typeOverrides.toMutableSet()
         this.validationLibrary = validationLibrary
         this.externalRefResolutionMode = externalRefResolutionMode
@@ -51,6 +54,7 @@ object MutableSettings {
     fun modelSuffix() = this.modelSuffix
     fun clientOptions() = this.clientOptions.toSet()
     fun clientTarget() = this.clientTarget
+    fun openfeignClientName() = this.openfeignClientName
     fun typeOverrides() = this.typeOverrides.toSet()
     fun validationLibrary() = this.validationLibrary
     fun externalRefResolutionMode() = this.externalRefResolutionMode
