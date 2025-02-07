@@ -58,35 +58,10 @@ class KotlinxSerializationPrimitiveTypesTest {
         }
     }
 
-    /**
-     * Custom serializer for [ByteArray] that serializes the value as a base64 string.
-     *
-     * https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/json.md#base64
-     */
-    @OptIn(ExperimentalEncodingApi::class)
-    object Base64AsStringSerializer : KSerializer<ByteArray> {
-        private val base64 = Base64.Default
-
-        override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
-            "ByteArrayAsBase64Serializer", PrimitiveKind.STRING
-        )
-
-        override fun serialize(encoder: Encoder, value: ByteArray) {
-            val base64Encoded = base64.encode(value)
-            encoder.encodeString(base64Encoded)
-        }
-
-        override fun deserialize(decoder: Decoder): ByteArray {
-            val base64Decoded = decoder.decodeString()
-            return base64.decode(base64Decoded)
-        }
-    }
-
     private val jsonWithCustomSerializers = Json {
         serializersModule = SerializersModule {
             // register contextual custom serializers
             contextual(BigDecimalSerializer)
-            contextual(Base64AsStringSerializer)
         }
         prettyPrint = true
     }
@@ -106,8 +81,8 @@ class KotlinxSerializationPrimitiveTypesTest {
             number = BigDecimal("109288282772724.4225837838838383888"),
             numberFloat = 1.23f,
             numberDouble = 4.56,
-            base64 = byteArrayOf(1, 2, 3),
-            binary = byteArrayOf(4, 5, 6)
+            base64 = "AQID",
+            binary = "BAUG"
         )
 
         val result = jsonWithCustomSerializers.encodeToString(content)
@@ -136,8 +111,8 @@ class KotlinxSerializationPrimitiveTypesTest {
             number = BigDecimal("109288282772724.4225837838838383888"),
             numberFloat = 1.23f,
             numberDouble = 4.56,
-            base64 = byteArrayOf(1, 2, 3),
-            binary = byteArrayOf(4, 5, 6)
+            base64 = "AQID",
+            binary = "BAUG"
         )
 
         assertThat(content.integer).isEqualTo(expectedContent.integer)

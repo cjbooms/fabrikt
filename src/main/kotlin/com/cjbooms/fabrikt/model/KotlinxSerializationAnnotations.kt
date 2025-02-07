@@ -42,7 +42,7 @@ object KotlinxSerializationAnnotations : SerializationAnnotations {
         funSpecBuilder // not applicable
 
     override fun addProperty(propertySpecBuilder: PropertySpec.Builder, oasKey: String, kotlinTypeInfo: KotlinTypeInfo): PropertySpec.Builder {
-        if (kotlinTypeInfo is KotlinTypeInfo.Numeric || kotlinTypeInfo is KotlinTypeInfo.ByteArray) {
+        if (kotlinTypeInfo is KotlinTypeInfo.Numeric) {
             propertySpecBuilder.addAnnotation(AnnotationSpec.builder(Contextual::class).build())
         }
         propertySpecBuilder.addAnnotation(
