@@ -1,0 +1,40 @@
+openapi: "3.0.0"
+info:
+paths:
+components:
+  schemas:
+    Content:
+      type: object
+      properties:
+        integer:
+          type: integer
+        integer32:
+          type: integer
+          format: int32
+        integer64:
+          type: integer
+          format: int64
+        boolean:
+          type: boolean
+        string:
+          type: string
+        stringUuid:
+          type: string
+          format: uuid
+        stringUri:
+          type: string
+          format: uri
+        stringDate:
+          type: string
+          format: date
+        stringDateTime:
+          type: string
+          format: date-time
+        number:
+          type: number
+        numberFloat:
+          type: number
+          format: float
+        numberDouble:
+          type: number
+          format: double

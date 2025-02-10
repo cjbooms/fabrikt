@@ -6,6 +6,7 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -40,8 +41,15 @@ object KotlinxSerializationAnnotations : SerializationAnnotations {
     override fun addSetter(funSpecBuilder: FunSpec.Builder) =
         funSpecBuilder // not applicable
 
-    override fun addProperty(propertySpecBuilder: PropertySpec.Builder, oasKey: String) =
-        propertySpecBuilder.addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("%S", oasKey).build())
+    override fun addProperty(propertySpecBuilder: PropertySpec.Builder, oasKey: String, kotlinTypeInfo: KotlinTypeInfo): PropertySpec.Builder {
+        if (kotlinTypeInfo is KotlinTypeInfo.Numeric) {
+            propertySpecBuilder.addAnnotation(AnnotationSpec.builder(Contextual::class).build())
+        }
+        propertySpecBuilder.addAnnotation(
+            AnnotationSpec.builder(SerialName::class).addMember("%S", oasKey).build()
+        )
+        return propertySpecBuilder
+    }
 
     override fun addParameter(propertySpecBuilder: PropertySpec.Builder, oasKey: String) =
         propertySpecBuilder // not applicable

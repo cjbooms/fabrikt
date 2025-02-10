@@ -20,7 +20,7 @@ sealed interface SerializationAnnotations {
     fun addIgnore(propertySpecBuilder: PropertySpec.Builder): PropertySpec.Builder
     fun addGetter(funSpecBuilder: FunSpec.Builder): FunSpec.Builder
     fun addSetter(funSpecBuilder: FunSpec.Builder): FunSpec.Builder
-    fun addProperty(propertySpecBuilder: PropertySpec.Builder, oasKey: String): PropertySpec.Builder
+    fun addProperty(propertySpecBuilder: PropertySpec.Builder, oasKey: String, kotlinTypeInfo: KotlinTypeInfo): PropertySpec.Builder
     fun addParameter(propertySpecBuilder: PropertySpec.Builder, oasKey: String): PropertySpec.Builder
     fun addClassAnnotation(typeSpecBuilder: TypeSpec.Builder): TypeSpec.Builder
     fun addBasePolymorphicTypeAnnotation(typeSpecBuilder: TypeSpec.Builder, propertyName: String): TypeSpec.Builder

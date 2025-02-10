@@ -115,18 +115,18 @@ object PropertyUtils {
                         }
                         serializationAnnotations.addParameter(property, oasKey)
                     }
-                    serializationAnnotations.addProperty(property, oasKey)
+                    serializationAnnotations.addProperty(property, oasKey, typeInfo)
                     property.addValidationAnnotations(this, validationAnnotations)
                 }
 
                 ClassSettings.PolymorphyType.NONE -> {
                     serializationAnnotations.addParameter(property, oasKey)
-                    serializationAnnotations.addProperty(property, oasKey)
+                    serializationAnnotations.addProperty(property, oasKey, typeInfo)
                     property.addValidationAnnotations(this, validationAnnotations)
                 }
 
                 ClassSettings.PolymorphyType.ONE_OF -> {
-                    serializationAnnotations.addProperty(property, oasKey)
+                    serializationAnnotations.addProperty(property, oasKey, typeInfo)
                     property.addValidationAnnotations(this, validationAnnotations)
                 }
             }
