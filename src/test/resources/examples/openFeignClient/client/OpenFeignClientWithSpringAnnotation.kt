@@ -18,7 +18,7 @@ import kotlin.collections.Map
 
 @Suppress("unused")
 @FeignClient(
-    name = "fabrikt-client",
+    name = "test-feign-client-name",
     contextId = "ExamplePath1",
 )
 public interface ExamplePath1Client {
@@ -62,7 +62,7 @@ public interface ExamplePath1Client {
 
 @Suppress("unused")
 @FeignClient(
-    name = "fabrikt-client",
+    name = "test-feign-client-name",
     contextId = "ExamplePath2",
 )
 public interface ExamplePath2Client {
@@ -125,7 +125,7 @@ public interface ExamplePath2Client {
 
 @Suppress("unused")
 @FeignClient(
-    name = "fabrikt-client",
+    name = "test-feign-client-name",
     contextId = "ExamplePath3Subresource",
 )
 public interface ExamplePath3SubresourceClient {

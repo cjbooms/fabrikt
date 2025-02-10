@@ -39,6 +39,7 @@ class OpenFeignClientGeneratorTest {
             genTypes = setOf(CodeGenerationType.CLIENT),
             clientTarget = ClientCodeGenTargetType.OPEN_FEIGN,
             modelOptions = setOf(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS),
+            openfeignClientName = "test-feign-client-name",
         )
         ModelNameRegistry.clear()
     }
