@@ -8,6 +8,7 @@ import feign.Headers
 import feign.Param
 import feign.QueryMap
 import feign.RequestLine
+import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.ResponseEntity
 import kotlin.Boolean
 import kotlin.Int
@@ -18,6 +19,10 @@ import kotlin.collections.List
 import kotlin.collections.Map
 
 @Suppress("unused")
+@FeignClient(
+    name = "test-feign-client-name",
+    contextId = "ExamplePath1",
+)
 public interface ExamplePath1Client {
     /**
      * GET example path 1
@@ -58,6 +63,10 @@ public interface ExamplePath1Client {
 }
 
 @Suppress("unused")
+@FeignClient(
+    name = "test-feign-client-name",
+    contextId = "ExamplePath2",
+)
 public interface ExamplePath2Client {
     /**
      * GET example path 2
@@ -117,6 +126,10 @@ public interface ExamplePath2Client {
 }
 
 @Suppress("unused")
+@FeignClient(
+    name = "test-feign-client-name",
+    contextId = "ExamplePath3Subresource",
+)
 public interface ExamplePath3SubresourceClient {
     /**
      * PUT example path 3

@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
+import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.TypeFactory
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_HEADERS_PARAMETER_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_QUERY_PARAMETERS_PARAMETER_NAME
@@ -53,6 +54,19 @@ class OpenFeignInterfaceGenerator(
 
             val clientType = TypeSpec.interfaceBuilder(simpleClientName(resourceName))
                 .addAnnotation(AnnotationSpec.builder(Suppress::class).addMember("%S", "unused").build())
+                .apply {
+                    if (options.contains(ClientCodeGenOptionType.SPRING_CLOUD_OPENFEIGN_STARTER_ANNOTATION)) {
+                        addAnnotation(
+                            OpenFeignAnnotations.feignClientBuilder()
+                                .addMember(
+                                    "name = %S",
+                                    MutableSettings.openfeignClientName()
+                                )
+                                .addMember("contextId = %S", resourceName)
+                                .build()
+                        )
+                    }
+                }
                 .addFunctions(funcSpecs)
                 .build()
 

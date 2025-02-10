@@ -28,9 +28,14 @@ enum class CodeGenerationType(val description: String) {
 enum class ClientCodeGenOptionType(private val description: String) {
     RESILIENCE4J("Generates a fault tolerance service for the client using the following library \"io.github.resilience4j:resilience4j-all:+\" (only for OkHttp clients)"),
     SUSPEND_MODIFIER("This option adds the suspend modifier to the generated client functions (only for OpenFeign clients)"),
-    SPRING_RESPONSE_ENTITY_WRAPPER("This option adds the Spring-ResponseEntity generic around the response to be able to get response headers and status (only for OpenFeign clients).");
+    SPRING_RESPONSE_ENTITY_WRAPPER("This option adds the Spring-ResponseEntity generic around the response to be able to get response headers and status (only for OpenFeign clients)."),
+    SPRING_CLOUD_OPENFEIGN_STARTER_ANNOTATION("This option adds the @FeignClient annotation to generated client interface")
+    ;
 
     override fun toString() = "`${super.toString()}` - $description"
+    companion object {
+        const val DEFAULT_OPEN_FEIGN_CLIENT_NAME = "fabrikt-client"
+    }
 }
 
 enum class ClientCodeGenTargetType(val description: String) {

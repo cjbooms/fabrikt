@@ -39,6 +39,7 @@ class OpenFeignClientGeneratorTest {
             genTypes = setOf(CodeGenerationType.CLIENT),
             clientTarget = ClientCodeGenTargetType.OPEN_FEIGN,
             modelOptions = setOf(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS),
+            openfeignClientName = "test-feign-client-name",
         )
         ModelNameRegistry.clear()
     }
@@ -59,13 +60,17 @@ class OpenFeignClientGeneratorTest {
     }
 
     @Test
-    fun `correct Open Feign interfaces are generated with response entity wrapper`() {
+    fun `correct Open Feign interfaces are generated with response entity wrapper and spring annotation`() {
         runTestCase(
             testCaseName = "openFeignClient",
             clientFileName = "OpenFeignClientWithResponseEntity.kt",
-            options = setOf(ClientCodeGenOptionType.SPRING_RESPONSE_ENTITY_WRAPPER),
+            options = setOf(
+                ClientCodeGenOptionType.SPRING_RESPONSE_ENTITY_WRAPPER,
+                ClientCodeGenOptionType.SPRING_CLOUD_OPENFEIGN_STARTER_ANNOTATION
+            )
         )
     }
+
 
     private fun runTestCase(
         testCaseName: String,

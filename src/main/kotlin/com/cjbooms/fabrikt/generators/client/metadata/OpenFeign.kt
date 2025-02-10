@@ -7,6 +7,7 @@ object OpenFeignImports {
 
     private object Packages {
         const val FEIGN = "feign"
+        const val SPRING_STARTER = "org.springframework.cloud.openfeign"
     }
 
     val REQUEST_LINE = ClassName(Packages.FEIGN, "RequestLine")
@@ -18,6 +19,8 @@ object OpenFeignImports {
     val QUERY_MAP = ClassName(Packages.FEIGN, "QueryMap")
 
     val PARAM = ClassName(Packages.FEIGN, "Param")
+
+    val FEIGN_CLIENT = ClassName(Packages.SPRING_STARTER, "FeignClient")
 }
 
 object OpenFeignAnnotations {
@@ -42,4 +45,8 @@ object OpenFeignAnnotations {
     fun paramBuilder(): AnnotationSpec.Builder =
         AnnotationSpec
             .builder(OpenFeignImports.PARAM)
+
+    fun feignClientBuilder(): AnnotationSpec.Builder =
+        AnnotationSpec
+            .builder(OpenFeignImports.FEIGN_CLIENT)
 }
