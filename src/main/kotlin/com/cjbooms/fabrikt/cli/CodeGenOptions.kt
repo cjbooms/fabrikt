@@ -33,6 +33,9 @@ enum class ClientCodeGenOptionType(private val description: String) {
     ;
 
     override fun toString() = "`${super.toString()}` - $description"
+    companion object {
+        const val DEFAULT_OPEN_FEIGN_CLIENT_NAME = "fabrikt-client"
+    }
 }
 
 enum class ClientCodeGenTargetType(val description: String) {

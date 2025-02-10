@@ -121,9 +121,9 @@ class CodeGenArgs {
 
     @Parameter(
         names = ["--openfeign-client-name"],
-        description = "Specify openfeign client name for spring-cloud-starter-openfeign. Required when using openfeign target.",
+        description = "Specify openfeign client name for spring-cloud-starter-openfeign. Defaults to 'fabrikt-client'.",
     )
-    var openfeignClientName: String? = null
+    var openfeignClientName: String = ClientCodeGenOptionType.DEFAULT_OPEN_FEIGN_CLIENT_NAME
 
     @Parameter(
         names = ["--src-path"],

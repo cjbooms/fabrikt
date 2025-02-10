@@ -10,7 +10,7 @@ object MutableSettings {
     private lateinit var modelSuffix: String
     private lateinit var clientOptions: MutableSet<ClientCodeGenOptionType>
     private lateinit var clientTarget: ClientCodeGenTargetType
-    private var openfeignClientName: String? = null
+    private lateinit var openfeignClientName: String
     private lateinit var typeOverrides: MutableSet<CodeGenTypeOverride>
     private lateinit var validationLibrary: ValidationLibrary
     private lateinit var externalRefResolutionMode: ExternalReferencesResolutionMode
@@ -24,7 +24,7 @@ object MutableSettings {
         modelSuffix: String = "",
         clientOptions: Set<ClientCodeGenOptionType> = emptySet(),
         clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.default,
-        openfeignClientName: String? = null,
+        openfeignClientName: String = ClientCodeGenOptionType.DEFAULT_OPEN_FEIGN_CLIENT_NAME,
         typeOverrides: Set<CodeGenTypeOverride> = emptySet(),
         validationLibrary: ValidationLibrary = ValidationLibrary.default,
         externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.default,

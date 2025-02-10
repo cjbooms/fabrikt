@@ -195,6 +195,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               |   `RESILIENCE4J` - Generates a fault tolerance service for the client using the following library "io.github.resilience4j:resilience4j-all:+" (only for OkHttp clients) |
 |                               |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated client functions (only for OpenFeign clients) |
 |                               |   `SPRING_RESPONSE_ENTITY_WRAPPER` - This option adds the Spring-ResponseEntity generic around the response to be able to get response headers and status (only for OpenFeign clients). |
+|                               |   `SPRING_CLOUD_OPENFEIGN_STARTER_ANNOTATION` - This option adds the @FeignClient annotation to generated client interface |
 |   `--http-client-target`      | Optionally select the target client that you want to be generated. Defaults to OK_HTTP |
 |                               | CHOOSE ONE OF: |
 |                               |   `OK_HTTP` - Generate OkHttp client. |
@@ -220,6 +221,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               |   `SEALED_INTERFACES_FOR_ONE_OF` - This option enables the generation of interfaces for discriminated oneOf types |
 |                               |   `NON_NULL_MAP_VALUES` - This option makes map values non-null. The default (since v15) and most spec compliant is make map values nullable |
 |   `--http-model-suffix`       | Specify custom suffix for all generated model classes. Defaults to no suffix. |
+|   `--openfeign-client-name`   | Specify openfeign client name for spring-cloud-starter-openfeign. Defaults to 'fabrikt-client'. |
 |   `--output-directory`        | Allows the generation dir to be overridden. Defaults to current dir |
 |   `--resources-path`          | Allows the path for generated resources to be overridden. Defaults to `src/main/resources` |
 |   `--serialization-library`   | Specify which serialization library to use for annotations in generated model classes. Default: JACKSON |

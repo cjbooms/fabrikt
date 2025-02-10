@@ -31,7 +31,6 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
-    implementation("org.springframework.cloud:spring-cloud-openfeign-core:4.2.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
@@ -61,34 +60,15 @@ tasks {
         dependsOn(":shadowJar")
     }
 
-    val generateCodeWithSpringCloudStarter by creating(JavaExec::class) {
-        inputs.files(apiFile)
-        outputs.dir(generationDir)
-        outputs.cacheIf { true }
-        classpath = rootProject.files("./build/libs/fabrikt-${rootProject.version}.jar")
-        mainClass.set("com.cjbooms.fabrikt.cli.CodeGen")
-        args = listOf(
-            "--output-directory", generationDir,
-            "--base-package", "com.example2",
-            "--api-file", apiFile,
-            "--targets", "http_models",
-            "--targets", "client",
-            "--http-client-target", "open_feign",
-            "--http-client-opts", "SPRING_CLOUD_OPENFEIGN_STARTER_ANNOTATION",
-            "--openfeign-client-name", "testClient"
-        )
-        dependsOn(":jar")
-        dependsOn(":shadowJar")
-    }
-
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
-        dependsOn(generateCode, generateCodeWithSpringCloudStarter)
+        dependsOn(generateCode)
     }
 
 
     withType<Test> {
         useJUnitPlatform()
         jvmArgs = listOf("--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.base/java.util=ALL-UNNAMED")
+
     }
 }

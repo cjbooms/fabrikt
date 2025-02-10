@@ -53,7 +53,7 @@ object CodeGen {
         modelSuffix: String,
         clientOptions: Set<ClientCodeGenOptionType>,
         clientTarget: ClientCodeGenTargetType,
-        openfeignClientName: String?,
+        openfeignClientName: String,
         typeOverrides: Set<CodeGenTypeOverride>,
         srcPath: Path,
         resourcesPath: Path,

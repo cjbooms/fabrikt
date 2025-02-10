@@ -67,6 +67,16 @@ class OpenFeignClientGeneratorTest {
         )
     }
 
+    @Test
+    fun `correct Open Feign annotation is added when configured`() {
+        runTestCase(
+            testCaseName = "openFeignClient",
+            clientFileName = "OpenFeignClientWithSpringAnnotation.kt",
+            options = setOf(
+                ClientCodeGenOptionType.SPRING_CLOUD_OPENFEIGN_STARTER_ANNOTATION,)
+        )
+    }
+
     private fun runTestCase(
         testCaseName: String,
         clientFileName: String = "OpenFeignClient.kt",

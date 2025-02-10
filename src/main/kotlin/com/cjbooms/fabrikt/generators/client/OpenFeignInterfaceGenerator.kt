@@ -60,9 +60,7 @@ class OpenFeignInterfaceGenerator(
                             OpenFeignAnnotations.feignClientBuilder()
                                 .addMember(
                                     "name = %S",
-                                    checkNotNull(MutableSettings.openfeignClientName()) {
-                                        "openfeignClientName must be set"
-                                    }
+                                    MutableSettings.openfeignClientName()
                                 )
                                 .addMember("contextId = %S", resourceName)
                                 .build()
