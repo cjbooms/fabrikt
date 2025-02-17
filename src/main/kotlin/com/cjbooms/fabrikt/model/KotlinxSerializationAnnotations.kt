@@ -41,14 +41,23 @@ object KotlinxSerializationAnnotations : SerializationAnnotations {
     override fun addSetter(funSpecBuilder: FunSpec.Builder) =
         funSpecBuilder // not applicable
 
-    override fun addProperty(propertySpecBuilder: PropertySpec.Builder, oasKey: String, kotlinTypeInfo: KotlinTypeInfo): PropertySpec.Builder {
-        if (kotlinTypeInfo is KotlinTypeInfo.Numeric) {
-            propertySpecBuilder.addAnnotation(AnnotationSpec.builder(Contextual::class).build())
+    override fun addProperty(
+        propertySpecBuilder: PropertySpec.Builder,
+        oasKey: String,
+        kotlinTypeInfo: KotlinTypeInfo
+    ): PropertySpec.Builder {
+        when (kotlinTypeInfo) {
+            is KotlinTypeInfo.Numeric,
+            is KotlinTypeInfo.Uri,
+            is KotlinTypeInfo.Uuid,
+            is KotlinTypeInfo.ByteArray -> {
+                propertySpecBuilder.addAnnotation(AnnotationSpec.builder(Contextual::class).build())
+            }
+            else -> {}
         }
-        propertySpecBuilder.addAnnotation(
+        return propertySpecBuilder.addAnnotation(
             AnnotationSpec.builder(SerialName::class).addMember("%S", oasKey).build()
         )
-        return propertySpecBuilder
     }
 
     override fun addParameter(propertySpecBuilder: PropertySpec.Builder, oasKey: String) =

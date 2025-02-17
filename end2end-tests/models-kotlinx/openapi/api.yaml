@@ -27,7 +27,6 @@ components:
           type: string
         model:
           type: string
-          format: uuid
     Pet:
       type: object
       required:

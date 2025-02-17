@@ -79,7 +79,7 @@ class KotlinxSerializationEnumTest {
         val json = """
             {"deviceType":"Ho_ver-boaRD","make":"Hover","model":"Board"}
         """.trimIndent()
-        val device = Json.decodeFromString(TransportationDevice.serializer(), json)
+        val device = Json.decodeFromString<TransportationDevice>(json)
         assertThat(device).isEqualTo(
             TransportationDevice(
                 deviceType = TransportationDeviceDeviceType.HO_VER_BOA_RD,

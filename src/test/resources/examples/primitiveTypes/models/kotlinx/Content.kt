@@ -1,7 +1,10 @@
 package examples.primitiveTypes.models
 
 import java.math.BigDecimal
+import java.net.URI
+import java.util.UUID
 import kotlin.Boolean
+import kotlin.ByteArray
 import kotlin.Double
 import kotlin.Float
 import kotlin.Int
@@ -25,10 +28,12 @@ public data class Content(
   public val boolean: Boolean? = null,
   @SerialName("string")
   public val string: String? = null,
+  @Contextual
   @SerialName("stringUuid")
-  public val stringUuid: String? = null,
+  public val stringUuid: UUID? = null,
+  @Contextual
   @SerialName("stringUri")
-  public val stringUri: String? = null,
+  public val stringUri: URI? = null,
   @SerialName("stringDate")
   public val stringDate: LocalDate? = null,
   @SerialName("stringDateTime")
@@ -40,4 +45,10 @@ public data class Content(
   public val numberFloat: Float? = null,
   @SerialName("numberDouble")
   public val numberDouble: Double? = null,
+  @Contextual
+  @SerialName("byte")
+  public val byte: ByteArray? = null,
+  @Contextual
+  @SerialName("binary")
+  public val binary: ByteArray? = null,
 )

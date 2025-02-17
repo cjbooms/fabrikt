@@ -38,3 +38,9 @@ components:
         numberDouble:
           type: number
           format: double
+        byte:
+          type: string
+          format: byte
+        binary:
+          type: string
+          format: binary

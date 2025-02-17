@@ -31,7 +31,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.24.2")
 }
 
-fun createGenerateCodeTask(name: String, apiFilePath: String, basePackage: String) =
+fun createGenerateCodeTask(name: String, apiFilePath: String, basePackage: String, additionalArgs: List<String> = emptyList()) =
     tasks.create(name, JavaExec::class) {
         inputs.files(file(apiFilePath))
         outputs.dir(generationDir)
@@ -46,7 +46,7 @@ fun createGenerateCodeTask(name: String, apiFilePath: String, basePackage: Strin
             "--targets", "http_models",
             "--serialization-library", "KOTLINX_SERIALIZATION",
             "--http-model-opts", "SEALED_INTERFACES_FOR_ONE_OF",
-        )
+        ).plus(additionalArgs)
         dependsOn(":jar")
         dependsOn(":shadowJar")
     }
@@ -62,11 +62,25 @@ tasks {
         "${rootProject.projectDir}/src/test/resources/examples/primitiveTypes/api.yaml",
         "com.example.primitives"
     )
+    val generateStringFormatOverrideCodeTask = createGenerateCodeTask(
+        "generateStringFormatOverrideCode",
+        "${rootProject.projectDir}/src/test/resources/examples/primitiveTypes/api.yaml",
+        "com.example.stringformat",
+        listOf(
+            "--type-overrides", "UUID_AS_STRING",
+            "--type-overrides", "URI_AS_STRING",
+            "--type-overrides", "BYTE_AS_STRING",
+            "--type-overrides", "BINARY_AS_STRING",
+            "--type-overrides", "DATE_AS_STRING",
+            "--type-overrides", "DATETIME_AS_STRING"
+        )
+    )
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
         dependsOn(generateCodeTask)
         dependsOn(generatePrimitiveTypesCodeTask)
+        dependsOn(generateStringFormatOverrideCodeTask)
     }
 
     withType<Test> {

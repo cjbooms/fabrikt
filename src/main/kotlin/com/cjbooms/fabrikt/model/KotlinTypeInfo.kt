@@ -82,12 +82,14 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
             }
             return when (schema.toOasType(oasKey)) {
                 OasType.Date -> {
-                    if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) KotlinxLocalDate
+                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.DATE_AS_STRING)) Text
+                    else if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) KotlinxLocalDate
                     else Date
                 }
 
                 OasType.DateTime -> {
-                    if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) KotlinxInstant
+                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.DATETIME_AS_STRING)) Text
+                    else if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) KotlinxInstant
                     else getOverridableDateTimeType()
                 }
 
@@ -96,17 +98,23 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     Enum(schema.getEnumValues(), ModelNameRegistry.getOrRegister(schema, enclosingSchema))
 
                 OasType.Uuid -> {
-                    if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) Text // could possibly be Kotlin native UUID once that becomes stable
+                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.UUID_AS_STRING)) Text
                     else Uuid
                 }
 
                 OasType.Uri -> {
-                    if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) Text // no native URI in kotlin and thus not in kotlinx.serialization either
+                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.URI_AS_STRING)) Text
                     else Uri
                 }
 
-                OasType.Base64String -> ByteArray
-                OasType.Binary -> getOverridableByteArray()
+                OasType.Base64String -> {
+                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.BYTE_AS_STRING)) Text
+                    else ByteArray
+                }
+                OasType.Binary -> {
+                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.BINARY_AS_STRING)) Text
+                    else getOverridableByteArray()
+                }
                 OasType.Double -> Double
                 OasType.Float -> Float
                 OasType.Number -> Numeric
