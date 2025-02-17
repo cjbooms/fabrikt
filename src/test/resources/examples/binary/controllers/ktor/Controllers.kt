@@ -11,6 +11,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
+import io.ktor.util.converters.ConversionService
 import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
@@ -51,12 +52,15 @@ public interface BinaryDataController {
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService = DefaultConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,

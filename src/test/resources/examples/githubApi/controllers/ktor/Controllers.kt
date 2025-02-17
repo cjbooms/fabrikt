@@ -18,6 +18,7 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.ParameterConversionException
+import io.ktor.server.plugins.dataconversion.conversionService
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -26,6 +27,7 @@ import io.ktor.server.routing.`get`
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.util.getOrFail
+import io.ktor.util.converters.ConversionService
 import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
@@ -70,12 +72,15 @@ public interface InternalEventsController {
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService = DefaultConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,
@@ -238,7 +243,10 @@ public interface ContributorsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
-                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
+                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>(
+                        "status",
+                        call.application.conversionService,
+                    )
                 controller.getContributor(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/contributors/{id}") {
@@ -258,12 +266,15 @@ public interface ContributorsController {
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService = DefaultConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,
@@ -420,7 +431,10 @@ public interface OrganisationsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
-                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
+                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>(
+                        "status",
+                        call.application.conversionService,
+                    )
                 controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/organisations/{id}") {
@@ -440,12 +454,15 @@ public interface OrganisationsController {
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService = DefaultConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,
@@ -629,12 +646,15 @@ public interface OrganisationsContributorsController {
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService = DefaultConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,
@@ -807,7 +827,10 @@ public interface RepositoriesController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
-                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
+                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>(
+                        "status",
+                        call.application.conversionService,
+                    )
                 controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/repositories/{id}") {
@@ -827,12 +850,15 @@ public interface RepositoriesController {
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService = DefaultConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,
@@ -1028,12 +1054,15 @@ public interface RepositoriesPullRequestsController {
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService = DefaultConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,
