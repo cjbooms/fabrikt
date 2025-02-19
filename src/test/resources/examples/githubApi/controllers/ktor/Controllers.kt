@@ -17,7 +17,9 @@ import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
+import io.ktor.server.plugins.MissingRequestParameterException
 import io.ktor.server.plugins.ParameterConversionException
+import io.ktor.server.plugins.dataconversion.conversionService
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -26,7 +28,7 @@ import io.ktor.server.routing.`get`
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.util.getOrFail
-import io.ktor.util.converters.DefaultConversionService
+import io.ktor.util.converters.ConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
 import kotlin.Boolean
@@ -65,17 +67,47 @@ public interface InternalEventsController {
 
         /**
          * Gets parameter value associated with this name or null if the name is not present.
-         * Converting to type R using DefaultConversionService.
+         * Converting to type R using ConversionService.
          *
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
+            } catch (cause: Exception) {
+                throw ParameterConversionException(
+                    name,
+                    typeInfo.type.simpleName
+                        ?: typeInfo.type.toString(),
+                    cause,
+                )
+            }
+        }
+
+        /**
+         * Gets parameter value associated with this name or throws if the name is not present.
+         * Converting to type R using ConversionService.
+         *
+         * Throws:
+         *   MissingRequestParameterException - when parameter is missing
+         *   ParameterConversionException - when conversion from String to R fails
+         */
+        private inline fun <reified R : Any> Parameters.getTypedOrFail(
+            name: String,
+            conversionService: ConversionService,
+        ): R {
+            val values = getAll(name) ?: throw MissingRequestParameterException(name)
+            val typeInfo = typeInfo<R>()
+            return try {
+                @Suppress("UNCHECKED_CAST")
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,
@@ -215,10 +247,19 @@ public interface ContributorsController {
         public fun Route.contributorsRoutes(controller: ContributorsController) {
             `get`("/contributors") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
+                val limit = call.request.queryParameters.getTyped<kotlin.Int>(
+                    "limit",
+                    call.application.conversionService,
+                )
                 val includeInactive =
-                    call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
-                val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
+                    call.request.queryParameters.getTyped<kotlin.Boolean>(
+                        "include_inactive",
+                        call.application.conversionService,
+                    )
+                val cursor = call.request.queryParameters.getTyped<kotlin.String>(
+                    "cursor",
+                    call.application.conversionService,
+                )
                 controller.searchContributors(
                     xFlowId,
                     limit,
@@ -238,7 +279,10 @@ public interface ContributorsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
-                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
+                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>(
+                        "status",
+                        call.application.conversionService,
+                    )
                 controller.getContributor(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/contributors/{id}") {
@@ -253,17 +297,47 @@ public interface ContributorsController {
 
         /**
          * Gets parameter value associated with this name or null if the name is not present.
-         * Converting to type R using DefaultConversionService.
+         * Converting to type R using ConversionService.
          *
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
+            } catch (cause: Exception) {
+                throw ParameterConversionException(
+                    name,
+                    typeInfo.type.simpleName
+                        ?: typeInfo.type.toString(),
+                    cause,
+                )
+            }
+        }
+
+        /**
+         * Gets parameter value associated with this name or throws if the name is not present.
+         * Converting to type R using ConversionService.
+         *
+         * Throws:
+         *   MissingRequestParameterException - when parameter is missing
+         *   ParameterConversionException - when conversion from String to R fails
+         */
+        private inline fun <reified R : Any> Parameters.getTypedOrFail(
+            name: String,
+            conversionService: ConversionService,
+        ): R {
+            val values = getAll(name) ?: throw MissingRequestParameterException(name)
+            val typeInfo = typeInfo<R>()
+            return try {
+                @Suppress("UNCHECKED_CAST")
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,
@@ -403,10 +477,19 @@ public interface OrganisationsController {
         public fun Route.organisationsRoutes(controller: OrganisationsController) {
             `get`("/organisations") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
+                val limit = call.request.queryParameters.getTyped<kotlin.Int>(
+                    "limit",
+                    call.application.conversionService,
+                )
                 val includeInactive =
-                    call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
-                val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
+                    call.request.queryParameters.getTyped<kotlin.Boolean>(
+                        "include_inactive",
+                        call.application.conversionService,
+                    )
+                val cursor = call.request.queryParameters.getTyped<kotlin.String>(
+                    "cursor",
+                    call.application.conversionService,
+                )
                 controller.get(xFlowId, limit, includeInactive, cursor, TypedApplicationCall(call))
             }
             post("/organisations") {
@@ -420,7 +503,10 @@ public interface OrganisationsController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
-                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
+                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>(
+                        "status",
+                        call.application.conversionService,
+                    )
                 controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/organisations/{id}") {
@@ -435,17 +521,47 @@ public interface OrganisationsController {
 
         /**
          * Gets parameter value associated with this name or null if the name is not present.
-         * Converting to type R using DefaultConversionService.
+         * Converting to type R using ConversionService.
          *
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
+            } catch (cause: Exception) {
+                throw ParameterConversionException(
+                    name,
+                    typeInfo.type.simpleName
+                        ?: typeInfo.type.toString(),
+                    cause,
+                )
+            }
+        }
+
+        /**
+         * Gets parameter value associated with this name or throws if the name is not present.
+         * Converting to type R using ConversionService.
+         *
+         * Throws:
+         *   MissingRequestParameterException - when parameter is missing
+         *   ParameterConversionException - when conversion from String to R fails
+         */
+        private inline fun <reified R : Any> Parameters.getTypedOrFail(
+            name: String,
+            conversionService: ConversionService,
+        ): R {
+            val values = getAll(name) ?: throw MissingRequestParameterException(name)
+            val typeInfo = typeInfo<R>()
+            return try {
+                @Suppress("UNCHECKED_CAST")
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,
@@ -586,10 +702,19 @@ public interface OrganisationsContributorsController {
             `get`("/organisations/{parent-id}/contributors") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
+                val limit = call.request.queryParameters.getTyped<kotlin.Int>(
+                    "limit",
+                    call.application.conversionService,
+                )
                 val includeInactive =
-                    call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
-                val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
+                    call.request.queryParameters.getTyped<kotlin.Boolean>(
+                        "include_inactive",
+                        call.application.conversionService,
+                    )
+                val cursor = call.request.queryParameters.getTyped<kotlin.String>(
+                    "cursor",
+                    call.application.conversionService,
+                )
                 controller.get(
                     xFlowId,
                     parentId,
@@ -624,17 +749,47 @@ public interface OrganisationsContributorsController {
 
         /**
          * Gets parameter value associated with this name or null if the name is not present.
-         * Converting to type R using DefaultConversionService.
+         * Converting to type R using ConversionService.
          *
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
+            } catch (cause: Exception) {
+                throw ParameterConversionException(
+                    name,
+                    typeInfo.type.simpleName
+                        ?: typeInfo.type.toString(),
+                    cause,
+                )
+            }
+        }
+
+        /**
+         * Gets parameter value associated with this name or throws if the name is not present.
+         * Converting to type R using ConversionService.
+         *
+         * Throws:
+         *   MissingRequestParameterException - when parameter is missing
+         *   ParameterConversionException - when conversion from String to R fails
+         */
+        private inline fun <reified R : Any> Parameters.getTypedOrFail(
+            name: String,
+            conversionService: ConversionService,
+        ): R {
+            val values = getAll(name) ?: throw MissingRequestParameterException(name)
+            val typeInfo = typeInfo<R>()
+            return try {
+                @Suppress("UNCHECKED_CAST")
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,
@@ -778,14 +933,29 @@ public interface RepositoriesController {
         public fun Route.repositoriesRoutes(controller: RepositoriesController) {
             `get`("/repositories") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
+                val limit = call.request.queryParameters.getTyped<kotlin.Int>(
+                    "limit",
+                    call.application.conversionService,
+                )
                 val slug =
-                    call.request.queryParameters.getTyped<kotlin.collections.List<kotlin.String>>("slug")
+                    call.request.queryParameters.getTyped<kotlin.collections.List<kotlin.String>>(
+                        "slug",
+                        call.application.conversionService,
+                    )
                 val name =
-                    call.request.queryParameters.getTyped<kotlin.collections.List<kotlin.String>>("name")
+                    call.request.queryParameters.getTyped<kotlin.collections.List<kotlin.String>>(
+                        "name",
+                        call.application.conversionService,
+                    )
                 val includeInactive =
-                    call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
-                val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
+                    call.request.queryParameters.getTyped<kotlin.Boolean>(
+                        "include_inactive",
+                        call.application.conversionService,
+                    )
+                val cursor = call.request.queryParameters.getTyped<kotlin.String>(
+                    "cursor",
+                    call.application.conversionService,
+                )
                 controller.get(
                     xFlowId,
                     limit,
@@ -807,7 +977,10 @@ public interface RepositoriesController {
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
-                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>("status")
+                    call.request.queryParameters.getTyped<examples.githubApi.models.StatusQueryParam>(
+                        "status",
+                        call.application.conversionService,
+                    )
                 controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/repositories/{id}") {
@@ -822,17 +995,47 @@ public interface RepositoriesController {
 
         /**
          * Gets parameter value associated with this name or null if the name is not present.
-         * Converting to type R using DefaultConversionService.
+         * Converting to type R using ConversionService.
          *
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
+            } catch (cause: Exception) {
+                throw ParameterConversionException(
+                    name,
+                    typeInfo.type.simpleName
+                        ?: typeInfo.type.toString(),
+                    cause,
+                )
+            }
+        }
+
+        /**
+         * Gets parameter value associated with this name or throws if the name is not present.
+         * Converting to type R using ConversionService.
+         *
+         * Throws:
+         *   MissingRequestParameterException - when parameter is missing
+         *   ParameterConversionException - when conversion from String to R fails
+         */
+        private inline fun <reified R : Any> Parameters.getTypedOrFail(
+            name: String,
+            conversionService: ConversionService,
+        ): R {
+            val values = getAll(name) ?: throw MissingRequestParameterException(name)
+            val typeInfo = typeInfo<R>()
+            return try {
+                @Suppress("UNCHECKED_CAST")
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,
@@ -983,10 +1186,19 @@ public interface RepositoriesPullRequestsController {
             `get`("/repositories/{parent-id}/pull-requests") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
+                val limit = call.request.queryParameters.getTyped<kotlin.Int>(
+                    "limit",
+                    call.application.conversionService,
+                )
                 val includeInactive =
-                    call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
-                val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
+                    call.request.queryParameters.getTyped<kotlin.Boolean>(
+                        "include_inactive",
+                        call.application.conversionService,
+                    )
+                val cursor = call.request.queryParameters.getTyped<kotlin.String>(
+                    "cursor",
+                    call.application.conversionService,
+                )
                 controller.get(
                     xFlowId,
                     parentId,
@@ -1023,17 +1235,47 @@ public interface RepositoriesPullRequestsController {
 
         /**
          * Gets parameter value associated with this name or null if the name is not present.
-         * Converting to type R using DefaultConversionService.
+         * Converting to type R using ConversionService.
          *
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
          */
-        private inline fun <reified R : Any> Parameters.getTyped(name: String): R? {
+        private inline fun <reified R : Any> Parameters.getTyped(
+            name: String,
+            conversionService: ConversionService,
+        ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
-                DefaultConversionService.fromValues(values, typeInfo) as R
+                conversionService.fromValues(values, typeInfo) as R
+            } catch (cause: Exception) {
+                throw ParameterConversionException(
+                    name,
+                    typeInfo.type.simpleName
+                        ?: typeInfo.type.toString(),
+                    cause,
+                )
+            }
+        }
+
+        /**
+         * Gets parameter value associated with this name or throws if the name is not present.
+         * Converting to type R using ConversionService.
+         *
+         * Throws:
+         *   MissingRequestParameterException - when parameter is missing
+         *   ParameterConversionException - when conversion from String to R fails
+         */
+        private inline fun <reified R : Any> Parameters.getTypedOrFail(
+            name: String,
+            conversionService: ConversionService,
+        ): R {
+            val values = getAll(name) ?: throw MissingRequestParameterException(name)
+            val typeInfo = typeInfo<R>()
+            return try {
+                @Suppress("UNCHECKED_CAST")
+                conversionService.fromValues(values, typeInfo) as R
             } catch (cause: Exception) {
                 throw ParameterConversionException(
                     name,

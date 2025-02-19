@@ -3,9 +3,9 @@ info:
   title: "API Example"
   version: "1.0"
 paths:
-  /example-path-1:
+  /instant-date-time:
     get:
-      summary: "GET example path 1"
+      summary: "GET instant date time"
       parameters:
         - $ref: "#/components/parameters/ListQueryParamExploded"
         - $ref: "#/components/parameters/QueryParam"
