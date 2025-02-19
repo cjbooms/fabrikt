@@ -47,11 +47,11 @@ class KtorInstantDateTimeTest {
                 instantDateTimeRoutes(InstantDateTimeControllerImpl(listCapturingSlot, param2CapturingSlot))
             }
 
-            val response = client.get("/instant-date-time?explode_list_query_param=2025-02-16T10:52:46Z&explode_list_query_param=2025-02-16T11:52:46Z")
+            val response = client.get("/instant-date-time?explode_list_query_param=2025-02-16T10:52:46Z&explode_list_query_param=2025-02-16T11:52:46Z&query_param2=2025-02-16T10:52:46Z")
 
             assertEquals(HttpStatusCode.OK, response.status)
             assertEquals(listOf(Instant.parse("2025-02-16T10:52:46Z"), Instant.parse("2025-02-16T11:52:46Z")), listCapturingSlot.captured)
-            assertEquals(null, param2CapturingSlot.captured)
+            assertEquals(Instant.parse("2025-02-16T10:52:46Z"), param2CapturingSlot.captured)
         }
     }
 
@@ -102,17 +102,11 @@ class KtorInstantDateTimeTest {
                     decode { values ->
                         values.single().let { Instant.parse(it) }
                     }
-                    encode { value ->
-                        listOf((value).toString())
-                    }
                 }
 
                 convert<List<Instant>> {
                     decode { values ->
                         values.map { Instant.parse(it) }
-                    }
-                    encode { value ->
-                        listOf((value).toString())
                     }
                 }
             }

@@ -8,6 +8,7 @@ import io.ktor.http.Parameters
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
+import io.ktor.server.plugins.MissingRequestParameterException
 import io.ktor.server.plugins.ParameterConversionException
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
@@ -53,7 +54,7 @@ public interface BooksBatchController {
 
         /**
          * Gets parameter value associated with this name or null if the name is not present.
-         * Converting to type R using DefaultConversionService.
+         * Converting to type R using ConversionService.
          *
          * Throws:
          *   ParameterConversionException - when conversion from String to R fails
@@ -63,6 +64,33 @@ public interface BooksBatchController {
             conversionService: ConversionService = DefaultConversionService,
         ): R? {
             val values = getAll(name) ?: return null
+            val typeInfo = typeInfo<R>()
+            return try {
+                @Suppress("UNCHECKED_CAST")
+                conversionService.fromValues(values, typeInfo) as R
+            } catch (cause: Exception) {
+                throw ParameterConversionException(
+                    name,
+                    typeInfo.type.simpleName
+                        ?: typeInfo.type.toString(),
+                    cause,
+                )
+            }
+        }
+
+        /**
+         * Gets parameter value associated with this name or throws if the name is not present.
+         * Converting to type R using ConversionService.
+         *
+         * Throws:
+         *   MissingRequestParameterException - when parameter is missing
+         *   ParameterConversionException - when conversion from String to R fails
+         */
+        private inline fun <reified R : Any> Parameters.getTypedOrFail(
+            name: String,
+            conversionService: ConversionService = DefaultConversionService,
+        ): R {
+            val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
             return try {
                 @Suppress("UNCHECKED_CAST")
