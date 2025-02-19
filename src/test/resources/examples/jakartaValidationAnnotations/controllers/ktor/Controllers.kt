@@ -8,12 +8,12 @@ import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.MissingRequestParameterException
 import io.ktor.server.plugins.ParameterConversionException
+import io.ktor.server.plugins.dataconversion.conversionService
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.`get`
 import io.ktor.server.util.getOrFail
 import io.ktor.util.converters.ConversionService
-import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
 import kotlin.Long
@@ -47,7 +47,10 @@ public interface MaximumTestController {
             `get`("/maximumTest/{pathId}") {
                 val pathId = call.parameters.getOrFail<kotlin.Long?>("pathId")
                 val headerid = call.request.headers["headerid"]
-                val queryid = call.request.queryParameters.getTyped<kotlin.Long>("queryid")
+                val queryid = call.request.queryParameters.getTyped<kotlin.Long>(
+                    "queryid",
+                    call.application.conversionService,
+                )
                 controller.getById(headerid, pathId, queryid, call)
             }
         }
@@ -61,7 +64,7 @@ public interface MaximumTestController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -88,7 +91,7 @@ public interface MaximumTestController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
@@ -143,7 +146,10 @@ public interface MinimumTestController {
             `get`("/minimumTest/{pathId}") {
                 val pathId = call.parameters.getOrFail<kotlin.Long?>("pathId")
                 val headerid = call.request.headers["headerid"]
-                val queryid = call.request.queryParameters.getTyped<kotlin.Long>("queryid")
+                val queryid = call.request.queryParameters.getTyped<kotlin.Long>(
+                    "queryid",
+                    call.application.conversionService,
+                )
                 controller.getById(headerid, pathId, queryid, call)
             }
         }
@@ -157,7 +163,7 @@ public interface MinimumTestController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -184,7 +190,7 @@ public interface MinimumTestController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
@@ -239,7 +245,10 @@ public interface MinMaxTestController {
             `get`("/minMaxTest/{pathId}") {
                 val pathId = call.parameters.getOrFail<kotlin.Long?>("pathId")
                 val headerid = call.request.headers["headerid"]
-                val queryid = call.request.queryParameters.getTyped<kotlin.Long>("queryid")
+                val queryid = call.request.queryParameters.getTyped<kotlin.Long>(
+                    "queryid",
+                    call.application.conversionService,
+                )
                 controller.getById(headerid, pathId, queryid, call)
             }
         }
@@ -253,7 +262,7 @@ public interface MinMaxTestController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -280,7 +289,7 @@ public interface MinMaxTestController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()

@@ -9,11 +9,11 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.MissingRequestParameterException
 import io.ktor.server.plugins.ParameterConversionException
+import io.ktor.server.plugins.dataconversion.conversionService
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.`get`
 import io.ktor.util.converters.ConversionService
-import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
 import kotlin.String
@@ -38,7 +38,10 @@ public interface RequiredController {
         public fun Route.requiredRoutes(controller: RequiredController) {
             authenticate("BasicAuth", "BearerAuth", optional = false) {
                 `get`("/required") {
-                    val testString = call.request.queryParameters.getTypedOrFail<kotlin.String>("testString")
+                    val testString = call.request.queryParameters.getTypedOrFail<kotlin.String>(
+                        "testString",
+                        call.application.conversionService,
+                    )
                     controller.testPath(testString, call)
                 }
             }
@@ -53,7 +56,7 @@ public interface RequiredController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -80,7 +83,7 @@ public interface RequiredController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
@@ -126,7 +129,10 @@ public interface ProhibitedController {
          */
         public fun Route.prohibitedRoutes(controller: ProhibitedController) {
             `get`("/prohibited") {
-                val testString = call.request.queryParameters.getTypedOrFail<kotlin.String>("testString")
+                val testString = call.request.queryParameters.getTypedOrFail<kotlin.String>(
+                    "testString",
+                    call.application.conversionService,
+                )
                 controller.testPath(testString, call)
             }
         }
@@ -140,7 +146,7 @@ public interface ProhibitedController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -167,7 +173,7 @@ public interface ProhibitedController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
@@ -214,7 +220,10 @@ public interface OptionalController {
         public fun Route.optionalRoutes(controller: OptionalController) {
             authenticate("BasicAuth", optional = true) {
                 `get`("/optional") {
-                    val testString = call.request.queryParameters.getTypedOrFail<kotlin.String>("testString")
+                    val testString = call.request.queryParameters.getTypedOrFail<kotlin.String>(
+                        "testString",
+                        call.application.conversionService,
+                    )
                     controller.testPath(testString, call)
                 }
             }
@@ -229,7 +238,7 @@ public interface OptionalController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -256,7 +265,7 @@ public interface OptionalController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
@@ -302,7 +311,10 @@ public interface NoneController {
          */
         public fun Route.noneRoutes(controller: NoneController) {
             `get`("/none") {
-                val testString = call.request.queryParameters.getTypedOrFail<kotlin.String>("testString")
+                val testString = call.request.queryParameters.getTypedOrFail<kotlin.String>(
+                    "testString",
+                    call.application.conversionService,
+                )
                 controller.testPath(testString, call)
             }
         }
@@ -316,7 +328,7 @@ public interface NoneController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -343,7 +355,7 @@ public interface NoneController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
@@ -390,7 +402,10 @@ public interface DefaultController {
         public fun Route.defaultRoutes(controller: DefaultController) {
             authenticate("basicAuth", optional = false) {
                 `get`("/default") {
-                    val testString = call.request.queryParameters.getTypedOrFail<kotlin.String>("testString")
+                    val testString = call.request.queryParameters.getTypedOrFail<kotlin.String>(
+                        "testString",
+                        call.application.conversionService,
+                    )
                     controller.testPath(testString, call)
                 }
             }
@@ -405,7 +420,7 @@ public interface DefaultController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -432,7 +447,7 @@ public interface DefaultController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()

@@ -13,7 +13,6 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.`get`
 import io.ktor.util.converters.ConversionService
-import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
 import kotlin.String
@@ -49,7 +48,7 @@ public interface TestController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -76,7 +75,7 @@ public interface TestController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()

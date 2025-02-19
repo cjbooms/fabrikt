@@ -8,11 +8,11 @@ import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.MissingRequestParameterException
 import io.ktor.server.plugins.ParameterConversionException
+import io.ktor.server.plugins.dataconversion.conversionService
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.`get`
 import io.ktor.util.converters.ConversionService
-import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
 import kotlin.String
@@ -41,8 +41,14 @@ public interface ExampleController {
          */
         public fun Route.exampleRoutes(controller: ExampleController) {
             `get`("/example") {
-                val a = call.request.queryParameters.getTypedOrFail<kotlin.String>("a")
-                val b = call.request.queryParameters.getTypedOrFail<kotlin.String>("b")
+                val a = call.request.queryParameters.getTypedOrFail<kotlin.String>(
+                    "a",
+                    call.application.conversionService,
+                )
+                val b = call.request.queryParameters.getTypedOrFail<kotlin.String>(
+                    "b",
+                    call.application.conversionService,
+                )
                 controller.get(a, b, call)
             }
         }
@@ -56,7 +62,7 @@ public interface ExampleController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -83,7 +89,7 @@ public interface ExampleController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()

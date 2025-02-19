@@ -221,20 +221,12 @@ class KtorControllerInterfaceGenerator(
             val typeName = param.type.copy(nullable = false) // not nullable because we handle that in the queryParameters.get* below
             val queryMethodName = if (param.isRequired) "getTypedOrFail" else "getTyped"
 
-            if (param.requiresKtorDataConversionPlugin()) {
-                builder.addStatement(
-                    "val ${param.name} = %M.request.queryParameters.%M<$typeName>(\"${param.originalName}\", call.application.%M)",
-                    MemberName("io.ktor.server.application", "call"),
-                    MemberName(packages.controllers, queryMethodName),
-                    MemberName("io.ktor.server.plugins.dataconversion", "conversionService"),
-                )
-            } else {
-                builder.addStatement(
-                    "val ${param.name} = %M.request.queryParameters.%M<$typeName>(\"${param.originalName}\")",
-                    MemberName("io.ktor.server.application", "call"),
-                    MemberName(packages.controllers, queryMethodName),
-                )
-            }
+            builder.addStatement(
+                "val ${param.name} = %M.request.queryParameters.%M<$typeName>(\"${param.originalName}\", call.application.%M)",
+                MemberName("io.ktor.server.application", "call"),
+                MemberName(packages.controllers, queryMethodName),
+                MemberName("io.ktor.server.plugins.dataconversion", "conversionService"),
+            )
         }
 
         bodyParams.forEach { param ->
@@ -412,15 +404,11 @@ class KtorControllerInterfaceGenerator(
         val returnType = TypeVariableName("R", Any::class)
             .copy(nullable = true, reified = true)
 
-        val conversionServiceParameter = ParameterSpec.builder("conversionService", ClassName("io.ktor.util.converters", "ConversionService"))
-            .defaultValue("%T", ClassName("io.ktor.util.converters", "DefaultConversionService"))
-            .build()
-
         FunSpec.builder("getTyped")
             .addModifiers(KModifier.INLINE, KModifier.PRIVATE)
             .receiver(ClassName("io.ktor.http", "Parameters"))
             .addParameter("name", String::class)
-            .addParameter(conversionServiceParameter)
+            .addParameter("conversionService", ClassName("io.ktor.util.converters", "ConversionService"))
             .addTypeVariable(returnType)
             .returns(returnType)
             .addCode("""
@@ -451,15 +439,11 @@ class KtorControllerInterfaceGenerator(
         val returnType = TypeVariableName("R", Any::class)
             .copy(nullable = false, reified = true)
 
-        val conversionServiceParameter = ParameterSpec.builder("conversionService", ClassName("io.ktor.util.converters", "ConversionService"))
-            .defaultValue("%T", ClassName("io.ktor.util.converters", "DefaultConversionService"))
-            .build()
-
         FunSpec.builder("getTypedOrFail")
             .addModifiers(KModifier.INLINE, KModifier.PRIVATE)
             .receiver(ClassName("io.ktor.http", "Parameters"))
             .addParameter("name", String::class)
-            .addParameter(conversionServiceParameter)
+            .addParameter("conversionService", ClassName("io.ktor.util.converters", "ConversionService"))
             .addTypeVariable(returnType)
             .returns(returnType)
             .addCode("""
@@ -545,29 +529,3 @@ private data class IncomingParametersByType(
 )
 
 private fun TypeName.isUnit(): Boolean = this == Unit::class.asTypeName()
-
-private fun RequestParameter.requiresKtorDataConversionPlugin(): Boolean {
-    return when (val type = this.typeInfo) {
-        is KotlinTypeInfo.Array -> {
-            !isPrimitiveType(type.parameterizedType.modelKClass)
-        }
-
-        else -> {
-            !isPrimitiveType(this.typeInfo.modelKClass)
-        }
-    }
-}
-
-private fun isPrimitiveType(klass: KClass<*>): Boolean {
-    return when (klass) {
-        Int::class,
-        Float::class,
-        Double::class,
-        Long::class,
-        Short::class,
-        Char::class,
-        Boolean::class,
-        String::class -> true
-        else -> false
-    }
-}

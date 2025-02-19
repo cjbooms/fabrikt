@@ -29,7 +29,6 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.util.getOrFail
 import io.ktor.util.converters.ConversionService
-import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
 import kotlin.Any
 import kotlin.Boolean
@@ -75,7 +74,7 @@ public interface InternalEventsController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -102,7 +101,7 @@ public interface InternalEventsController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
@@ -248,10 +247,19 @@ public interface ContributorsController {
         public fun Route.contributorsRoutes(controller: ContributorsController) {
             `get`("/contributors") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
+                val limit = call.request.queryParameters.getTyped<kotlin.Int>(
+                    "limit",
+                    call.application.conversionService,
+                )
                 val includeInactive =
-                    call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
-                val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
+                    call.request.queryParameters.getTyped<kotlin.Boolean>(
+                        "include_inactive",
+                        call.application.conversionService,
+                    )
+                val cursor = call.request.queryParameters.getTyped<kotlin.String>(
+                    "cursor",
+                    call.application.conversionService,
+                )
                 controller.searchContributors(
                     xFlowId,
                     limit,
@@ -296,7 +304,7 @@ public interface ContributorsController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -323,7 +331,7 @@ public interface ContributorsController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
@@ -469,10 +477,19 @@ public interface OrganisationsController {
         public fun Route.organisationsRoutes(controller: OrganisationsController) {
             `get`("/organisations") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
+                val limit = call.request.queryParameters.getTyped<kotlin.Int>(
+                    "limit",
+                    call.application.conversionService,
+                )
                 val includeInactive =
-                    call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
-                val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
+                    call.request.queryParameters.getTyped<kotlin.Boolean>(
+                        "include_inactive",
+                        call.application.conversionService,
+                    )
+                val cursor = call.request.queryParameters.getTyped<kotlin.String>(
+                    "cursor",
+                    call.application.conversionService,
+                )
                 controller.get(xFlowId, limit, includeInactive, cursor, TypedApplicationCall(call))
             }
             post("/organisations") {
@@ -511,7 +528,7 @@ public interface OrganisationsController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -538,7 +555,7 @@ public interface OrganisationsController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
@@ -685,10 +702,19 @@ public interface OrganisationsContributorsController {
             `get`("/organisations/{parent-id}/contributors") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
+                val limit = call.request.queryParameters.getTyped<kotlin.Int>(
+                    "limit",
+                    call.application.conversionService,
+                )
                 val includeInactive =
-                    call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
-                val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
+                    call.request.queryParameters.getTyped<kotlin.Boolean>(
+                        "include_inactive",
+                        call.application.conversionService,
+                    )
+                val cursor = call.request.queryParameters.getTyped<kotlin.String>(
+                    "cursor",
+                    call.application.conversionService,
+                )
                 controller.get(
                     xFlowId,
                     parentId,
@@ -730,7 +756,7 @@ public interface OrganisationsContributorsController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -757,7 +783,7 @@ public interface OrganisationsContributorsController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
@@ -907,14 +933,29 @@ public interface RepositoriesController {
         public fun Route.repositoriesRoutes(controller: RepositoriesController) {
             `get`("/repositories") {
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
+                val limit = call.request.queryParameters.getTyped<kotlin.Int>(
+                    "limit",
+                    call.application.conversionService,
+                )
                 val slug =
-                    call.request.queryParameters.getTyped<kotlin.collections.List<kotlin.String>>("slug")
+                    call.request.queryParameters.getTyped<kotlin.collections.List<kotlin.String>>(
+                        "slug",
+                        call.application.conversionService,
+                    )
                 val name =
-                    call.request.queryParameters.getTyped<kotlin.collections.List<kotlin.String>>("name")
+                    call.request.queryParameters.getTyped<kotlin.collections.List<kotlin.String>>(
+                        "name",
+                        call.application.conversionService,
+                    )
                 val includeInactive =
-                    call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
-                val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
+                    call.request.queryParameters.getTyped<kotlin.Boolean>(
+                        "include_inactive",
+                        call.application.conversionService,
+                    )
+                val cursor = call.request.queryParameters.getTyped<kotlin.String>(
+                    "cursor",
+                    call.application.conversionService,
+                )
                 controller.get(
                     xFlowId,
                     limit,
@@ -961,7 +1002,7 @@ public interface RepositoriesController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -988,7 +1029,7 @@ public interface RepositoriesController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
@@ -1145,10 +1186,19 @@ public interface RepositoriesPullRequestsController {
             `get`("/repositories/{parent-id}/pull-requests") {
                 val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
-                val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
+                val limit = call.request.queryParameters.getTyped<kotlin.Int>(
+                    "limit",
+                    call.application.conversionService,
+                )
                 val includeInactive =
-                    call.request.queryParameters.getTyped<kotlin.Boolean>("include_inactive")
-                val cursor = call.request.queryParameters.getTyped<kotlin.String>("cursor")
+                    call.request.queryParameters.getTyped<kotlin.Boolean>(
+                        "include_inactive",
+                        call.application.conversionService,
+                    )
+                val cursor = call.request.queryParameters.getTyped<kotlin.String>(
+                    "cursor",
+                    call.application.conversionService,
+                )
                 controller.get(
                     xFlowId,
                     parentId,
@@ -1192,7 +1242,7 @@ public interface RepositoriesPullRequestsController {
          */
         private inline fun <reified R : Any> Parameters.getTyped(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R? {
             val values = getAll(name) ?: return null
             val typeInfo = typeInfo<R>()
@@ -1219,7 +1269,7 @@ public interface RepositoriesPullRequestsController {
          */
         private inline fun <reified R : Any> Parameters.getTypedOrFail(
             name: String,
-            conversionService: ConversionService = DefaultConversionService,
+            conversionService: ConversionService,
         ): R {
             val values = getAll(name) ?: throw MissingRequestParameterException(name)
             val typeInfo = typeInfo<R>()
