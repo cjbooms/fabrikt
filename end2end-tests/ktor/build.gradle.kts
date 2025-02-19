@@ -69,13 +69,13 @@ tasks {
     val generateKtorInstantDateTimeCode = createCodeGenerationTask(
         "generateKtorInstantDateTimeCode",
         "src/test/resources/examples/instantDateTime/api.yaml",
-        listOf("--type-overrides", "DATETIME_AS_INSTANT", "--serialization-library", "KOTLINX_SERIALIZATION")
+        listOf("--serialization-library", "KOTLINX_SERIALIZATION")
     )
 
     val generateKtorQueryParametersCode = createCodeGenerationTask(
         "generateKtorQueryParametersCode",
         "src/test/resources/examples/queryParameters/api.yaml",
-        listOf("--type-overrides", "DATETIME_AS_INSTANT", "--serialization-library", "KOTLINX_SERIALIZATION")
+        listOf("--serialization-library", "KOTLINX_SERIALIZATION")
     )
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
