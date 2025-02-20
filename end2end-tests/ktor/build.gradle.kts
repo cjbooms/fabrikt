@@ -9,6 +9,7 @@ sourceSets {
 
 plugins {
     kotlin("jvm")
+    kotlin("plugin.serialization") version "2.1.0"
 }
 
 java {
@@ -23,6 +24,7 @@ val ktorVersion: String by rootProject.extra
 dependencies {
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
     implementation("javax.validation:validation-api:2.0.1.Final")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
@@ -32,8 +34,10 @@ dependencies {
     // ktor server
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
+    implementation("io.ktor:ktor-server-data-conversion:$ktorVersion")
 
     // ktor test
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
@@ -62,10 +66,24 @@ tasks {
         listOf("--http-controller-opts", "AUTHENTICATION")
     )
 
+    val generateKtorInstantDateTimeCode = createCodeGenerationTask(
+        "generateKtorInstantDateTimeCode",
+        "src/test/resources/examples/instantDateTime/api.yaml",
+        listOf("--serialization-library", "KOTLINX_SERIALIZATION")
+    )
+
+    val generateKtorQueryParametersCode = createCodeGenerationTask(
+        "generateKtorQueryParametersCode",
+        "src/test/resources/examples/queryParameters/api.yaml",
+        listOf("--serialization-library", "KOTLINX_SERIALIZATION")
+    )
+
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
         dependsOn(generateKtorCode)
         dependsOn(generateKtorAuthCode)
+        dependsOn(generateKtorInstantDateTimeCode)
+        dependsOn(generateKtorQueryParametersCode)
     }
 
 

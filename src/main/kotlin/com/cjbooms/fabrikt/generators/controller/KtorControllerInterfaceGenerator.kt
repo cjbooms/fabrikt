@@ -12,6 +12,7 @@ import com.cjbooms.fabrikt.model.ControllerLibraryType
 import com.cjbooms.fabrikt.model.ControllerType
 import com.cjbooms.fabrikt.model.HeaderParam
 import com.cjbooms.fabrikt.model.IncomingParameter
+import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.KotlinTypes
 import com.cjbooms.fabrikt.model.PathParam
 import com.cjbooms.fabrikt.model.QueryParam
@@ -37,6 +38,7 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
+import kotlin.reflect.KClass
 
 private const val TYPED_APPLICATION_CALL_CLASS_NAME = "TypedApplicationCall"
 
@@ -88,6 +90,7 @@ class KtorControllerInterfaceGenerator(
                 TypeSpec.companionObjectBuilder()
                     .addFunction(routeFunBuilder.build())
                     .addFunction(getTypedFun)
+                    .addFunction(getTypedOrFailFun)
                     .addFunction(getOrFailFun)
                     .build()
             )
@@ -216,17 +219,20 @@ class KtorControllerInterfaceGenerator(
 
         queryParams.forEach { param ->
             val typeName = param.type.copy(nullable = false) // not nullable because we handle that in the queryParameters.get* below
-            if (param.isRequired) {
+            val queryMethodName = if (param.isRequired) "getTypedOrFail" else "getTyped"
+
+            if (param.requiresKtorDataConversionPlugin()) {
                 builder.addStatement(
-                    "val ${param.name} = %M.request.queryParameters.%M<$typeName>(\"${param.originalName}\")",
+                    "val ${param.name} = %M.request.queryParameters.%M<$typeName>(\"${param.originalName}\", call.application.%M)",
                     MemberName("io.ktor.server.application", "call"),
-                    MemberName("io.ktor.server.util", "getOrFail", isExtension = true),
+                    MemberName(packages.controllers, queryMethodName),
+                    MemberName("io.ktor.server.plugins.dataconversion", "conversionService"),
                 )
             } else {
                 builder.addStatement(
                     "val ${param.name} = %M.request.queryParameters.%M<$typeName>(\"${param.originalName}\")",
                     MemberName("io.ktor.server.application", "call"),
-                    MemberName(packages.controllers, "getTyped"),
+                    MemberName(packages.controllers, queryMethodName),
                 )
             }
         }
@@ -406,10 +412,15 @@ class KtorControllerInterfaceGenerator(
         val returnType = TypeVariableName("R", Any::class)
             .copy(nullable = true, reified = true)
 
+        val conversionServiceParameter = ParameterSpec.builder("conversionService", ClassName("io.ktor.util.converters", "ConversionService"))
+            .defaultValue("%T", ClassName("io.ktor.util.converters", "DefaultConversionService"))
+            .build()
+
         FunSpec.builder("getTyped")
             .addModifiers(KModifier.INLINE, KModifier.PRIVATE)
             .receiver(ClassName("io.ktor.http", "Parameters"))
             .addParameter("name", String::class)
+            .addParameter(conversionServiceParameter)
             .addTypeVariable(returnType)
             .returns(returnType)
             .addCode("""
@@ -417,20 +428,60 @@ class KtorControllerInterfaceGenerator(
                 val typeInfo = %M<R>()
                 return try {
                     @Suppress("UNCHECKED_CAST")
-                    %M.fromValues(values, typeInfo) as R
+                    conversionService.fromValues(values, typeInfo) as R
                 } catch (cause: Exception) {
                     throw %M(name, typeInfo.type.simpleName ?: typeInfo.type.toString(), cause)
                 }
             """.trimIndent(),
                 MemberName("io.ktor.util.reflect", "typeInfo"),
-                MemberName("io.ktor.util.converters", "DefaultConversionService",),
                 MemberName("io.ktor.server.plugins", "ParameterConversionException")
             )
             .addKdoc("""
                 Gets parameter value associated with this name or null if the name is not present.
-                Converting to type R using DefaultConversionService.
+                Converting to type R using ConversionService.
                 
                 Throws:
+                  ParameterConversionException - when conversion from String to R fails
+            """.trimIndent()
+            )
+            .build()
+    }
+
+    private val getTypedOrFailFun = run {
+        val returnType = TypeVariableName("R", Any::class)
+            .copy(nullable = false, reified = true)
+
+        val conversionServiceParameter = ParameterSpec.builder("conversionService", ClassName("io.ktor.util.converters", "ConversionService"))
+            .defaultValue("%T", ClassName("io.ktor.util.converters", "DefaultConversionService"))
+            .build()
+
+        FunSpec.builder("getTypedOrFail")
+            .addModifiers(KModifier.INLINE, KModifier.PRIVATE)
+            .receiver(ClassName("io.ktor.http", "Parameters"))
+            .addParameter("name", String::class)
+            .addParameter(conversionServiceParameter)
+            .addTypeVariable(returnType)
+            .returns(returnType)
+            .addCode("""
+                val values = getAll(name) ?: throw %M(name)
+                val typeInfo = %M<R>()
+                return try {
+                    @Suppress("UNCHECKED_CAST")
+                    conversionService.fromValues(values, typeInfo) as R
+                } catch (cause: Exception) {
+                    throw %M(name, typeInfo.type.simpleName ?: typeInfo.type.toString(), cause)
+                }
+            """.trimIndent(),
+                MemberName("io.ktor.server.plugins", "MissingRequestParameterException"),
+                MemberName("io.ktor.util.reflect", "typeInfo"),
+                MemberName("io.ktor.server.plugins", "ParameterConversionException")
+            )
+            .addKdoc("""
+                Gets parameter value associated with this name or throws if the name is not present.
+                Converting to type R using ConversionService.
+                
+                Throws:
+                  MissingRequestParameterException - when parameter is missing
                   ParameterConversionException - when conversion from String to R fails
             """.trimIndent()
             )
@@ -494,3 +545,29 @@ private data class IncomingParametersByType(
 )
 
 private fun TypeName.isUnit(): Boolean = this == Unit::class.asTypeName()
+
+private fun RequestParameter.requiresKtorDataConversionPlugin(): Boolean {
+    return when (val type = this.typeInfo) {
+        is KotlinTypeInfo.Array -> {
+            !isPrimitiveType(type.parameterizedType.modelKClass)
+        }
+
+        else -> {
+            !isPrimitiveType(this.typeInfo.modelKClass)
+        }
+    }
+}
+
+private fun isPrimitiveType(klass: KClass<*>): Boolean {
+    return when (klass) {
+        Int::class,
+        Float::class,
+        Double::class,
+        Long::class,
+        Short::class,
+        Char::class,
+        Boolean::class,
+        String::class -> true
+        else -> false
+    }
+}

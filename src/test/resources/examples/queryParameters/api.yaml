@@ -1,0 +1,42 @@
+openapi: "3.1.0"
+info:
+  title: "API Example"
+  version: "1.0"
+paths:
+  /query-params:
+    get:
+      summary: "GET with required query parameter"
+      parameters:
+        - $ref: "#/components/parameters/PrimitiveTypeQueryParam"
+        - $ref: "#/components/parameters/EnumQueryParam"
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/vnd.custom.media+json:
+              schema:
+                $ref: "#/components/schemas/QueryParamsResult"
+
+components:
+  parameters:
+    PrimitiveTypeQueryParam:
+      name: "name"
+      in: "query"
+      schema:
+        type: "string"
+      required: true
+
+    EnumQueryParam:
+      name: "order"
+      in: "query"
+      schema:
+        type: string
+        enum: [asc, desc]
+
+
+  schemas:
+    QueryParamsResult:
+      type: "object"
+      properties:
+        title:
+          type: "string"
