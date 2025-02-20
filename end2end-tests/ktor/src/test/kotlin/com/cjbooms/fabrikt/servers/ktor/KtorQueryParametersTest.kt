@@ -5,10 +5,13 @@ import com.example.models.EnumQueryParam
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.dataconversion.DataConversion
 import io.ktor.server.testing.*
 import io.ktor.util.converters.*
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.response.respond
 import io.mockk.CapturingSlot
 import io.mockk.slot
 import org.junit.jupiter.api.Test
@@ -21,9 +24,7 @@ class KtorQueryParametersTest {
         val enumCapturingSlot: CapturingSlot<EnumQueryParam?> = slot()
 
         testApplication {
-            install(ContentNegotiation) {
-                json()
-            }
+            configure(withDataConversion = false)
 
             routing {
                 queryParamsRoutes(QueryParametersControllerImpl(nameCapturingSlot, enumCapturingSlot))
@@ -41,11 +42,10 @@ class KtorQueryParametersTest {
     fun `returns 400 when name required query parameter is missing`() {
         val nameCapturingSlot: CapturingSlot<String?> = slot()
         val enumCapturingSlot: CapturingSlot<EnumQueryParam?> = slot()
+        val errorCapturingSlot = slot<String?>()
 
         testApplication {
-            install(ContentNegotiation) {
-                json()
-            }
+            configure(withDataConversion = false, errorCapturingSlot = errorCapturingSlot)
 
             routing {
                 queryParamsRoutes(QueryParametersControllerImpl(nameCapturingSlot, enumCapturingSlot))
@@ -54,6 +54,7 @@ class KtorQueryParametersTest {
             val response = client.get("/query-params")
 
             assertEquals(HttpStatusCode.BadRequest, response.status)
+            assertEquals("Request parameter name is missing", errorCapturingSlot.captured)
         }
     }
 
@@ -63,17 +64,7 @@ class KtorQueryParametersTest {
         val enumCapturingSlot: CapturingSlot<EnumQueryParam?> = slot()
 
         testApplication {
-            install(ContentNegotiation) {
-                json()
-            }
-
-            install(DataConversion) {
-                convert<EnumQueryParam> {
-                    decode { values ->
-                        values.single().let { EnumQueryParam.fromValue(it) ?:  throw DataConversionException() }
-                    }
-                }
-            }
+            configure(withDataConversion = true)
 
             routing {
                 queryParamsRoutes(QueryParametersControllerImpl(nameCapturingSlot, enumCapturingSlot))
@@ -91,12 +82,31 @@ class KtorQueryParametersTest {
     fun `returns 400 when limit parameter is invalid`() {
         val nameCapturingSlot: CapturingSlot<String?> = slot()
         val enumCapturingSlot: CapturingSlot<EnumQueryParam?> = slot()
+        val errorCapturingSlot = slot<String?>()
 
         testApplication {
-            install(ContentNegotiation) {
-                json()
+            configure(withDataConversion = true, errorCapturingSlot = errorCapturingSlot)
+
+            routing {
+                queryParamsRoutes(QueryParametersControllerImpl(nameCapturingSlot, enumCapturingSlot))
             }
 
+            val response = client.get("/query-params?name=valid&order=invalid")
+
+            assertEquals(HttpStatusCode.BadRequest, response.status)
+            assertEquals("Request parameter order couldn't be parsed/converted to EnumQueryParam", errorCapturingSlot.captured)
+        }
+    }
+
+    private fun ApplicationTestBuilder.configure(
+        withDataConversion: Boolean = true,
+        errorCapturingSlot: CapturingSlot<String?>? = null,
+    ) {
+        install(ContentNegotiation) {
+            json()
+        }
+
+        if (withDataConversion) {
             install(DataConversion) {
                 convert<EnumQueryParam> {
                     decode { values ->
@@ -104,14 +114,13 @@ class KtorQueryParametersTest {
                     }
                 }
             }
+        }
 
-            routing {
-                queryParamsRoutes(QueryParametersControllerImpl(nameCapturingSlot, enumCapturingSlot))
+        install(StatusPages) {
+            exception<BadRequestException> { call, cause ->
+                errorCapturingSlot?.captured = cause.message
+                call.respond(HttpStatusCode.BadRequest)
             }
-
-            val response = client.get("/query-params?order=invalid")
-
-            assertEquals(HttpStatusCode.BadRequest, response.status)
         }
     }
 }
