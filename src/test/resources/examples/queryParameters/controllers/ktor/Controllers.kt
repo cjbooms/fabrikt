@@ -1,6 +1,7 @@
-package examples.parameterNameClash.controllers
+package examples.queryParameters.controllers
 
-import examples.parameterNameClash.models.SomeObject
+import examples.queryParameters.models.EnumQueryParam
+import examples.queryParameters.models.QueryParamsResult
 import io.ktor.http.Headers
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
@@ -9,11 +10,10 @@ import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.MissingRequestParameterException
 import io.ktor.server.plugins.ParameterConversionException
-import io.ktor.server.request.receive
+import io.ktor.server.plugins.dataconversion.conversionService
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.`get`
-import io.ktor.server.routing.post
 import io.ktor.util.converters.ConversionService
 import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
@@ -21,53 +21,39 @@ import kotlin.Any
 import kotlin.String
 import kotlin.Suppress
 
-public interface ExampleController {
+public interface QueryParamsController {
     /**
-     * Route is expected to respond with status 204.
-     * Use [respond] to send the response.
+     * GET with required query parameter
      *
-     * @param pathB
-     * @param queryB
-     * @param call The Ktor application call
-     */
-    public suspend fun getById(
-        pathB: String,
-        queryB: String,
-        call: ApplicationCall,
-    )
-
-    /**
-     * Route is expected to respond with status 204.
-     * Use [respond] to send the response.
+     * Route is expected to respond with [examples.queryParameters.models.QueryParamsResult].
+     * Use [examples.queryParameters.controllers.TypedApplicationCall.respondTyped] to send the
+     * response.
      *
-     * @param bodySomeObject example
-     * @param querySomeObject
-     * @param call The Ktor application call
+     * @param name
+     * @param order
+     * @param call Decorated ApplicationCall with additional typed respond methods
      */
-    public suspend fun post(
-        querySomeObject: String,
-        bodySomeObject: SomeObject,
-        call: ApplicationCall,
+    public suspend fun `get`(
+        name: String,
+        order: EnumQueryParam?,
+        call: TypedApplicationCall<QueryParamsResult>,
     )
 
     public companion object {
         /**
-         * Mounts all routes for the Example resource
+         * Mounts all routes for the QueryParams resource
          *
-         * - GET /example/{b}
-         * - POST /example
+         * - GET /query-params GET with required query parameter
          */
-        public fun Route.exampleRoutes(controller: ExampleController) {
-            `get`("/example/{b}") {
-                val pathB = call.parameters.getTypedOrFail<kotlin.String>("b")
-                val queryB = call.request.queryParameters.getTypedOrFail<kotlin.String>("b")
-                controller.getById(pathB, queryB, call)
-            }
-            post("/example") {
-                val querySomeObject =
-                    call.request.queryParameters.getTypedOrFail<kotlin.String>("someObject")
-                val bodySomeObject = call.receive<SomeObject>()
-                controller.post(querySomeObject, bodySomeObject, call)
+        public fun Route.queryParamsRoutes(controller: QueryParamsController) {
+            `get`("/query-params") {
+                val name = call.request.queryParameters.getTypedOrFail<kotlin.String>("name")
+                val order =
+                    call.request.queryParameters.getTyped<examples.queryParameters.models.EnumQueryParam>(
+                        "order",
+                        call.application.conversionService,
+                    )
+                controller.get(name, order, TypedApplicationCall(call))
             }
         }
 

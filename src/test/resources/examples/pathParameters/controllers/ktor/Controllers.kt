@@ -1,6 +1,6 @@
-package examples.parameterNameClash.controllers
+package examples.pathParameters.controllers
 
-import examples.parameterNameClash.models.SomeObject
+import examples.pathParameters.models.PathParamWithEnum
 import io.ktor.http.Headers
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
@@ -9,65 +9,56 @@ import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.MissingRequestParameterException
 import io.ktor.server.plugins.ParameterConversionException
-import io.ktor.server.request.receive
+import io.ktor.server.plugins.dataconversion.conversionService
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.`get`
-import io.ktor.server.routing.post
 import io.ktor.util.converters.ConversionService
 import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
+import java.util.UUID
 import kotlin.Any
 import kotlin.String
 import kotlin.Suppress
 
-public interface ExampleController {
+public interface PathParamsController {
     /**
+     * GET with path parameters
+     *
      * Route is expected to respond with status 204.
      * Use [respond] to send the response.
      *
-     * @param pathB
-     * @param queryB
+     * @param primitiveParam
+     * @param formatParam
+     * @param enumParam
      * @param call The Ktor application call
      */
     public suspend fun getById(
-        pathB: String,
-        queryB: String,
-        call: ApplicationCall,
-    )
-
-    /**
-     * Route is expected to respond with status 204.
-     * Use [respond] to send the response.
-     *
-     * @param bodySomeObject example
-     * @param querySomeObject
-     * @param call The Ktor application call
-     */
-    public suspend fun post(
-        querySomeObject: String,
-        bodySomeObject: SomeObject,
+        primitiveParam: String,
+        formatParam: UUID,
+        enumParam: PathParamWithEnum,
         call: ApplicationCall,
     )
 
     public companion object {
         /**
-         * Mounts all routes for the Example resource
+         * Mounts all routes for the PathParams resource
          *
-         * - GET /example/{b}
-         * - POST /example
+         * - GET /path-params/{primitiveParam}/{formatParam}/{enumParam} GET with path parameters
          */
-        public fun Route.exampleRoutes(controller: ExampleController) {
-            `get`("/example/{b}") {
-                val pathB = call.parameters.getTypedOrFail<kotlin.String>("b")
-                val queryB = call.request.queryParameters.getTypedOrFail<kotlin.String>("b")
-                controller.getById(pathB, queryB, call)
-            }
-            post("/example") {
-                val querySomeObject =
-                    call.request.queryParameters.getTypedOrFail<kotlin.String>("someObject")
-                val bodySomeObject = call.receive<SomeObject>()
-                controller.post(querySomeObject, bodySomeObject, call)
+        public fun Route.pathParamsRoutes(controller: PathParamsController) {
+            `get`("/path-params/{primitiveParam}/{formatParam}/{enumParam}") {
+                val primitiveParam = call.parameters.getTypedOrFail<kotlin.String>("primitiveParam")
+                val formatParam = call.parameters.getTypedOrFail<java.util.UUID>(
+                    "formatParam",
+                    call.application.conversionService,
+                )
+                val enumParam =
+                    call.parameters.getTypedOrFail<examples.pathParameters.models.PathParamWithEnum>(
+                        "enumParam",
+                        call.application.conversionService,
+                    )
+                controller.getById(primitiveParam, formatParam, enumParam, call)
             }
         }
 

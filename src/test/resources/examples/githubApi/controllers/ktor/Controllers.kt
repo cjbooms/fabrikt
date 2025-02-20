@@ -27,7 +27,6 @@ import io.ktor.server.routing.delete
 import io.ktor.server.routing.`get`
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
-import io.ktor.server.util.getOrFail
 import io.ktor.util.converters.ConversionService
 import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
@@ -267,7 +266,7 @@ public interface ContributorsController {
                 controller.createContributor(xFlowId, idempotencyKey, contributor, call)
             }
             `get`("/contributors/{id}") {
-                val id = call.parameters.getOrFail<kotlin.String>("id")
+                val id = call.parameters.getTypedOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
@@ -278,7 +277,7 @@ public interface ContributorsController {
                 controller.getContributor(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/contributors/{id}") {
-                val id = call.parameters.getOrFail<kotlin.String>("id")
+                val id = call.parameters.getTypedOrFail<kotlin.String>("id")
                 val ifMatch = call.request.headers.getOrFail("If-Match")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
@@ -482,7 +481,7 @@ public interface OrganisationsController {
                 controller.post(xFlowId, idempotencyKey, organisation, call)
             }
             `get`("/organisations/{id}") {
-                val id = call.parameters.getOrFail<kotlin.String>("id")
+                val id = call.parameters.getTypedOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
@@ -493,7 +492,7 @@ public interface OrganisationsController {
                 controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/organisations/{id}") {
-                val id = call.parameters.getOrFail<kotlin.String>("id")
+                val id = call.parameters.getTypedOrFail<kotlin.String>("id")
                 val ifMatch = call.request.headers.getOrFail("If-Match")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
@@ -683,7 +682,7 @@ public interface OrganisationsContributorsController {
          */
         public fun Route.organisationsContributorsRoutes(controller: OrganisationsContributorsController) {
             `get`("/organisations/{parent-id}/contributors") {
-                val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
+                val parentId = call.parameters.getTypedOrFail<kotlin.String>("parent-id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
                 val includeInactive =
@@ -699,23 +698,23 @@ public interface OrganisationsContributorsController {
                 )
             }
             `get`("/organisations/{parent-id}/contributors/{id}") {
-                val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
-                val id = call.parameters.getOrFail<kotlin.String>("id")
+                val parentId = call.parameters.getTypedOrFail<kotlin.String>("parent-id")
+                val id = call.parameters.getTypedOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 controller.getById(xFlowId, ifNoneMatch, parentId, id, TypedApplicationCall(call))
             }
             put("/organisations/{parent-id}/contributors/{id}") {
-                val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
-                val id = call.parameters.getOrFail<kotlin.String>("id")
+                val parentId = call.parameters.getTypedOrFail<kotlin.String>("parent-id")
+                val id = call.parameters.getTypedOrFail<kotlin.String>("id")
                 val ifMatch = call.request.headers.getOrFail("If-Match")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 controller.putById(ifMatch, xFlowId, idempotencyKey, parentId, id, call)
             }
             delete("/organisations/{parent-id}/contributors/{id}") {
-                val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
-                val id = call.parameters.getOrFail<kotlin.String>("id")
+                val parentId = call.parameters.getTypedOrFail<kotlin.String>("parent-id")
+                val id = call.parameters.getTypedOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 controller.deleteById(xFlowId, parentId, id, call)
             }
@@ -932,7 +931,7 @@ public interface RepositoriesController {
                 controller.post(xFlowId, idempotencyKey, repository, call)
             }
             `get`("/repositories/{id}") {
-                val id = call.parameters.getOrFail<kotlin.String>("id")
+                val id = call.parameters.getTypedOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 val status =
@@ -943,7 +942,7 @@ public interface RepositoriesController {
                 controller.getById(xFlowId, ifNoneMatch, id, status, TypedApplicationCall(call))
             }
             put("/repositories/{id}") {
-                val id = call.parameters.getOrFail<kotlin.String>("id")
+                val id = call.parameters.getTypedOrFail<kotlin.String>("id")
                 val ifMatch = call.request.headers.getOrFail("If-Match")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
@@ -1143,7 +1142,7 @@ public interface RepositoriesPullRequestsController {
          */
         public fun Route.repositoriesPullRequestsRoutes(controller: RepositoriesPullRequestsController) {
             `get`("/repositories/{parent-id}/pull-requests") {
-                val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
+                val parentId = call.parameters.getTypedOrFail<kotlin.String>("parent-id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val limit = call.request.queryParameters.getTyped<kotlin.Int>("limit")
                 val includeInactive =
@@ -1159,22 +1158,22 @@ public interface RepositoriesPullRequestsController {
                 )
             }
             post("/repositories/{parent-id}/pull-requests") {
-                val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
+                val parentId = call.parameters.getTypedOrFail<kotlin.String>("parent-id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]
                 val pullRequest = call.receive<PullRequest>()
                 controller.post(xFlowId, idempotencyKey, parentId, pullRequest, call)
             }
             `get`("/repositories/{parent-id}/pull-requests/{id}") {
-                val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
-                val id = call.parameters.getOrFail<kotlin.String>("id")
+                val parentId = call.parameters.getTypedOrFail<kotlin.String>("parent-id")
+                val id = call.parameters.getTypedOrFail<kotlin.String>("id")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val ifNoneMatch = call.request.headers["If-None-Match"]
                 controller.getById(xFlowId, ifNoneMatch, parentId, id, TypedApplicationCall(call))
             }
             put("/repositories/{parent-id}/pull-requests/{id}") {
-                val parentId = call.parameters.getOrFail<kotlin.String>("parent-id")
-                val id = call.parameters.getOrFail<kotlin.String>("id")
+                val parentId = call.parameters.getTypedOrFail<kotlin.String>("parent-id")
+                val id = call.parameters.getTypedOrFail<kotlin.String>("id")
                 val ifMatch = call.request.headers.getOrFail("If-Match")
                 val xFlowId = call.request.headers["X-Flow-Id"]
                 val idempotencyKey = call.request.headers["Idempotency-Key"]

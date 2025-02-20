@@ -11,7 +11,6 @@ import io.ktor.server.plugins.ParameterConversionException
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.`get`
-import io.ktor.server.util.getOrFail
 import io.ktor.util.converters.ConversionService
 import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
@@ -45,7 +44,7 @@ public interface MaximumTestController {
          */
         public fun Route.maximumTestRoutes(controller: MaximumTestController) {
             `get`("/maximumTest/{pathId}") {
-                val pathId = call.parameters.getOrFail<kotlin.Long?>("pathId")
+                val pathId = call.parameters.getTypedOrFail<kotlin.Long>("pathId")
                 val headerid = call.request.headers["headerid"]
                 val queryid = call.request.queryParameters.getTyped<kotlin.Long>("queryid")
                 controller.getById(headerid, pathId, queryid, call)
@@ -141,7 +140,7 @@ public interface MinimumTestController {
          */
         public fun Route.minimumTestRoutes(controller: MinimumTestController) {
             `get`("/minimumTest/{pathId}") {
-                val pathId = call.parameters.getOrFail<kotlin.Long?>("pathId")
+                val pathId = call.parameters.getTypedOrFail<kotlin.Long>("pathId")
                 val headerid = call.request.headers["headerid"]
                 val queryid = call.request.queryParameters.getTyped<kotlin.Long>("queryid")
                 controller.getById(headerid, pathId, queryid, call)
@@ -237,7 +236,7 @@ public interface MinMaxTestController {
          */
         public fun Route.minMaxTestRoutes(controller: MinMaxTestController) {
             `get`("/minMaxTest/{pathId}") {
-                val pathId = call.parameters.getOrFail<kotlin.Long?>("pathId")
+                val pathId = call.parameters.getTypedOrFail<kotlin.Long>("pathId")
                 val headerid = call.request.headers["headerid"]
                 val queryid = call.request.queryParameters.getTyped<kotlin.Long>("queryid")
                 controller.getById(headerid, pathId, queryid, call)

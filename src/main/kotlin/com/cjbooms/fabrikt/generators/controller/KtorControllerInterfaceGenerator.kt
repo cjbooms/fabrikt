@@ -196,11 +196,22 @@ class KtorControllerInterfaceGenerator(
             .indent()
 
         pathParams.forEach { param ->
-            builder.addStatement(
-                "val ${param.name} = %M.parameters.%M<${param.type}>(\"${param.originalName}\")",
-                MemberName("io.ktor.server.application", "call"),
-                MemberName("io.ktor.server.util", "getOrFail", isExtension = true),
-            )
+            val typeName = param.type.copy(nullable = false) // not nullable because we handle that in the queryParameters.get* below
+            val queryMethodName = "getTypedOrFail"
+            if (param.requiresKtorDataConversionPlugin()) {
+                builder.addStatement(
+                    "val ${param.name} = %M.parameters.%M<${typeName}>(\"${param.originalName}\", call.application.%M)",
+                    MemberName("io.ktor.server.application", "call"),
+                    MemberName(packages.controllers, queryMethodName),
+                    MemberName("io.ktor.server.plugins.dataconversion", "conversionService"),
+                )
+            } else {
+                builder.addStatement(
+                    "val ${param.name} = %M.parameters.%M<${typeName}>(\"${param.originalName}\")",
+                    MemberName("io.ktor.server.application", "call"),
+                    MemberName(packages.controllers, queryMethodName),
+                )
+            }
         }
 
         headerParams.forEach { param ->
