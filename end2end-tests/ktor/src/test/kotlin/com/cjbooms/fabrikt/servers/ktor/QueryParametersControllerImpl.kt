@@ -10,7 +10,7 @@ class QueryParametersControllerImpl(
     private val nameCapturingSlot: CapturingSlot<String?>,
     private val orderCapturingSlot: CapturingSlot<EnumQueryParam?>,
 ): QueryParamsController {
-    override suspend fun get(name: String, order: EnumQueryParam?, call: TypedApplicationCall<Any>) {
+    override suspend fun get(name: String, order: EnumQueryParam?, call: TypedApplicationCall<QueryParamsResult>) {
         nameCapturingSlot.captured = name
         orderCapturingSlot.captured = order
         call.respondTyped(QueryParamsResult("ok"))
