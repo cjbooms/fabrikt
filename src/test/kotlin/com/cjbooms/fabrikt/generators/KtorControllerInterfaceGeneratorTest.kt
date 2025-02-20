@@ -38,6 +38,8 @@ class KtorControllerInterfaceGeneratorTest {
         "requestBodyAsArray",
         "jakartaValidationAnnotations",
         "modelSuffix",
+        "queryParameters",
+        "pathParameters",
     )
 
     private fun setupGithubApiTestEnv() {

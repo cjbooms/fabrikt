@@ -1,0 +1,41 @@
+openapi: "3.1.0"
+info:
+  title: "API Example"
+  version: "1.0"
+
+paths:
+  /path-params/{primitiveParam}/{formatParam}/{enumParam}:
+    get:
+      summary: "GET with path parameters"
+      parameters:
+        - $ref: "#/components/parameters/PrimitiveTypePathParam"
+        - $ref: "#/components/parameters/PathParamWithFormat"
+        - $ref: "#/components/parameters/PathParamWithEnum"
+      responses:
+        204:
+          description: "successful operation"
+
+components:
+  parameters:
+    PrimitiveTypePathParam:
+      name: "primitiveParam"
+      in: "path"
+      schema:
+        type: "string"
+      required: true
+
+    PathParamWithFormat:
+      name: "formatParam"
+      in: "path"
+      schema:
+        type: "string"
+        format: "uuid"
+      required: true
+
+    PathParamWithEnum:
+      name: "enumParam"
+      in: "path"
+      schema:
+        type: string
+        enum: [active, inactive]
+      required: true

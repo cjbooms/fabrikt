@@ -52,6 +52,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("org.assertj:assertj-core:3.24.2")
+
+    testImplementation("ch.qos.logback:logback-classic:1.4.3")
 }
 
 tasks {
@@ -78,12 +80,19 @@ tasks {
         listOf("--serialization-library", "KOTLINX_SERIALIZATION")
     )
 
+    val generateKtorPathParametersCode = createCodeGenerationTask(
+        "generateKtorPathParametersCode",
+        "src/test/resources/examples/pathParameters/api.yaml",
+        listOf("--serialization-library", "KOTLINX_SERIALIZATION")
+    )
+
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
         dependsOn(generateKtorCode)
         dependsOn(generateKtorAuthCode)
         dependsOn(generateKtorInstantDateTimeCode)
         dependsOn(generateKtorQueryParametersCode)
+        dependsOn(generateKtorPathParametersCode)
     }
 
 
