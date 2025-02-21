@@ -1,8 +1,10 @@
 package examples.polymorphicModels.models
 
 import com.fasterxml.jackson.`annotation`.JsonProperty
+import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import kotlin.String
+import kotlin.collections.List
 
 public data class PolymorphicTypeOne(
   @param:JsonProperty("first_name")
@@ -13,6 +15,11 @@ public data class PolymorphicTypeOne(
   @get:JsonProperty("last_name")
   @get:NotNull
   override val lastName: String,
+  @param:JsonProperty("pets")
+  @get:JsonProperty("pets")
+  @get:NotNull
+  @get:Valid
+  override val pets: List<Pet>,
   @param:JsonProperty("child_one_name")
   @get:JsonProperty("child_one_name")
   public val childOneName: String? = null,
@@ -20,4 +27,4 @@ public data class PolymorphicTypeOne(
   @get:NotNull
   @param:JsonProperty("generation")
   override val generation: String = "PolymorphicTypeOne",
-) : PolymorphicSuperType(firstName, lastName)
+) : PolymorphicSuperType(firstName, lastName, pets)
