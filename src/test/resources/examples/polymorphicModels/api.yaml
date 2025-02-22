@@ -15,6 +15,7 @@ components:
         - generation
         - first_name
         - last_name
+        - pets
       properties:
         generation:
           type: string
@@ -22,6 +23,10 @@ components:
           type: string
         last_name:
           type: string
+        pets:
+          type: array
+          items:
+            $ref: "#/components/schemas/Pet"
     PolymorphicTypeOne:
       allOf:
         - $ref: "#/components/schemas/PolymorphicSuperType"
@@ -45,3 +50,11 @@ components:
         some_integer_propery:
           type: integer
           format: int32
+
+    Pet:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name

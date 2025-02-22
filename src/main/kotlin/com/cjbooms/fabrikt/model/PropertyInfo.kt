@@ -84,9 +84,7 @@ sealed class PropertyInfo {
                             schema = property.value,
                             isInherited = settings.markAsInherited,
                             parentSchema = this,
-                            enclosingSchema = if (property.value.isInlinedArrayDefinition() || property.value.itemsSchema.isInlinedEnumDefinition())
-                                enclosingSchema
-                            else null
+                            enclosingSchema = enclosingSchema,
                         )
                     OasType.Object.type ->
                         if (property.value.isSimpleMapDefinition() || property.value.isSchemaLess())
@@ -194,12 +192,17 @@ sealed class PropertyInfo {
     ) : PropertyInfo(), CollectionValidation {
         override val typeInfo: KotlinTypeInfo =
             if (isInherited) {
-                KotlinTypeInfo.from(schema, oasKey, parentSchema)
+                KotlinTypeInfo.from(schema, oasKey, parentSchema.takeIf { isInlined() })
             } else {
-                KotlinTypeInfo.from(schema, oasKey, enclosingSchema)
+                KotlinTypeInfo.from(schema, oasKey, enclosingSchema.takeIf { isInlined() })
             }
         override val minItems: Int? = schema.minItems
         override val maxItems: Int? = schema.maxItems
+
+        private fun isInlined(): Boolean =
+            schema
+                .itemsSchema
+                .let { it.isInlinedObjectDefinition() || it.isInlinedEnumDefinition() || it.isInlinedArrayDefinition() }
     }
 
     data class MapField(
