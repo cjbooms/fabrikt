@@ -98,6 +98,9 @@ tasks {
         }
         archiveBaseName.set(executableName)
         archiveClassifier.set("")
+        // relocate the transitive dependency on an old guava version to prevent conflicts (https://github.com/cjbooms/fabrikt/issues/379)
+        relocate("com.google.common", "com.cjbooms.fabrikt.shaded.com.google.common")
+        relocate("com.google.thirdparty", "com.cjbooms.fabrikt.shaded.com.google.thirdparty")
     }
 
     val dokka = getByName<DokkaTask>("dokkaHtml") {
