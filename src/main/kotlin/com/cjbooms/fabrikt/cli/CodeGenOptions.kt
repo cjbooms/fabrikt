@@ -4,9 +4,9 @@ import com.cjbooms.fabrikt.generators.JakartaAnnotations
 import com.cjbooms.fabrikt.generators.JavaxValidationAnnotations
 import com.cjbooms.fabrikt.generators.NoValidationAnnotations
 import com.cjbooms.fabrikt.generators.ValidationAnnotations
-import com.cjbooms.fabrikt.model.SerializationAnnotations
 import com.cjbooms.fabrikt.model.JacksonAnnotations
 import com.cjbooms.fabrikt.model.KotlinxSerializationAnnotations
+import com.cjbooms.fabrikt.model.SerializationAnnotations
 
 enum class CodeGenerationType(val description: String) {
     HTTP_MODELS(
@@ -33,6 +33,7 @@ enum class ClientCodeGenOptionType(private val description: String) {
     ;
 
     override fun toString() = "`${super.toString()}` - $description"
+
     companion object {
         const val DEFAULT_OPEN_FEIGN_CLIENT_NAME = "fabrikt-client"
     }
@@ -40,7 +41,9 @@ enum class ClientCodeGenOptionType(private val description: String) {
 
 enum class ClientCodeGenTargetType(val description: String) {
     OK_HTTP("Generate OkHttp client."),
-    OPEN_FEIGN("Generate OpenFeign client.");
+    OPEN_FEIGN("Generate OpenFeign client."),
+    SPRING_HTTP_INTERFACE("Generate Spring HTTP Interface."),
+    ;
 
     override fun toString() = "`${super.toString()}` - $description"
 
@@ -67,6 +70,7 @@ enum class ControllerCodeGenOptionType(val description: String) {
     SUSPEND_MODIFIER("This option adds the suspend modifier to the generated controller functions"),
     AUTHENTICATION("This option adds the authentication parameter to the generated controller functions"),
     COMPLETION_STAGE("This option makes generated controller functions have Type CompletionStage<T> (works only with Spring Controller generator)");
+
     override fun toString() = "`${super.toString()}` - $description"
 }
 
@@ -92,13 +96,18 @@ enum class CodeGenTypeOverride(val description: String) {
     DATE_AS_STRING("Ignore string format `date` and use `String` as the type"),
     DATETIME_AS_STRING("Ignore string format `date-time` and use `String` as the type"),
     BYTEARRAY_AS_INPUTSTREAM("Use `InputStream` as ByteArray type. Defaults to `ByteArray`");
+
     override fun toString() = "`${super.toString()}` - $description"
 }
 
 enum class ValidationLibrary(val description: String, val annotations: ValidationAnnotations) {
-    JAVAX_VALIDATION("Use `javax.validation` annotations in generated model classes (default)", JavaxValidationAnnotations),
+    JAVAX_VALIDATION(
+        "Use `javax.validation` annotations in generated model classes (default)",
+        JavaxValidationAnnotations
+    ),
     JAKARTA_VALIDATION("Use `jakarta.validation` annotations in generated model classes", JakartaAnnotations),
     NO_VALIDATION("Use no validation annotations in generated model classes", NoValidationAnnotations);
+
     override fun toString() = "`${super.toString()}` - $description"
 
     companion object {
@@ -119,7 +128,10 @@ enum class ExternalReferencesResolutionMode(val description: String) {
 
 enum class SerializationLibrary(val description: String, val serializationAnnotations: SerializationAnnotations) {
     JACKSON("Use Jackson for serialization and deserialization", JacksonAnnotations),
-    KOTLINX_SERIALIZATION("Use kotlinx.serialization for serialization and deserialization", KotlinxSerializationAnnotations);
+    KOTLINX_SERIALIZATION(
+        "Use kotlinx.serialization for serialization and deserialization",
+        KotlinxSerializationAnnotations
+    );
 
     override fun toString() = "`${super.toString()}` - $description"
 
