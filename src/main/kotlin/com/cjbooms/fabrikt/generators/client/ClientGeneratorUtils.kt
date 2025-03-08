@@ -125,7 +125,7 @@ object ClientGeneratorUtils {
     }
 
     /**
-     * Adds suspend as modified to the func spec so that i can be used with CoroutineFeign
+     * Add suspend as modified to method definitions on supported clients, ex. CoroutineFeign, Spring HTTP Interface.
      */
     fun FunSpec.Builder.addSuspendModifier(options: Set<ClientCodeGenOptionType>): FunSpec.Builder {
         if (options.contains(ClientCodeGenOptionType.SUSPEND_MODIFIER)) {
