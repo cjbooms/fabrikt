@@ -36,8 +36,10 @@ components:
           $ref: "#/components/schemas/RootDiscriminator"
         rootField1:
           type: string
+          description: this is a rootField1
         rootField2:
           type: boolean
+          description: this is a rootField2
 
     FirstLevelChild:
       allOf:
@@ -152,10 +154,12 @@ components:
           type: string
           required: true
           nullable: false
+          description: commonField1
         field2:
           type: string
           required: true
           nullable: false
+          description: commonField2
 
     # Polymorphism
     PolymorphicTypeOneRef:
@@ -427,6 +431,3 @@ components:
         properties:
           bar_prop:
             type: string
-
-
-
