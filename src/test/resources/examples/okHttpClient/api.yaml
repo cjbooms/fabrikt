@@ -124,6 +124,19 @@ paths:
         204:
           description: "Operation successful"
 
+  /example-path-4/only-failure-response:
+    post:
+      summary: "POST example path 4"
+      responses:
+        204:
+          description: "No Content"
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Failure'
+          description: Bad Request
+
 components:
   parameters:
     PathParam:

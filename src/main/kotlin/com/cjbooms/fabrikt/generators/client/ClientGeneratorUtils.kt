@@ -4,6 +4,7 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.GeneratorUtils
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaTypeKey
+import com.cjbooms.fabrikt.generators.GeneratorUtils.hasAnySuccessResponseSchemas
 import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleContentMediaTypes
 import com.cjbooms.fabrikt.generators.GeneratorUtils.hasMultipleSuccessResponseSchemas
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
@@ -37,16 +38,18 @@ object ClientGeneratorUtils {
      * If no response body is found, Unit is returned.
      */
     fun Operation.getReturnType(packages: Packages): TypeName {
-        return if (hasMultipleSuccessResponseSchemas()) {
-                JsonNode::class.asTypeName()
-            } else {
-                this.getPrimaryContentMediaType()?.let {
-                    toModelType(
-                        packages.base,
-                        KotlinTypeInfo.from(it.value.schema)
-                    )
-                } ?: Unit::class.asTypeName()
-            }
+        return if(!hasAnySuccessResponseSchemas()){
+            Unit::class.asTypeName()
+        } else if (hasMultipleSuccessResponseSchemas()) {
+            JsonNode::class.asTypeName()
+        } else {
+            this.getPrimaryContentMediaType()?.let {
+                toModelType(
+                    packages.base,
+                    KotlinTypeInfo.from(it.value.schema)
+                )
+            } ?: Unit::class.asTypeName()
+        }
     }
 
     fun Operation.toClientReturnType(packages: Packages): TypeName {

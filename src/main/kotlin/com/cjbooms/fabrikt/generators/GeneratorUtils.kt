@@ -133,6 +133,8 @@ object GeneratorUtils {
 
     fun Operation.hasMultipleContentMediaTypes(): Boolean? = this.firstResponse()?.hasMultipleContentMediaTypes()
 
+    fun Operation.hasAnySuccessResponseSchemas(): Boolean = getBodySuccessResponses().isNotEmpty()
+
     fun Operation.hasMultipleSuccessResponseSchemas(): Boolean =
             getBodySuccessResponses().flatMap { it.contentMediaTypes.values }.map { it.schema.name }.distinct().size > 1
 

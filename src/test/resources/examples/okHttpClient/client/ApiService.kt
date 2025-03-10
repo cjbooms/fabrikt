@@ -145,3 +145,33 @@ public class ExamplePath3SubresourceService(
             apiClient.putExamplePath3PathParamSubresource(firstModel, pathParam, ifMatch, csvListQueryParam, additionalHeaders)
         }
 }
+
+/**
+ * The circuit breaker registry should have the proper configuration to correctly action on circuit
+ * breaker transitions based on the client exceptions [ApiClientException], [ApiServerException] and
+ * [IOException].
+ *
+ * @see ApiClientException
+ * @see ApiServerException
+ */
+@Suppress("unused")
+public class ExamplePath4OnlyFailureResponseService(
+    private val circuitBreakerRegistry: CircuitBreakerRegistry,
+    objectMapper: ObjectMapper,
+    baseUrl: String,
+    client: OkHttpClient,
+) {
+    public var circuitBreakerName: String = "examplePath4OnlyFailureResponseClient"
+
+    private val apiClient: ExamplePath4OnlyFailureResponseClient =
+        ExamplePath4OnlyFailureResponseClient(objectMapper, baseUrl, client)
+
+    @Throws(ApiException::class)
+    public fun postExamplePath4OnlyFailureResponse(
+        additionalHeaders: Map<String, String> =
+            emptyMap(),
+    ): ApiResponse<Unit> =
+        withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
+            apiClient.postExamplePath4OnlyFailureResponse(additionalHeaders)
+        }
+}
