@@ -263,3 +263,38 @@ public class ExamplePath3SubresourceClient(
         return request.execute(client, objectMapper, jacksonTypeRef())
     }
 }
+
+@Suppress("unused")
+public class ExamplePath4OnlyFailureResponseClient(
+    private val objectMapper: ObjectMapper,
+    private val baseUrl: String,
+    private val client: OkHttpClient,
+) {
+    /**
+     * POST example path 4
+     */
+    @Throws(ApiException::class)
+    public fun postExamplePath4OnlyFailureResponse(
+        additionalHeaders: Map<String, String> =
+            emptyMap(),
+        additionalQueryParameters: Map<String, String> = emptyMap(),
+    ): ApiResponse<Unit> {
+        val httpUrl: HttpUrl = "$baseUrl/example-path-4/only-failure-response"
+            .toHttpUrl()
+            .newBuilder()
+            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+            .build()
+
+        val headerBuilder = Headers.Builder()
+        additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
+        val httpHeaders: Headers = headerBuilder.build()
+
+        val request: Request = Request.Builder()
+            .url(httpUrl)
+            .headers(httpHeaders)
+            .post(ByteArray(0).toRequestBody())
+            .build()
+
+        return request.execute(client, objectMapper, jacksonTypeRef())
+    }
+}
