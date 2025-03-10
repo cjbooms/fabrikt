@@ -200,6 +200,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               | CHOOSE ONE OF: |
 |                               |   `OK_HTTP` - Generate OkHttp client. |
 |                               |   `OPEN_FEIGN` - Generate OpenFeign client. |
+|                               |   `SPRING_HTTP_INTERFACE` - Generate Spring HTTP Interface. |
 |   `--http-controller-opts`    | Select the options for the controllers that you want to be generated. |
 |                               | CHOOSE ANY OF: |
 |                               |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions |

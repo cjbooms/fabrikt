@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.client.OkHttpClientGenerator
 import com.cjbooms.fabrikt.generators.client.OpenFeignInterfaceGenerator
+import com.cjbooms.fabrikt.generators.client.SpringHttpInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
@@ -48,6 +49,7 @@ class CodeGenerator(
         val clientGenerator = when (MutableSettings.clientTarget()) {
             ClientCodeGenTargetType.OK_HTTP -> OkHttpClientGenerator(packages, sourceApi, srcPath)
             ClientCodeGenTargetType.OPEN_FEIGN -> OpenFeignInterfaceGenerator(packages, sourceApi)
+            ClientCodeGenTargetType.SPRING_HTTP_INTERFACE -> SpringHttpInterfaceGenerator(packages, sourceApi)
         }
         val options = MutableSettings.clientOptions()
         val clientFiles = clientGenerator.generate(options).files
