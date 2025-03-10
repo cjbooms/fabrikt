@@ -3,8 +3,10 @@ package com.cjbooms.fabrikt.generators
 import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
+import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllers
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
@@ -295,5 +297,27 @@ class SpringControllerGeneratorTest {
         ).generate().toSingleFile()
 
         assertThat(controllers).isEqualTo(expectedControllers)
+    }
+
+    @Test
+    fun `the specified additional annotations are added`() {
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.CONTROLLERS),
+            controllerTarget = ControllerCodeGenTargetType.SPRING,
+            controllerAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+        )
+
+        val api = SourceApi(readTextResource("/examples/additionalControllerAnnotations/api.yaml"))
+        val generator = SpringControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            JavaxValidationAnnotations,
+        )
+        val controllers = generator.generate()
+
+        val fileStr = controllers.toSingleFile()
+        val expectedControllers = readTextResource("/examples/additionalControllerAnnotations/controllers/spring/Controllers.kt")
+
+        assertThat(fileStr.trim()).isEqualTo(expectedControllers.trim())
     }
 }

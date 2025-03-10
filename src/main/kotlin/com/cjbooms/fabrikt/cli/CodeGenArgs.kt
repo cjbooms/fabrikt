@@ -93,6 +93,12 @@ class CodeGenArgs {
     var controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.SPRING
 
     @Parameter(
+        names = ["--http-controller-annotations"],
+        description = "Select the optional annotations for the controllers that you want to be generated.",
+    )
+    var controllerAnnotations: List<String> = emptyList()
+
+    @Parameter(
         names = ["--http-model-opts"],
         description = "Select the options for the http models that you want to be generated.",
         converter = ModelCodeGenOptionConverter::class
@@ -104,6 +110,12 @@ class CodeGenArgs {
         description = "Specify custom suffix for all generated model classes. Defaults to no suffix."
     )
     var modelSuffix: String = ""
+
+    @Parameter(
+        names = ["--http-model-annotations"],
+        description = "Select the optional annotations for the models that you want to be generated.",
+    )
+    var modelAnnotations: List<String> = emptyList()
 
     @Parameter(
         names = ["--http-client-opts"],
@@ -118,6 +130,12 @@ class CodeGenArgs {
         converter = ClientCodeGenTargetConverter::class
     )
     var clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.OK_HTTP
+
+    @Parameter(
+        names = ["--http-client-annotations"],
+        description = "Select the optional annotations for the clients that you want to be generated.",
+    )
+    var clientAnnotations: List<String> = emptyList()
 
     @Parameter(
         names = ["--openfeign-client-name"],

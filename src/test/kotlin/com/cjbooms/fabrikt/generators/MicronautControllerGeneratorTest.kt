@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllers
 import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
@@ -244,5 +245,27 @@ class MicronautControllerGeneratorTest {
         val expectedControllers = readTextResource("/examples/byteArrayStream/controllers/micronaut/Controllers.kt")
 
         assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
+    }
+
+    @Test
+    fun `the specified additional annotations are added`() {
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.CONTROLLERS),
+            controllerTarget = ControllerCodeGenTargetType.MICRONAUT,
+            controllerAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+        )
+
+        val api = SourceApi(readTextResource("/examples/additionalControllerAnnotations/api.yaml"))
+        val generator = MicronautControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            JavaxValidationAnnotations,
+        )
+        val controllers = generator.generate()
+
+        val fileStr = controllers.toSingleFile()
+        val expectedControllers = readTextResource("/examples/additionalControllerAnnotations/controllers/micronaut/Controllers.kt")
+
+        assertThat(fileStr.trim()).isEqualTo(expectedControllers.trim())
     }
 }
