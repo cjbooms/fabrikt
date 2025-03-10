@@ -16,11 +16,13 @@ import com.reprezen.kaizen.oasparser.model3.Parameter
 import com.reprezen.kaizen.oasparser.model3.RequestBody
 import com.reprezen.kaizen.oasparser.model3.Response
 import com.reprezen.kaizen.oasparser.model3.Schema
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import java.util.function.Predicate
@@ -88,6 +90,27 @@ object GeneratorUtils {
         }
 
         return kdoc.build()
+    }
+
+    fun TypeSpec.Builder.addAdditionalControllerAnnotations(): TypeSpec.Builder = apply {
+        MutableSettings.controllerAnnotations().forEach { annotationFqcn ->
+            val annotation = AnnotationSpec.builder(ClassName.bestGuess(annotationFqcn)).build()
+            addAnnotation(annotation)
+        }
+    }
+
+    fun TypeSpec.Builder.addAdditionalClientAnnotations(): TypeSpec.Builder = apply {
+        MutableSettings.clientAnnotations().forEach { annotationFqcn ->
+            val annotation = AnnotationSpec.builder(ClassName.bestGuess(annotationFqcn)).build()
+            addAnnotation(annotation)
+        }
+    }
+
+    fun TypeSpec.Builder.addAdditionalModelAnnotations(): TypeSpec.Builder = apply {
+        MutableSettings.modelAnnotations().forEach { annotationFqcn ->
+            val annotation = AnnotationSpec.builder(ClassName.bestGuess(annotationFqcn)).build()
+            addAnnotation(annotation)
+        }
     }
 
     fun TypeSpec.Builder.primaryPropertiesConstructor(vararg properties: PropertySpec): TypeSpec.Builder {

@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.GeneratorUtils.addAdditionalClientAnnotations
 import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.getPrimaryContentMediaType
 import com.cjbooms.fabrikt.generators.GeneratorUtils.primaryPropertiesConstructor
@@ -95,6 +96,7 @@ class OkHttpSimpleClientGenerator(
                     PropertySpec.builder("baseUrl", String::class.asTypeName(), KModifier.PRIVATE).build(),
                     PropertySpec.builder("client", "OkHttpClient".toClassName("okhttp3"), KModifier.PRIVATE).build()
                 )
+                .addAdditionalClientAnnotations()
                 .addAnnotation(AnnotationSpec.builder(Suppress::class).addMember("%S", "unused").build())
                 .addFunctions(funcSpecs)
                 .build()

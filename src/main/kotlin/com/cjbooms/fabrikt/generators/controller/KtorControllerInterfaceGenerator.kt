@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.generators.controller
 
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.GeneratorUtils.addAdditionalControllerAnnotations
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
 import com.cjbooms.fabrikt.generators.controller.ControllerGeneratorUtils.SecuritySupport
@@ -60,6 +61,7 @@ class KtorControllerInterfaceGenerator(
     override fun generate(): KtorControllers {
         val controllerInterfaces = api.openApi3.routeToPaths().map { (resourceName, paths) ->
             val controllerBuilder = TypeSpec.interfaceBuilder(ControllerGeneratorUtils.controllerName(resourceName))
+                .addAdditionalControllerAnnotations()
 
             val routeFunBuilder = FunSpec.builder("${resourceName.camelCase()}Routes")
                 .receiver(ClassName("io.ktor.server.routing", "Route"))

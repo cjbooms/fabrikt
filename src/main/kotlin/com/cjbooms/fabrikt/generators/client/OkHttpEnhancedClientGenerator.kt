@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.generators.client
 
 import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.GeneratorUtils.addAdditionalClientAnnotations
 import com.cjbooms.fabrikt.generators.GeneratorUtils.functionName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKCodeName
@@ -120,6 +121,7 @@ class OkHttpEnhancedClientGenerator(
             .addKdoc(addClientKDoc())
             .primaryConstructor(constructor)
             .addProperty(circuitBreakerRegistryProperty)
+            .addAdditionalClientAnnotations()
             .addAnnotation(AnnotationSpec.builder(Suppress::class).addMember("%S", "unused").build())
             .addProperty(configurableCircuitBreakerNameProperty)
             .addProperty(clientProperty)

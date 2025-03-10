@@ -165,6 +165,27 @@ class OkHttpClientGeneratorTest {
         assertThat(enhancedClientCode).isEqualTo(expectedClientCode)
     }
 
+    @Test
+    fun `the specified additional annotations are added`() {
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.CLIENT),
+            clientTarget = ClientCodeGenTargetType.OK_HTTP,
+            clientAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+        )
+
+        val api = SourceApi(readTextResource("/examples/additionalClientAnnotations/api.yaml"))
+        val generator = OkHttpSimpleClientGenerator(
+            Packages("example.additionalannotation"),
+            api,
+        )
+        val clients = generator.generateDynamicClientCode()
+
+        val fileStr = clients.toSingleFile()
+        val expectedClients = readTextResource("/examples/additionalClientAnnotations/clients/okhttp/Clients.kt")
+
+        assertThat(fileStr.trim()).isEqualTo(expectedClients.trim())
+    }
+
     private fun Collection<ClientType>.toSingleFile(): String {
         val destPackage = if (this.isNotEmpty()) first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")

@@ -5,6 +5,7 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.ClassSettings
+import com.cjbooms.fabrikt.generators.GeneratorUtils.addAdditionalModelAnnotations
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toObjectTypeSpec
 import com.cjbooms.fabrikt.generators.MutableSettings
@@ -394,6 +395,7 @@ class ModelGenerator(
         val enumType = generatedType(packages.base, enum.enumClassName)
         val classBuilder = TypeSpec
             .enumBuilder(enumType)
+            .addAdditionalModelAnnotations()
             .primaryConstructor(
                 FunSpec.constructorBuilder()
                     .addParameter("value", String::class)
@@ -470,6 +472,7 @@ class ModelGenerator(
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
             .addMicronautReflectionAnnotation()
+            .addAdditionalModelAnnotations()
             .addCompanionObject()
         for (oneOfInterface in oneOfInterfaces) {
             classBuilder
@@ -521,6 +524,7 @@ class ModelGenerator(
         allSchemas: List<SchemaInfo>,
     ): TypeSpec = with(FunSpec.constructorBuilder()) {
         TypeSpec.classBuilder(generatedType(packages.base, modelName))
+            .addAdditionalModelAnnotations()
             .buildPolymorphicSubType(
                 schemaName,
                 properties.filter(PropertyInfo::isInherited),
@@ -551,6 +555,7 @@ class ModelGenerator(
     ): TypeSpec {
         val interfaceBuilder = TypeSpec.interfaceBuilder(generatedType(packages.base, modelName))
             .addModifiers(KModifier.SEALED)
+            .addAdditionalModelAnnotations()
 
         if (discriminator != null && discriminator.propertyName != null) {
             serializationAnnotations.addClassAnnotation(interfaceBuilder)
@@ -592,6 +597,7 @@ class ModelGenerator(
         oneOfSuperInterfaces: Set<Schema>,
         allSchemas: List<SchemaInfo>,
     ): TypeSpec = TypeSpec.classBuilder(generatedType(packages.base, modelName))
+        .addAdditionalModelAnnotations()
         .buildPolymorphicSuperType(
             modelName = modelName,
             schemaName = schemaName,
@@ -663,6 +669,7 @@ class ModelGenerator(
         extensions: Map<String, Any>,
         oneOfSuperInterfaces: Set<Schema>,
     ): TypeSpec = TypeSpec.classBuilder(generatedType(packages.base, modelName))
+        .addAdditionalModelAnnotations()
         .buildPolymorphicSubType(schemaName, properties, superType, extensions, oneOfSuperInterfaces).build()
 
     private fun TypeSpec.Builder.buildPolymorphicSubType(
