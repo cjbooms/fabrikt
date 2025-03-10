@@ -25,15 +25,11 @@ import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PathParam
 import com.cjbooms.fabrikt.model.QueryParam
 import com.cjbooms.fabrikt.model.RequestParameter
-import com.cjbooms.fabrikt.model.SimpleFile
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
-import com.github.javaparser.utils.CodeGenerationUtils
 import com.reprezen.kaizen.oasparser.model3.Operation
 import com.reprezen.kaizen.oasparser.model3.Path
 import com.squareup.kotlinpoet.AnnotationSpec
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
@@ -55,7 +51,6 @@ class SpringHttpInterfaceGenerator(
             }
 
             val clientType = TypeSpec.interfaceBuilder(simpleClientName(resourceName))
-                .addAnnotation(generatedAnnotationSpec())
                 .addAnnotation(AnnotationSpec.builder(Suppress::class).addMember("%S", "unused").build())
                 .addFunctions(funcSpecs)
                 .build()
@@ -253,21 +248,5 @@ class SpringHttpInterfaceGenerator(
         }
     }
 
-    override fun generateLibrary(options: Set<ClientCodeGenOptionType>): Collection<GeneratedFile> = setOf(
-        generatedAnnotationFile()
-    )
-
-    private fun generatedAnnotationFile(): SimpleFile {
-        val destFile = srcPath.resolve(CodeGenerationUtils.packageToPath(packages.client))
-            .resolve("GeneratedClient.kt")
-        val annotationTypeSpec = TypeSpec.annotationBuilder(
-            ClassName(packages.client, "GeneratedClient")
-        ).build()
-        val fileSpec = FileSpec.builder(packages.client, "GeneratedClient").addType(annotationTypeSpec).build()
-        return SimpleFile(destFile, fileSpec.toString())
-    }
-
-    private fun generatedAnnotationSpec(): AnnotationSpec = AnnotationSpec.builder(
-        ClassName(packages.client, "GeneratedClient")
-    ).build()
+    override fun generateLibrary(options: Set<ClientCodeGenOptionType>): Collection<GeneratedFile> = setOf()
 }

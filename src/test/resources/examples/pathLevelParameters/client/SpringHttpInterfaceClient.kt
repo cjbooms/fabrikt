@@ -8,7 +8,6 @@ import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Map
 
-@GeneratedClient
 @Suppress("unused")
 public interface ExampleClient {
     /**

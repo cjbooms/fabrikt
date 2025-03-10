@@ -16,7 +16,6 @@ import kotlin.Suppress
 import kotlin.collections.List
 import kotlin.collections.Map
 
-@GeneratedClient
 @Suppress("unused")
 public interface ExamplePath1Client {
     /**
@@ -59,7 +58,6 @@ public interface ExamplePath1Client {
     )
 }
 
-@GeneratedClient
 @Suppress("unused")
 public interface ExamplePath2Client {
     /**
@@ -123,7 +121,6 @@ public interface ExamplePath2Client {
     )
 }
 
-@GeneratedClient
 @Suppress("unused")
 public interface ExamplePath3SubresourceClient {
     /**

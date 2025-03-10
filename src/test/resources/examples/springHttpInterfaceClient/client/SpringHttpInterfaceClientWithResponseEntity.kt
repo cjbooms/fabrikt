@@ -18,7 +18,6 @@ import kotlin.Unit
 import kotlin.collections.List
 import kotlin.collections.Map
 
-@GeneratedClient
 @Suppress("unused")
 public interface ExamplePath1Client {
     /**
@@ -61,7 +60,6 @@ public interface ExamplePath1Client {
     ): ResponseEntity<Unit>
 }
 
-@GeneratedClient
 @Suppress("unused")
 public interface ExamplePath2Client {
     /**
@@ -125,7 +123,6 @@ public interface ExamplePath2Client {
     ): ResponseEntity<Unit>
 }
 
-@GeneratedClient
 @Suppress("unused")
 public interface ExamplePath3SubresourceClient {
     /**
