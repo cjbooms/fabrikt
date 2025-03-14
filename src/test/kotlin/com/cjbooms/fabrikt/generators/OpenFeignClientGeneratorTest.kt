@@ -71,6 +71,28 @@ class OpenFeignClientGeneratorTest {
         )
     }
 
+    @Test
+    fun `the specified additional annotations are added`() {
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.CLIENT),
+            clientTarget = ClientCodeGenTargetType.OPEN_FEIGN,
+            clientClassAdditionalAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+            clientMethodAdditionalAnnotations = listOf("example.MethodAnnotation1", "example.MethodAnnotation2"),
+        )
+
+        val api = SourceApi(readTextResource("/examples/additionalClientAnnotations/api.yaml"))
+        val generator = OpenFeignInterfaceGenerator(
+            Packages("example.additionalannotation"),
+            api,
+        )
+        val clients = generator.generate(setOf())
+
+        val fileStr = clients.clients.toSingleFile()
+        val expectedClients = readTextResource("/examples/additionalClientAnnotations/clients/openfeign/Clients.kt")
+
+        assertThat(fileStr.trim()).isEqualTo(expectedClients.trim())
+    }
+
 
     private fun runTestCase(
         testCaseName: String,

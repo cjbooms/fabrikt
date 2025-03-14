@@ -235,4 +235,27 @@ class KtorControllerInterfaceGeneratorTest {
 
         assertThat(fileStr.trim()).isEqualTo(expectedControllers.trim())
     }
+
+    @Test
+    fun `the specified additional annotations are added`() {
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.CONTROLLERS),
+            controllerTarget = ControllerCodeGenTargetType.KTOR,
+            controllerClassAdditionalAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+            controllerMethodAdditionalAnnotations = listOf("example.MethodAnnotation1", "example.MethodAnnotation2"),
+        )
+
+        val api = SourceApi(readTextResource("/examples/additionalControllerAnnotations/api.yaml"))
+        val generator = KtorControllerInterfaceGenerator(
+            Packages(basePackage),
+            api
+        )
+        val controllers = generator.generate()
+        val lib = generator.generateLibrary()
+
+        val fileStr = controllers.toSingleFile(lib)
+        val expectedControllers = readTextResource("/examples/additionalControllerAnnotations/controllers/ktor/Controllers.kt")
+
+        assertThat(fileStr.trim()).isEqualTo(expectedControllers.trim())
+    }
 }

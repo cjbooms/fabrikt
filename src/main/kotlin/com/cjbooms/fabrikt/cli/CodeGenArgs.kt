@@ -93,6 +93,18 @@ class CodeGenArgs {
     var controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.SPRING
 
     @Parameter(
+        names = ["--http-controller-class-additional-annotations"],
+        description = "Select the optional annotations for the controllers that you want to be generated.",
+    )
+    var controllerClassAdditionalAnnotations: List<String> = emptyList()
+
+    @Parameter(
+        names = ["--http-controller-method-additional-annotations"],
+        description = "Select the optional annotations for the controllers that you want to be generated.",
+    )
+    var controllerMethodAdditionalAnnotations: List<String> = emptyList()
+
+    @Parameter(
         names = ["--http-model-opts"],
         description = "Select the options for the http models that you want to be generated.",
         converter = ModelCodeGenOptionConverter::class
@@ -104,6 +116,12 @@ class CodeGenArgs {
         description = "Specify custom suffix for all generated model classes. Defaults to no suffix."
     )
     var modelSuffix: String = ""
+
+    @Parameter(
+        names = ["--http-model-additional-annotations"],
+        description = "Select the optional annotations for the models that you want to be generated.",
+    )
+    var modelAdditionalAnnotations: List<String> = emptyList()
 
     @Parameter(
         names = ["--http-client-opts"],
@@ -118,6 +136,18 @@ class CodeGenArgs {
         converter = ClientCodeGenTargetConverter::class
     )
     var clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.OK_HTTP
+
+    @Parameter(
+        names = ["--http-client-class-additional-annotations"],
+        description = "Select the optional annotations for the clients that you want to be generated.",
+    )
+    var clientClassAdditionalAnnotations: List<String> = emptyList()
+
+    @Parameter(
+        names = ["--http-client-method-additional-annotations"],
+        description = "Select the optional annotations for the clients that you want to be generated.",
+    )
+    var clientMethodAdditionalAnnotations: List<String> = emptyList()
 
     @Parameter(
         names = ["--openfeign-client-name"],

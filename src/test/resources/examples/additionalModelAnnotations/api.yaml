@@ -1,0 +1,361 @@
+openapi: "3.0.0"
+info:
+  title: "API Example"
+  version: "1.0"
+paths:
+  /example-path-1:
+    get:
+      summary: "GET example path 1"
+      parameters:
+        - $ref: "#/components/parameters/ListQueryParamExploded"
+        - $ref: "#/components/parameters/QueryParam2"
+        - $ref: "#/components/parameters/ListQueryParamInt"
+      responses:
+        200:
+          description: "successful operation"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
+          content:
+            application/vnd.custom.media+json:
+              schema:
+                $ref: "#/components/schemas/QueryResult"
+
+    post:
+      summary: "POST example path 1"
+      parameters:
+        - $ref: "#/components/parameters/ListQueryParamExploded"
+      requestBody:
+        $ref: "#/components/requestBodies/PostBody"
+      responses:
+        201:
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          description: "Successful operation"
+
+  /example-path-2/{path_param}:
+    get:
+      summary: "GET example path 2"
+      parameters:
+        - $ref: "#/components/parameters/PathParam"
+        - $ref: "#/components/parameters/QueryParam2"
+        - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/PaginationLimitParam"
+      responses:
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Failure'
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Failure'
+        423:
+          description: Locked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Failure'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Failure'
+        200:
+          description: "successful operation"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
+          content:
+            application/json:
+              schema:
+                discriminator:
+                  propertyName: "model_type"
+                oneOf:
+                  - $ref: "#/components/schemas/FirstModel"
+                  - $ref: "#/components/schemas/SecondModel"
+                  - $ref: "#/components/schemas/ThirdModel"
+        304:
+          description: "Returned in conjunction with use of the If-None-Match header.\
+            \ Indicates that the resource as described by the passed etag value has\
+            \ not changed"
+    head:
+      operationId: headOperationIdExample
+      summary: "HEAD example path 2"
+      parameters:
+        - $ref: "#/components/parameters/PathParam"
+        - $ref: "#/components/parameters/QueryParam3"
+        - $ref: "#/components/parameters/IfNoneMatch"
+      responses:
+        200:
+          description: "Record Exists"
+        304:
+          description: "Returned in conjunction with use of the If-None-Match header.\
+            \ Indicates that the resource as described by the passed etag value has\
+            \ not changed"
+
+    put:
+      summary: "PUT example path 2"
+      parameters:
+        - $ref: "#/components/parameters/PathParam"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        $ref: "#/components/requestBodies/PutBody"
+      responses:
+        204:
+          description: "Operation successful"
+
+  /example-path-3/{path_param}/subresource:
+    put:
+      summary: "PUT example path 3"
+      parameters:
+        - $ref: "#/components/parameters/ListQueryParamCsv"
+        - $ref: "#/components/parameters/PathParam"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        $ref: "#/components/requestBodies/PutBody"
+      responses:
+        204:
+          description: "Operation successful"
+
+components:
+  parameters:
+    PathParam:
+      name: "path_param"
+      description: "The resource id"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+
+    IfMatch:
+      name: "If-Match"
+      description: "The RFC7232 If-Match header field"
+      in: "header"
+      schema:
+        type: "string"
+      required: true
+
+    IfNoneMatch:
+      name: "If-None-Match"
+      description: "The RFC7232 If-None-Match header field"
+      in: "header"
+      schema:
+        type: "string"
+      required: false
+
+    ListQueryParamExploded:
+      name: "explode_list_query_param"
+      in: "query"
+      schema:
+        type: "array"
+        items:
+          type: "string"
+      required: false
+      allowEmptyValue: false
+
+    ListQueryParamCsv:
+      name: "csv_list_query_param"
+      in: "query"
+      explode: false
+      schema:
+        type: "array"
+        items:
+          type: "string"
+      required: false
+      allowEmptyValue: false
+
+    ListQueryParamInt:
+      name: "int_list_query_param"
+      in: "query"
+      schema:
+        type: "array"
+        items:
+          type: "integer"
+      required: false
+
+    PaginationLimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1000
+        default: 500
+      required: false
+
+    QueryParam2:
+      name: "query_param2"
+      in: "query"
+      schema:
+        type: integer
+      required: false
+
+    QueryParam3:
+      name: "query_param3"
+      in: "query"
+      schema:
+        type: boolean
+      required: false
+
+  headers:
+    Location:
+      description: "The Location header indicates the URL of a newly created resource"
+      schema:
+        type: "string"
+
+    CacheControl:
+      description: "The RFC7234 Cache Control header"
+      schema:
+        type: "string"
+      example: "must-revalidate, max-age=5"
+
+  requestBodies:
+    PostBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            discriminator:
+              propertyName: "model_type"
+            oneOf:
+              - $ref: "#/components/schemas/FirstModel"
+              - $ref: "#/components/schemas/SecondModel"
+              - $ref: "#/components/schemas/ThirdModel"
+    PutBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FirstModel"
+
+
+  schemas:
+    QueryResult:
+      type: "object"
+      required:
+        - "items"
+      properties:
+        items:
+          type: "array"
+          minItems: 0
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/FirstModel"
+              - $ref: "#/components/schemas/SecondModel"
+              - $ref: "#/components/schemas/ThirdModel"
+    Content:
+      type: "object"
+      required:
+        - "id"
+        - "attr_1"
+        - "attr_2"
+        - "attr_3"
+        - "etag"
+        - "model_type"
+      properties:
+        id:
+          description: "The unique resource id"
+          type: "string"
+          readOnly: true
+        first_attr:
+          description: "The attribute 1"
+          type: "string"
+          format: "date-time"
+          example: "2016-01-27T10:52:46.406Z"
+          readOnly: true
+        second_attr:
+          description: "The attribute 2"
+          type: "string"
+          readOnly: true
+        third_attr:
+          type: "string"
+          enum:
+            - "enum_type_1"
+            - "enum_type_2"
+          description: "Enum types for attribute 3"
+          example: "enum_type_2"
+        etag:
+          type: "string"
+          description: "Etag value to be used in conjunction with If-Match headers for optimistic locking purposes"
+          readOnly: true
+        model_type:
+          type: "string"
+          description: "The model discrimination type"
+          enum:
+            - "first_model"
+            - "second_model"
+            - "third_model"
+          example: "third_model"
+      discriminator:
+        propertyName: "model_type"
+        mapping:
+          first_model: "#/components/schemas/FirstModel"
+          second_model: "#/components/schemas/SecondModel"
+          third_model: "#/components/schemas/ThirdModel"
+
+    FirstModel:
+      allOf:
+        - $ref: "#/components/schemas/Content"
+        - type: "object"
+          properties:
+            extra_first_attr:
+              description: "The attribute 1 for model 1"
+              type: array
+              items:
+                type: "string"
+                minItems: 1
+                maxItems: 10
+              readOnly: true
+    SecondModel:
+      allOf:
+        - $ref: "#/components/schemas/Content"
+        - type: "object"
+          properties:
+            extra_first_attr:
+              description: "The attribute 1 for model 2"
+              type: "string"
+              readOnly: true
+            extra_second_attr:
+              description: "The attribute 2 for model 2"
+              type: boolean
+              readOnly: true
+
+    ThirdModel:
+      allOf:
+        - $ref: "#/components/schemas/Content"
+        - type: "object"
+          properties:
+            extra_first_attr:
+              description: "The attribute 1 for model 3"
+              type: "string"
+              format: "date-time"
+              example: "2016-01-27T10:52:46.406Z"
+              readOnly: true
+            extra_second_attr:
+              description: "The attribute 2 for model 3"
+              type: integer
+              readOnly: true
+
+    Failure:
+      required:
+        - error
+        - errorCode
+        - traceId
+      type: object
+      properties:
+        traceId:
+          type: string
+          format: uuid
+        errorCode:
+          type: string
+        error:
+          type: string
+        subType:
+          type: string

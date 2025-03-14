@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.generators.controller
 
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
+import com.cjbooms.fabrikt.generators.GeneratorUtils.addAdditionalControllerAnnotations
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toIncomingParameters
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toKdoc
 import com.cjbooms.fabrikt.generators.ValidationAnnotations
@@ -66,6 +67,7 @@ class MicronautControllerInterfaceGenerator(
                     .builder(MicronautImports.CONTROLLER)
                     .build(),
             )
+            .addAdditionalControllerAnnotations()
 
     override fun buildFunction(
         path: Path,
@@ -83,6 +85,7 @@ class MicronautControllerInterfaceGenerator(
             .addModifiers(KModifier.ABSTRACT)
             .addKdoc(op.toKdoc(parameters))
             .addMicronautFunAnnotation(op, verb, path.pathString)
+            .addAdditionalControllerAnnotations(op)
             .apply {
                 if (useSuspendModifier) {
                     addModifiers(KModifier.SUSPEND)
