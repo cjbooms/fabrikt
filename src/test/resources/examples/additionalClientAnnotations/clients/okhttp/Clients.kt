@@ -2,8 +2,11 @@ package example.additionalannotation.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import example.AdditionalAnnotationPerOperation
 import example.Annotation1
 import example.Annotation2
+import example.MethodAnnotation1
+import example.MethodAnnotation2
 import example.additionalannotation.models.Content
 import example.additionalannotation.models.FirstModel
 import example.additionalannotation.models.QueryResult
@@ -39,6 +42,8 @@ public class ExamplePath1Client(
      * @param intListQueryParam
      */
     @Throws(ApiException::class)
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
@@ -75,6 +80,8 @@ public class ExamplePath1Client(
      * @param explodeListQueryParam
      */
     @Throws(ApiException::class)
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun postExamplePath1(
         content: Content,
         explodeListQueryParam: List<String>? = null,
@@ -119,6 +126,8 @@ public class ExamplePath2Client(
      * @param ifNoneMatch The RFC7232 If-None-Match header field
      */
     @Throws(ApiException::class)
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun getExamplePath2PathParam(
         pathParam: String,
         limit: Int = 500,
@@ -158,6 +167,8 @@ public class ExamplePath2Client(
      * @param ifNoneMatch The RFC7232 If-None-Match header field
      */
     @Throws(ApiException::class)
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun headOperationIdExample(
         pathParam: String,
         queryParam3: Boolean? = null,
@@ -195,6 +206,8 @@ public class ExamplePath2Client(
      * @param ifMatch The RFC7232 If-Match header field
      */
     @Throws(ApiException::class)
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun putExamplePath2PathParam(
         firstModel: FirstModel,
         pathParam: String,
@@ -241,6 +254,9 @@ public class ExamplePath3SubresourceClient(
      * @param csvListQueryParam
      */
     @Throws(ApiException::class)
+    @MethodAnnotation1
+    @MethodAnnotation2
+    @AdditionalAnnotationPerOperation
     public fun putExamplePath3PathParamSubresource(
         firstModel: FirstModel,
         pathParam: String,

@@ -93,10 +93,16 @@ class CodeGenArgs {
     var controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.SPRING
 
     @Parameter(
-        names = ["--http-controller-annotations"],
+        names = ["--http-controller-class-additional-annotations"],
         description = "Select the optional annotations for the controllers that you want to be generated.",
     )
-    var controllerAnnotations: List<String> = emptyList()
+    var controllerClassAdditionalAnnotations: List<String> = emptyList()
+
+    @Parameter(
+        names = ["--http-controller-method-additional-annotations"],
+        description = "Select the optional annotations for the controllers that you want to be generated.",
+    )
+    var controllerMethodAdditionalAnnotations: List<String> = emptyList()
 
     @Parameter(
         names = ["--http-model-opts"],
@@ -112,10 +118,10 @@ class CodeGenArgs {
     var modelSuffix: String = ""
 
     @Parameter(
-        names = ["--http-model-annotations"],
+        names = ["--http-model-additional-annotations"],
         description = "Select the optional annotations for the models that you want to be generated.",
     )
-    var modelAnnotations: List<String> = emptyList()
+    var modelAdditionalAnnotations: List<String> = emptyList()
 
     @Parameter(
         names = ["--http-client-opts"],
@@ -132,10 +138,16 @@ class CodeGenArgs {
     var clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.OK_HTTP
 
     @Parameter(
-        names = ["--http-client-annotations"],
+        names = ["--http-client-class-additional-annotations"],
         description = "Select the optional annotations for the clients that you want to be generated.",
     )
-    var clientAnnotations: List<String> = emptyList()
+    var clientClassAdditionalAnnotations: List<String> = emptyList()
+
+    @Parameter(
+        names = ["--http-client-method-additional-annotations"],
+        description = "Select the optional annotations for the clients that you want to be generated.",
+    )
+    var clientMethodAdditionalAnnotations: List<String> = emptyList()
 
     @Parameter(
         names = ["--openfeign-client-name"],

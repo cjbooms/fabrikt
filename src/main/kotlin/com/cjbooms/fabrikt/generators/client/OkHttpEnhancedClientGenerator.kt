@@ -57,6 +57,7 @@ class OkHttpEnhancedClientGenerator(
                             AnnotationSpec.builder(Throws::class)
                                 .addMember("%T::class", "ApiException".toClassName(packages.client)).build()
                         )
+                        .addAdditionalClientAnnotations(operation)
                         .addIncomingParameters(parameters)
                         .addParameter(
                             ParameterSpec.builder(

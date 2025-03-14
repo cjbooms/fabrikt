@@ -6,7 +6,6 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.cli.ValidationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllers
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
@@ -304,7 +303,8 @@ class SpringControllerGeneratorTest {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.CONTROLLERS),
             controllerTarget = ControllerCodeGenTargetType.SPRING,
-            controllerAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+            controllerClassAdditionalAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+            controllerMethodAdditionalAnnotations = listOf("example.MethodAnnotation1", "example.MethodAnnotation2"),
         )
 
         val api = SourceApi(readTextResource("/examples/additionalControllerAnnotations/api.yaml"))

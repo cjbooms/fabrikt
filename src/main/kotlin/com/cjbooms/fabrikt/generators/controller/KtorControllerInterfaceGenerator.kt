@@ -112,6 +112,7 @@ class KtorControllerInterfaceGenerator(
         val methodName = getMethodName(operation, verb, path)
         val builder = FunSpec.builder(methodName)
             .addModifiers(setOf(KModifier.SUSPEND, KModifier.ABSTRACT))
+            .addAdditionalControllerAnnotations(operation)
 
         val params = operation.toIncomingParameters(packages.base, path.value.parameters, emptyList())
         val (pathParams, queryParams, headerParams, bodyParams) = params.splitByType()

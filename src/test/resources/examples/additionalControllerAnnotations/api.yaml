@@ -118,6 +118,8 @@ paths:
         - $ref: "#/components/parameters/ListQueryParamCsv"
         - $ref: "#/components/parameters/PathParam"
         - $ref: "#/components/parameters/IfMatch"
+      x-additional-annotations:
+        - "example.AdditionalAnnotationPerOperation"
       requestBody:
         $ref: "#/components/requestBodies/PutBody"
       responses:

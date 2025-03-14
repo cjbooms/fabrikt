@@ -114,6 +114,8 @@ paths:
   /example-path-3/{path_param}/subresource:
     put:
       summary: "PUT example path 3"
+      x-additional-annotations:
+        - "example.AdditionalAnnotationPerOperation"
       parameters:
         - $ref: "#/components/parameters/ListQueryParamCsv"
         - $ref: "#/components/parameters/PathParam"

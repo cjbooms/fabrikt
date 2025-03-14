@@ -85,6 +85,7 @@ class MicronautControllerInterfaceGenerator(
             .addModifiers(KModifier.ABSTRACT)
             .addKdoc(op.toKdoc(parameters))
             .addMicronautFunAnnotation(op, verb, path.pathString)
+            .addAdditionalControllerAnnotations(op)
             .apply {
                 if (useSuspendModifier) {
                     addModifiers(KModifier.SUSPEND)

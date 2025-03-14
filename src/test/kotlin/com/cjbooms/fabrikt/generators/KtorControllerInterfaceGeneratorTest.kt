@@ -241,7 +241,8 @@ class KtorControllerInterfaceGeneratorTest {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.CONTROLLERS),
             controllerTarget = ControllerCodeGenTargetType.KTOR,
-            controllerAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+            controllerClassAdditionalAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+            controllerMethodAdditionalAnnotations = listOf("example.MethodAnnotation1", "example.MethodAnnotation2"),
         )
 
         val api = SourceApi(readTextResource("/examples/additionalControllerAnnotations/api.yaml"))
