@@ -79,6 +79,7 @@ class SpringControllerInterfaceGenerator(
             .addModifiers(KModifier.ABSTRACT)
             .addKdoc(op.toKdoc(parameters))
             .addSpringFunAnnotation(op, verb, path.pathString)
+            .addAdditionalControllerAnnotations(op)
             .addSuspendModifier()
 
         val explicitAsyncSupport = op.extensions[EXTENSION_ASYNC_SUPPORT] as? Boolean

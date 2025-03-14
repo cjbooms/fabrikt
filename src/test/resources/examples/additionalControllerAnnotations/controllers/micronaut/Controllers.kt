@@ -1,7 +1,10 @@
 package ie.zalando.controllers
 
+import example.AdditionalAnnotationPerOperation
 import example.Annotation1
 import example.Annotation2
+import example.MethodAnnotation1
+import example.MethodAnnotation2
 import ie.zalando.models.Content
 import ie.zalando.models.FirstModel
 import ie.zalando.models.QueryResult
@@ -37,6 +40,8 @@ public interface ExamplePath1Controller {
      */
     @Get(uri = "/example-path-1")
     @Produces(value = ["application/vnd.custom.media+json"])
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun `get`(
         @Valid @QueryValue(value = "explode_list_query_param") explodeListQueryParam: List<String>?,
         @QueryValue(value = "query_param2") queryParam2: Int?,
@@ -51,6 +56,8 @@ public interface ExamplePath1Controller {
      */
     @Post(uri = "/example-path-1")
     @Consumes(value = ["application/json"])
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun post(
         @Body @Valid content: Content,
         @Valid @QueryValue(
@@ -79,6 +86,8 @@ public interface ExamplePath2Controller {
             "application/json",
         ],
     )
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun getById(
         @PathVariable(value = "path_param") pathParam: String,
         @Min(1) @Max(1_000) @QueryValue(value = "limit", defaultValue = "500") limit: Int,
@@ -95,6 +104,8 @@ public interface ExamplePath2Controller {
      */
     @Put(uri = "/example-path-2/{path_param}")
     @Consumes(value = ["application/json"])
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun putById(
         @Body @Valid firstModel: FirstModel,
         @PathVariable(value = "path_param") pathParam: String,
@@ -116,6 +127,9 @@ public interface ExamplePath3SubresourceController {
      */
     @Put(uri = "/example-path-3/{path_param}/subresource")
     @Consumes(value = ["application/json"])
+    @MethodAnnotation1
+    @MethodAnnotation2
+    @AdditionalAnnotationPerOperation
     public fun put(
         @Body @Valid firstModel: FirstModel,
         @PathVariable(value = "path_param") pathParam: String,

@@ -94,6 +94,7 @@ class OpenFeignInterfaceGenerator(
             .addKdoc(operation.toKdoc(parameters))
             .addRequestLineAnnotation(resource, verb, parameters)
             .addHeadersAnnotation(operation, parameters)
+            .addAdditionalClientAnnotations(operation)
             .addSuspendModifier(options)
             .addIncomingParameters(
                 parameters,

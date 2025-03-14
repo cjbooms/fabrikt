@@ -1,7 +1,10 @@
 package ie.zalando.controllers
 
+import example.AdditionalAnnotationPerOperation
 import example.Annotation1
 import example.Annotation2
+import example.MethodAnnotation1
+import example.MethodAnnotation2
 import ie.zalando.models.Content
 import ie.zalando.models.FirstModel
 import ie.zalando.models.QueryResult
@@ -40,6 +43,8 @@ public interface ExamplePath1Controller {
         produces = ["application/vnd.custom.media+json"],
         method = [RequestMethod.GET],
     )
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun `get`(
         @Valid @RequestParam(value = "explode_list_query_param", required = false)
         explodeListQueryParam: List<String>?,
@@ -60,6 +65,8 @@ public interface ExamplePath1Controller {
         method = [RequestMethod.POST],
         consumes = ["application/json"],
     )
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun post(
         @RequestBody @Valid content: Content,
         @Valid @RequestParam(
@@ -92,6 +99,8 @@ public interface ExamplePath2Controller {
         ],
         method = [RequestMethod.GET],
     )
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun getById(
         @PathVariable(value = "path_param", required = true) pathParam: String,
         @Min(1) @Max(1_000) @RequestParam(value = "limit", required = false, defaultValue = "500")
@@ -113,6 +122,8 @@ public interface ExamplePath2Controller {
         method = [RequestMethod.PUT],
         consumes = ["application/json"],
     )
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun putById(
         @RequestBody @Valid firstModel: FirstModel,
         @PathVariable(value = "path_param", required = true) pathParam: String,
@@ -140,6 +151,9 @@ public interface ExamplePath3SubresourceController {
         method = [RequestMethod.PUT],
         consumes = ["application/json"],
     )
+    @MethodAnnotation1
+    @MethodAnnotation2
+    @AdditionalAnnotationPerOperation
     public fun put(
         @RequestBody @Valid firstModel: FirstModel,
         @PathVariable(value = "path_param", required = true) pathParam: String,

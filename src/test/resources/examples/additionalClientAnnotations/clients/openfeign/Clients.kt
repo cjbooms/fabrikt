@@ -1,7 +1,10 @@
 package example.additionalannotation.client
 
+import example.AdditionalAnnotationPerOperation
 import example.Annotation1
 import example.Annotation2
+import example.MethodAnnotation1
+import example.MethodAnnotation2
 import example.additionalannotation.models.Content
 import example.additionalannotation.models.FirstModel
 import example.additionalannotation.models.QueryResult
@@ -30,6 +33,8 @@ public interface ExamplePath1Client {
      */
     @RequestLine("GET /example-path-1?explode_list_query_param={explodeListQueryParam}&query_param2={queryParam2}&int_list_query_param={intListQueryParam}")
     @Headers("Accept: application/vnd.custom.media+json")
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun getExamplePath1(
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
         @Param("queryParam2") queryParam2: Int? = null,
@@ -45,6 +50,8 @@ public interface ExamplePath1Client {
      * @param explodeListQueryParam
      */
     @RequestLine("POST /example-path-1?explode_list_query_param={explodeListQueryParam}")
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun postExamplePath1(
         content: Content,
         @Param("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
@@ -70,6 +77,8 @@ public interface ExamplePath2Client {
         "If-None-Match: {ifNoneMatch}",
         "Accept: application/json",
     )
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun getExamplePath2PathParam(
         @Param("pathParam") pathParam: String,
         @Param("limit") limit: Int = 500,
@@ -88,6 +97,8 @@ public interface ExamplePath2Client {
      */
     @RequestLine("HEAD /example-path-2/{pathParam}?query_param3={queryParam3}")
     @Headers("If-None-Match: {ifNoneMatch}")
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun headOperationIdExample(
         @Param("pathParam") pathParam: String,
         @Param("queryParam3") queryParam3: Boolean? = null,
@@ -105,6 +116,8 @@ public interface ExamplePath2Client {
      */
     @RequestLine("PUT /example-path-2/{pathParam}")
     @Headers("If-Match: {ifMatch}")
+    @MethodAnnotation1
+    @MethodAnnotation2
     public fun putExamplePath2PathParam(
         firstModel: FirstModel,
         @Param("pathParam") pathParam: String,
@@ -128,6 +141,9 @@ public interface ExamplePath3SubresourceClient {
      */
     @RequestLine("PUT /example-path-3/{pathParam}/subresource?csv_list_query_param={csvListQueryParam}")
     @Headers("If-Match: {ifMatch}")
+    @MethodAnnotation1
+    @MethodAnnotation2
+    @AdditionalAnnotationPerOperation
     public fun putExamplePath3PathParamSubresource(
         firstModel: FirstModel,
         @Param("pathParam") pathParam: String,

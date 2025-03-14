@@ -5,7 +5,6 @@ import com.cjbooms.fabrikt.cli.ClientCodeGenTargetType
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
-import com.cjbooms.fabrikt.generators.client.OkHttpSimpleClientGenerator
 import com.cjbooms.fabrikt.generators.client.OpenFeignInterfaceGenerator
 import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.model.ClientType
@@ -77,7 +76,8 @@ class OpenFeignClientGeneratorTest {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.CLIENT),
             clientTarget = ClientCodeGenTargetType.OPEN_FEIGN,
-            clientAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+            clientClassAdditionalAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+            clientMethodAdditionalAnnotations = listOf("example.MethodAnnotation1", "example.MethodAnnotation2"),
         )
 
         val api = SourceApi(readTextResource("/examples/additionalClientAnnotations/api.yaml"))

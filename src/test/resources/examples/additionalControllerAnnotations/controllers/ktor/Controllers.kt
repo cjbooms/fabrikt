@@ -1,7 +1,10 @@
 package ie.zalando.controllers
 
+import example.AdditionalAnnotationPerOperation
 import example.Annotation1
 import example.Annotation2
+import example.MethodAnnotation1
+import example.MethodAnnotation2
 import ie.zalando.models.Content
 import ie.zalando.models.FirstModel
 import ie.zalando.models.QueryResult
@@ -42,6 +45,8 @@ public interface ExamplePath1Controller {
      * @param intListQueryParam
      * @param call Decorated ApplicationCall with additional typed respond methods
      */
+    @MethodAnnotation1
+    @MethodAnnotation2
     public suspend fun `get`(
         explodeListQueryParam: List<String>?,
         queryParam2: Int?,
@@ -59,6 +64,8 @@ public interface ExamplePath1Controller {
      * @param explodeListQueryParam
      * @param call The Ktor application call
      */
+    @MethodAnnotation1
+    @MethodAnnotation2
     public suspend fun post(
         explodeListQueryParam: List<String>?,
         content: Content,
@@ -173,6 +180,8 @@ public interface ExamplePath2Controller {
      * @param ifNoneMatch The RFC7232 If-None-Match header field
      * @param call Decorated ApplicationCall with additional typed respond methods
      */
+    @MethodAnnotation1
+    @MethodAnnotation2
     public suspend fun getById(
         ifNoneMatch: String?,
         pathParam: String,
@@ -192,6 +201,8 @@ public interface ExamplePath2Controller {
      * @param ifMatch The RFC7232 If-Match header field
      * @param call The Ktor application call
      */
+    @MethodAnnotation1
+    @MethodAnnotation2
     public suspend fun putById(
         ifMatch: String,
         pathParam: String,
@@ -301,6 +312,9 @@ public interface ExamplePath3SubresourceController {
      * @param csvListQueryParam
      * @param call The Ktor application call
      */
+    @MethodAnnotation1
+    @MethodAnnotation2
+    @AdditionalAnnotationPerOperation
     public suspend fun put(
         ifMatch: String,
         pathParam: String,

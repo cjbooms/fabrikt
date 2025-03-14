@@ -22,10 +22,10 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import java.util.function.Predicate
+import kotlin.reflect.cast
 
 object GeneratorUtils {
     /**
@@ -93,14 +93,36 @@ object GeneratorUtils {
     }
 
     fun TypeSpec.Builder.addAdditionalControllerAnnotations(): TypeSpec.Builder = apply {
-        MutableSettings.controllerAnnotations().forEach { annotationFqcn ->
+        MutableSettings.controllerClassAdditionalAnnotations().forEach { annotationFqcn ->
+            val annotation = AnnotationSpec.builder(ClassName.bestGuess(annotationFqcn)).build()
+            addAnnotation(annotation)
+        }
+    }
+
+    fun FunSpec.Builder.addAdditionalControllerAnnotations(operation: Operation): FunSpec.Builder = apply {
+        val additionalAnnotationsPerOperation = (operation.getExtension("x-additional-annotations") as? List<*>)
+            ?.map { String::class.cast(it) }
+            .orEmpty()
+        val additionalAnnotationsGlobal = MutableSettings.controllerMethodAdditionalAnnotations()
+        (additionalAnnotationsGlobal + additionalAnnotationsPerOperation).forEach { annotationFqcn ->
             val annotation = AnnotationSpec.builder(ClassName.bestGuess(annotationFqcn)).build()
             addAnnotation(annotation)
         }
     }
 
     fun TypeSpec.Builder.addAdditionalClientAnnotations(): TypeSpec.Builder = apply {
-        MutableSettings.clientAnnotations().forEach { annotationFqcn ->
+        MutableSettings.clientClassAdditionalAnnotations().forEach { annotationFqcn ->
+            val annotation = AnnotationSpec.builder(ClassName.bestGuess(annotationFqcn)).build()
+            addAnnotation(annotation)
+        }
+    }
+
+    fun FunSpec.Builder.addAdditionalClientAnnotations(operation: Operation): FunSpec.Builder = apply {
+        val additionalAnnotationsPerOperation = (operation.getExtension("x-additional-annotations") as? List<*>)
+            ?.map { String::class.cast(it) }
+            .orEmpty()
+        val additionalAnnotationsGlobal = MutableSettings.clientMethodAdditionalAnnotations()
+        (additionalAnnotationsGlobal + additionalAnnotationsPerOperation).forEach { annotationFqcn ->
             val annotation = AnnotationSpec.builder(ClassName.bestGuess(annotationFqcn)).build()
             addAnnotation(annotation)
         }

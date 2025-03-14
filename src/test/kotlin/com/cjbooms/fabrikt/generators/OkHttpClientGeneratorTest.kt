@@ -170,7 +170,8 @@ class OkHttpClientGeneratorTest {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.CLIENT),
             clientTarget = ClientCodeGenTargetType.OK_HTTP,
-            clientAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+            clientClassAdditionalAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+            clientMethodAdditionalAnnotations = listOf("example.MethodAnnotation1", "example.MethodAnnotation2"),
         )
 
         val api = SourceApi(readTextResource("/examples/additionalClientAnnotations/api.yaml"))
