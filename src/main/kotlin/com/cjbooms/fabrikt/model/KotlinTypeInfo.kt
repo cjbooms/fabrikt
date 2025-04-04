@@ -46,8 +46,9 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     data class Object(val simpleClassName: String) : KotlinTypeInfo(GeneratedType::class, simpleClassName)
     data class Array(
         val parameterizedType: KotlinTypeInfo,
-        val isParameterizedTypeNullable: kotlin.Boolean = false
-    ) : KotlinTypeInfo(List::class)
+        val isParameterizedTypeNullable: kotlin.Boolean = false,
+        val hasUniqueItems: kotlin.Boolean = false,
+    ) : KotlinTypeInfo(if (hasUniqueItems) Set::class else List::class)
 
     data class Map(val parameterizedType: KotlinTypeInfo) : KotlinTypeInfo(Map::class)
     object UnknownAdditionalProperties : KotlinTypeInfo(Any::class)
