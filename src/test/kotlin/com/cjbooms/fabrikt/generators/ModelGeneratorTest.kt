@@ -68,6 +68,7 @@ class ModelGeneratorTest {
         "byteArrayStream",
         "untypedObject",
         "primitiveTypes",
+        "uniqueItems"
     )
 
     @BeforeEach
@@ -79,7 +80,7 @@ class ModelGeneratorTest {
     }
 
     @Test
-    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("enumExamples")
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("uniqueItems")
 
     @ParameterizedTest
     @MethodSource("testCases")
