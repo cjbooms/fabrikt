@@ -16,6 +16,7 @@ import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfStringToNonNullType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMapOfStringToType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfMapsStringToStringType
 import com.cjbooms.fabrikt.generators.TypeFactory.createMutableMapOfStringToType
+import com.cjbooms.fabrikt.generators.TypeFactory.createSet
 import com.cjbooms.fabrikt.generators.ValidationAnnotations
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.basePolymorphicType
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata.polymorphicSubTypes
@@ -78,14 +79,25 @@ class ModelGenerator(
     private val externalRefResolutionMode: ExternalReferencesResolutionMode = MutableSettings.externalRefResolutionMode()
 
     companion object {
-        fun toModelType(basePackage: String, typeInfo: KotlinTypeInfo, isNullable: Boolean = false): TypeName {
+        fun toModelType(
+            basePackage: String,
+            typeInfo: KotlinTypeInfo,
+            isNullable: Boolean = false,
+        ): TypeName {
             val className =
                 toClassName(
                     basePackage,
                     typeInfo,
                 )
             val typeName = when (typeInfo) {
-                is KotlinTypeInfo.Array -> createList(
+                is KotlinTypeInfo.Array -> if (typeInfo.hasUniqueItems) {
+                    createSet(
+                        toModelType(
+                            basePackage,
+                            typeInfo.parameterizedType,
+                            typeInfo.isParameterizedTypeNullable
+                        ),)
+                } else createList(
                     toModelType(
                         basePackage,
                         typeInfo.parameterizedType,
@@ -187,10 +199,10 @@ class ModelGenerator(
                 }
                 it.typeInfo is KotlinTypeInfo.Array -> {
                     buildInlinedListDefinition(
-                            schema = it.schema,
-                            schemaName = it.schema.safeName(),
-                            enclosingSchema = it.schema,
-                            apiDocUrl = it.schema.getDocumentUrl(),
+                        schema = it.schema,
+                        schemaName = it.schema.safeName(),
+                        enclosingSchema = it.schema,
+                        apiDocUrl = it.schema.getDocumentUrl(),
                     )
                 }
                 else -> {
@@ -566,7 +578,10 @@ class ModelGenerator(
                     allSchemas.find { value.endsWith("/${it.name}") }!!
                 }
                 .mapValues { (_, value) ->
-                    toModelType(packages.base, KotlinTypeInfo.from(value.schema, value.name))
+                    toModelType(
+                        packages.base,
+                        KotlinTypeInfo.from(value.schema, value.name),
+                    )
                 }
             serializationAnnotations.addPolymorphicSubTypesAnnotation(interfaceBuilder, mappings)
         }
@@ -679,7 +694,10 @@ class ModelGenerator(
             .addMicronautReflectionAnnotation()
             .addCompanionObject()
             .superclass(
-                toModelType(packages.base, KotlinTypeInfo.from(superType.schema, superType.name)),
+                toModelType(
+                    packages.base,
+                    KotlinTypeInfo.from(superType.schema, superType.name),
+                ),
             )
 
         for (oneOfSuperInterface in oneOfSuperInterfaces) {
@@ -750,7 +768,10 @@ class ModelGenerator(
         mappingKeys(schemaInfo.schema)
             .filter { it.value == schemaInfo.schema.name || it.key == schemaInfo.schema.name }
             .map {
-                it.key to toModelType(packages.base, KotlinTypeInfo.from(schemaInfo.schema, schemaInfo.name))
+                it.key to toModelType(
+                    packages.base,
+                    KotlinTypeInfo.from(schemaInfo.schema, schemaInfo.name),
+                )
             }
             .toMap()
 
