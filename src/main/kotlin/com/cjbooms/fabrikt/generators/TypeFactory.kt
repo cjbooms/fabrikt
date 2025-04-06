@@ -48,6 +48,9 @@ object TypeFactory {
     fun createList(clazz: TypeName) =
         List::class.asClassName().parameterizedBy(clazz)
 
+    fun createSet(clazz: TypeName) =
+        Set::class.asClassName().parameterizedBy(clazz)
+
     fun TypeName.maybeMakeMapValueNullable(): TypeName =
         if (MutableSettings.modelOptions().contains(ModelCodeGenOptionType.NON_NULL_MAP_VALUES)) this
         else this.copy(nullable = true)
