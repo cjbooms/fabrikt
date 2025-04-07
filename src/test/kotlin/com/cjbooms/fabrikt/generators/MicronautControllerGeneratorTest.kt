@@ -245,4 +245,27 @@ class MicronautControllerGeneratorTest {
 
         assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
     }
+
+    @Test
+    fun `the specified additional annotations are added`() {
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.CONTROLLERS),
+            controllerTarget = ControllerCodeGenTargetType.MICRONAUT,
+            controllerClassAdditionalAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+            controllerMethodAdditionalAnnotations = listOf("example.MethodAnnotation1", "example.MethodAnnotation2"),
+        )
+
+        val api = SourceApi(readTextResource("/examples/additionalControllerAnnotations/api.yaml"))
+        val generator = MicronautControllerInterfaceGenerator(
+            Packages(basePackage),
+            api,
+            JavaxValidationAnnotations,
+        )
+        val controllers = generator.generate()
+
+        val fileStr = controllers.toSingleFile()
+        val expectedControllers = readTextResource("/examples/additionalControllerAnnotations/controllers/micronaut/Controllers.kt")
+
+        assertThat(fileStr.trim()).isEqualTo(expectedControllers.trim())
+    }
 }

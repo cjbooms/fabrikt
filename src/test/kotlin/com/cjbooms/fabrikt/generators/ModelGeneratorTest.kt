@@ -326,6 +326,26 @@ class ModelGeneratorTest {
         assertThat(models).isEqualTo(expectedModels)
     }
 
+    @Test
+    fun `the specified additional annotations are added`() {
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.HTTP_MODELS),
+            modelAnnotations = listOf("example.Annotation1", "example.Annotation2"),
+        )
+
+        val api = SourceApi(readTextResource("/examples/additionalModelAnnotations/api.yaml"))
+        val generator = ModelGenerator(
+            Packages("example.additionalannotation"),
+            api,
+        )
+        val models = generator.generate()
+
+        val fileStr = models.toSingleFile()
+        val expectedClients = readTextResource("/examples/additionalModelAnnotations/models/Models.kt")
+
+        assertThat(fileStr.trim()).isEqualTo(expectedClients.trim())
+    }
+
     private fun Models.toSingleFile(): String {
         val destPackage = if (models.isNotEmpty()) models.first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
