@@ -10,11 +10,12 @@ import com.cjbooms.fabrikt.generators.TypeFactory
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_HEADERS_PARAMETER_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.ADDITIONAL_QUERY_PARAMETERS_PARAMETER_NAME
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.addIncomingParameters
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.addSuspendModifier
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.deriveClientParameters
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.getReturnType
+import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.optionallyParameterizeWithResponseEntity
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.metadata.OpenFeignAnnotations
-import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports.RESPONSE_ENTITY
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Clients
 import com.cjbooms.fabrikt.model.GeneratedFile
@@ -34,11 +35,8 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.buildCodeBlock
-
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 
 class OpenFeignInterfaceGenerator(
     private val packages: Packages,
@@ -160,7 +158,7 @@ class OpenFeignInterfaceGenerator(
         }
 
         private fun List<IncomingParameter>.getPathAndQueryParameters():
-            Pair<List<RequestParameter>, List<RequestParameter>> {
+                Pair<List<RequestParameter>, List<RequestParameter>> {
             val queryParameters = mutableListOf<RequestParameter>()
             val pathVariables = mutableListOf<RequestParameter>()
             for (parameter in this) {
@@ -286,25 +284,5 @@ class OpenFeignInterfaceGenerator(
                 }.toString()
             }
         }
-    }
-
-    /**
-     * Adds suspend as modified to the func spec so that i can be used with CoroutineFeign
-     */
-    private fun FunSpec.Builder.addSuspendModifier(options: Set<ClientCodeGenOptionType>): FunSpec.Builder {
-        if (options.contains(ClientCodeGenOptionType.SUSPEND_MODIFIER)) {
-            this.addModifiers(KModifier.SUSPEND)
-        }
-        return this
-    }
-
-    /**
-     * Adds a ResponseEntity around the returned object so that we can get headers and statuscodes
-     */
-    private fun TypeName.optionallyParameterizeWithResponseEntity(options: Set<ClientCodeGenOptionType>): TypeName {
-        if (options.contains(ClientCodeGenOptionType.SPRING_RESPONSE_ENTITY_WRAPPER)) {
-            return RESPONSE_ENTITY.parameterizedBy(this)
-        }
-        return this
     }
 }
