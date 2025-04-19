@@ -74,7 +74,7 @@ sealed class OasType(
                     if (candidates.size > 1) candidates.find { it.format == format }
                     else candidates.firstOrNull()
                 } ?: throw IllegalStateException(
-                "Unknown OAS type: ${safeType()} and format: $format and specialization: ${getSpecialization(oasKey)}"
+                "Unknown OAS type: ${safeType()} and format: $format and specialization: ${getSpecialization(oasKey)} for key: $oasKey"
             )
 
         private fun values(clazz: KClass<OasType>) =

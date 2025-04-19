@@ -54,9 +54,11 @@ object YamlUtils {
     fun parseOpenApi(input: String, inputDir: Path = Paths.get("").toAbsolutePath()): OpenApi3 =
         try {
             val root: JsonNode = objectMapper.readTree(input)
-            if (root["openapi"].asText() == "3.1.0") {
+            val openapiVersion = root["openapi"]?.asText() ?: ""
+            if (openapiVersion.startsWith("3.1.")) {
                 downgradeNullableSyntax(root)
             }
+            cleanEmptyTypes(root)
             OpenApi3Parser().parse(root, inputDir.toUri().toURL())
         } catch (ex: NullPointerException) {
             throw IllegalArgumentException(
@@ -67,27 +69,65 @@ object YamlUtils {
             )
         }
 
+    fun cleanEmptyTypes(node: JsonNode) {
+        when {
+            node.isObject -> {
+                val objectNode = node as ObjectNode
+                val fieldsToProcess = objectNode.fields().asSequence().toList()
+
+                for ((key, value) in fieldsToProcess) {
+                    if (key == "type" && (value.isNull || (value.isTextual && value.asText().isBlank()))) {
+                        objectNode.remove("type")
+                    } else {
+                        cleanEmptyTypes(value)
+                    }
+                }
+            }
+
+            node.isArray -> {
+                node.forEach { cleanEmptyTypes(it) }
+            }
+        }
+    }
+
     private fun downgradeNullableSyntax(node: JsonNode) {
         when {
             node.isObject -> {
+                val objectNode = node as ObjectNode
+                val fieldsToProcess = objectNode.fields().asSequence().toList()
                 var requiresNullable = false
-                node.fields().forEach { (key, maybeTypeArray) ->
-                    if (key == "type" && maybeTypeArray.isArray && maybeTypeArray.contains(NULL_TYPE)) {
-                        val nonNullType = maybeTypeArray.first { it != NULL_TYPE }
-                        (node as ObjectNode).replace("type", nonNullType)
+
+                for ((key, value) in fieldsToProcess) {
+                    // Handle `type: ["object", "null"]`
+                    if (key == "type" && value.isArray && value.contains(NULL_TYPE)) {
+                        val nonNullType = value.first { it != NULL_TYPE }
+                        objectNode.replace("type", nonNullType)
                         requiresNullable = true
                     }
-                    if (key == "oneOf" && maybeTypeArray.isArray && maybeTypeArray.size() == 2 && maybeTypeArray.any { it.isObject && it.has("type") && it.get("type") == NULL_TYPE }) {
-                        val nonNullOption = maybeTypeArray.first { !it.has("type") || it.get("type") != NULL_TYPE }
-                        (node as ObjectNode).putArray("allOf")
-                        (node.get("allOf") as ArrayNode).insert(0, nonNullOption)
-                        node.remove("oneOf")
-                        requiresNullable = true
+
+                    // Handle `anyOf` or `oneOf` with a `type: null` entry
+                    if ((key == "oneOf" || key == "anyOf")
+                        && value.isArray
+                        && value.size() == 2
+                        && value.any { it.isObject && it.has("type") && it.get("type") == NULL_TYPE }
+                    ) {
+                        val nonNullOption = value.first { !it.has("type") || it.get("type") != NULL_TYPE }
+
+                        if (nonNullOption.isObject) {
+                            // Replace the *entire object* with the non-null option, and add nullable
+                            objectNode.removeAll()
+                            objectNode.setAll<ObjectNode>(nonNullOption.deepCopy<ObjectNode>())
+                            objectNode.put("nullable", true)
+                            // Skip recursion for this node since it was replaced
+                            return
+                        }
                     }
-                    downgradeNullableSyntax(maybeTypeArray)
+
+                    downgradeNullableSyntax(value)
                 }
+
                 if (requiresNullable) {
-                    (node as ObjectNode).put("nullable", true)
+                    objectNode.put("nullable", true)
                 }
             }
 
