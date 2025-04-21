@@ -286,31 +286,33 @@ class ModelGenerator(
         } else {
             when (it) {
                 is PropertyInfo.ObjectInlinedField -> {
-                    if (it.isInherited) {
-                        emptySet() // Rely on the parent definition
-                    }
-                    else if (it.schema.isOneOfSuperInterface() && SEALED_INTERFACES_FOR_ONE_OF in options) {
-                        setOf(
-                            oneOfSuperInterface(
-                                modelName = ModelNameRegistry.getOrRegister(it.schema, enclosingSchema),
-                                discriminator = it.schema.discriminator,
-                                allSchemas = sourceApi.allSchemas,
-                                members = it.schema.oneOfSchemas,
-                                oneOfSuperInterfaces = it.schema.findOneOfSuperInterface(sourceApi.allSchemas.map { it.schema })
+                    when {
+                        it.isInherited -> {
+                            emptySet() // Rely on the parent definition
+                        }
+                        it.schema.isOneOfSuperInterface() && SEALED_INTERFACES_FOR_ONE_OF in options -> {
+                            setOf(
+                                oneOfSuperInterface(
+                                    modelName = ModelNameRegistry.getOrRegister(it.schema, enclosingSchema),
+                                    discriminator = it.schema.discriminator,
+                                    allSchemas = sourceApi.allSchemas,
+                                    members = it.schema.oneOfSchemas,
+                                    oneOfSuperInterfaces = it.schema.findOneOfSuperInterface(sourceApi.allSchemas.map { it.schema })
+                                )
                             )
-                        )
-                    }
-                    else {
-                        val props = it.schema.topLevelProperties(HTTP_SETTINGS, sourceApi.openApi3, enclosingSchema)
-                        val currentModel = standardDataClass(
-                            ModelNameRegistry.getOrRegister(it.schema, enclosingSchema),
-                            it.name,
-                            props,
-                            it.schema.extensions,
-                            oneOfInterfaces = emptySet(),
-                        )
-                        val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
-                        inlinedModels + currentModel
+                        }
+                        else -> {
+                            val props = it.schema.topLevelProperties(HTTP_SETTINGS, sourceApi.openApi3, enclosingSchema)
+                            val currentModel = standardDataClass(
+                                ModelNameRegistry.getOrRegister(it.schema, enclosingSchema),
+                                it.name,
+                                props,
+                                it.schema.extensions,
+                                oneOfInterfaces = emptySet(),
+                            )
+                            val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
+                            inlinedModels + currentModel
+                        }
                     }
                 }
 
