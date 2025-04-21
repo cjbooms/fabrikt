@@ -4,7 +4,6 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType
 import com.cjbooms.fabrikt.model.PropertyInfo
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUnsupportedComplexInlinedDefinition
 import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.jsonoverlay.Overlay
 import com.reprezen.kaizen.oasparser.model3.Discriminator
@@ -103,7 +102,7 @@ object KaizenParserExtensions {
             ?.filterNot { it.isBlank() } ?: emptyList()
     }
 
-    fun Schema.hasAdditionalProperties(): Boolean = isObjectType() && Overlay.of(additionalPropertiesSchema).isPresent
+    fun Schema.hasAdditionalProperties(): Boolean = Overlay.of(additionalPropertiesSchema).isPresent
 
     fun Schema.isUnknownAdditionalProperties(oasKey: String) = type == null &&
         (getSchemaNameInParent() ?: oasKey) == "additionalProperties" && properties?.isEmpty() == true
@@ -255,20 +254,39 @@ object KaizenParserExtensions {
                 .replace("~1", "-") // so application~1octet-stream becomes application-octet-stream
         }
 
-    fun Schema.safeType(): String? =
-        when {
-            type != null -> type
-            properties?.isNotEmpty() == true -> "object"
-            allOfSchemas.hasAnyDefinedProperties() -> "object"
-            allOfSchemas?.firstOrNull { it.type != null } != null -> allOfSchemas.first { it.type != null }.type
-            oneOfSchemas.hasAnyDefinedProperties() -> "object"
-            oneOfSchemas?.firstOrNull { it.type != null } != null -> oneOfSchemas.first { it.type != null }.type
-            anyOfSchemas.hasAnyDefinedProperties() -> "object"
-            anyOfSchemas?.firstOrNull { it.type != null } != null -> anyOfSchemas.first { it.type != null }.type
-            isOneOfPolymorphicTypes() -> "object"
-            isUnknownAdditionalProperties("") -> "object"
-            else -> null
-        }
+    fun Schema.safeType(): String? {
+        // 1. Direct type is always authoritative
+        if (type != null) return type
+
+        // 2. Clear object-like cues
+        if (properties?.isNotEmpty() == true) return "object"
+        if (allOfSchemas.hasAnyDefinedProperties()) return "object"
+        if (oneOfSchemas.hasAnyDefinedProperties()) return "object"
+        if (anyOfSchemas.hasAnyDefinedProperties()) return "object"
+        if (isOneOfPolymorphicTypes()) return "object"
+        if (isUnknownAdditionalProperties("")) return "object"
+        if (Overlay.of(additionalPropertiesSchema).isPresent) return "object"
+
+        // 3. All types in anyOf/oneOf are the same? Use that
+        val consistentOneOfType = oneOfSchemas.consistentSchemaType()
+        if (consistentOneOfType != null) return consistentOneOfType
+
+        val consistentAnyOfType = anyOfSchemas.consistentSchemaType()
+        if (consistentAnyOfType != null) return consistentAnyOfType
+
+        val consistentAllOfType = allOfSchemas.consistentSchemaType()
+        if (consistentAllOfType != null) return consistentAllOfType
+
+        // 4. Default fallback
+        return null
+    }
+
+    private fun List<Schema>?.consistentSchemaType(): String? {
+        if (this.isNullOrEmpty()) return null
+
+        val nonNullTypes = this.mapNotNull { it.type }.toSet()
+        return if (nonNullTypes.size == 1) nonNullTypes.first() else null
+    }
 
     private fun List<Schema>?.hasAnyDefinedProperties(): Boolean =
         this?.any { it.properties?.isNotEmpty() == true } == true

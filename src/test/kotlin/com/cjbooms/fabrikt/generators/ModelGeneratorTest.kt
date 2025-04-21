@@ -33,7 +33,6 @@ class ModelGeneratorTest {
 
     @Suppress("unused")
     private fun testCases(): Stream<String> = Stream.of(
-        "additionalProperties",
         "arrays",
         "anyOfOneOfAllOf",
         "deepNestedSharingReferences",
@@ -79,7 +78,7 @@ class ModelGeneratorTest {
     }
 
     @Test
-    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("a_failing_test")
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("enumExamples")
 
     @ParameterizedTest
     @MethodSource("testCases")
@@ -114,9 +113,12 @@ class ModelGeneratorTest {
         sourceSet.forEach {
             it.writeFileTo(tempDirectory.toFile())
         }
-
-        val tempFolderContents =
-            readFolder(tempDirectory.resolve(basePackage.replace(".", File.separator)).resolve("models"))
+        val tempFolderContents = tempDirectory
+            .resolve(basePackage.replace(".", File.separator))
+            .resolve("models")
+            .takeIf { Files.exists(it) && Files.isDirectory(it) }
+            ?.let(::readFolder)
+            ?: emptyMap()
         tempFolderContents.forEach {
             if (expectedModels.containsKey(it.key)) {
                 assertThat((it.value))

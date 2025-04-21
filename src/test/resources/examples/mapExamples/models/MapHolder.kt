@@ -54,6 +54,10 @@ public data class MapHolder(
   @get:JsonProperty("inlined_complex_object_with_typed_map")
   @get:Valid
   public val inlinedComplexObjectWithTypedMap: MapHolderInlinedComplexObjectWithTypedMap? = null,
+  @param:JsonProperty("contains_polymorphic_map_reference")
+  @get:JsonProperty("contains_polymorphic_map_reference")
+  @get:Valid
+  public val containsPolymorphicMapReference: ContainsReferenceToPolymorphicMap? = null,
   @get:JsonIgnore
   public val properties: MutableMap<String, Map<String, ExternalObjectFour?>?> = mutableMapOf(),
 ) {
