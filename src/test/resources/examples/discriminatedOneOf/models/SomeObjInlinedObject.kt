@@ -1,4 +1,4 @@
-package examples.openapi310.models
+package examples.discriminatedOneOf.models
 
 import com.fasterxml.jackson.`annotation`.JsonSubTypes
 import com.fasterxml.jackson.`annotation`.JsonTypeInfo
@@ -11,4 +11,4 @@ import com.fasterxml.jackson.`annotation`.JsonTypeInfo
 )
 @JsonSubTypes(JsonSubTypes.Type(value = OneObject::class, name =
     "char_location"),JsonSubTypes.Type(value = TwoObject::class, name = "content_block_location"))
-public sealed interface NewNullableFormatComplexNullable
+public sealed interface SomeObjInlinedObject

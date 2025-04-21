@@ -10,6 +10,27 @@ components:
       properties:
         state:
           $ref: '#/components/schemas/State'
+        inlinedArray:
+          type: array
+          items:
+            discriminator:
+              mapping:
+                char_location: "#/components/schemas/OneObject"
+                content_block_location: "#/components/schemas/TwoObject"
+              propertyName: type
+            oneOf:
+              - "$ref": "#/components/schemas/OneObject"
+              - "$ref": "#/components/schemas/TwoObject"
+        inlinedObject:
+          type: object
+          discriminator:
+            mapping:
+              char_location: "#/components/schemas/OneObject"
+              content_block_location: "#/components/schemas/TwoObject"
+            propertyName: type
+          oneOf:
+            - "$ref": "#/components/schemas/OneObject"
+            - "$ref": "#/components/schemas/TwoObject"
     State:
       oneOf:
         - $ref: '#/components/schemas/StateA'
@@ -44,3 +65,15 @@ components:
           enum:
             - mode1
             - mode2
+    OneObject:
+      required:
+        - type
+      properties:
+        type:
+          type: string
+    TwoObject:
+      required:
+        - type
+      properties:
+        type:
+          type: string

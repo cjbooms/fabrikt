@@ -78,7 +78,7 @@ class ModelGeneratorTest {
     }
 
     @Test
-    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("openapi310")
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("discriminatedOneOf")
 
     @ParameterizedTest
     @MethodSource("testCases")
@@ -89,7 +89,7 @@ class ModelGeneratorTest {
         if (testCaseName == "instantDateTime") {
             MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
         }
-        if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface") {
+        if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface" || testCaseName == "openapi310") {
             MutableSettings.addOption(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF)
         }
         if (testCaseName == "mapExamplesNonNullValues") {
