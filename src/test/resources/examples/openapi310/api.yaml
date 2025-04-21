@@ -4,11 +4,39 @@ components:
     NewNullableFormat:
       type: object
       required:
-        - version
+        - simpleNullable
       properties:
-        version:
+        simpleNullable:
           type:
             - string
             - 'null'
           description: The resolved version or `null` if there is no matching version.
-
+        objectNullable:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/OneObject'
+        complexNullable:
+          anyOf:
+            - items:
+                discriminator:
+                  mapping:
+                    char_location: "#/components/schemas/OneObject"
+                    content_block_location: "#/components/schemas/TwoObject"
+                  propertyName: type
+                oneOf:
+                  - "$ref": "#/components/schemas/OneObject"
+                  - "$ref": "#/components/schemas/TwoObject"
+              type: array
+            - type: 'null'
+    OneObject:
+      required:
+        - type
+      properties:
+        type:
+          type: string
+    TwoObject:
+      required:
+        - type
+      properties:
+        type:
+          type: string

@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInLinedObjectUnderAllOf
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedArrayDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterface
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isRequired
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleMapDefinition
@@ -39,7 +40,11 @@ sealed class PropertyInfo {
 
         val HTTP_SETTINGS = Settings()
 
-        fun Schema.topLevelProperties(settings: Settings, api: OpenApi3, enclosingSchema: Schema? = null): Collection<PropertyInfo> {
+        fun Schema.topLevelProperties(
+            settings: Settings,
+            api: OpenApi3,
+            enclosingSchema: Schema? = null
+        ): Collection<PropertyInfo> {
             val results = mutableListOf<PropertyInfo>() +
                 allOfSchemas.flatMap {
                     it.topLevelProperties(
@@ -87,6 +92,7 @@ sealed class PropertyInfo {
                             enclosingSchema = enclosingSchema,
                             hasUniqueItems = property.value.isUniqueItems
                         )
+
                     OasType.Array.type ->
                         ListField(
                             isRequired = isRequired(
@@ -99,6 +105,7 @@ sealed class PropertyInfo {
                             enclosingSchema = enclosingSchema,
                             hasUniqueItems = property.value.isUniqueItems
                         )
+
                     OasType.Object.type ->
                         if (property.value.isSimpleMapDefinition() || property.value.isSchemaLess())
                             MapField(
@@ -131,6 +138,7 @@ sealed class PropertyInfo {
                                 isInherited = settings.markAsInherited,
                                 parentSchema = this
                             )
+
                     else ->
                         if (property.value.isWriteOnly && settings.excludeWriteOnly) {
                             null
@@ -216,7 +224,7 @@ sealed class PropertyInfo {
         private fun isInlined(): Boolean =
             schema
                 .itemsSchema
-                .let { it.isInlinedObjectDefinition() || it.isInlinedEnumDefinition() || it.isInlinedArrayDefinition() }
+                .let { it.isInlinedObjectDefinition() || it.isInlinedEnumDefinition() || it.isInlinedArrayDefinition() || it.isOneOfSuperInterface()}
     }
 
     data class MapField(
