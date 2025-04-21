@@ -46,8 +46,9 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     data class Object(val simpleClassName: String) : KotlinTypeInfo(GeneratedType::class, simpleClassName)
     data class Array(
         val parameterizedType: KotlinTypeInfo,
-        val isParameterizedTypeNullable: kotlin.Boolean = false
-    ) : KotlinTypeInfo(List::class)
+        val isParameterizedTypeNullable: kotlin.Boolean = false,
+        val hasUniqueItems: kotlin.Boolean = false,
+    ) : KotlinTypeInfo(if (hasUniqueItems) Set::class else List::class)
 
     data class Map(val parameterizedType: KotlinTypeInfo) : KotlinTypeInfo(Map::class)
     object UnknownAdditionalProperties : KotlinTypeInfo(Any::class)
@@ -122,10 +123,14 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Int64 -> BigInt
                 OasType.Integer -> Integer
                 OasType.Boolean -> Boolean
+                OasType.Set ->
+                    if (schema.itemsSchema.isNotDefined())
+                        throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")
+                    else Array(from(schema.itemsSchema, oasKey, enclosingSchema), schema.itemsSchema.isNullable, true)
                 OasType.Array ->
                     if (schema.itemsSchema.isNotDefined())
                         throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")
-                    else Array(from(schema.itemsSchema, oasKey, enclosingSchema), schema.itemsSchema.isNullable)
+                    else Array(from(schema.itemsSchema, oasKey, enclosingSchema), schema.itemsSchema.isNullable, schema.itemsSchema.isUniqueItems)
 
                 OasType.Object -> Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
                 OasType.Map ->

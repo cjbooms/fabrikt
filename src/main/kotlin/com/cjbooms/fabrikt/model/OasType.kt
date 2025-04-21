@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.model
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isMapTypeAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSet
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleMapDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleOneOfAnyDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleTypedAdditionalProperties
@@ -18,7 +19,7 @@ import kotlin.reflect.full.isSubclassOf
 sealed class OasType(
     val type: String?,
     val format: String? = null,
-    val specialization: Specialization = Specialization.NONE
+    val specialization: Specialization = Specialization.NONE,
 ) {
     object Any : OasType(null)
     object OneOfAny : OasType(WILD_CARD_TYPE, specialization = Specialization.ONE_OF_ANY)
@@ -34,6 +35,7 @@ sealed class OasType(
     object Integer : OasType("integer")
     object Object : OasType("object")
     object Array : OasType("array")
+    object Set : OasType("array", specialization = Specialization.SET)
     object UntypedObject : OasType("object", specialization = Specialization.UNTYPED_OBJECT)
     object Enum : OasType("string", specialization = Specialization.ENUM)
     object Uuid : OasType("string", specialization = Specialization.UUID)
@@ -95,6 +97,7 @@ sealed class OasType(
                 isUnknownAdditionalProperties(oasKey) -> Specialization.UNKNOWN_ADDITIONAL_PROPERTIES
                 isSimpleOneOfAnyDefinition() -> Specialization.ONE_OF_ANY
                 isSchemaLess() -> Specialization.UNTYPED_OBJECT
+                isSet() -> Specialization.SET
                 oasKey != ADDITIONAL_PROPERTIES_VALUE && isSimpleTypedAdditionalProperties(oasKey) ->
                     Specialization.SIMPLE_TYPED_ADDITIONAL_PROPERTIES
                 else -> Specialization.NONE
@@ -115,6 +118,7 @@ sealed class OasType(
         NONE,
         ONE_OF_ANY,
         BYTE,
-        BINARY
+        BINARY,
+        SET
     }
 }
