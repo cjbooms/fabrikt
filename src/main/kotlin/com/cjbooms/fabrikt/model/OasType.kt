@@ -11,6 +11,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isStringDefinitionWithFor
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUnknownAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUntypedAdditionalProperties
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.printPathFromRoot
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeType
 import com.reprezen.kaizen.oasparser.model3.Schema
 import kotlin.reflect.KClass
@@ -76,7 +77,7 @@ sealed class OasType(
                     if (candidates.size > 1) candidates.find { it.format == format }
                     else candidates.firstOrNull()
                 } ?: throw IllegalStateException(
-                "Unknown OAS type: ${safeType()} and format: $format and specialization: ${getSpecialization(oasKey)} for key: $oasKey"
+                "Unknown OAS type: ${safeType()} and format: $format and specialization: ${getSpecialization(oasKey)} for path: ${this.printPathFromRoot()}"
             )
 
         private fun values(clazz: KClass<OasType>) =
