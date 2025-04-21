@@ -123,6 +123,10 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Int64 -> BigInt
                 OasType.Integer -> Integer
                 OasType.Boolean -> Boolean
+                OasType.Set ->
+                    if (schema.itemsSchema.isNotDefined())
+                        throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")
+                    else Array(from(schema.itemsSchema, oasKey, enclosingSchema), schema.itemsSchema.isNullable, true)
                 OasType.Array ->
                     if (schema.itemsSchema.isNotDefined())
                         throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")

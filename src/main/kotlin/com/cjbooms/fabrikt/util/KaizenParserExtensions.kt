@@ -71,6 +71,9 @@ object KaizenParserExtensions {
             anyOfSchemas?.isNotEmpty() != true
         )
 
+    fun Schema.isSet(): Boolean =
+        isArrayType() && this.isUniqueItems
+
     fun Schema.isSimpleMapDefinition() = hasAdditionalProperties() && properties?.isEmpty() == true
 
     fun Schema.isSimpleOneOfAnyDefinition() = oneOfSchemas?.isNotEmpty() == true &&

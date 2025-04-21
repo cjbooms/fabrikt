@@ -83,6 +83,7 @@ class ModelGenerator(
             basePackage: String,
             typeInfo: KotlinTypeInfo,
             isNullable: Boolean = false,
+            hasUniqueItems: Boolean = false,
         ): TypeName {
             val className =
                 toClassName(
@@ -95,13 +96,15 @@ class ModelGenerator(
                         toModelType(
                             basePackage,
                             typeInfo.parameterizedType,
-                            typeInfo.isParameterizedTypeNullable
+                            typeInfo.isParameterizedTypeNullable,
+                            typeInfo.hasUniqueItems
                         ),)
                 } else createList(
                     toModelType(
                         basePackage,
                         typeInfo.parameterizedType,
-                        typeInfo.isParameterizedTypeNullable
+                        typeInfo.isParameterizedTypeNullable,
+                        typeInfo.hasUniqueItems
                     ),
                 )
 

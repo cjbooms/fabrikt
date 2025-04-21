@@ -75,6 +75,18 @@ sealed class PropertyInfo {
         ): Collection<PropertyInfo> {
             val mainProperties: List<PropertyInfo> = properties.map { property ->
                 when (property.value.safeType()) {
+                    OasType.Set.type ->
+                        ListField(
+                            isRequired = isRequired(
+                                api, property, settings.markReadWriteOnlyOptional, settings.markAllOptional
+                            ),
+                            oasKey = property.key,
+                            schema = property.value,
+                            isInherited = settings.markAsInherited,
+                            parentSchema = this,
+                            enclosingSchema = enclosingSchema,
+                            hasUniqueItems = true
+                        )
                     OasType.Array.type ->
                         ListField(
                             isRequired = isRequired(
@@ -85,6 +97,7 @@ sealed class PropertyInfo {
                             isInherited = settings.markAsInherited,
                             parentSchema = this,
                             enclosingSchema = enclosingSchema,
+                            hasUniqueItems = property.value.isUniqueItems
                         )
                     OasType.Object.type ->
                         if (property.value.isSimpleMapDefinition() || property.value.isSchemaLess())
@@ -188,7 +201,8 @@ sealed class PropertyInfo {
         override val schema: Schema,
         override val isInherited: Boolean,
         val parentSchema: Schema,
-        val enclosingSchema: Schema?
+        val enclosingSchema: Schema?,
+        val hasUniqueItems: Boolean,
     ) : PropertyInfo(), CollectionValidation {
         override val typeInfo: KotlinTypeInfo =
             if (isInherited) {

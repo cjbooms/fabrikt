@@ -119,7 +119,9 @@ class ModelGeneratorTest {
             readFolder(tempDirectory.resolve(basePackage.replace(".", File.separator)).resolve("models"))
         tempFolderContents.forEach {
             if (expectedModels.containsKey(it.key)) {
-                assertThat((it.value)).isEqualTo(expectedModels[it.key])
+                assertThat((it.value))
+                    .describedAs("expected model '${it.key}' does not match the given value.")
+                    .isEqualTo(expectedModels[it.key])
             } else {
                 assertThat(it.value).isEqualTo("File not found in expected models")
             }
