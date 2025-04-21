@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary.KOTLINX_SERIALIZATION
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType.Companion.toOasType
@@ -112,10 +113,12 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.BYTE_AS_STRING)) Text
                     else ByteArray
                 }
+
                 OasType.Binary -> {
                     if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.BINARY_AS_STRING)) Text
                     else getOverridableByteArray()
                 }
+
                 OasType.Double -> Double
                 OasType.Float -> Float
                 OasType.Number -> Numeric
@@ -127,10 +130,15 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     if (schema.itemsSchema.isNotDefined())
                         throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")
                     else Array(from(schema.itemsSchema, oasKey, enclosingSchema), schema.itemsSchema.isNullable, true)
+
                 OasType.Array ->
                     if (schema.itemsSchema.isNotDefined())
                         throw IllegalArgumentException("Property ${schema.name} cannot be parsed to a Schema. Check your input")
-                    else Array(from(schema.itemsSchema, oasKey, enclosingSchema), schema.itemsSchema.isNullable, schema.itemsSchema.isUniqueItems)
+                    else Array(
+                        from(schema.itemsSchema, oasKey, enclosingSchema),
+                        schema.itemsSchema.isNullable,
+                        schema.itemsSchema.isUniqueItems
+                    )
 
                 OasType.Object -> Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
                 OasType.Map ->
@@ -153,7 +161,9 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
 
                 OasType.Any -> AnyType
                 OasType.OneOfAny ->
-                    if (schema.isOneOfSuperInterfaceWithDiscriminator()) {
+                    if (schema.isOneOfSuperInterfaceWithDiscriminator() &&
+                        ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF in MutableSettings.modelOptions()
+                    ) {
                         Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
                     } else {
                         AnyType

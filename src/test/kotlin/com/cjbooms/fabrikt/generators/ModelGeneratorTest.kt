@@ -62,7 +62,6 @@ class ModelGeneratorTest {
         "instantDateTime",
         "discriminatedOneOf",
         "openapi310",
-        "openapi310OptionalObject",
         "binary",
         "oneOfMarkerInterface",
         "byteArrayStream",
@@ -79,7 +78,7 @@ class ModelGeneratorTest {
     }
 
     @Test
-    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("enumExamples")
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("openapi310")
 
     @ParameterizedTest
     @MethodSource("testCases")
