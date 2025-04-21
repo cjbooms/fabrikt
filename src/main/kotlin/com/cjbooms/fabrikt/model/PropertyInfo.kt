@@ -85,7 +85,7 @@ sealed class PropertyInfo {
                             isInherited = settings.markAsInherited,
                             parentSchema = this,
                             enclosingSchema = enclosingSchema,
-                            hasUniqueItems = true
+                            hasUniqueItems = property.value.isUniqueItems
                         )
                     OasType.Array.type ->
                         ListField(
