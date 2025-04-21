@@ -1,5 +1,5 @@
 openapi: 3.0.0
-
+# See mapExamples for many more examples of how additional properties are used
 components:
   schemas:
     Result:

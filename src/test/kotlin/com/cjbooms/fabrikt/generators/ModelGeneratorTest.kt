@@ -114,9 +114,12 @@ class ModelGeneratorTest {
         sourceSet.forEach {
             it.writeFileTo(tempDirectory.toFile())
         }
-
-        val tempFolderContents =
-            readFolder(tempDirectory.resolve(basePackage.replace(".", File.separator)).resolve("models"))
+        val tempFolderContents = tempDirectory
+            .resolve(basePackage.replace(".", File.separator))
+            .resolve("models")
+            .takeIf { Files.exists(it) && Files.isDirectory(it) }
+            ?.let(::readFolder)
+            ?: emptyMap()
         tempFolderContents.forEach {
             if (expectedModels.containsKey(it.key)) {
                 assertThat((it.value))

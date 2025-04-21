@@ -61,9 +61,6 @@ data class SourceApi(
                             "Do not use properties and a combiner at the same level.",
                     ),
                 )
-            } else if (schema.type == null && schema.properties?.isNotEmpty() == true) {
-                logger.warning("Schema '$name' has 'type: null' but defines properties. Assuming: 'type: object'")
-                errors
             } else {
                 errors
             }
