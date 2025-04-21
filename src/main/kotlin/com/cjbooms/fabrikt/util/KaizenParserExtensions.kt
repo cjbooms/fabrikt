@@ -127,10 +127,7 @@ object KaizenParserExtensions {
         !isOneOfSuperInterface() && ((simpleTypes.contains(type) && !isEnumDefinition()) || isSimpleMapDefinition() || isSimpleOneOfAnyDefinition())
 
     private fun Schema.isObjectType() =
-        OasType.Object.type == type || if (properties?.isNotEmpty() == true) {
-            Logger.getGlobal().warning("Schema '$name' has 'type: null' but defines properties. Assuming: 'type: object'")
-        true
-    } else false
+        OasType.Object.type == type || properties?.isNotEmpty() == true
 
     private fun Schema.isArrayType() = OasType.Array.type == type
 
