@@ -291,6 +291,8 @@ object KaizenParserExtensions {
     fun Schema.isOneOfPolymorphicTypes() =
         this.oneOfSchemas?.firstOrNull()?.allOfSchemas?.firstOrNull() != null
 
+    fun Schema.isInlinedOneOfSuperInterface() = isOneOfSuperInterface() && isInlinedPropertySchema()
+
     fun Schema.isOneOfSuperInterface() =
         oneOfSchemas.isNotEmpty() && allOfSchemas.isEmpty() && anyOfSchemas.isEmpty() && properties.isEmpty() &&
             oneOfSchemas.all { it.isObjectType() }
@@ -305,20 +307,17 @@ object KaizenParserExtensions {
         (allOfSchemas ?: emptyList()) + (anyOfSchemas ?: emptyList())
 
     /**
-     * The `pathFromRoot` of a property schema ends with
-     * `/properties/<name of property>`, so we check if the
-     * penultimate segment is `properties`.
-     */
+    * Recognises two inlining patterns:
+    * - A direct property schema:              /properties/<name>
+    * - An array item schema under a property: /properties/<name>/items
+    */
     private fun Schema.isInlinedPropertySchema(): Boolean {
         val path = Overlay.of(this).pathFromRoot
-        val lastSegment = path.lastIndexOf('/')
-        if (lastSegment != -1) {
-            val penultimateSegment = path.lastIndexOf('/', lastSegment - 1)
-            if (penultimateSegment != -1) {
-                return path.startsWith("/properties/", penultimateSegment)
-            }
-        }
-        return false
+
+        val isDirectProperty = Regex(".*/properties/[^/]+$").matches(path)
+        val isArrayItem = Regex(".*/properties/[^/]+/items$").matches(path)
+
+        return isDirectProperty || isArrayItem
     }
 
     fun OpenApi3.basePath(): String =

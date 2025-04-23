@@ -10,6 +10,10 @@ components:
       properties:
         state:
           $ref: '#/components/schemas/State'
+        arrayOfStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/State'
         inlinedArray:
           type: array
           items:

@@ -38,6 +38,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.getSuperType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isComplexTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedOneOfSuperInterface
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfPolymorphicTypes
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterface
@@ -383,7 +384,7 @@ class ModelGenerator(
                         ),
                     )
 
-                items.isOneOfSuperInterface() && SEALED_INTERFACES_FOR_ONE_OF in options ->
+                items.isInlinedOneOfSuperInterface() && SEALED_INTERFACES_FOR_ONE_OF in options ->
                     setOf(
                         oneOfSuperInterface(
                             modelName = ModelNameRegistry.getOrRegister(schema, enclosingSchema),
