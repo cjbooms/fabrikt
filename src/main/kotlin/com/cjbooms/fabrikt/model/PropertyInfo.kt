@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInLinedObjectUnderAllOf
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedArrayDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedOneOfSuperInterface
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterface
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isRequired
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
@@ -224,7 +225,7 @@ sealed class PropertyInfo {
         private fun isInlined(): Boolean =
             schema
                 .itemsSchema
-                .let { it.isInlinedObjectDefinition() || it.isInlinedEnumDefinition() || it.isInlinedArrayDefinition() || it.isOneOfSuperInterface()}
+                .let { it.isInlinedObjectDefinition() || it.isInlinedEnumDefinition() || it.isInlinedArrayDefinition() || it.isInlinedOneOfSuperInterface()}
     }
 
     data class MapField(

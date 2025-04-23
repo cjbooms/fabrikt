@@ -12,6 +12,9 @@ public data class SomeObj(
   @get:NotNull
   @get:Valid
   public val state: State,
+  @SerialName("arrayOfStates")
+  @get:Valid
+  public val arrayOfStates: List<State>? = null,
   @SerialName("inlinedArray")
   @get:Valid
   public val inlinedArray: List<SomeObjInlinedArray>? = null,

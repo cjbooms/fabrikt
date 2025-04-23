@@ -291,6 +291,8 @@ object KaizenParserExtensions {
     fun Schema.isOneOfPolymorphicTypes() =
         this.oneOfSchemas?.firstOrNull()?.allOfSchemas?.firstOrNull() != null
 
+    fun Schema.isInlinedOneOfSuperInterface() = isOneOfSuperInterface() && isInlinedPropertySchema()
+
     fun Schema.isOneOfSuperInterface() =
         oneOfSchemas.isNotEmpty() && allOfSchemas.isEmpty() && anyOfSchemas.isEmpty() && properties.isEmpty() &&
             oneOfSchemas.all { it.isObjectType() }
@@ -311,14 +313,14 @@ object KaizenParserExtensions {
      */
     private fun Schema.isInlinedPropertySchema(): Boolean {
         val path = Overlay.of(this).pathFromRoot
-        val lastSegment = path.lastIndexOf('/')
-        if (lastSegment != -1) {
-            val penultimateSegment = path.lastIndexOf('/', lastSegment - 1)
-            if (penultimateSegment != -1) {
-                return path.startsWith("/properties/", penultimateSegment)
-            }
-        }
-        return false
+
+        // Case 1: /properties/<property>
+        val directPropertyMatch = Regex(".*/properties/[^/]+$")
+
+        // Case 2: /properties/<property>/items
+        val itemsPropertyMatch = Regex(".*/properties/[^/]+/items$")
+
+        return directPropertyMatch.matches(path) || itemsPropertyMatch.matches(path)
     }
 
     fun OpenApi3.basePath(): String =
