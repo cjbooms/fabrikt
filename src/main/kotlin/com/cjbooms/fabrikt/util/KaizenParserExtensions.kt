@@ -307,20 +307,17 @@ object KaizenParserExtensions {
         (allOfSchemas ?: emptyList()) + (anyOfSchemas ?: emptyList())
 
     /**
-     * The `pathFromRoot` of a property schema ends with
-     * `/properties/<name of property>`, so we check if the
-     * penultimate segment is `properties`.
-     */
+    * Recognises two inlining patterns:
+    * - A direct property schema:              /properties/<name>
+    * - An array item schema under a property: /properties/<name>/items
+    */
     private fun Schema.isInlinedPropertySchema(): Boolean {
         val path = Overlay.of(this).pathFromRoot
 
-        // Case 1: /properties/<property>
-        val directPropertyMatch = Regex(".*/properties/[^/]+$")
+        val isDirectProperty = Regex(".*/properties/[^/]+$").matches(path)
+        val isArrayItem = Regex(".*/properties/[^/]+/items$").matches(path)
 
-        // Case 2: /properties/<property>/items
-        val itemsPropertyMatch = Regex(".*/properties/[^/]+/items$")
-
-        return directPropertyMatch.matches(path) || itemsPropertyMatch.matches(path)
+        return isDirectProperty || isArrayItem
     }
 
     fun OpenApi3.basePath(): String =
