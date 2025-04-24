@@ -9,7 +9,6 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedArrayDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedEnumDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedObjectDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedOneOfSuperInterface
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterface
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isRequired
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSchemaLess
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSimpleMapDefinition
@@ -49,17 +48,19 @@ sealed class PropertyInfo {
             val results = mutableListOf<PropertyInfo>() +
                 allOfSchemas.flatMap {
                     it.topLevelProperties(
-                        maybeMarkInherited(
-                            settings,
-                            enclosingSchema,
-                            it
-                        ),
-                        api,
-                        this
+                        settings = maybeMarkInherited(settings, enclosingSchema, it),
+                        api = api,
+                        enclosingSchema = if (this.isInlinedObjectDefinition()) enclosingSchema else this
                     )
                 } +
                 (if (oneOfSchemas.isEmpty()) emptyList() else listOf(OneOfAny(oneOfSchemas.first()))) +
-                anyOfSchemas.flatMap { it.topLevelProperties(settings.copy(markAllOptional = true), api, this) } +
+                anyOfSchemas.flatMap {
+                    it.topLevelProperties(
+                        settings = settings.copy(markAllOptional = true),
+                        api = api,
+                        enclosingSchema = if (this.isInlinedObjectDefinition()) enclosingSchema else this
+                    )
+                } +
                 getInLinedProperties(settings, api, enclosingSchema)
             return results.distinctBy { it.oasKey }
         }
@@ -225,7 +226,7 @@ sealed class PropertyInfo {
         private fun isInlined(): Boolean =
             schema
                 .itemsSchema
-                .let { it.isInlinedObjectDefinition() || it.isInlinedEnumDefinition() || it.isInlinedArrayDefinition() || it.isInlinedOneOfSuperInterface()}
+                .let { it.isInlinedObjectDefinition() || it.isInlinedEnumDefinition() || it.isInlinedArrayDefinition() || it.isInlinedOneOfSuperInterface() }
     }
 
     data class MapField(
