@@ -78,7 +78,7 @@ class ModelGeneratorTest {
     }
 
     @Test
-    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("discriminatedOneOf")
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("inlinedAggregatedObjects")
 
     @ParameterizedTest
     @MethodSource("testCases")
