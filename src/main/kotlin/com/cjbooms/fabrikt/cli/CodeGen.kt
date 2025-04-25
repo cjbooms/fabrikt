@@ -38,6 +38,7 @@ object CodeGen {
             codeGenArgs.validationLibrary,
             codeGenArgs.externalRefResolutionMode,
             codeGenArgs.serializationLibrary,
+            codeGenArgs.generatorOptions,
         )
     }
 
@@ -60,6 +61,7 @@ object CodeGen {
         validationLibrary: ValidationLibrary,
         externalRefResolutionMode: ExternalReferencesResolutionMode,
         serializationLibrary: SerializationLibrary,
+        generatorOptions: Set<CodeGenOptionType>,
     ) {
         MutableSettings.updateSettings(
             codeGenTypes,
@@ -74,6 +76,7 @@ object CodeGen {
             validationLibrary,
             externalRefResolutionMode,
             serializationLibrary,
+            generatorOptions,
         )
 
         val suppliedApi = pathToApi.toFile().readText()

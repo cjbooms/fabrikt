@@ -100,6 +100,12 @@ enum class CodeGenTypeOverride(val description: String) {
     override fun toString() = "`${super.toString()}` - $description"
 }
 
+enum class CodeGenOptionType(val description: String) {
+    ADD_FILE_DISCLAIMER("This option adds a disclaimer to the generated files.");
+
+    override fun toString() = "`${super.toString()}` - $description"
+}
+
 enum class ValidationLibrary(val description: String, val annotations: ValidationAnnotations) {
     JAVAX_VALIDATION(
         "Use `javax.validation` annotations in generated model classes (default)",
