@@ -1,0 +1,23 @@
+openapi: 3.0.0
+paths:
+components:
+  schemas:
+    Pet:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        tag:
+          type: string
+        type:
+          type: string
+          enum:
+            - legged
+            - winged
+            - finned
+      required:
+        - name
+        - tag

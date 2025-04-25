@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
 import com.beust.jcommander.ParameterException
+import com.cjbooms.fabrikt.cli.CodeGenOptionType
 import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
@@ -142,6 +143,29 @@ class ModelGeneratorTest {
         val apiLocation = javaClass.getResource("/examples/modelSuffix/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
         val expectedModels = readFolder(Path.of("src/test/resources/examples/modelSuffix/models/"))
+
+        val models = ModelGenerator(
+            Packages(basePackage),
+            sourceApi,
+        ).generate()
+
+        models.files.forEach { file ->
+            val key = "${file.name}.kt"
+            val content = file.toString()
+            assertThat(content).isEqualTo(expectedModels[key])
+        }
+    }
+
+    @Test
+    fun `generate models with file comment`() {
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.HTTP_MODELS),
+            generatorOptions = setOf(CodeGenOptionType.ADD_FILE_DISCLAIMER)
+        )
+        val basePackage = "examples.fileComment"
+        val apiLocation = javaClass.getResource("/examples/fileComment/api.yaml")!!
+        val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
+        val expectedModels = readFolder(Path.of("src/test/resources/examples/fileComment/models/"))
 
         val models = ModelGenerator(
             Packages(basePackage),
