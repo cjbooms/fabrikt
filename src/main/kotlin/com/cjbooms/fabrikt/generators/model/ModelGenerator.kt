@@ -69,6 +69,7 @@ import com.squareup.kotlinpoet.asTypeName
 import java.io.Serializable
 import java.net.MalformedURLException
 import java.net.URL
+import java.util.logging.Logger
 
 class ModelGenerator(
     private val packages: Packages,
@@ -80,6 +81,7 @@ class ModelGenerator(
     private val externalRefResolutionMode: ExternalReferencesResolutionMode = MutableSettings.externalRefResolutionMode()
 
     companion object {
+        private val logger = Logger.getGlobal()
         fun toModelType(
             basePackage: String,
             typeInfo: KotlinTypeInfo,
@@ -596,23 +598,16 @@ class ModelGenerator(
         if (discriminator != null && discriminator.propertyName != null) {
             serializationAnnotations.addClassAnnotation(interfaceBuilder)
             serializationAnnotations.addBasePolymorphicTypeAnnotation(interfaceBuilder, discriminator.propertyName)
-            val membersAndMappingsConsistent = members.all { member ->
-                discriminator.mappings.any { (_, ref) -> ref.endsWith("/${member.name}") }
+
+            val mappings = getDiscriminatorMappingsOrDefault(discriminator, members, allSchemas, modelName)
+
+            val kotlinMappings = mappings.mapValues { (_, schema) ->
+                toModelType(
+                    packages.base,
+                    KotlinTypeInfo.from(schema.schema, schema.name),
+                )
             }
-            if (!membersAndMappingsConsistent) {
-                throw IllegalArgumentException("members and mappings are not consistent for oneOf super interface $modelName!")
-            }
-            val mappings = discriminator.mappings
-                .mapValues { (_, value) ->
-                    allSchemas.find { value.endsWith("/${it.name}") }!!
-                }
-                .mapValues { (_, value) ->
-                    toModelType(
-                        packages.base,
-                        KotlinTypeInfo.from(value.schema, value.name),
-                    )
-                }
-            serializationAnnotations.addPolymorphicSubTypesAnnotation(interfaceBuilder, mappings)
+            serializationAnnotations.addPolymorphicSubTypesAnnotation(interfaceBuilder, kotlinMappings)
         }
 
         for (oneOfSuperInterface in oneOfSuperInterfaces) {
@@ -625,6 +620,38 @@ class ModelGenerator(
             .addMicronautReflectionAnnotation()
 
         return interfaceBuilder.build()
+    }
+
+    private fun getDiscriminatorMappingsOrDefault(
+        discriminator: Discriminator,
+        members: List<Schema>,
+        allSchemas: List<SchemaInfo>,
+        modelName: String
+    ): Map<String, SchemaInfo> {
+        val mappings = if (discriminator.mappings.isNullOrEmpty()) {
+            // No explicit mappings: default to schema name matching
+            members.mapNotNull { member ->
+                val schema = allSchemas.find { it.name == member.name }
+                if (schema == null) {
+                    logger.warning("Could not find schema for member ${member.name} in oneOf super interface $modelName!")
+                    null
+                } else {
+                    member.name to schema  // Key by member name
+                }
+            }.toMap()
+        } else {
+            // Explicit mappings present: key by the mapping key (discriminator value)
+            discriminator.mappings.mapNotNull { (mappingKey, ref) ->
+                val schema = allSchemas.find { ref.endsWith("/${it.name}") }
+                if (schema == null) {
+                    logger.warning("Mapping $mappingKey -> $ref does not match any schema in oneOf super interface $modelName!")
+                    null
+                } else {
+                    mappingKey to schema  // Key by mapping key (not by schema name)
+                }
+            }.toMap()
+        }
+        return mappings
     }
 
     private fun polymorphicSuperType(
