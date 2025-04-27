@@ -175,6 +175,7 @@ object GeneratorUtils {
                     it.schema
                 )
             }
+            .distinctBy { it.schema.safeName().toKotlinParameterName().ifEmpty { it.schema.toVarName() } }
 
         val parameters = mergeParameters(pathParameters, parameters)
             .map {
