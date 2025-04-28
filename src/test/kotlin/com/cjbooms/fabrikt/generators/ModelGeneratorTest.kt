@@ -1,7 +1,7 @@
 package com.cjbooms.fabrikt.generators
 
 import com.beust.jcommander.ParameterException
-import com.cjbooms.fabrikt.cli.CodeGenOptionType
+import com.cjbooms.fabrikt.cli.OutputOptionType
 import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
@@ -160,7 +160,7 @@ class ModelGeneratorTest {
     fun `generate models with file comment`() {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
-            generatorOptions = setOf(CodeGenOptionType.ADD_FILE_DISCLAIMER)
+            outputOptions = setOf(OutputOptionType.ADD_FILE_DISCLAIMER)
         )
         val basePackage = "examples.fileComment"
         val apiLocation = javaClass.getResource("/examples/fileComment/api.yaml")!!

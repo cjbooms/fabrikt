@@ -38,7 +38,7 @@ object CodeGen {
             codeGenArgs.validationLibrary,
             codeGenArgs.externalRefResolutionMode,
             codeGenArgs.serializationLibrary,
-            codeGenArgs.generatorOptions,
+            codeGenArgs.outputOptions,
         )
     }
 
@@ -61,7 +61,7 @@ object CodeGen {
         validationLibrary: ValidationLibrary,
         externalRefResolutionMode: ExternalReferencesResolutionMode,
         serializationLibrary: SerializationLibrary,
-        generatorOptions: Set<CodeGenOptionType>,
+        generatorOptions: Set<OutputOptionType>,
     ) {
         MutableSettings.updateSettings(
             codeGenTypes,

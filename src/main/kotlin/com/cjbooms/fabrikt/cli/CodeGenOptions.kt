@@ -100,7 +100,7 @@ enum class CodeGenTypeOverride(val description: String) {
     override fun toString() = "`${super.toString()}` - $description"
 }
 
-enum class CodeGenOptionType(val description: String) {
+enum class OutputOptionType(val description: String) {
     ADD_FILE_DISCLAIMER("This option adds a disclaimer to the generated files.");
 
     override fun toString() = "`${super.toString()}` - $description"

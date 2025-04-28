@@ -1,7 +1,6 @@
 package com.cjbooms.fabrikt.model
 
-import com.cjbooms.fabrikt.cli.CodeGenOptionType
-import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.OutputOptionType
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.Destinations.clientPackage
@@ -62,7 +61,7 @@ fun <T : GeneratedType> Collection<T>.toFileSpec(): Collection<FileSpec> = this
     .map {
         val builder = FileSpec.builder(it.destinationPackage, it.className.simpleName)
 
-        if (MutableSettings.generatorOptions().contains(CodeGenOptionType.ADD_FILE_DISCLAIMER)) {
+        if (MutableSettings.outputOptions().contains(OutputOptionType.ADD_FILE_DISCLAIMER)) {
             builder.addFileComment("""
                 
                 This file was generated from an OpenAPI specification by Fabrikt.

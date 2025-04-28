@@ -15,7 +15,7 @@ object MutableSettings {
     private lateinit var validationLibrary: ValidationLibrary
     private lateinit var externalRefResolutionMode: ExternalReferencesResolutionMode
     private lateinit var serializationLibrary: SerializationLibrary
-    private lateinit var generatorOptions: MutableSet<CodeGenOptionType>
+    private lateinit var outputOptions: MutableSet<OutputOptionType>
 
     fun updateSettings(
         genTypes: Set<CodeGenerationType> = emptySet(),
@@ -30,7 +30,7 @@ object MutableSettings {
         validationLibrary: ValidationLibrary = ValidationLibrary.default,
         externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.default,
         serializationLibrary: SerializationLibrary = SerializationLibrary.default,
-        generatorOptions: Set<CodeGenOptionType> = emptySet()
+        outputOptions: Set<OutputOptionType> = emptySet()
     ) {
         this.generationTypes = genTypes.toMutableSet()
         this.controllerOptions = controllerOptions.toMutableSet()
@@ -44,7 +44,7 @@ object MutableSettings {
         this.validationLibrary = validationLibrary
         this.externalRefResolutionMode = externalRefResolutionMode
         this.serializationLibrary = serializationLibrary
-        this.generatorOptions = generatorOptions.toMutableSet()
+        this.outputOptions = outputOptions.toMutableSet()
     }
 
     fun addOption(option: ModelCodeGenOptionType) = modelOptions.add(option)
@@ -62,5 +62,5 @@ object MutableSettings {
     fun validationLibrary() = this.validationLibrary
     fun externalRefResolutionMode() = this.externalRefResolutionMode
     fun serializationLibrary() = this.serializationLibrary
-    fun generatorOptions() = this.generatorOptions.toSet()
+    fun outputOptions() = this.outputOptions.toSet()
 }
