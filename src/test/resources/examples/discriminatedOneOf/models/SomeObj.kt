@@ -23,4 +23,8 @@ public data class SomeObj(
   @get:JsonProperty("inlinedObject")
   @get:Valid
   public val inlinedObject: SomeObjInlinedObject? = null,
+  @param:JsonProperty("inlinedObjectNoMappings")
+  @get:JsonProperty("inlinedObjectNoMappings")
+  @get:Valid
+  public val inlinedObjectNoMappings: SomeObjInlinedObjectNoMappings? = null,
 )

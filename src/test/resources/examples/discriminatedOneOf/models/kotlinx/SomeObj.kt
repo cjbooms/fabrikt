@@ -21,4 +21,7 @@ public data class SomeObj(
   @SerialName("inlinedObject")
   @get:Valid
   public val inlinedObject: SomeObjInlinedObject? = null,
+  @SerialName("inlinedObjectNoMappings")
+  @get:Valid
+  public val inlinedObjectNoMappings: SomeObjInlinedObjectNoMappings? = null,
 )

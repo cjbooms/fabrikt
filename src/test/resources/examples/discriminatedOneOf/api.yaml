@@ -35,6 +35,13 @@ components:
           oneOf:
             - "$ref": "#/components/schemas/OneObject"
             - "$ref": "#/components/schemas/TwoObject"
+        inlinedObjectNoMappings:
+          type: object
+          discriminator:
+            propertyName: type
+          oneOf:
+            - "$ref": "#/components/schemas/OneObject"
+            - "$ref": "#/components/schemas/TwoObject"
     State:
       oneOf:
         - $ref: '#/components/schemas/StateA'
