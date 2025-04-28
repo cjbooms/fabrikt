@@ -1,11 +1,10 @@
 package com.cjbooms.fabrikt.model
 
-import com.cjbooms.fabrikt.cli.OutputOptionType
-import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.Destinations.clientPackage
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.Destinations.modelsPackage
+import com.cjbooms.fabrikt.util.FileUtils.addFileDisclaimer
 import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
 import com.reprezen.kaizen.oasparser.model3.Parameter
 import com.reprezen.kaizen.oasparser.model3.Schema
@@ -59,19 +58,9 @@ data class Clients(val clients: Collection<ClientType>) : KotlinTypes(clients) {
 
 fun <T : GeneratedType> Collection<T>.toFileSpec(): Collection<FileSpec> = this
     .map {
-        val builder = FileSpec.builder(it.destinationPackage, it.className.simpleName)
-
-        if (MutableSettings.outputOptions().contains(OutputOptionType.ADD_FILE_DISCLAIMER)) {
-            builder.addFileComment("""
-                
-                This file was generated from an OpenAPI specification by Fabrikt.
-                DO NOT EDIT. Changes will be lost the next time the code is regenerated.
-                Instead, update the spec and regenerate to update.
-                
-            """.trimIndent())
-        }
-
-        builder.addType(it.spec).build()
+        FileSpec.builder(it.destinationPackage, it.className.simpleName)
+            .addFileDisclaimer()
+            .addType(it.spec).build()
     }
 
 /**
