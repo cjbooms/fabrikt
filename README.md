@@ -223,10 +223,10 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               |   `NON_NULL_MAP_VALUES` - This option makes map values non-null. The default (since v15) and most spec compliant is make map values nullable |
 |   `--http-model-suffix`       | Specify custom suffix for all generated model classes. Defaults to no suffix. |
 |   `--openfeign-client-name`   | Specify openfeign client name for spring-cloud-starter-openfeign. Defaults to 'fabrikt-client'. |
-|   `--opts`                    | Select general options for the generated code. |
+|   `--output-directory`        | Allows the generation dir to be overridden. Defaults to current dir |
+|   `--output-opts`             | Select options for the output. |
 |                               | CHOOSE ANY OF: |
 |                               |   `ADD_FILE_DISCLAIMER` - This option adds a disclaimer to the generated files. |
-|   `--output-directory`        | Allows the generation dir to be overridden. Defaults to current dir |
 |   `--resources-path`          | Allows the path for generated resources to be overridden. Defaults to `src/main/resources` |
 |   `--serialization-library`   | Specify which serialization library to use for annotations in generated model classes. Default: JACKSON |
 |                               | CHOOSE ONE OF: |
