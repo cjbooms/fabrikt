@@ -448,7 +448,7 @@ class ModelGenerator(
 
         enum.entries.forEach {
             val enumConstantBuilder = TypeSpec.anonymousClassBuilder()
-                .addSuperclassConstructorParameter(CodeBlock.of("\"$it\""))
+                .addSuperclassConstructorParameter("%S", it)
             serializationAnnotations.addEnumConstantAnnotation(enumConstantBuilder, it)
             classBuilder.addEnumConstant(
                 it.toEnumName(),
