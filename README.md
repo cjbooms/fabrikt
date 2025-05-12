@@ -273,7 +273,14 @@ cd fabrikt/
 ```
 
 ## Publishing
-This library is published to [Sonatype's OSS](https://s01.oss.sonatype.org/#welcome) staging repository using Github actions when a release is drafted. It can be manually promoted from there to the release repository which is indexed by Maven Central.
+
+1. Go to [Release Tab](https://github.com/cjbooms/fabrikt/releases) 
+2. Select `Draft a new release`. 
+3. Set tag to a version greater than current using symantic versioning, anticipating whether the changes made could break builds. 
+4. Click `Generate release notes`. Ensure that the tag and release version match.
+5. Click `Publish release` buttom at the bottom.
+
+Github Actions will publish to [Sonatype's OSS](https://s01.oss.sonatype.org/#welcome) staging repository. You must then log in to Sonatype and manually promote the release repository by Closing and then Promoting. After 30 minutes or so, Maven Central will have indexed the promoted release.
 
 ## Specific Features
 
