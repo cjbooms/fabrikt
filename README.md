@@ -280,7 +280,7 @@ cd fabrikt/
 4. Click `Generate release notes`. Ensure that the tag and release version match.
 5. Click `Publish release` buttom at the bottom.
 
-Github Actions will publish to [Sonatype's OSS](https://s01.oss.sonatype.org/#welcome) staging repository. You must then log in to Sonatype and manually promoted to the release repository by Closing and then Promoting. After 30 minutes or so, Maven Central will have indexed the promoted release.
+Github Actions will publish to [Sonatype's OSS](https://s01.oss.sonatype.org/#welcome) staging repository. You must then log in to Sonatype and manually promote the release repository by Closing and then Promoting. After 30 minutes or so, Maven Central will have indexed the promoted release.
 
 ## Specific Features
 
