@@ -1,0 +1,10 @@
+openapi: 3.0.0
+info:
+  version: '1'
+  title: httpStatusCodeRangeDefinition
+paths:
+  /example:
+    get:
+      responses:
+        '2XX':  # https://swagger.io/docs/specification/v3_0/describing-responses/#http-status-codes
+          description: example

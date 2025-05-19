@@ -32,7 +32,7 @@ object ControllerGeneratorUtils {
         val toResponseMapping: Map<Int, Response> = responses
             .filter { it.key != "default" }
             .map { (code, body) ->
-                code.toInt() to body
+                code.replace('X','0').toInt() to body
             }.toMap()
 
         // Happy path, just pull out the http code with the lowest value. Later we may have conditional responses
