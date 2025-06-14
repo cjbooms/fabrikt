@@ -75,21 +75,12 @@ tasks {
             "--type-overrides", "DATETIME_AS_STRING"
         )
     )
-    val generateSuffixedCodeTask = createGenerateCodeTask(
-        "generateSuffixedCodeTask",
-        "$projectDir/openapi/api.yaml",
-        "com.example.suffixed",
-        listOf(
-            "--http-model-suffix", "ModelSuffix"
-        )
-    )
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
         dependsOn(generateCodeTask)
         dependsOn(generatePrimitiveTypesCodeTask)
         dependsOn(generateStringFormatOverrideCodeTask)
-        dependsOn(generateSuffixedCodeTask)
     }
 
     withType<Test> {
