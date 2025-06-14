@@ -695,7 +695,7 @@ class ModelGenerator(
         val subTypes = allSchemas
             .filter { model ->
                 model.schema.allOfSchemas.any { allOfRef ->
-                    allOfRef.name?.toModelClassName() == modelName &&
+                    ModelNameRegistry.getOrRegister(allOfRef) == modelName &&
                         (
                             allOfRef.discriminator == discriminator ||
                                 allOfRef.allOfSchemas.any { it.discriminator == discriminator }
