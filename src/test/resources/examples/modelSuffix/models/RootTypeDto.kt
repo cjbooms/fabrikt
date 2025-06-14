@@ -11,7 +11,7 @@ import kotlin.String
   property = "rootDiscriminator",
   visible = true,
 )
-@JsonSubTypes()
+@JsonSubTypes(JsonSubTypes.Type(value = FirstLevelChildDto::class, name = "firstLevelChild"))
 public sealed class RootTypeDto(
   public open val rootField1: String,
   public open val rootField2: Boolean? = null,
