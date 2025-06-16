@@ -10,7 +10,7 @@ import kotlin.String
   property = "generation",
   visible = true,
 )
-@JsonSubTypes()
+@JsonSubTypes(JsonSubTypes.Type(value = PolymorphicTypeOneDto::class, name = "PolymorphicTypeOne"))
 public sealed class PolymorphicSuperTypeDto(
   public open val firstName: String,
   public open val lastName: String,
