@@ -18,7 +18,7 @@ import kotlin.jvm.Throws
 public class HelloClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      *
@@ -48,6 +48,6 @@ public class HelloClient(
             .get()
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }

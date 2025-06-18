@@ -22,11 +22,11 @@ public class BinaryDataService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "binaryDataClient"
 
-    private val apiClient: BinaryDataClient = BinaryDataClient(objectMapper, baseUrl, client)
+    private val apiClient: BinaryDataClient = BinaryDataClient(objectMapper, baseUrl, okHttpClient)
 
     @Throws(ApiException::class)
     public fun postBinaryData(

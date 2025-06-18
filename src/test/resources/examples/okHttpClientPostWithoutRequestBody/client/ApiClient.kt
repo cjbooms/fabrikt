@@ -18,7 +18,7 @@ import kotlin.jvm.Throws
 public class ExampleClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      *
@@ -44,7 +44,7 @@ public class ExampleClient(
             .put(ByteArray(0).toRequestBody())
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -71,7 +71,7 @@ public class ExampleClient(
             .post(ByteArray(0).toRequestBody())
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -98,6 +98,6 @@ public class ExampleClient(
             .patch(ByteArray(0).toRequestBody())
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }

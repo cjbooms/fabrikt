@@ -19,7 +19,7 @@ import kotlin.jvm.Throws
 public class BinaryDataClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      *
@@ -48,6 +48,6 @@ public class BinaryDataClient(
             .post(objectMapper.writeValueAsString(applicationOctetStream).toRequestBody("application/octet-stream".toMediaType()))
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }
