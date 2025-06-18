@@ -27,11 +27,15 @@ public class ExamplePath1Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "examplePath1Client"
 
-    private val apiClient: ExamplePath1Client = ExamplePath1Client(objectMapper, baseUrl, client)
+    private val apiClient: ExamplePath1Client = ExamplePath1Client(
+        objectMapper,
+        baseUrl,
+        okHttpClient,
+    )
 
     @Throws(ApiException::class)
     public fun getExamplePath1(
@@ -58,11 +62,15 @@ public class ExamplePath2Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "examplePath2Client"
 
-    private val apiClient: ExamplePath2Client = ExamplePath2Client(objectMapper, baseUrl, client)
+    private val apiClient: ExamplePath2Client = ExamplePath2Client(
+        objectMapper,
+        baseUrl,
+        okHttpClient,
+    )
 
     @Throws(ApiException::class)
     public fun getExamplePath2(
@@ -89,14 +97,14 @@ public class MultipleResponseSchemasService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "multipleResponseSchemasClient"
 
     private val apiClient: MultipleResponseSchemasClient = MultipleResponseSchemasClient(
         objectMapper,
         baseUrl,
-        client,
+        okHttpClient,
     )
 
     @Throws(ApiException::class)
@@ -122,12 +130,12 @@ public class DifferentSuccessAndErrorResponseSchemaService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "differentSuccessAndErrorResponseSchemaClient"
 
     private val apiClient: DifferentSuccessAndErrorResponseSchemaClient =
-        DifferentSuccessAndErrorResponseSchemaClient(objectMapper, baseUrl, client)
+        DifferentSuccessAndErrorResponseSchemaClient(objectMapper, baseUrl, okHttpClient)
 
     @Throws(ApiException::class)
     public fun getDifferentSuccessAndErrorResponseSchema(

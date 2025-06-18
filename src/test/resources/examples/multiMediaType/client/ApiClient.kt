@@ -22,7 +22,7 @@ import kotlin.jvm.Throws
 public class ExamplePath1Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      * GET example path 1
@@ -58,7 +58,7 @@ public class ExamplePath1Client(
             .get()
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }
 
@@ -66,7 +66,7 @@ public class ExamplePath1Client(
 public class ExamplePath2Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      * GET example path 1
@@ -102,7 +102,7 @@ public class ExamplePath2Client(
             .get()
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }
 
@@ -110,7 +110,7 @@ public class ExamplePath2Client(
 public class MultipleResponseSchemasClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      * GET with multiple response content schemas
@@ -140,7 +140,7 @@ public class MultipleResponseSchemasClient(
             .get()
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }
 
@@ -148,7 +148,7 @@ public class MultipleResponseSchemasClient(
 public class DifferentSuccessAndErrorResponseSchemaClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      *
@@ -175,6 +175,6 @@ public class DifferentSuccessAndErrorResponseSchemaClient(
             .get()
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }

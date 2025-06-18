@@ -93,7 +93,7 @@ class OkHttpSimpleClientGenerator(
                 .primaryPropertiesConstructor(
                     PropertySpec.builder("objectMapper", ObjectMapper::class.asTypeName(), KModifier.PRIVATE).build(),
                     PropertySpec.builder("baseUrl", String::class.asTypeName(), KModifier.PRIVATE).build(),
-                    PropertySpec.builder("client", "OkHttpClient".toClassName("okhttp3"), KModifier.PRIVATE).build()
+                    PropertySpec.builder("okHttpClient", "OkHttpClient".toClassName("okhttp3"), KModifier.PRIVATE).build()
                 )
                 .addAnnotation(AnnotationSpec.builder(Suppress::class).addMember("%S", "unused").build())
                 .addFunctions(funcSpecs)
@@ -226,7 +226,7 @@ data class SimpleClientOperationStatement(
     }
 
     private fun CodeBlock.Builder.addRequestExecutionStatement() =
-        this.add("\nreturn request.execute(client, objectMapper, jacksonTypeRef())\n")
+        this.add("\nreturn request.execute(okHttpClient, objectMapper, jacksonTypeRef())\n")
 
     private fun CodeBlock.Builder.addRequestSerializerStatement(verb: String) {
         val requestBody = operation.requestBody

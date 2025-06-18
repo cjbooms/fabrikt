@@ -23,11 +23,11 @@ public class HelloService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "helloClient"
 
-    private val apiClient: HelloClient = HelloClient(objectMapper, baseUrl, client)
+    private val apiClient: HelloClient = HelloClient(objectMapper, baseUrl, okHttpClient)
 
     @Throws(ApiException::class)
     public fun helloWorld(
