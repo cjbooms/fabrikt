@@ -81,19 +81,19 @@ class SpringHttpInterfaceGenerator(
                     when (parameter.parameterLocation) {
                         is QueryParam -> {
                             SpringHttpInterfaceAnnotations.requestParamBuilder()
-                                .addMember("%S", parameter.name)
+                                .addMember("%S", parameter.originalName)
                                 .build()
                         }
 
                         is HeaderParam -> {
                             SpringHttpInterfaceAnnotations.requestHeaderBuilder()
-                                .addMember("%S", parameter.name)
+                                .addMember("%S", parameter.originalName)
                                 .build()
                         }
 
                         is PathParam -> {
                             SpringHttpInterfaceAnnotations.pathVariableBuilder()
-                                .addMember("%S", parameter.name)
+                                .addMember("%S", parameter.originalName)
                                 .build()
                         }
                     }

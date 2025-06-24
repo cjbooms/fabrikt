@@ -24,8 +24,8 @@ public interface ExampleClient {
         method = "GET",
     )
     public fun getExampleB(
-        @PathVariable("pathB") pathB: String,
-        @RequestParam("queryB") queryB: String,
+        @PathVariable("b") pathB: String,
+        @RequestParam("b") queryB: String,
         @RequestHeader additionalHeaders: Map<String, Any> = emptyMap(),
         @RequestParam additionalQueryParameters: Map<String, Any> = emptyMap(),
     )
@@ -42,7 +42,7 @@ public interface ExampleClient {
     )
     public fun postExample(
         @RequestBody bodySomeObject: SomeObject,
-        @RequestParam("querySomeObject") querySomeObject: String,
+        @RequestParam("someObject") querySomeObject: String,
         @RequestHeader additionalHeaders: Map<String, Any> = emptyMap(),
         @RequestParam additionalQueryParameters: Map<String, Any> = emptyMap(),
     )
