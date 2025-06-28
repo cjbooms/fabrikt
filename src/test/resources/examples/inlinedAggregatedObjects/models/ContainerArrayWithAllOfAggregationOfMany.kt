@@ -10,6 +10,9 @@ public data class ContainerArrayWithAllOfAggregationOfMany(
   @get:JsonProperty("annotations")
   @get:Valid
   public val annotations: List<ContainerAnnotations>? = null,
+  /**
+   * The identifier of the chat message.
+   */
   @param:JsonProperty("id")
   @get:JsonProperty("id")
   public val id: String? = null,

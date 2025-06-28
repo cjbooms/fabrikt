@@ -4,6 +4,9 @@ import com.fasterxml.jackson.`annotation`.JsonValue
 import kotlin.String
 import kotlin.collections.Map
 
+/**
+ * Shows which child type is being returned
+ */
 public enum class ParentType(
   @JsonValue
   public val `value`: String,

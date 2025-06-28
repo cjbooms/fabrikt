@@ -11,10 +11,16 @@ import kotlin.collections.Map
 import kotlin.collections.MutableMap
 
 public data class Event(
+  /**
+   * The id of the entity this event belongs to
+   */
   @param:JsonProperty("entity_id")
   @get:JsonProperty("entity_id")
   @get:NotNull
   public val entityId: String,
+  /**
+   * This unstructured event content must conform to the Nakadi Event Type's schema
+   */
   @param:JsonProperty("data")
   @get:JsonProperty("data")
   @get:NotNull

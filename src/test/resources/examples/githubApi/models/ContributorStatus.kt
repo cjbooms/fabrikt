@@ -4,6 +4,9 @@ import com.fasterxml.jackson.`annotation`.JsonValue
 import kotlin.String
 import kotlin.collections.Map
 
+/**
+ * States whether the entity is currently active or inactive
+ */
 public enum class ContributorStatus(
   @JsonValue
   public val `value`: String,
