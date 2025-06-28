@@ -6,6 +6,7 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.ClassSettings
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
+import com.cjbooms.fabrikt.generators.GeneratorUtils.toKDoc
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toObjectTypeSpec
 import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.generators.PropertyUtils.addToClass
@@ -193,22 +194,22 @@ class ModelGenerator(
     private fun createModels(api: OpenApi3, schemas: List<SchemaInfo>) = schemas
         .filterNot { it.schema.isSimpleType() }
         .filterNot { it.schema.isOneOfPolymorphicTypes() }
-        .flatMap {
-            val properties = it.schema.topLevelProperties(HTTP_SETTINGS, api, it.schema)
+        .flatMap { schemaInfo ->
+            val properties = schemaInfo.schema.topLevelProperties(HTTP_SETTINGS, api, schemaInfo.schema)
             when {
                 properties.isNotEmpty() ||
-                it.typeInfo is KotlinTypeInfo.Enum ||
-                it.schema.findOneOfSuperInterface(schemas.map { it.schema }).isNotEmpty() -> {
-                    val primaryModel = buildPrimaryModel(api, it, properties, schemas)
-                    val inlinedModels = buildInLinedModels(properties, it.schema, it.schema.getDocumentUrl())
+                schemaInfo.typeInfo is KotlinTypeInfo.Enum ||
+                schemaInfo.schema.findOneOfSuperInterface(schemas.map { it.schema }).isNotEmpty() -> {
+                    val primaryModel = buildPrimaryModel(api, schemaInfo, properties, schemas)
+                    val inlinedModels = buildInLinedModels(properties, schemaInfo.schema, schemaInfo.schema.getDocumentUrl())
                     listOf(primaryModel) + inlinedModels
                 }
-                it.typeInfo is KotlinTypeInfo.Array -> {
+                schemaInfo.typeInfo is KotlinTypeInfo.Array -> {
                     buildInlinedListDefinition(
-                        schema = it.schema,
-                        schemaName = it.schema.safeName(),
-                        enclosingSchema = it.schema,
-                        apiDocUrl = it.schema.getDocumentUrl(),
+                        schema = schemaInfo.schema,
+                        schemaName = schemaInfo.schema.safeName(),
+                        enclosingSchema = schemaInfo.schema,
+                        apiDocUrl = schemaInfo.schema.getDocumentUrl(),
                     )
                 }
                 else -> {
@@ -265,12 +266,12 @@ class ModelGenerator(
                 schemaInfo.schema.findOneOfSuperInterface(allSchemas.map { it.schema }),
             )
 
-            schemaInfo.typeInfo is KotlinTypeInfo.Enum -> buildEnumClass(schemaInfo.typeInfo)
+            schemaInfo.typeInfo is KotlinTypeInfo.Enum -> buildEnumClass(schemaInfo.schema, schemaInfo.typeInfo)
             else -> standardDataClass(
                 modelName = modelName,
                 schemaName = schemaName,
                 properties = properties,
-                extensions = schemaInfo.schema.extensions,
+                schema = schemaInfo.schema,
                 oneOfInterfaces = schemaInfo.schema.findOneOfSuperInterface(allSchemas.map { it.schema }),
             )
         }
@@ -310,7 +311,7 @@ class ModelGenerator(
                                 ModelNameRegistry.getOrRegister(it.schema, enclosingSchema),
                                 it.name,
                                 props,
-                                it.schema.extensions,
+                                it.schema,
                                 oneOfInterfaces = emptySet(),
                             )
                             val inlinedModels = buildInLinedModels(props, enclosingSchema, apiDocUrl)
@@ -330,7 +331,7 @@ class ModelGenerator(
                                 modelName = ModelNameRegistry.getOrRegister(it.schema, valueSuffix = it.schema.isInlinedTypedAdditionalProperties()),
                                 schemaName = it.name,
                                 properties = it.schema.topLevelProperties(HTTP_SETTINGS, sourceApi.openApi3, enclosingSchema),
-                                extensions = it.schema.extensions,
+                                schema = it.schema,
                                 oneOfInterfaces = emptySet(),
                             ),
                         )
@@ -340,7 +341,7 @@ class ModelGenerator(
 
                 is PropertyInfo.Field ->
                     if (it.typeInfo is KotlinTypeInfo.Enum && !it.isInherited) {
-                        setOf(buildEnumClass(it.typeInfo as KotlinTypeInfo.Enum))
+                        setOf(buildEnumClass(it.schema, it.typeInfo as KotlinTypeInfo.Enum))
                     } else {
                         emptySet()
                     }
@@ -374,7 +375,7 @@ class ModelGenerator(
                             modelName = ModelNameRegistry.getOrRegister(schema, enclosingSchema),
                             schemaName = schemaName,
                             properties = props,
-                            extensions = schema.extensions,
+                            schema = schema,
                             oneOfInterfaces = emptySet(),
                         )
                     }
@@ -382,6 +383,7 @@ class ModelGenerator(
                 items.isInlinedEnumDefinition() ->
                     setOf(
                         buildEnumClass(
+                            items,
                             KotlinTypeInfo.from(items, "items", enclosingSchema) as KotlinTypeInfo.Enum,
                         ),
                     )
@@ -433,10 +435,11 @@ class ModelGenerator(
             .filterNotNull()
             .filter { Overlay.of(it).isPresent }
 
-    private fun buildEnumClass(enum: KotlinTypeInfo.Enum): TypeSpec {
+    private fun buildEnumClass(schema: Schema, enum: KotlinTypeInfo.Enum): TypeSpec {
         val enumType = generatedType(packages.base, enum.enumClassName)
         val classBuilder = TypeSpec
             .enumBuilder(enumType)
+            .apply { schema.toKDoc()?.let { addKdoc(it) } }
             .primaryConstructor(
                 FunSpec.constructorBuilder()
                     .addParameter("value", String::class)
@@ -486,7 +489,7 @@ class ModelGenerator(
                 modelName = ModelNameRegistry.getOrRegister(schema, valueSuffix = schema.isInlinedTypedAdditionalProperties()),
                 schemaName = schema.safeName(),
                 properties = mapField.schema.additionalPropertiesSchema.topLevelProperties(HTTP_SETTINGS, sourceApi.openApi3),
-                extensions = mapField.schema.extensions,
+                schema = schema,
                 oneOfInterfaces = emptySet(),
             )
         } else {
@@ -497,7 +500,7 @@ class ModelGenerator(
         modelName: String,
         schemaName: String,
         properties: Collection<PropertyInfo>,
-        extensions: Map<String, Any>,
+        schema: Schema,
         oneOfInterfaces: Set<Schema>,
     ): TypeSpec {
         val name = generatedType(packages.base, modelName)
@@ -509,6 +512,7 @@ class ModelGenerator(
                 TypeSpec.classBuilder(name)
             }
         val classBuilder = builder
+            .apply { schema.toKDoc()?.let { addKdoc(it) } }
             .addSerializableInterface()
             .addQuarkusReflectionAnnotation()
             .addMicronautIntrospectedAnnotation()
@@ -530,13 +534,13 @@ class ModelGenerator(
                 properties.addToClass(
                     schemaName = schemaName,
                     classBuilder = classBuilder,
-                    classType = ClassSettings(ClassSettings.PolymorphyType.ONE_OF, extensions),
+                    classType = ClassSettings(ClassSettings.PolymorphyType.ONE_OF, schema.extensions),
                 )
             } else {
                 properties.addToClass(
                     schemaName = schemaName,
                     classBuilder = classBuilder,
-                    classType = ClassSettings(ClassSettings.PolymorphyType.NONE, extensions),
+                    classType = ClassSettings(ClassSettings.PolymorphyType.NONE, schema.extensions),
                 )
             }
         }

@@ -9,6 +9,9 @@ public data class ChildTypeA(
   @get:JsonProperty("some_string")
   @get:NotNull
   public val someString: String,
+  /**
+   * Shows which child type is being returned
+   */
   @get:JsonProperty("type")
   @get:NotNull
   @param:JsonProperty("type")

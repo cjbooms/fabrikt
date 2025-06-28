@@ -77,10 +77,12 @@ components:
             - mode1
             - mode2
     OneObject:
+      description: One Object
       required:
         - type
       properties:
         type:
+          description: Type Property
           type: string
     TwoObject:
       required:

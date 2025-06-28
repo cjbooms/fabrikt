@@ -12,5 +12,8 @@ import com.fasterxml.jackson.`annotation`.JsonTypeInfo
 @JsonSubTypes(JsonSubTypes.Type(value = ChildTypeA::class, name =
     "CHILD_TYPE_A"),JsonSubTypes.Type(value = ChildTypeB::class, name = "CHILD_TYPE_B"))
 public sealed class ParentSpec() {
+  /**
+   * Shows which child type is being returned
+   */
   public abstract val type: ParentType
 }

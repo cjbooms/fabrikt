@@ -10,7 +10,13 @@ import kotlin.String
 import kotlin.collections.Map
 import kotlin.collections.MutableMap
 
+/**
+ * Describes the SQL entity we are requesting events for.
+ */
 public data class EntityDetails(
+  /**
+   * The value from the table:column which is being monitored by ferit.
+   */
   @param:JsonProperty("id")
   @get:JsonProperty("id")
   @get:NotNull

@@ -7,6 +7,9 @@ import kotlin.String
 import kotlin.collections.List
 
 public data class NewNullableFormat(
+  /**
+   * The resolved version or `null` if there is no matching version.
+   */
   @param:JsonProperty("simpleNullable")
   @get:JsonProperty("simpleNullable")
   public val simpleNullable: String?,

@@ -42,6 +42,11 @@ public data class PersonWithDefaults(
   @get:JsonProperty("string_phrase")
   @get:NotNull
   public val stringPhrase: String = "Cowabunga Dude",
+  /**
+   * An absolute URI that identifies the problem type.  When dereferenced,
+   * it SHOULD provide human-readable documentation for the problem type
+   * (e.g., using HTML).
+   */
   @param:JsonProperty("uri_type")
   @get:JsonProperty("uri_type")
   @get:NotNull

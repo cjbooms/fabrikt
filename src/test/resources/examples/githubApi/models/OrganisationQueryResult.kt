@@ -8,9 +8,15 @@ import javax.validation.constraints.Size
 import kotlin.collections.List
 
 public data class OrganisationQueryResult(
+  /**
+   * The hyperlink to a page of data
+   */
   @param:JsonProperty("prev")
   @get:JsonProperty("prev")
   public val prev: URI? = null,
+  /**
+   * The hyperlink to a page of data
+   */
   @param:JsonProperty("next")
   @get:JsonProperty("next")
   public val next: URI? = null,
