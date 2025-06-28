@@ -20,7 +20,7 @@ import kotlin.jvm.Throws
 public class ExampleClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      *
@@ -53,7 +53,7 @@ public class ExampleClient(
             .get()
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -86,6 +86,6 @@ public class ExampleClient(
             .post(objectMapper.writeValueAsString(bodySomeObject).toRequestBody("application/json".toMediaType()))
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }

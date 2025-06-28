@@ -25,7 +25,7 @@ import kotlin.jvm.Throws
 public class ExamplePath1Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      * GET example path 1
@@ -61,7 +61,7 @@ public class ExamplePath1Client(
             .get()
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -94,7 +94,7 @@ public class ExamplePath1Client(
             .post(objectMapper.writeValueAsString(content).toRequestBody("application/json".toMediaType()))
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }
 
@@ -102,7 +102,7 @@ public class ExamplePath1Client(
 public class ExamplePath2Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      * GET example path 2
@@ -141,7 +141,7 @@ public class ExamplePath2Client(
             .get()
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -178,7 +178,7 @@ public class ExamplePath2Client(
             .head()
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -214,7 +214,7 @@ public class ExamplePath2Client(
             .put(objectMapper.writeValueAsString(firstModel).toRequestBody("application/json".toMediaType()))
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }
 
@@ -222,7 +222,7 @@ public class ExamplePath2Client(
 public class ExamplePath3SubresourceClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      * PUT example path 3
@@ -260,7 +260,7 @@ public class ExamplePath3SubresourceClient(
             .put(objectMapper.writeValueAsString(firstModel).toRequestBody("application/json".toMediaType()))
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }
 
@@ -268,7 +268,7 @@ public class ExamplePath3SubresourceClient(
 public class ExamplePath4OnlyFailureResponseClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      * POST example path 4
@@ -295,6 +295,6 @@ public class ExamplePath4OnlyFailureResponseClient(
             .post(ByteArray(0).toRequestBody())
             .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }

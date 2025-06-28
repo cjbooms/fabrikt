@@ -28,11 +28,15 @@ public class ExamplePath1Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "examplePath1Client"
 
-    private val apiClient: ExamplePath1Client = ExamplePath1Client(objectMapper, baseUrl, client)
+    private val apiClient: ExamplePath1Client = ExamplePath1Client(
+        objectMapper,
+        baseUrl,
+        okHttpClient,
+    )
 
     @Throws(ApiException::class)
     public fun getExamplePath1(
@@ -69,11 +73,15 @@ public class ExamplePath2Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "examplePath2Client"
 
-    private val apiClient: ExamplePath2Client = ExamplePath2Client(objectMapper, baseUrl, client)
+    private val apiClient: ExamplePath2Client = ExamplePath2Client(
+        objectMapper,
+        baseUrl,
+        okHttpClient,
+    )
 
     @Throws(ApiException::class)
     public fun getExamplePath2PathParam(
@@ -123,14 +131,14 @@ public class ExamplePath3SubresourceService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "examplePath3SubresourceClient"
 
     private val apiClient: ExamplePath3SubresourceClient = ExamplePath3SubresourceClient(
         objectMapper,
         baseUrl,
-        client,
+        okHttpClient,
     )
 
     @Throws(ApiException::class)
@@ -159,12 +167,12 @@ public class ExamplePath4OnlyFailureResponseService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "examplePath4OnlyFailureResponseClient"
 
     private val apiClient: ExamplePath4OnlyFailureResponseClient =
-        ExamplePath4OnlyFailureResponseClient(objectMapper, baseUrl, client)
+        ExamplePath4OnlyFailureResponseClient(objectMapper, baseUrl, okHttpClient)
 
     @Throws(ApiException::class)
     public fun postExamplePath4OnlyFailureResponse(
