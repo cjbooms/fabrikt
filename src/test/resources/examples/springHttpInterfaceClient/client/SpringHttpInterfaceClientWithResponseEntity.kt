@@ -34,10 +34,10 @@ public interface ExamplePath1Client {
         accept = ["application/vnd.custom.media+json"],
     )
     public fun getExamplePath1(
-        @RequestParam("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
-        @RequestParam("queryParam2") queryParam2: Int? = null,
-        @RequestHeader("headerParam1") headerParam1: String? = null,
-        @RequestHeader("headerParam2") headerParam2: String? = null,
+        @RequestParam("explode_list_query_param") explodeListQueryParam: List<String>? = null,
+        @RequestParam("query_param2") queryParam2: Int? = null,
+        @RequestHeader("header_param1") headerParam1: String? = null,
+        @RequestHeader("header_param2") headerParam2: String? = null,
         @RequestHeader additionalHeaders: Map<String, Any> = emptyMap(),
         @RequestParam additionalQueryParameters: Map<String, Any> = emptyMap(),
     ): ResponseEntity<QueryResult>
@@ -54,7 +54,7 @@ public interface ExamplePath1Client {
     )
     public fun postExamplePath1(
         @RequestBody content: Content,
-        @RequestParam("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
+        @RequestParam("explode_list_query_param") explodeListQueryParam: List<String>? = null,
         @RequestHeader additionalHeaders: Map<String, Any> = emptyMap(),
         @RequestParam additionalQueryParameters: Map<String, Any> = emptyMap(),
     ): ResponseEntity<Unit>
@@ -76,10 +76,10 @@ public interface ExamplePath2Client {
         accept = ["application/json"],
     )
     public fun getExamplePath2PathParam(
-        @PathVariable("pathParam") pathParam: String,
+        @PathVariable("path_param") pathParam: String,
         @RequestParam("limit") limit: Int = 500,
-        @RequestParam("queryParam2") queryParam2: Int? = null,
-        @RequestHeader("ifNoneMatch") ifNoneMatch: String? = null,
+        @RequestParam("query_param2") queryParam2: Int? = null,
+        @RequestHeader("If-None-Match") ifNoneMatch: String? = null,
         @RequestHeader additionalHeaders: Map<String, Any> = emptyMap(),
         @RequestParam additionalQueryParameters: Map<String, Any> = emptyMap(),
     ): ResponseEntity<Content>
@@ -96,9 +96,9 @@ public interface ExamplePath2Client {
         method = "HEAD",
     )
     public fun headOperationIdExample(
-        @PathVariable("pathParam") pathParam: String,
-        @RequestParam("queryParam3") queryParam3: Boolean? = null,
-        @RequestHeader("ifNoneMatch") ifNoneMatch: String? = null,
+        @PathVariable("path_param") pathParam: String,
+        @RequestParam("query_param3") queryParam3: Boolean? = null,
+        @RequestHeader("If-None-Match") ifNoneMatch: String? = null,
         @RequestHeader additionalHeaders: Map<String, Any> = emptyMap(),
         @RequestParam additionalQueryParameters: Map<String, Any> = emptyMap(),
     ): ResponseEntity<Unit>
@@ -116,8 +116,8 @@ public interface ExamplePath2Client {
     )
     public fun putExamplePath2PathParam(
         @RequestBody firstModel: FirstModel,
-        @PathVariable("pathParam") pathParam: String,
-        @RequestHeader("ifMatch") ifMatch: String,
+        @PathVariable("path_param") pathParam: String,
+        @RequestHeader("If-Match") ifMatch: String,
         @RequestHeader additionalHeaders: Map<String, Any> = emptyMap(),
         @RequestParam additionalQueryParameters: Map<String, Any> = emptyMap(),
     ): ResponseEntity<Unit>
@@ -139,9 +139,9 @@ public interface ExamplePath3SubresourceClient {
     )
     public fun putExamplePath3PathParamSubresource(
         @RequestBody firstModel: FirstModel,
-        @PathVariable("pathParam") pathParam: String,
-        @RequestHeader("ifMatch") ifMatch: String,
-        @RequestParam("csvListQueryParam") csvListQueryParam: List<String>? = null,
+        @PathVariable("path_param") pathParam: String,
+        @RequestHeader("If-Match") ifMatch: String,
+        @RequestParam("csv_list_query_param") csvListQueryParam: List<String>? = null,
         @RequestHeader additionalHeaders: Map<String, Any> = emptyMap(),
         @RequestParam additionalQueryParameters: Map<String, Any> = emptyMap(),
     ): ResponseEntity<Unit>
