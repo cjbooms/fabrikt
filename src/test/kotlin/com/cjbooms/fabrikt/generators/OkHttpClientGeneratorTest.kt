@@ -6,12 +6,14 @@ import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.OutputOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OkHttpEnhancedClientGenerator
 import com.cjbooms.fabrikt.generators.client.OkHttpSimpleClientGenerator
 import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.model.ClientType
+import com.cjbooms.fabrikt.model.Clients
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SimpleFile
 import com.cjbooms.fabrikt.model.SourceApi
@@ -163,6 +165,28 @@ class OkHttpClientGeneratorTest {
         assertThat(models).isEqualTo(expectedModel)
         assertThat(simpleClientCode).isEqualTo(expectedClient)
         assertThat(enhancedClientCode).isEqualTo(expectedClientCode)
+    }
+
+    @Test
+    fun `adds disclaimer as comment to files if enabled`() {
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.CLIENT),
+            clientTarget = ClientCodeGenTargetType.OK_HTTP,
+            outputOptions = setOf(OutputOptionType.ADD_FILE_DISCLAIMER)
+        )
+        val api = SourceApi(readTextResource("/examples/fileComment/api.yaml"))
+        val generator = OkHttpSimpleClientGenerator(
+            Packages("examples.fileComment"),
+            api
+        )
+
+        val expectedClient = readTextResource("/examples/fileComment/client/PetsClient.kt")
+
+        val clientTypes = generator.generateDynamicClientCode()
+
+        val content = Clients(clientTypes).files.first().toString().let { Linter.lintString(it) }
+
+        assertThat(content).isEqualTo(expectedClient)
     }
 
     private fun Collection<ClientType>.toSingleFile(): String {

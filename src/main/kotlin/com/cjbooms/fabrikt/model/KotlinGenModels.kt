@@ -51,6 +51,7 @@ data class Models(val models: Collection<ModelType>) : KotlinTypes(models) {
 data class Clients(val clients: Collection<ClientType>) : KotlinTypes(clients) {
     override val files: Collection<FileSpec> = super.files.map {
         it.toBuilder()
+            .addFileDisclaimer()
             .addImport(JacksonMetadata.TYPE_REFERENCE_IMPORT.first, JacksonMetadata.TYPE_REFERENCE_IMPORT.second)
             .build()
     }
