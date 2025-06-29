@@ -17,8 +17,8 @@ object FileUtils {
             addFileComment("""
                 
                 This file was generated from an OpenAPI specification by Fabrikt.
-                DO NOT EDIT. Changes will be lost the next time the code is regenerated.
-                Instead, update the spec and regenerate to update.
+                DO NOT EDIT. Changes will be lost the next time the code is generated.
+                Instead, update the spec and re-generate to update.
                 
             """.trimIndent())
         }
