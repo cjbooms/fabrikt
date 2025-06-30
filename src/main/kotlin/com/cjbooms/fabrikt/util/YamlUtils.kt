@@ -90,7 +90,16 @@ object YamlUtils {
         }
     }
 
-    private fun downgradeNullableSyntax(node: JsonNode) {
+    private fun downgradeNullableSyntax(
+        node: JsonNode,
+        propertyName: String? = null,
+        parentSchemaObject: ObjectNode? = null
+    ) {
+        // Track the schema object through recursion. Top level attributes, e.g. 'required', may be modified.
+        var schemaObject = parentSchemaObject
+        if (node.has("properties")) {
+            schemaObject = node as ObjectNode
+        }
         when {
             node.isObject -> {
                 val objectNode = node as ObjectNode
@@ -118,12 +127,25 @@ object YamlUtils {
                             objectNode.removeAll()
                             objectNode.setAll<ObjectNode>(nonNullOption.deepCopy<ObjectNode>())
                             objectNode.put("nullable", true)
-                            // Skip recursion for this node since it was replaced
+
+                            // In OAS 3.0, the 'nullable' sibling property will be ignored for '$ref' types, but the
+                            // generated Kotlin type still needs to be recognized as nullable. Without modifying the
+                            // referenced schema object or building a new nullable version of that object, we can remove
+                            // the field from 'required', which has the same effect on the generated code.
+                            if (objectNode.has("\$ref")) {
+                                val requiredProperties = schemaObject?.get("required") as? ArrayNode
+                                val newRequiredProperties = requiredProperties?.filter { it.textValue() != propertyName }
+                                if (newRequiredProperties.isNullOrEmpty()) {
+                                    schemaObject?.remove("required")
+                                } else {
+                                    schemaObject?.replace("required", objectMapper.valueToTree(newRequiredProperties))
+                                }
+                            }
                             return
                         }
                     }
 
-                    downgradeNullableSyntax(value)
+                    downgradeNullableSyntax(value, key, schemaObject)
                 }
 
                 if (requiresNullable) {
@@ -132,7 +154,7 @@ object YamlUtils {
             }
 
             node.isArray -> {
-                node.forEach { downgradeNullableSyntax(it) }
+                node.forEach { downgradeNullableSyntax(it, propertyName, schemaObject) }
             }
         }
     }

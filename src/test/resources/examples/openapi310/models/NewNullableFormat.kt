@@ -17,6 +17,14 @@ public data class NewNullableFormat(
   @get:JsonProperty("objectNullable")
   @get:Valid
   public val objectNullable: OneObject? = null,
+  @param:JsonProperty("requiredNullableRef")
+  @get:JsonProperty("requiredNullableRef")
+  @get:Valid
+  public val requiredNullableRef: OneObject? = null,
+  @param:JsonProperty("singleRequiredFieldNullableRef")
+  @get:JsonProperty("singleRequiredFieldNullableRef")
+  @get:Valid
+  public val singleRequiredFieldNullableRef: SingleRequiredFieldNullableObject? = null,
   @param:JsonProperty("complexNullable")
   @get:JsonProperty("complexNullable")
   public val complexNullable: List<Any>? = null,
