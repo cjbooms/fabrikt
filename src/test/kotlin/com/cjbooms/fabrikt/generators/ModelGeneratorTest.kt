@@ -330,6 +330,26 @@ class ModelGeneratorTest {
         assertThat(models).isEqualTo(expectedModels)
     }
 
+    @Test
+    fun `kdoc is added to models correctly when the description contains %-sign`() {
+        val basePackage = "examples.kdoc"
+        val spec = readTextResource("/examples/kdoc/api.yaml")
+        val expectedModels = readTextResource("/examples/kdoc/models/Models.kt")
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.HTTP_MODELS),
+            validationLibrary = ValidationLibrary.NO_VALIDATION,
+        )
+
+        val models = ModelGenerator(
+            Packages(basePackage),
+            SourceApi(spec),
+        )
+            .generate()
+            .toSingleFile()
+
+        assertThat(models).isEqualTo(expectedModels)
+    }
+
     private fun Models.toSingleFile(): String {
         val destPackage = if (models.isNotEmpty()) models.first().destinationPackage else ""
         val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
