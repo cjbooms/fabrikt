@@ -91,8 +91,8 @@ object GeneratorUtils {
     }
 
     fun Schema.toKDoc(): CodeBlock? {
-        return this.description?.takeIf { it.isNotEmpty() }?.let { description ->
-            CodeBlock.builder().add("${this.description.orEmpty()}\n")
+        return this.description?.takeIf(String::isNotEmpty)?.let { description ->
+            CodeBlock.builder().add("%L", "$description\n")
         }?.build()
     }
 
