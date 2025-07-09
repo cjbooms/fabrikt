@@ -20,6 +20,7 @@ import com.cjbooms.fabrikt.model.PathParam
 import com.cjbooms.fabrikt.model.QueryParam
 import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.FileUtils.addFileDisclaimer
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSingleResource
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.cjbooms.fabrikt.util.toUpperCase
@@ -194,6 +195,7 @@ class SpringControllerInterfaceGenerator(
 data class SpringControllers(val controllers: Collection<ControllerType>) : KotlinTypes(controllers) {
     override val files: Collection<FileSpec> = super.files.map {
         it.toBuilder()
+            .addFileDisclaimer()
             .addImport(SpringImports.Static.REQUEST_METHOD.first, SpringImports.Static.REQUEST_METHOD.second)
             .addImport(
                 SpringImports.Static.RESPONSE_STATUS.first,
