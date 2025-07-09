@@ -8,10 +8,10 @@ import com.cjbooms.fabrikt.generators.MutableSettings
 import com.cjbooms.fabrikt.model.OasType.Companion.toOasType
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.getEnumValues
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isEnumDefinition
-import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUnsupportedComplexInlinedDefinition
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isInlinedTypedAdditionalProperties
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isNotDefined
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isOneOfSuperInterfaceWithDiscriminator
+import com.cjbooms.fabrikt.util.KaizenParserExtensions.isUnsupportedComplexInlinedDefinition
 import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.reprezen.kaizen.oasparser.model3.Schema
 import java.math.BigDecimal
@@ -22,6 +22,7 @@ import java.util.UUID
 import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.reflect.KClass
+import kotlin.uuid.ExperimentalUuidApi
 
 sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassName: String? = null) {
 
@@ -38,6 +39,10 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     object Integer : KotlinTypeInfo(Int::class)
     object BigInt : KotlinTypeInfo(Long::class)
     object Uuid : KotlinTypeInfo(UUID::class)
+
+    @OptIn(ExperimentalUuidApi::class)
+    object KotlinUuid : KotlinTypeInfo(kotlin.uuid.Uuid::class)
+
     object Uri : KotlinTypeInfo(URI::class)
     object ByteArray : KotlinTypeInfo(kotlin.ByteArray::class)
     object InputStream : KotlinTypeInfo(java.io.InputStream::class)
@@ -100,8 +105,17 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     Enum(schema.getEnumValues(), ModelNameRegistry.getOrRegister(schema, enclosingSchema))
 
                 OasType.Uuid -> {
-                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.UUID_AS_STRING)) Text
-                    else Uuid
+                    when {
+                        // settings can't contain both typeOverrides. IllegalStateException would
+                        // have been thrown before entering this code here
+                        MutableSettings.typeOverrides()
+                            .contains(CodeGenTypeOverride.UUID_AS_STRING) -> Text
+
+                        MutableSettings.typeOverrides()
+                            .contains(CodeGenTypeOverride.UUID_AS_KOTLIN_UUID) -> KotlinUuid
+
+                        else -> Uuid
+                    }
                 }
 
                 OasType.Uri -> {

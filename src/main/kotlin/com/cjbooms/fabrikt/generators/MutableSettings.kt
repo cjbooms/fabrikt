@@ -30,6 +30,8 @@ object MutableSettings {
         externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.default,
         serializationLibrary: SerializationLibrary = SerializationLibrary.default,
     ) {
+        typeOverrides.validate()
+
         this.generationTypes = genTypes.toMutableSet()
         this.controllerOptions = controllerOptions.toMutableSet()
         this.controllerTarget = controllerTarget
@@ -44,8 +46,15 @@ object MutableSettings {
         this.serializationLibrary = serializationLibrary
     }
 
-    fun addOption(option: ModelCodeGenOptionType) = modelOptions.add(option)
-    fun addOption(override: CodeGenTypeOverride) = typeOverrides.add(override)
+    fun addOption(option: ModelCodeGenOptionType): Boolean {
+        typeOverrides.validate()
+        return modelOptions.add(option)
+    }
+
+    fun addOption(override: CodeGenTypeOverride): Boolean {
+        (typeOverrides.toSet() + override).validate()
+        return typeOverrides.add(override)
+    }
 
     fun generationTypes() = this.generationTypes.toSet()
     fun controllerOptions() = this.controllerOptions.toSet()
@@ -55,8 +64,21 @@ object MutableSettings {
     fun clientOptions() = this.clientOptions.toSet()
     fun clientTarget() = this.clientTarget
     fun openfeignClientName() = this.openfeignClientName
-    fun typeOverrides() = this.typeOverrides.toSet()
+    fun typeOverrides(): Set<CodeGenTypeOverride> {
+        this.typeOverrides.validate()
+        return this.typeOverrides.toSet()
+    }
     fun validationLibrary() = this.validationLibrary
     fun externalRefResolutionMode() = this.externalRefResolutionMode
     fun serializationLibrary() = this.serializationLibrary
+
+    public fun Set<CodeGenTypeOverride>.validate() {
+        check(
+            !(CodeGenTypeOverride.UUID_AS_STRING in this
+                    && CodeGenTypeOverride.UUID_AS_KOTLIN_UUID in this)
+        ) {
+            """Conflicting UUID overrides. Use either UUID_AS_STRING or UUID_AS_KOTLIN_UUID but
+                    |not both at the same time""".trimMargin()
+        }
+    }
 }

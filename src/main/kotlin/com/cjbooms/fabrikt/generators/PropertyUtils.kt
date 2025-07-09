@@ -35,6 +35,10 @@ data class ClassSettings(
 }
 
 object PropertyUtils {
+    val experimentalApiMap = mapOf(
+        KotlinTypeInfo.KotlinUuid to listOf(ClassName("kotlin.uuid", "ExperimentalUuidApi"))
+    )
+
     fun PropertyInfo.addToClass(
         schemaName: String,
         type: TypeName,
@@ -182,6 +186,13 @@ object PropertyUtils {
                 }
                 constructorBuilder.addParameter(constructorParameter.build())
             }
+        }
+
+        experimentalApiMap[this.typeInfo]?.forEach {
+            val optInAnnotationSpec = AnnotationSpec.builder(ClassName("kotlin", "OptIn"))
+                .addMember("%T::class", it)
+                .build()
+            property.addAnnotation(optInAnnotationSpec)
         }
 
         classBuilder.addProperty(property.build())
