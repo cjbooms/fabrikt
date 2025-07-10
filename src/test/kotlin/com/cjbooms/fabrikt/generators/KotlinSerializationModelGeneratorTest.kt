@@ -37,7 +37,6 @@ class KotlinSerializationModelGeneratorTest {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
             serializationLibrary = SerializationLibrary.KOTLINX_SERIALIZATION,
-            typeOverrides = setOf(CodeGenTypeOverride.UUID_AS_KOTLIN_UUID),
         )
         ModelNameRegistry.clear()
     }
@@ -85,6 +84,7 @@ class KotlinSerializationModelGeneratorTest {
     fun `using uuidAsKotlinUuid and uuidAsKotlinUuid results in IllegalStateException`() {
         assertThrows<IllegalStateException> {
             MutableSettings.addOption(CodeGenTypeOverride.UUID_AS_STRING)
+            MutableSettings.addOption(CodeGenTypeOverride.UUID_AS_KOTLIN_UUID)
         }
 
         assertThrows<IllegalStateException> {
