@@ -112,7 +112,8 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                             .contains(CodeGenTypeOverride.UUID_AS_STRING) -> Text
 
                         MutableSettings.typeOverrides()
-                            .contains(CodeGenTypeOverride.UUID_AS_KOTLIN_UUID) -> KotlinUuid
+                            .contains(CodeGenTypeOverride.UUID_AS_KOTLIN_UUID) ||
+                                MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION -> KotlinUuid
 
                         else -> Uuid
                     }
