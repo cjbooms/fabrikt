@@ -81,7 +81,7 @@ class KotlinSerializationModelGeneratorTest {
     }
 
     @Test
-    fun `using uuidAsKotlinUuid and uuidAsKotlinUuid results in IllegalStateException`() {
+    fun `using uuidAsKotlinUuid and uuidAsString results in IllegalStateException`() {
         assertThrows<IllegalStateException> {
             MutableSettings.addOption(CodeGenTypeOverride.UUID_AS_STRING)
             MutableSettings.addOption(CodeGenTypeOverride.UUID_AS_KOTLIN_UUID)
