@@ -14,7 +14,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 object KotlinUuidAsStringSerializer : KSerializer<Uuid> {
     override val descriptor = PrimitiveSerialDescriptor(
-        "java.util.UUID", PrimitiveKind.STRING
+        "kotlin.uuid.Uuid", PrimitiveKind.STRING
     )
 
     override fun deserialize(decoder: Decoder): Uuid {
