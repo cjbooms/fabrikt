@@ -7,6 +7,7 @@ import com.cjbooms.fabrikt.model.JacksonAnnotations
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PropertyInfo
 import com.cjbooms.fabrikt.model.SerializationAnnotations
+import com.cjbooms.fabrikt.util.ExperimentalApiUtils.getNeededOptIns
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
@@ -184,6 +185,7 @@ object PropertyUtils {
             }
         }
 
+        property.addAnnotations(getNeededOptIns(this.typeInfo))
         classBuilder.addProperty(property.build())
     }
 

@@ -4,6 +4,7 @@ import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
+import com.cjbooms.fabrikt.cli.SerializationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
 import com.cjbooms.fabrikt.model.ControllerLibraryType
@@ -55,6 +56,7 @@ class KtorControllerInterfaceGeneratorTest {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.CONTROLLERS),
             controllerTarget = ControllerCodeGenTargetType.KTOR,
+            serializationLibrary = SerializationLibrary.KOTLINX_SERIALIZATION,
         )
         ModelNameRegistry.clear()
     }

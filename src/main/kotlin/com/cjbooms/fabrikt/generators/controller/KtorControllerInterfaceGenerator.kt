@@ -18,6 +18,7 @@ import com.cjbooms.fabrikt.model.PathParam
 import com.cjbooms.fabrikt.model.QueryParam
 import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.ExperimentalApiUtils.getNeededOptIns
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSingleResource
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
@@ -69,26 +70,30 @@ class KtorControllerInterfaceGenerator(
                 )
                 .addKdoc("Mounts all routes for the $resourceName resource\n\n")
 
-            paths.forEach { path ->
+            val requiredAnnotations = paths.flatMap { path ->
                 path.value.operations
                     .filter { (verb, _) -> verb.toUpperCase() != "HEAD" }
-                    .forEach { (verb, operation) ->
+                    .flatMap { (verb, operation) ->
                         // add route handler
-                        val routeCode = buildRouteCode(operation, verb, path)
-                        routeFunBuilder.addCode(routeCode)
+                        val (routeCode, requiredAnnotations) = buildRouteCode(operation, verb, path)
+                        routeFunBuilder
+                            .addCode(routeCode)
                             routeFunBuilder.addKdoc("- ${verb.toUpperCase()} ${path.key} ${(operation.summary ?: operation.description).orEmpty()}\n")
 
                         // generate controller interface function
                         val controllerFun = buildControllerFun(operation, verb, path)
 
                         controllerBuilder.addFunction(controllerFun)
+                        requiredAnnotations
                     }
-            }
+            }.toSet()
 
             // add the companion object with the route functions
             controllerBuilder.addType(
                 TypeSpec.companionObjectBuilder()
-                    .addFunction(routeFunBuilder.build())
+                    .addFunction(routeFunBuilder
+                        .addAnnotations(requiredAnnotations)
+                        .build())
                     .addFunction(getTypedFun)
                     .addFunction(getTypedOrFailFun)
                     .addFunction(getOrFailFun)
@@ -107,6 +112,7 @@ class KtorControllerInterfaceGenerator(
      * Builds the base controller function that takes in all parameters.
      */
     private fun buildControllerFun(operation: Operation, verb: String, path: Map.Entry<String, Path>): FunSpec {
+        var requiredAnnotations: Set<AnnotationSpec> = setOf()
         val methodName = getMethodName(operation, verb, path)
         val builder = FunSpec.builder(methodName)
             .addModifiers(setOf(KModifier.SUSPEND, KModifier.ABSTRACT))
@@ -116,6 +122,8 @@ class KtorControllerInterfaceGenerator(
 
         headerParams.forEach { param ->
             // TODO: Consider handling header parameter types. Currently everything is a string.
+            // TODO: uncomment as soon as we don't use string for everything.
+            //  requiredAnnotations += addNeededOptIns(param.type)
             if (param.isRequired) {
                 builder.addParameter(ParameterSpec.builder(param.name, String::class).build())
             } else {
@@ -126,6 +134,7 @@ class KtorControllerInterfaceGenerator(
         }
 
         (pathParams + queryParams).forEach { param ->
+            requiredAnnotations += getNeededOptIns(param.type)
             if (param.isRequired) {
                 builder.addParameter(param.toParameterSpecBuilder().build())
             } else {
@@ -136,6 +145,7 @@ class KtorControllerInterfaceGenerator(
         }
 
         bodyParams.forEach { param ->
+            requiredAnnotations += getNeededOptIns(param.type)
             builder.addParameter(param.toParameterSpecBuilder().build())
         }
 
@@ -151,14 +161,17 @@ class KtorControllerInterfaceGenerator(
             )
         }
 
-        return builder.build()
+        return builder
+            .addAnnotations(requiredAnnotations)
+            .build()
     }
 
     /**
      * Builds the code that goes into the route function.
      */
-    private fun buildRouteCode(operation: Operation, verb: String, path: Map.Entry<String, Path>): CodeBlock {
+    private fun buildRouteCode(operation: Operation, verb: String, path: Map.Entry<String, Path>): CodeBlockWithAnnotations {
         val builder = CodeBlock.builder()
+        var requiredAnnotations: Set<AnnotationSpec> = setOf()
 
         val securityOption = operation.securitySupport(globalSecurity)
 
@@ -197,6 +210,7 @@ class KtorControllerInterfaceGenerator(
 
         pathParams.forEach { param ->
             val typeName = param.type.copy(nullable = false) // not nullable because we handle that in the queryParameters.get* below
+            requiredAnnotations += getNeededOptIns(typeName)
             val queryMethodName = "getTypedOrFail"
             if (param.requiresKtorDataConversionPlugin()) {
                 builder.addStatement(
@@ -229,6 +243,7 @@ class KtorControllerInterfaceGenerator(
         }
 
         queryParams.forEach { param ->
+            requiredAnnotations += getNeededOptIns(param.type)
             val typeName = param.type.copy(nullable = false) // not nullable because we handle that in the queryParameters.get* below
             val queryMethodName = if (param.isRequired) "getTypedOrFail" else "getTyped"
 
@@ -249,6 +264,7 @@ class KtorControllerInterfaceGenerator(
         }
 
         bodyParams.forEach { param ->
+            requiredAnnotations += getNeededOptIns(param.type)
             builder.addStatement(
                 "val ${param.name} = %M.%M<%T>()",
                 MemberName("io.ktor.server.application", "call"),
@@ -288,7 +304,7 @@ class KtorControllerInterfaceGenerator(
                 .addStatement("}")
         }
 
-        return builder.build()
+        return CodeBlockWithAnnotations(builder.build(), requiredAnnotations)
     }
 
     private fun buildControllerFunKdoc(operation: Operation, parameters: List<IncomingParameter>): CodeBlock {
@@ -536,6 +552,11 @@ class KtorControllerInterfaceGenerator(
         }
     }
 }
+
+private data class CodeBlockWithAnnotations(
+    val codeBlock: CodeBlock,
+    val requiredAnnotations: Set<AnnotationSpec> = emptySet()
+)
 
 private fun List<IncomingParameter>.splitByType(): IncomingParametersByType {
     val requestParams = this.filterIsInstance<RequestParameter>()
