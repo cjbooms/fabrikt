@@ -6,16 +6,18 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
 import io.mockk.CapturingSlot
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class PathParamsControllerImpl(
     private val primitiveParamCapturingSlot: CapturingSlot<String?>,
-    private val formatParamCapturingSlot: CapturingSlot<UUID?>,
+    private val formatParamCapturingSlot: CapturingSlot<Uuid?>,
     private val enumParamCapturingSlot: CapturingSlot<PathParamWithEnum?>,
 ) : PathParamsController {
     override suspend fun getById(
         primitiveParam: String,
-        formatParam: UUID,
+        formatParam: Uuid,
         enumParam: PathParamWithEnum,
         call: ApplicationCall
     ) {

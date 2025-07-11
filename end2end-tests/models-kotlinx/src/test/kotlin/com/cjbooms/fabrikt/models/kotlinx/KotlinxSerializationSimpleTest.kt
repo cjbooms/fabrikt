@@ -1,7 +1,7 @@
 package com.cjbooms.fabrikt.models.kotlinx
 
+import com.cjbooms.fabrikt.models.kotlinx.serializers.KotlinUuidAsStringSerializer
 import com.cjbooms.fabrikt.models.kotlinx.serializers.URIAsStringSerializer
-import com.cjbooms.fabrikt.models.kotlinx.serializers.UUIDAsStringSerializer
 import com.example.models.Pet
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -12,14 +12,16 @@ import kotlinx.serialization.modules.contextual
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.net.URI
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class KotlinxSerializationSimpleTest {
 
     private val jsonWithCustomSerializers = Json {
         serializersModule = SerializersModule {
             // register contextual custom serializers
-            contextual(UUIDAsStringSerializer)
+            contextual(KotlinUuidAsStringSerializer)
             contextual(URIAsStringSerializer)
         }
     }
@@ -54,7 +56,7 @@ class KotlinxSerializationSimpleTest {
                 tag = "dog",
                 dateOfBirth = LocalDate.parse("2009-02-13"),
                 lastFedAt = Instant.parse("2011-02-04T10:00:00Z"),
-                earTagUuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
+                earTagUuid = Uuid.parse("123e4567-e89b-12d3-a456-426614174000"),
                 imageUrl = URI.create("https://example.org/image.jpg")
             )
         )

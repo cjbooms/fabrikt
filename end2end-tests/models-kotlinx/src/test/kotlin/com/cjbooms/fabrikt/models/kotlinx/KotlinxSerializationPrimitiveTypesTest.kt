@@ -2,8 +2,8 @@ package com.cjbooms.fabrikt.models.kotlinx
 
 import com.cjbooms.fabrikt.models.kotlinx.serializers.BigDecimalSerializer
 import com.cjbooms.fabrikt.models.kotlinx.serializers.ByteArrayAsBase64String
+import com.cjbooms.fabrikt.models.kotlinx.serializers.KotlinUuidAsStringSerializer
 import com.cjbooms.fabrikt.models.kotlinx.serializers.URIAsStringSerializer
-import com.cjbooms.fabrikt.models.kotlinx.serializers.UUIDAsStringSerializer
 import com.example.primitives.models.Content
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -17,7 +17,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.net.URI
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 /**
  * This test verifies that the generated Kotlinx serialization code for the primitive types uses the custom serializers
@@ -25,6 +26,7 @@ import java.util.UUID
  *
  * The custom serializers are resolved because the fields are annotated with `@Contextual`.
  */
+@OptIn(ExperimentalUuidApi::class)
 class KotlinxSerializationPrimitiveTypesTest {
 
     private val jsonWithCustomSerializers = Json {
@@ -32,7 +34,7 @@ class KotlinxSerializationPrimitiveTypesTest {
             // register contextual custom serializers
             contextual(BigDecimalSerializer)
             contextual(ByteArrayAsBase64String)
-            contextual(UUIDAsStringSerializer)
+            contextual(KotlinUuidAsStringSerializer)
             contextual(URIAsStringSerializer)
         }
         prettyPrint = true
@@ -46,7 +48,7 @@ class KotlinxSerializationPrimitiveTypesTest {
         integer64 = 9223372036854775807,
         boolean = true,
         string = "example",
-        stringUuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
+        stringUuid = Uuid.parse("123e4567-e89b-12d3-a456-426614174000"),
         stringUri = URI.create("https://example.org"),
         stringDate = LocalDate.parse("2020-02-04"),
         stringDateTime = Instant.parse("2024-11-04T12:00:00Z"),

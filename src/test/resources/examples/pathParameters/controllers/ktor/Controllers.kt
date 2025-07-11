@@ -16,10 +16,12 @@ import io.ktor.server.routing.`get`
 import io.ktor.util.converters.ConversionService
 import io.ktor.util.converters.DefaultConversionService
 import io.ktor.util.reflect.typeInfo
-import java.util.UUID
 import kotlin.Any
+import kotlin.OptIn
 import kotlin.String
 import kotlin.Suppress
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 public interface PathParamsController {
     /**
@@ -33,9 +35,10 @@ public interface PathParamsController {
      * @param enumParam
      * @param call The Ktor application call
      */
+    @OptIn(ExperimentalUuidApi::class)
     public suspend fun getById(
         primitiveParam: String,
-        formatParam: UUID,
+        formatParam: Uuid,
         enumParam: PathParamWithEnum,
         call: ApplicationCall,
     )
@@ -46,10 +49,11 @@ public interface PathParamsController {
          *
          * - GET /path-params/{primitiveParam}/{formatParam}/{enumParam} GET with path parameters
          */
+        @OptIn(ExperimentalUuidApi::class)
         public fun Route.pathParamsRoutes(controller: PathParamsController) {
             `get`("/path-params/{primitiveParam}/{formatParam}/{enumParam}") {
                 val primitiveParam = call.parameters.getTypedOrFail<kotlin.String>("primitiveParam")
-                val formatParam = call.parameters.getTypedOrFail<java.util.UUID>(
+                val formatParam = call.parameters.getTypedOrFail<kotlin.uuid.Uuid>(
                     "formatParam",
                     call.application.conversionService,
                 )

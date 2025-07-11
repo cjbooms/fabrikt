@@ -7,6 +7,7 @@ import com.cjbooms.fabrikt.model.JacksonAnnotations
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
 import com.cjbooms.fabrikt.model.PropertyInfo
 import com.cjbooms.fabrikt.model.SerializationAnnotations
+import com.cjbooms.fabrikt.util.ExperimentalApiUtils.getNeededOptIns
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
@@ -35,10 +36,6 @@ data class ClassSettings(
 }
 
 object PropertyUtils {
-    val experimentalApiMap = mapOf(
-        KotlinTypeInfo.KotlinUuid to listOf(ClassName("kotlin.uuid", "ExperimentalUuidApi"))
-    )
-
     fun PropertyInfo.addToClass(
         schemaName: String,
         type: TypeName,
@@ -188,13 +185,7 @@ object PropertyUtils {
             }
         }
 
-        experimentalApiMap[this.typeInfo]?.forEach {
-            val optInAnnotationSpec = AnnotationSpec.builder(ClassName("kotlin", "OptIn"))
-                .addMember("%T::class", it)
-                .build()
-            property.addAnnotation(optInAnnotationSpec)
-        }
-
+        property.addAnnotations(getNeededOptIns(this.typeInfo))
         classBuilder.addProperty(property.build())
     }
 
