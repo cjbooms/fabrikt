@@ -2,12 +2,12 @@ package com.cjbooms.fabrikt.models.kotlinx
 
 import com.cjbooms.fabrikt.models.kotlinx.serializers.BigDecimalSerializer
 import com.cjbooms.fabrikt.models.kotlinx.serializers.ByteArrayAsBase64String
-import com.cjbooms.fabrikt.models.kotlinx.serializers.KotlinUuidAsStringSerializer
 import com.cjbooms.fabrikt.models.kotlinx.serializers.URIAsStringSerializer
 import com.example.primitives.models.Content
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -34,7 +34,7 @@ class KotlinxSerializationPrimitiveTypesTest {
             // register contextual custom serializers
             contextual(BigDecimalSerializer)
             contextual(ByteArrayAsBase64String)
-            contextual(KotlinUuidAsStringSerializer)
+            contextual(Uuid.serializer())
             contextual(URIAsStringSerializer)
         }
         prettyPrint = true

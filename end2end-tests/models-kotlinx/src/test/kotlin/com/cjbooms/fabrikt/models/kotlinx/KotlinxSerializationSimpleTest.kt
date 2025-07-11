@@ -1,10 +1,10 @@
 package com.cjbooms.fabrikt.models.kotlinx
 
-import com.cjbooms.fabrikt.models.kotlinx.serializers.KotlinUuidAsStringSerializer
 import com.cjbooms.fabrikt.models.kotlinx.serializers.URIAsStringSerializer
 import com.example.models.Pet
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -21,7 +21,7 @@ class KotlinxSerializationSimpleTest {
     private val jsonWithCustomSerializers = Json {
         serializersModule = SerializersModule {
             // register contextual custom serializers
-            contextual(KotlinUuidAsStringSerializer)
+            contextual(Uuid.serializer())
             contextual(URIAsStringSerializer)
         }
     }
