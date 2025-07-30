@@ -17,3 +17,9 @@ jobs:
         env:
           OSSRH_USER_TOKEN_USERNAME: ${{ secrets.OSSRH_USER_TOKEN_USERNAME }}
           OSSRH_USER_TOKEN_PASSWORD: ${{ secrets.OSSRH_USER_TOKEN_PASSWORD }}
+      - name: Finalise upload so it appears in Central Portal
+        run: |
+          curl -X POST \
+            -u "${{ secrets.OSSRH_USER_TOKEN_USERNAME }}:${{ secrets.OSSRH_USER_TOKEN_PASSWORD }}" \
+            "https://central.sonatype.com/api/v1/publisher/manual/upload/defaultRepository/com/cjbooms"
+
