@@ -71,7 +71,7 @@ public interface ExamplePath2Client {
      * @param ifNoneMatch The RFC7232 If-None-Match header field
      */
     @HttpExchange(
-        url = "/example-path-2/{pathParam}",
+        url = "/example-path-2/{path_param}",
         method = "GET",
         accept = ["application/json"],
     )
@@ -92,7 +92,7 @@ public interface ExamplePath2Client {
      * @param ifNoneMatch The RFC7232 If-None-Match header field
      */
     @HttpExchange(
-        url = "/example-path-2/{pathParam}",
+        url = "/example-path-2/{path_param}",
         method = "HEAD",
     )
     public fun headOperationIdExample(
@@ -111,7 +111,7 @@ public interface ExamplePath2Client {
      * @param ifMatch The RFC7232 If-Match header field
      */
     @HttpExchange(
-        url = "/example-path-2/{pathParam}",
+        url = "/example-path-2/{path_param}",
         method = "PUT",
     )
     public fun putExamplePath2PathParam(
@@ -134,7 +134,7 @@ public interface ExamplePath3SubresourceClient {
      * @param csvListQueryParam
      */
     @HttpExchange(
-        url = "/example-path-3/{pathParam}/subresource",
+        url = "/example-path-3/{path_param}/subresource",
         method = "PUT",
     )
     public fun putExamplePath3PathParamSubresource(

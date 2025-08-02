@@ -158,10 +158,7 @@ class SpringHttpInterfaceGenerator(
         }
 
         private fun AnnotationSpec.Builder.addUrl(): AnnotationSpec.Builder = apply {
-            val pathParameters = parameters.getPathParameters()
-            val resolvedResource = resourceWithDeduplicatedParamNames(resource, pathParameters)
-
-            addMember("url=%S", resolvedResource)
+            addMember("url=%S", resource)
         }
 
         private fun AnnotationSpec.Builder.addContentType(
@@ -233,19 +230,6 @@ class SpringHttpInterfaceGenerator(
         private fun List<IncomingParameter>.getPathParameters(): List<RequestParameter> =
             filterIsInstance<RequestParameter>()
                 .filter { it.parameterLocation is PathParam }
-
-        private fun resourceWithDeduplicatedParamNames(
-            resource: String,
-            pathParameters: List<RequestParameter>,
-        ): String {
-            var resolvedResource = resource
-            pathParameters.forEach { parameter ->
-                if (parameter.originalName != parameter.name) {
-                    resolvedResource = resolvedResource.replace("{${parameter.originalName}}", "{${parameter.name}}")
-                }
-            }
-            return resolvedResource
-        }
     }
 
     override fun generateLibrary(options: Set<ClientCodeGenOptionType>): Collection<GeneratedFile> = setOf()
