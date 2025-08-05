@@ -2,14 +2,16 @@ package examples.primitiveTypes.models
 
 import java.math.BigDecimal
 import java.net.URI
-import java.util.UUID
 import kotlin.Boolean
 import kotlin.ByteArray
 import kotlin.Double
 import kotlin.Float
 import kotlin.Int
 import kotlin.Long
+import kotlin.OptIn
 import kotlin.String
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Contextual
@@ -30,7 +32,8 @@ public data class Content(
   public val string: String? = null,
   @Contextual
   @SerialName("stringUuid")
-  public val stringUuid: UUID? = null,
+  @OptIn(ExperimentalUuidApi::class)
+  public val stringUuid: Uuid? = null,
   @Contextual
   @SerialName("stringUri")
   public val stringUri: URI? = null,
