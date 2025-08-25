@@ -20,7 +20,7 @@ public interface ExampleClient {
      * @param queryB
      */
     @HttpExchange(
-        url = "/example/{pathB}",
+        url = "/example/{b}",
         method = "GET",
     )
     public fun getExampleB(
