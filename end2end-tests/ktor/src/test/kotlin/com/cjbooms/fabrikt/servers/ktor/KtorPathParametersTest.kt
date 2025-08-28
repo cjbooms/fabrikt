@@ -13,14 +13,16 @@ import io.ktor.server.testing.testApplication
 import io.mockk.CapturingSlot
 import io.mockk.slot
 import org.junit.jupiter.api.Test
-import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class KtorPathParametersTest {
     @Test
     fun `handles path parameters of different types using DataConversion plugin`() {
         val primitiveParamCapturingSlot = slot<String?>()
-        val formatParamCapturingSlot = slot<UUID?>()
+        val formatParamCapturingSlot = slot<Uuid?>()
         val enumParamCapturingSlot = slot<PathParamWithEnum?>()
 
         testApplication {
@@ -38,7 +40,7 @@ class KtorPathParametersTest {
 
             assertEquals(HttpStatusCode.NoContent, response.status)
             assertEquals("test", primitiveParamCapturingSlot.captured)
-            assertEquals(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), formatParamCapturingSlot.captured)
+            assertEquals(Uuid.parse("123e4567-e89b-12d3-a456-426614174000"), formatParamCapturingSlot.captured)
             assertEquals(PathParamWithEnum.ACTIVE, enumParamCapturingSlot.captured)
         }
     }
@@ -46,7 +48,7 @@ class KtorPathParametersTest {
     @Test
     fun `falls back to DefaultConversion service if DataConversion is not installed`() {
         val primitiveParamCapturingSlot = slot<String?>()
-        val formatParamCapturingSlot = slot<UUID?>()
+        val formatParamCapturingSlot = slot<Uuid?>()
         val enumParamCapturingSlot = slot<PathParamWithEnum?>()
 
         testApplication {
@@ -64,7 +66,7 @@ class KtorPathParametersTest {
 
             assertEquals(HttpStatusCode.NoContent, response.status)
             assertEquals("test", primitiveParamCapturingSlot.captured)
-            assertEquals(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), formatParamCapturingSlot.captured)
+            assertEquals(Uuid.parse("123e4567-e89b-12d3-a456-426614174000"), formatParamCapturingSlot.captured)
             assertEquals(PathParamWithEnum.ACTIVE, enumParamCapturingSlot.captured)
         }
     }
@@ -72,7 +74,7 @@ class KtorPathParametersTest {
     @Test
     fun `fails with 400 when conversion fails`() {
         val primitiveParamCapturingSlot = slot<String?>()
-        val formatParamCapturingSlot = slot<UUID?>()
+        val formatParamCapturingSlot = slot<Uuid?>()
         val enumParamCapturingSlot = slot<PathParamWithEnum?>()
         val errorCapturingSlot = slot<String?>()
 
@@ -90,7 +92,7 @@ class KtorPathParametersTest {
             val response = client.get("/path-params/test/0000-invalid-uuid-0000/active")
 
             assertEquals(HttpStatusCode.BadRequest, response.status)
-            assertEquals("Request parameter formatParam couldn't be parsed/converted to UUID", errorCapturingSlot.captured)
+            assertEquals("Request parameter formatParam couldn't be parsed/converted to Uuid", errorCapturingSlot.captured)
         }
     }
 
@@ -98,13 +100,13 @@ class KtorPathParametersTest {
         withDataConversion: Boolean = true,
         errorCapturingSlot: CapturingSlot<String?>? = null,
     ) {
-        if (withDataConversion) {
-            install(DataConversion) {
-                convert<UUID> {
-                    decode { values ->
-                        UUID.fromString(values.single())
-                    }
+        install(DataConversion) {
+            convert<Uuid> {
+                decode { values ->
+                    Uuid.parse(values.single())
                 }
+            }
+            if (withDataConversion) {
                 convert<PathParamWithEnum> {
                     decode { values ->
                         PathParamWithEnum.entries.find { it.value == values.single() }

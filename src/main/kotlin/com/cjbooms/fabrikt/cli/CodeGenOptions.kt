@@ -93,6 +93,7 @@ enum class CodeGenTypeOverride(val description: String) {
     BINARY_AS_STRING("Ignore string format `binary` and use `String` as the type"),
     URI_AS_STRING("Ignore string format `uri` and use `String` as the type"),
     UUID_AS_STRING("Ignore string format `uuid` and use `String` as the type"),
+    UUID_AS_KOTLIN_UUID("Use kotlin's Uuid instead of Java's UUID as the type"),
     DATE_AS_STRING("Ignore string format `date` and use `String` as the type"),
     DATETIME_AS_STRING("Ignore string format `date-time` and use `String` as the type"),
     BYTEARRAY_AS_INPUTSTREAM("Use `InputStream` as ByteArray type. Defaults to `ByteArray`");

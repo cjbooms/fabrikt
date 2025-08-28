@@ -1,5 +1,6 @@
 package com.cjbooms.fabrikt.generators
 
+import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary
@@ -35,7 +36,7 @@ class KotlinSerializationModelGeneratorTest {
     fun init() {
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
-            serializationLibrary = SerializationLibrary.KOTLINX_SERIALIZATION
+            serializationLibrary = SerializationLibrary.KOTLINX_SERIALIZATION,
         )
         ModelNameRegistry.clear()
     }
@@ -77,6 +78,25 @@ class KotlinSerializationModelGeneratorTest {
         }
 
         tempDirectory.toFile().deleteRecursively()
+    }
+
+    @Test
+    fun `using uuidAsKotlinUuid and uuidAsString results in IllegalStateException`() {
+        assertThrows<IllegalStateException> {
+            MutableSettings.addOption(CodeGenTypeOverride.UUID_AS_STRING)
+            MutableSettings.addOption(CodeGenTypeOverride.UUID_AS_KOTLIN_UUID)
+        }
+
+        assertThrows<IllegalStateException> {
+            MutableSettings.updateSettings(
+                genTypes = setOf(CodeGenerationType.HTTP_MODELS),
+                serializationLibrary = SerializationLibrary.KOTLINX_SERIALIZATION,
+                typeOverrides = setOf(
+                    CodeGenTypeOverride.UUID_AS_KOTLIN_UUID,
+                    CodeGenTypeOverride.UUID_AS_STRING,
+                ),
+            )
+        }
     }
 
     @Test
