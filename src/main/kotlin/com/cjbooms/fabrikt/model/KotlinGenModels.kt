@@ -4,6 +4,7 @@ import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.Destinations.clientPackage
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.Destinations.modelsPackage
+import com.cjbooms.fabrikt.util.FileUtils.addFileDisclaimer
 import com.cjbooms.fabrikt.util.NormalisedString.toKotlinParameterName
 import com.reprezen.kaizen.oasparser.model3.Parameter
 import com.reprezen.kaizen.oasparser.model3.Schema
@@ -58,8 +59,8 @@ data class Clients(val clients: Collection<ClientType>) : KotlinTypes(clients) {
 fun <T : GeneratedType> Collection<T>.toFileSpec(): Collection<FileSpec> = this
     .map {
         FileSpec.builder(it.destinationPackage, it.className.simpleName)
-            .addType(it.spec)
-            .build()
+            .addFileDisclaimer()
+            .addType(it.spec).build()
     }
 
 /**
