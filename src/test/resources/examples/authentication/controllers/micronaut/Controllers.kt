@@ -34,7 +34,9 @@ public interface ProhibitedController {
      */
     @Get(uri = "/prohibited")
     @Secured(SecurityRule.IS_ANONYMOUS)
-    public fun testPath(@QueryValue(value = "testString") testString: String): HttpResponse<Unit>
+    public fun testPath(
+        @QueryValue(value = "testString") testString: String,
+    ): HttpResponse<Unit>
 }
 
 @Controller
@@ -60,7 +62,9 @@ public interface NoneController {
      * @param testString
      */
     @Get(uri = "/none")
-    public fun testPath(@QueryValue(value = "testString") testString: String): HttpResponse<Unit>
+    public fun testPath(
+        @QueryValue(value = "testString") testString: String,
+    ): HttpResponse<Unit>
 }
 
 @Controller

@@ -263,25 +263,6 @@ programmatically construct Kotlin classes for maximum flexibility.
 
 This project was started by engineers from [Zalando Tech](https://opensource.zalando.com/) and is battle-tested heavily in production there.
 
-## Building Locally
-
-Fabrikt is built with Gradle and requires an initialised git repository. The easiest way to build it is to clone the repo locally before executing the build command:
-```
-git clone git@github.com:cjbooms/fabrikt.git
-cd fabrikt/
-./gradlew clean build
-```
-
-## Publishing
-
-1. Go to [Release Tab](https://github.com/cjbooms/fabrikt/releases) 
-2. Select `Draft a new release`. 
-3. Set tag to a version greater than current using symantic versioning, anticipating whether the changes made could break builds. 
-4. Click `Generate release notes`. Ensure that the tag and release version match.
-5. Click `Publish release` buttom at the bottom.
-
-Github Actions will publish the deployment to [Sonatype Central](https://central.sonatype.com/publishing/deployments). You must then log in to Sonatype and decide to either release or drop that deployment. After 30 minutes or so, Maven Central will have indexed the promoted release.
-
 ## Specific Features
 
 ### Polymorphism via `allOf`
@@ -429,3 +410,28 @@ data class Responses(
     val entries: List<ChildDefinition>? = null
 )
 ```
+
+## Contributing
+
+### Building Locally
+
+Fabrikt is built with Gradle and requires an initialised git repository. The easiest way to build it is to clone the repo locally before executing the build command:
+```
+git clone git@github.com:cjbooms/fabrikt.git
+cd fabrikt/
+./gradlew clean build
+```
+
+### Adjusting Test Examples
+
+A utility function is available in [GeneratedCodeAsserter.kt](src/test/kotlin/com/cjbooms/fabrikt/util/GeneratedCodeAsserter.kt) to mass change all of the code generation examples in the test resources folder. This is useful when a global change is made to the code generation logic and all of the examples need to be updated.
+
+### Publishing
+
+1. Go to [Release Tab](https://github.com/cjbooms/fabrikt/releases)
+2. Select `Draft a new release`.
+3. Set tag to a version greater than current using symantic versioning, anticipating whether the changes made could break builds.
+4. Click `Generate release notes`. Ensure that the tag and release version match.
+5. Click `Publish release` buttom at the bottom.
+
+Github Actions will publish the deployment to [Sonatype Central](https://central.sonatype.com/publishing/deployments). You must then log in to Sonatype and decide to either release or drop that deployment. After 30 minutes or so, Maven Central will have indexed the promoted release.

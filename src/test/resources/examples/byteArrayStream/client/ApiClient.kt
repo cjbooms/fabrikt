@@ -32,21 +32,24 @@ public class BinaryDataClient(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<ByteArray> {
-        val httpUrl: HttpUrl = "$baseUrl/binary-data"
-            .toHttpUrl()
-            .newBuilder()
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/binary-data"
+                .toHttpUrl()
+                .newBuilder()
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
         val headerBuilder = Headers.Builder()
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .post(objectMapper.writeValueAsString(applicationOctetStream).toRequestBody("application/octet-stream".toMediaType()))
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .post(objectMapper.writeValueAsString(applicationOctetStream).toRequestBody("application/octet-stream".toMediaType()))
+                .build()
 
         return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }

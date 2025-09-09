@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.0.20"
+    id("org.jetbrains.kotlin.jvm") version "2.2.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.jetbrains.dokka") version "1.8.10"
     id("com.palantir.git-version") version "3.0.0"
@@ -80,9 +80,8 @@ dependencies {
     testImplementation("io.ktor:ktor-server-core:$ktorVersion")
     testImplementation("io.ktor:ktor-server-auth:$ktorVersion")
 
-    testImplementation(platform("com.pinterest.ktlint:ktlint-bom:0.49.0"))
-    testImplementation("com.pinterest:ktlint")
-    testImplementation("com.pinterest.ktlint:ktlint-core")
+    testImplementation(platform("com.pinterest.ktlint:ktlint-bom:1.7.1"))
+    testImplementation("com.pinterest.ktlint:ktlint-rule-engine-core")
     testImplementation("com.pinterest.ktlint:ktlint-rule-engine")
     testImplementation("com.pinterest.ktlint:ktlint-ruleset-standard")
 }
@@ -128,8 +127,8 @@ tasks {
     }
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_17.toString()
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }
 

@@ -1,6 +1,7 @@
 package examples.okHttpClient.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import examples.okHttpClient.models.Content
 import examples.okHttpClient.models.FirstModel
 import examples.okHttpClient.models.QueryResult
@@ -32,11 +33,12 @@ public class ExamplePath1Service(
 ) {
     public var circuitBreakerName: String = "examplePath1Client"
 
-    private val apiClient: ExamplePath1Client = ExamplePath1Client(
-        objectMapper,
-        baseUrl,
-        okHttpClient,
-    )
+    private val apiClient: ExamplePath1Client =
+        ExamplePath1Client(
+            objectMapper,
+            baseUrl,
+            okHttpClient,
+        )
 
     @Throws(ApiException::class)
     public fun getExamplePath1(
@@ -77,11 +79,12 @@ public class ExamplePath2Service(
 ) {
     public var circuitBreakerName: String = "examplePath2Client"
 
-    private val apiClient: ExamplePath2Client = ExamplePath2Client(
-        objectMapper,
-        baseUrl,
-        okHttpClient,
-    )
+    private val apiClient: ExamplePath2Client =
+        ExamplePath2Client(
+            objectMapper,
+            baseUrl,
+            okHttpClient,
+        )
 
     @Throws(ApiException::class)
     public fun getExamplePath2PathParam(
@@ -135,11 +138,12 @@ public class ExamplePath3SubresourceService(
 ) {
     public var circuitBreakerName: String = "examplePath3SubresourceClient"
 
-    private val apiClient: ExamplePath3SubresourceClient = ExamplePath3SubresourceClient(
-        objectMapper,
-        baseUrl,
-        okHttpClient,
-    )
+    private val apiClient: ExamplePath3SubresourceClient =
+        ExamplePath3SubresourceClient(
+            objectMapper,
+            baseUrl,
+            okHttpClient,
+        )
 
     @Throws(ApiException::class)
     public fun putExamplePath3PathParamSubresource(

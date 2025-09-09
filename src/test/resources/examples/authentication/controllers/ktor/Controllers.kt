@@ -27,7 +27,10 @@ public interface RequiredController {
      * @param testString
      * @param call The Ktor application call
      */
-    public suspend fun testPath(testString: String, call: ApplicationCall)
+    public suspend fun testPath(
+        testString: String,
+        call: ApplicationCall,
+    )
 
     public companion object {
         /**
@@ -103,8 +106,9 @@ public interface RequiredController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -116,7 +120,10 @@ public interface ProhibitedController {
      * @param testString
      * @param call The Ktor application call
      */
-    public suspend fun testPath(testString: String, call: ApplicationCall)
+    public suspend fun testPath(
+        testString: String,
+        call: ApplicationCall,
+    )
 
     public companion object {
         /**
@@ -190,8 +197,9 @@ public interface ProhibitedController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -203,7 +211,10 @@ public interface OptionalController {
      * @param testString
      * @param call The Ktor application call
      */
-    public suspend fun testPath(testString: String, call: ApplicationCall)
+    public suspend fun testPath(
+        testString: String,
+        call: ApplicationCall,
+    )
 
     public companion object {
         /**
@@ -279,8 +290,9 @@ public interface OptionalController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -292,7 +304,10 @@ public interface NoneController {
      * @param testString
      * @param call The Ktor application call
      */
-    public suspend fun testPath(testString: String, call: ApplicationCall)
+    public suspend fun testPath(
+        testString: String,
+        call: ApplicationCall,
+    )
 
     public companion object {
         /**
@@ -366,8 +381,9 @@ public interface NoneController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -379,7 +395,10 @@ public interface DefaultController {
      * @param testString
      * @param call The Ktor application call
      */
-    public suspend fun testPath(testString: String, call: ApplicationCall)
+    public suspend fun testPath(
+        testString: String,
+        call: ApplicationCall,
+    )
 
     public companion object {
         /**
@@ -455,8 +474,9 @@ public interface DefaultController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -476,7 +496,10 @@ public class TypedApplicationCall<R : Any>(
     }
 
     @Suppress("unused")
-    public suspend inline fun <reified T : R> respondTyped(status: HttpStatusCode, message: T) {
+    public suspend inline fun <reified T : R> respondTyped(
+        status: HttpStatusCode,
+        message: T,
+    ) {
         respond(status, message)
     }
 }

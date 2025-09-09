@@ -25,12 +25,12 @@ import kotlin.collections.Map
     JsonSubTypes.Type(
         value = FirstModel::class,
         name =
-        "first_model",
+            "first_model",
     ),
     JsonSubTypes.Type(
         value = SecondModel::class,
         name =
-        "second_model",
+            "second_model",
     ),
     JsonSubTypes.Type(value = ThirdModel::class, name = "third_model"),
 )
@@ -145,7 +145,8 @@ public data class FirstModel(
     @get:NotNull
     @param:JsonProperty("model_type")
     override val modelType: ContentModelType = ContentModelType.FIRST_MODEL,
-) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable
+) : Content(id, firstAttr, secondAttr, thirdAttr, etag),
+    Serializable
 
 public data class QueryResult(
     @param:JsonProperty("items")
@@ -206,7 +207,8 @@ public data class SecondModel(
     @get:NotNull
     @param:JsonProperty("model_type")
     override val modelType: ContentModelType = ContentModelType.SECOND_MODEL,
-) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable
+) : Content(id, firstAttr, secondAttr, thirdAttr, etag),
+    Serializable
 
 public data class ThirdModel(
     /**
@@ -258,4 +260,5 @@ public data class ThirdModel(
     @get:NotNull
     @param:JsonProperty("model_type")
     override val modelType: ContentModelType = ContentModelType.THIRD_MODEL,
-) : Content(id, firstAttr, secondAttr, thirdAttr, etag), Serializable
+) : Content(id, firstAttr, secondAttr, thirdAttr, etag),
+    Serializable

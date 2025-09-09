@@ -2,6 +2,7 @@ package examples.arrays.controllers
 
 import examples.arrays.models.ArrayContainingComplexInlined
 import examples.arrays.models.Something
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.`annotation`.Validated
