@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.InstantLibrary
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary.KOTLINX_SERIALIZATION
 import com.cjbooms.fabrikt.generators.MutableSettings
@@ -31,6 +32,8 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     object DateTime : KotlinTypeInfo(OffsetDateTime::class)
     object Instant : KotlinTypeInfo(java.time.Instant::class)
     object KotlinxInstant : KotlinTypeInfo(kotlinx.datetime.Instant::class)
+    @OptIn(kotlin.time.ExperimentalTime::class)
+    object KotlinInstant : KotlinTypeInfo(kotlin.time.Instant::class)
     object LocalDateTime : KotlinTypeInfo(java.time.LocalDateTime::class)
     object Double : KotlinTypeInfo(kotlin.Double::class)
     object Float : KotlinTypeInfo(kotlin.Float::class)
@@ -91,7 +94,9 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
 
                 OasType.DateTime -> {
                     if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.DATETIME_AS_STRING)) Text
-                    else if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) KotlinxInstant
+                    else if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION)
+                        if (MutableSettings.instantLibrary() == InstantLibrary.KOTLINX_INSTANT) KotlinxInstant
+                        else KotlinInstant
                     else getOverridableDateTimeType()
                 }
 

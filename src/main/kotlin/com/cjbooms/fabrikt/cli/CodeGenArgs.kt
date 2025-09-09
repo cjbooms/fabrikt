@@ -166,6 +166,13 @@ class CodeGenArgs {
         converter = SerializationLibraryOptionConverter::class
     )
     var serializationLibrary: SerializationLibrary = SerializationLibrary.JACKSON
+
+    @Parameter(
+        names = ["--instant-library"],
+        description = "Specify which Instant library to use in generated model classes for kotlinx.serialization. Default: KOTLIN_TIME_INSTANT",
+        converter = ValidationLibraryOptionConverter::class
+    )
+    var instantLibrary: InstantLibrary = InstantLibrary.KOTLIN_TIME_INSTANT
 }
 
 class CodeGenerationTypesConverter : IStringConverter<CodeGenerationType> {
