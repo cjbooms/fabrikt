@@ -104,7 +104,10 @@ public data class ExternalObjectTwo(
     public fun `get`(): Map<String, Map<String, ExternalObjectFour?>?> = properties
 
     @JsonAnySetter
-    public fun `set`(name: String, `value`: Map<String, ExternalObjectFour?>?) {
+    public fun `set`(
+        name: String,
+        `value`: Map<String, ExternalObjectFour?>?,
+    ) {
         properties[name] = value
     }
 }
@@ -195,11 +198,11 @@ public data class OneOfTwo(
     JsonSubTypes.Type(value = OneOfOne::class, name = "OneOfOne"),
     JsonSubTypes.Type(
         value =
-        OneOfTwo::class,
+            OneOfTwo::class,
         name = "OneOfTwo",
     ),
 )
-public sealed class ParentOneOf() {
+public sealed class ParentOneOf {
     public abstract val discriminator: String
 }
 

@@ -6,11 +6,14 @@ import com.pinterest.ktlint.ruleset.standard.StandardRuleSetProvider
 
 object Linter {
 
+    val shouldLint = true
     fun lintString(rawText: String): String {
-        val code = Code.fromSnippet(rawText)
-        val result = KtLintRuleEngine(
-            ruleProviders = StandardRuleSetProvider().getRuleProviders(),
-        ).format(code)
-        return result
+        return if (shouldLint) {
+            val code = Code.fromSnippet(rawText)
+            val result = KtLintRuleEngine(
+                ruleProviders = StandardRuleSetProvider().getRuleProviders(),
+            ).format(code)
+            result
+        } else rawText
     }
 }

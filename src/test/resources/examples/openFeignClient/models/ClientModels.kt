@@ -24,12 +24,12 @@ import kotlin.collections.Map
     JsonSubTypes.Type(
         value = FirstModel::class,
         name =
-        "first_model",
+            "first_model",
     ),
     JsonSubTypes.Type(
         value = SecondModel::class,
         name =
-        "second_model",
+            "second_model",
     ),
     JsonSubTypes.Type(value = ThirdModel::class, name = "third_model"),
 )

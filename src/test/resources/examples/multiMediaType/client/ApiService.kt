@@ -2,6 +2,7 @@ package examples.multiMediaType.client
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import examples.multiMediaType.models.ContentType
 import examples.multiMediaType.models.QueryResult
 import examples.multiMediaType.models.SuccessResponse
@@ -31,11 +32,12 @@ public class ExamplePath1Service(
 ) {
     public var circuitBreakerName: String = "examplePath1Client"
 
-    private val apiClient: ExamplePath1Client = ExamplePath1Client(
-        objectMapper,
-        baseUrl,
-        okHttpClient,
-    )
+    private val apiClient: ExamplePath1Client =
+        ExamplePath1Client(
+            objectMapper,
+            baseUrl,
+            okHttpClient,
+        )
 
     @Throws(ApiException::class)
     public fun getExamplePath1(
@@ -66,11 +68,12 @@ public class ExamplePath2Service(
 ) {
     public var circuitBreakerName: String = "examplePath2Client"
 
-    private val apiClient: ExamplePath2Client = ExamplePath2Client(
-        objectMapper,
-        baseUrl,
-        okHttpClient,
-    )
+    private val apiClient: ExamplePath2Client =
+        ExamplePath2Client(
+            objectMapper,
+            baseUrl,
+            okHttpClient,
+        )
 
     @Throws(ApiException::class)
     public fun getExamplePath2(
@@ -101,11 +104,12 @@ public class MultipleResponseSchemasService(
 ) {
     public var circuitBreakerName: String = "multipleResponseSchemasClient"
 
-    private val apiClient: MultipleResponseSchemasClient = MultipleResponseSchemasClient(
-        objectMapper,
-        baseUrl,
-        okHttpClient,
-    )
+    private val apiClient: MultipleResponseSchemasClient =
+        MultipleResponseSchemasClient(
+            objectMapper,
+            baseUrl,
+            okHttpClient,
+        )
 
     @Throws(ApiException::class)
     public fun getMultipleResponseSchemas(

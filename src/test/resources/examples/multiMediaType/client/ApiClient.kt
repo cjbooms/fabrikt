@@ -39,24 +39,29 @@ public class ExamplePath1Client(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
-        val httpUrl: HttpUrl = "$baseUrl/example-path-1"
-            .toHttpUrl()
-            .newBuilder()
-            .queryParam("explode_list_query_param", explodeListQueryParam, true)
-            .queryParam("query_param2", queryParam2)
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example-path-1"
+                .toHttpUrl()
+                .newBuilder()
+                .queryParam("explode_list_query_param", explodeListQueryParam, true)
+                .queryParam("query_param2", queryParam2)
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
-        val headerBuilder = Headers.Builder()
-            .`header`("Accept", acceptHeader)
+        val headerBuilder =
+            Headers
+                .Builder()
+                .`header`("Accept", acceptHeader)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .get()
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .get()
+                .build()
 
         return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
@@ -83,24 +88,29 @@ public class ExamplePath2Client(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
-        val httpUrl: HttpUrl = "$baseUrl/example-path-2"
-            .toHttpUrl()
-            .newBuilder()
-            .queryParam("explode_list_query_param", explodeListQueryParam, true)
-            .queryParam("query_param2", queryParam2)
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example-path-2"
+                .toHttpUrl()
+                .newBuilder()
+                .queryParam("explode_list_query_param", explodeListQueryParam, true)
+                .queryParam("query_param2", queryParam2)
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
-        val headerBuilder = Headers.Builder()
-            .`header`("Accept", accept?.value)
+        val headerBuilder =
+            Headers
+                .Builder()
+                .`header`("Accept", accept?.value)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .get()
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .get()
+                .build()
 
         return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
@@ -123,22 +133,27 @@ public class MultipleResponseSchemasClient(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<JsonNode> {
-        val httpUrl: HttpUrl = "$baseUrl/multiple-response-schemas"
-            .toHttpUrl()
-            .newBuilder()
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/multiple-response-schemas"
+                .toHttpUrl()
+                .newBuilder()
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
-        val headerBuilder = Headers.Builder()
-            .`header`("Accept", accept?.value)
+        val headerBuilder =
+            Headers
+                .Builder()
+                .`header`("Accept", accept?.value)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .get()
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .get()
+                .build()
 
         return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
@@ -159,21 +174,24 @@ public class DifferentSuccessAndErrorResponseSchemaClient(
             emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<SuccessResponse> {
-        val httpUrl: HttpUrl = "$baseUrl/different-success-and-error-response-schema"
-            .toHttpUrl()
-            .newBuilder()
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/different-success-and-error-response-schema"
+                .toHttpUrl()
+                .newBuilder()
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
         val headerBuilder = Headers.Builder()
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .get()
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .get()
+                .build()
 
         return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }

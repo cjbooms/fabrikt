@@ -11,6 +11,7 @@ import examples.completionStage.models.PullRequestQueryResult
 import examples.completionStage.models.Repository
 import examples.completionStage.models.RepositoryQueryResult
 import examples.completionStage.models.StatusQueryParam
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.`annotation`.Validated
@@ -46,7 +47,9 @@ public interface InternalEventsController {
         method = [RequestMethod.POST],
         consumes = ["application/json"],
     )
-    public fun post(@RequestBody @Valid bulkEntityDetails: BulkEntityDetails): ResponseEntity<EventResults>
+    public fun post(
+        @RequestBody @Valid bulkEntityDetails: BulkEntityDetails,
+    ): ResponseEntity<EventResults>
 }
 
 @Controller

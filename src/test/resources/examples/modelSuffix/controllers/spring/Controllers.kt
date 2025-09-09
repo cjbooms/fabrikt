@@ -2,6 +2,7 @@ package examples.modelSuffix.controllers
 
 import examples.modelSuffix.models.ModeParameterDto
 import examples.modelSuffix.models.RootTypeDto
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.`annotation`.Validated
@@ -25,7 +26,9 @@ public interface ExampleController {
         produces = ["application/json"],
         method = [RequestMethod.GET],
     )
-    public fun `get`(@RequestParam(value = "mode", required = true) mode: ModeParameterDto): ResponseEntity<RootTypeDto>
+    public fun `get`(
+        @RequestParam(value = "mode", required = true) mode: ModeParameterDto,
+    ): ResponseEntity<RootTypeDto>
 
     /**
      *
@@ -38,5 +41,7 @@ public interface ExampleController {
         method = [RequestMethod.POST],
         consumes = ["application/json"],
     )
-    public fun post(@RequestBody @Valid rootType: RootTypeDto): ResponseEntity<RootTypeDto>
+    public fun post(
+        @RequestBody @Valid rootType: RootTypeDto,
+    ): ResponseEntity<RootTypeDto>
 }

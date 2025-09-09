@@ -124,8 +124,9 @@ public interface InternalEventsController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -345,8 +346,9 @@ public interface ContributorsController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -560,8 +562,9 @@ public interface OrganisationsController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -779,8 +782,9 @@ public interface OrganisationsContributorsController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -1010,8 +1014,9 @@ public interface RepositoriesController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -1241,8 +1246,9 @@ public interface RepositoriesPullRequestsController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -1262,7 +1268,10 @@ public class TypedApplicationCall<R : Any>(
     }
 
     @Suppress("unused")
-    public suspend inline fun <reified T : R> respondTyped(status: HttpStatusCode, message: T) {
+    public suspend inline fun <reified T : R> respondTyped(
+        status: HttpStatusCode,
+        message: T,
+    ) {
         respond(status, message)
     }
 }

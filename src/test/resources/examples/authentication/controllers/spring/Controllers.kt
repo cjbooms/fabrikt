@@ -1,5 +1,6 @@
 package examples.authentication.controllers
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Controller
@@ -44,7 +45,9 @@ public interface ProhibitedController {
         produces = [],
         method = [RequestMethod.GET],
     )
-    public fun testPath(@RequestParam(value = "testString", required = true) testString: String): ResponseEntity<Unit>
+    public fun testPath(
+        @RequestParam(value = "testString", required = true) testString: String,
+    ): ResponseEntity<Unit>
 }
 
 @Controller
@@ -81,7 +84,9 @@ public interface NoneController {
         produces = [],
         method = [RequestMethod.GET],
     )
-    public fun testPath(@RequestParam(value = "testString", required = true) testString: String): ResponseEntity<Unit>
+    public fun testPath(
+        @RequestParam(value = "testString", required = true) testString: String,
+    ): ResponseEntity<Unit>
 }
 
 @Controller

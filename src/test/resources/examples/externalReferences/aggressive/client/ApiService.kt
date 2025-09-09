@@ -1,6 +1,7 @@
 package examples.externalReferences.aggressive.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import examples.externalReferences.aggressive.models.ContainingExternalReference
 import examples.externalReferences.aggressive.models.ExternalParameter
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
