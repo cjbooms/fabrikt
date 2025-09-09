@@ -122,7 +122,7 @@ enum class InstantLibrary(val description: String) {
     override fun toString() = "`${super.toString()}` - $description"
 
     companion object {
-        val default = KOTLIN_TIME_INSTANT
+        val default = KOTLINX_INSTANT
     }
 }
 

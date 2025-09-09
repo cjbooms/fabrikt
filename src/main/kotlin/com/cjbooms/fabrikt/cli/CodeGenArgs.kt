@@ -169,10 +169,10 @@ class CodeGenArgs {
 
     @Parameter(
         names = ["--instant-library"],
-        description = "Specify which Instant library to use in generated model classes for kotlinx.serialization. Default: KOTLIN_TIME_INSTANT",
-        converter = ValidationLibraryOptionConverter::class
+        description = "Specify which Instant library to use in generated model classes for kotlinx.serialization. Default: KOTLINX_INSTANT",
+        converter = InstantOptionConverter::class
     )
-    var instantLibrary: InstantLibrary = InstantLibrary.KOTLIN_TIME_INSTANT
+    var instantLibrary: InstantLibrary = InstantLibrary.KOTLINX_INSTANT
 }
 
 class CodeGenerationTypesConverter : IStringConverter<CodeGenerationType> {
@@ -203,6 +203,10 @@ class ClientCodeGenTargetConverter : IStringConverter<ClientCodeGenTargetType> {
 
 class ValidationLibraryOptionConverter : IStringConverter<ValidationLibrary> {
     override fun convert(value: String): ValidationLibrary = convertToEnumValue(value)
+}
+
+class InstantOptionConverter : IStringConverter<InstantLibrary> {
+    override fun convert(value: String): InstantLibrary = convertToEnumValue(value)
 }
 
 class TypeCodeGenOptionsConverter: IStringConverter<CodeGenTypeOverride> {

@@ -10,7 +10,7 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
-import kotlin.time.Instant
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName

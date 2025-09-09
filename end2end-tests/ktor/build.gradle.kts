@@ -89,7 +89,10 @@ tasks {
     )
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
+        compilerOptions {
+            optIn.add("kotlin.time.ExperimentalTime")
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
         dependsOn(generateKtorCode)
         dependsOn(generateKtorAuthCode)
         dependsOn(generateKtorInstantDateTimeCode)
@@ -120,6 +123,7 @@ fun TaskContainer.createCodeGenerationTask(
         "--targets", "http_models",
         "--targets", "controllers",
         "--http-controller-target", "ktor",
+        "--instant-library", "KOTLINX_INSTANT",
     ) + opts
     dependsOn(":jar")
     dependsOn(":shadowJar")
