@@ -222,6 +222,10 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               |   `SEALED_INTERFACES_FOR_ONE_OF` - This option enables the generation of interfaces for discriminated oneOf types |
 |                               |   `NON_NULL_MAP_VALUES` - This option makes map values non-null. The default (since v15) and most spec compliant is make map values nullable |
 |   `--http-model-suffix`       | Specify custom suffix for all generated model classes. Defaults to no suffix. |
+|   `--instant-library`         | Specify which Instant library to use in generated model classes for kotlinx.serialization. Default: KOTLINX_INSTANT |
+|                               | CHOOSE ONE OF: |
+|                               |   `KOTLINX_INSTANT` - Use `kotlinx.datetime` Instant in generated classes (default) |
+|                               |   `KOTLIN_TIME_INSTANT` - Use `kotlin.time` Instant in generated classes |
 |   `--openfeign-client-name`   | Specify openfeign client name for spring-cloud-starter-openfeign. Defaults to 'fabrikt-client'. |
 |   `--output-directory`        | Allows the generation dir to be overridden. Defaults to current dir |
 |   `--resources-path`          | Allows the path for generated resources to be overridden. Defaults to `src/main/resources` |

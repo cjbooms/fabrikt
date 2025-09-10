@@ -115,6 +115,17 @@ enum class ValidationLibrary(val description: String, val annotations: Validatio
     }
 }
 
+enum class InstantLibrary(val description: String) {
+    KOTLINX_INSTANT("Use `kotlinx.datetime` Instant in generated classes (default)"),
+    KOTLIN_TIME_INSTANT("Use `kotlin.time` Instant in generated classes");
+
+    override fun toString() = "`${super.toString()}` - $description"
+
+    companion object {
+        val default = KOTLINX_INSTANT
+    }
+}
+
 enum class ExternalReferencesResolutionMode(val description: String) {
     TARGETED("Generate models only for directly referenced schemas in external API files."),
     AGGRESSIVE("Referencing any schema in an external API file triggers generation of every external schema in that file.");

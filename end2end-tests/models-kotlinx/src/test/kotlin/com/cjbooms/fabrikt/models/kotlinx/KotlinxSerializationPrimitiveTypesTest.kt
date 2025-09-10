@@ -5,10 +5,8 @@ import com.cjbooms.fabrikt.models.kotlinx.serializers.ByteArrayAsBase64String
 import com.cjbooms.fabrikt.models.kotlinx.serializers.URIAsStringSerializer
 import com.cjbooms.fabrikt.models.kotlinx.serializers.UUIDAsStringSerializer
 import com.example.primitives.models.Content
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -18,6 +16,7 @@ import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.net.URI
 import java.util.UUID
+import kotlin.time.Instant
 
 /**
  * This test verifies that the generated Kotlinx serialization code for the primitive types uses the custom serializers

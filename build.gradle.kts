@@ -41,8 +41,8 @@ allprojects {
 val jacksonVersion by extra { "2.15.1" }
 val junitVersion by extra { "5.9.2" }
 val ktorVersion by extra { "3.0.1" }
-val kotlinxSerializationVersion by extra { "1.7.3" }
-val kotlinxDateTimeVersion by extra { "0.6.1" }
+val kotlinxSerializationVersion by extra { "1.9.0" }
+val kotlinxDateTimeVersion by extra { "0.7.1-0.6.x-compat" }
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -128,6 +128,7 @@ tasks {
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         compilerOptions {
+            optIn.add("kotlin.time.ExperimentalTime")
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }

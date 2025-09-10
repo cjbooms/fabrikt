@@ -332,7 +332,7 @@ class ModelGeneratorTest {
     }
 
     @Test
-    fun `kdoc is added to models correctly when the description contains %-sign`() {
+    fun `kdoc is added to models correctly when the description contains percentage sign`() {
         val basePackage = "examples.kdoc"
         val spec = readTextResource("/examples/kdoc/api.yaml")
         val expectedModels = "/examples/kdoc/models/Models.kt"
