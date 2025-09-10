@@ -51,7 +51,6 @@ import com.cjbooms.fabrikt.util.KaizenParserExtensions.mappingKeys
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.NormalisedString.toEnumName
-import com.cjbooms.fabrikt.util.NormalisedString.toModelClassName
 import com.reprezen.jsonoverlay.Overlay
 import com.reprezen.kaizen.oasparser.OpenApi3Parser
 import com.reprezen.kaizen.oasparser.model3.Discriminator
@@ -59,7 +58,6 @@ import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Schema
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
@@ -76,10 +74,10 @@ class ModelGenerator(
     private val packages: Packages,
     private val sourceApi: SourceApi,
 ) {
-    private val options = MutableSettings.modelOptions()
-    private val validationAnnotations: ValidationAnnotations = MutableSettings.validationLibrary().annotations
-    private val serializationAnnotations: SerializationAnnotations = MutableSettings.serializationLibrary().serializationAnnotations
-    private val externalRefResolutionMode: ExternalReferencesResolutionMode = MutableSettings.externalRefResolutionMode()
+    private val options = MutableSettings.modelOptions
+    private val validationAnnotations: ValidationAnnotations = MutableSettings.validationLibrary.annotations
+    private val serializationAnnotations: SerializationAnnotations = MutableSettings.serializationLibrary.serializationAnnotations
+    private val externalRefResolutionMode: ExternalReferencesResolutionMode = MutableSettings.externalRefResolutionMode
 
     companion object {
         private val logger = Logger.getGlobal()
@@ -87,7 +85,6 @@ class ModelGenerator(
             basePackage: String,
             typeInfo: KotlinTypeInfo,
             isNullable: Boolean = false,
-            hasUniqueItems: Boolean = false,
         ): TypeName {
             val className =
                 toClassName(
@@ -100,15 +97,13 @@ class ModelGenerator(
                         toModelType(
                             basePackage,
                             typeInfo.parameterizedType,
-                            typeInfo.isParameterizedTypeNullable,
-                            typeInfo.hasUniqueItems
+                            typeInfo.isParameterizedTypeNullable
                         ),)
                 } else createList(
                     toModelType(
                         basePackage,
                         typeInfo.parameterizedType,
-                        typeInfo.isParameterizedTypeNullable,
-                        typeInfo.hasUniqueItems
+                        typeInfo.isParameterizedTypeNullable
                     ),
                 )
 
@@ -341,7 +336,7 @@ class ModelGenerator(
 
                 is PropertyInfo.Field ->
                     if (it.typeInfo is KotlinTypeInfo.Enum && !it.isInherited) {
-                        setOf(buildEnumClass(it.schema, it.typeInfo as KotlinTypeInfo.Enum))
+                        setOf(buildEnumClass(it.schema, it.typeInfo))
                     } else {
                         emptySet()
                     }
@@ -409,7 +404,7 @@ class ModelGenerator(
             if (docUrl != apiDocUrl) {
                 try {
                     externalApiSchemas.getOrPut(docUrl) { mutableSetOf() }.add(schema.safeName())
-                } catch (ex: MalformedURLException) {
+                } catch (_: MalformedURLException) {
                     // skip
                 }
             }

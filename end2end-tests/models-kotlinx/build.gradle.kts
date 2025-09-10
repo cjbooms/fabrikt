@@ -81,6 +81,7 @@ tasks {
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         compilerOptions {
+            optIn.add("kotlinx.serialization.ExperimentalSerializationApi")
             optIn.add("kotlin.time.ExperimentalTime")
             jvmTarget.set(JvmTarget.JVM_17)
         }
