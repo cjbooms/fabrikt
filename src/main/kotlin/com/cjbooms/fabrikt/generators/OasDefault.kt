@@ -7,7 +7,7 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeName
 import java.math.BigDecimal
 import java.net.URI
-import java.util.Base64
+import java.util.*
 
 sealed class OasDefault {
 
@@ -23,9 +23,18 @@ sealed class OasDefault {
             CodeBlock.of("%T($decimalValue)", BigDecimal::class)
     }
 
-    data class NumberValue(val numericValue: Number) : OasDefault() {
+    data class NumberValue(val numericValue: Number, val typeInfo: KotlinTypeInfo) : OasDefault() {
         override fun getDefault(): CodeBlock =
-            CodeBlock.of("%L", numericValue)
+            CodeBlock.of("%L", "$numericValue$suffix")
+
+        private val suffix: String = when (typeInfo) {
+            is KotlinTypeInfo.Float -> "f"
+            is KotlinTypeInfo.Double ->
+                if (!numericValue.toString().contains(".") && !numericValue.toString().contains("e")) ".0"
+                else ""
+
+            else -> ""
+        }
     }
 
     data class UriValue(val strValue: String) : OasDefault() {
@@ -78,8 +87,9 @@ sealed class OasDefault {
                 is Number ->
                     when (typeInfo) {
                         is KotlinTypeInfo.Numeric -> OasDefault.BigDecimalValue(default)
-                        else -> OasDefault.NumberValue(default)
+                        else -> OasDefault.NumberValue(default, typeInfo)
                     }
+
                 is Boolean -> OasDefault.BooleanValue(default)
                 else -> null
             }
