@@ -30,7 +30,7 @@ class CodeGenerator(
     private val resourcesPath: Path,
 ) {
 
-    fun generate(): Collection<GeneratedFile> = MutableSettings.generationTypes().map(::generateCode).flatten()
+    fun generate(): Collection<GeneratedFile> = MutableSettings.generationTypes.map(::generateCode).flatten()
 
     private fun generateCode(generationType: CodeGenerationType): Collection<GeneratedFile> =
         when (generationType) {
@@ -46,12 +46,12 @@ class CodeGenerator(
         sourceSet(controllers()).plus(sourceSet(models().files))
 
     private fun generateClient(): Collection<GeneratedFile> {
-        val clientGenerator = when (MutableSettings.clientTarget()) {
+        val clientGenerator = when (MutableSettings.clientTarget) {
             ClientCodeGenTargetType.OK_HTTP -> OkHttpClientGenerator(packages, sourceApi, srcPath)
             ClientCodeGenTargetType.OPEN_FEIGN -> OpenFeignInterfaceGenerator(packages, sourceApi)
             ClientCodeGenTargetType.SPRING_HTTP_INTERFACE -> SpringHttpInterfaceGenerator(packages, sourceApi)
         }
-        val options = MutableSettings.clientOptions()
+        val options = MutableSettings.clientOptions
         val clientFiles = clientGenerator.generate(options).files
         val libFiles = clientGenerator.generateLibrary(options)
         return sourceSet(clientFiles).plus(libFiles).plus(sourceSet(models().files))
@@ -71,25 +71,25 @@ class CodeGenerator(
 
     private fun controllers(): List<FileSpec> {
         val generator =
-            when (MutableSettings.controllerTarget()) {
+            when (MutableSettings.controllerTarget) {
                 ControllerCodeGenTargetType.SPRING -> SpringControllerInterfaceGenerator(
                     packages,
                     sourceApi,
-                    MutableSettings.validationLibrary().annotations,
-                    MutableSettings.controllerOptions(),
+                    MutableSettings.validationLibrary.annotations,
+                    MutableSettings.controllerOptions,
                 )
 
                 ControllerCodeGenTargetType.MICRONAUT -> MicronautControllerInterfaceGenerator(
                     packages,
                     sourceApi,
-                    MutableSettings.validationLibrary().annotations,
-                    MutableSettings.controllerOptions(),
+                    MutableSettings.validationLibrary.annotations,
+                    MutableSettings.controllerOptions,
                 )
 
                 ControllerCodeGenTargetType.KTOR -> KtorControllerInterfaceGenerator(
                     packages,
                     sourceApi,
-                    MutableSettings.controllerOptions(),
+                    MutableSettings.controllerOptions,
                 )
             }
 

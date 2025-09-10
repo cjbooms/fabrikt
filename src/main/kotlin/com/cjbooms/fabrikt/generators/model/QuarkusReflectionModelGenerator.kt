@@ -12,7 +12,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 class QuarkusReflectionModelGenerator(
     private val models: Models,
 ) {
-    private val generationTypes: Set<CodeGenerationType> = MutableSettings.generationTypes()
+    private val generationTypes: Set<CodeGenerationType> = MutableSettings.generationTypes
     companion object {
         const val RESOURCE_FILE_NAME = "reflection-config.json"
     }

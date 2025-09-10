@@ -58,7 +58,7 @@ class OpenFeignInterfaceGenerator(
                             OpenFeignAnnotations.feignClientBuilder()
                                 .addMember(
                                     "name = %S",
-                                    MutableSettings.openfeignClientName()
+                                    MutableSettings.openfeignClientName
                                 )
                                 .addMember("contextId = %S", resourceName)
                                 .build()

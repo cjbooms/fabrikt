@@ -52,6 +52,6 @@ object TypeFactory {
         Set::class.asClassName().parameterizedBy(clazz)
 
     fun TypeName.maybeMakeMapValueNullable(): TypeName =
-        if (MutableSettings.modelOptions().contains(ModelCodeGenOptionType.NON_NULL_MAP_VALUES)) this
+        if (MutableSettings.modelOptions.contains(ModelCodeGenOptionType.NON_NULL_MAP_VALUES)) this
         else this.copy(nullable = true)
 }
