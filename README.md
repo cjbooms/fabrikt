@@ -224,8 +224,8 @@ This section documents the available CLI parameters for controlling what gets ge
 |   `--http-model-suffix`       | Specify custom suffix for all generated model classes. Defaults to no suffix. |
 |   `--instant-library`         | Specify which Instant library to use in generated model classes for kotlinx.serialization. Default: KOTLINX_INSTANT |
 |                               | CHOOSE ONE OF: |
-|                               |   `KOTLINX_INSTANT` - Use `kotlinx.datetime` Instant in generated model classes (default) |
-|                               |   `KOTLIN_TIME_INSTANT` - Use `jakarta.validation` annotations in generated model classes |
+|                               |   `KOTLINX_INSTANT` - Use `kotlinx.datetime` Instant in generated classes (default) |
+|                               |   `KOTLIN_TIME_INSTANT` - Use `kotlin.time` Instant in generated classes |
 |   `--openfeign-client-name`   | Specify openfeign client name for spring-cloud-starter-openfeign. Defaults to 'fabrikt-client'. |
 |   `--output-directory`        | Allows the generation dir to be overridden. Defaults to current dir |
 |   `--resources-path`          | Allows the path for generated resources to be overridden. Defaults to `src/main/resources` |

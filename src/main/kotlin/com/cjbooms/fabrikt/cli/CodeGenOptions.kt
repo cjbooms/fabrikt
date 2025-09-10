@@ -116,8 +116,8 @@ enum class ValidationLibrary(val description: String, val annotations: Validatio
 }
 
 enum class InstantLibrary(val description: String) {
-    KOTLINX_INSTANT("Use `kotlinx.datetime` Instant in generated model classes (default)"),
-    KOTLIN_TIME_INSTANT("Use `jakarta.validation` annotations in generated model classes");
+    KOTLINX_INSTANT("Use `kotlinx.datetime` Instant in generated classes (default)"),
+    KOTLIN_TIME_INSTANT("Use `kotlin.time` Instant in generated classes");
 
     override fun toString() = "`${super.toString()}` - $description"
 
