@@ -33,9 +33,10 @@ public class ExampleService(
     public fun getExample(
         a: String,
         b: String,
+        xJsonEncodedHeader: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExample(a, b, additionalHeaders)
+            apiClient.getExample(a, b, xJsonEncodedHeader, additionalHeaders)
         }
 }

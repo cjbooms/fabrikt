@@ -33,12 +33,14 @@ public class ExamplePath1Client(
      * @param explodeListQueryParam
      * @param queryParam2
      * @param intListQueryParam
+     * @param xJsonEncodedHeader Json Encoded header
      */
     @Throws(ApiException::class)
     public fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         intListQueryParam: List<Int>? = null,
+        xJsonEncodedHeader: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
@@ -52,7 +54,10 @@ public class ExamplePath1Client(
                 .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
                 .build()
 
-        val headerBuilder = Headers.Builder()
+        val headerBuilder =
+            Headers
+                .Builder()
+                .`header`("X-Json-Encoded-Header", xJsonEncodedHeader)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 

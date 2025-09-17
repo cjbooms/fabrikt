@@ -165,6 +165,15 @@ public data class FirstModel(
     override val modelType: ContentModelType = ContentModelType.FIRST_MODEL,
 ) : Content(id, firstAttr, secondAttr, thirdAttr, etag)
 
+public data class JsonEncodedHeader(
+    @param:JsonProperty("headerProp1")
+    @get:JsonProperty("headerProp1")
+    public val headerProp1: String? = null,
+    @param:JsonProperty("headerProp2")
+    @get:JsonProperty("headerProp2")
+    public val headerProp2: String? = null,
+)
+
 public data class QueryResult(
     @param:JsonProperty("items")
     @get:JsonProperty("items")

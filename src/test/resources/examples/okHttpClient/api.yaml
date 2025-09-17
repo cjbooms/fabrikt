@@ -1,4 +1,4 @@
-openapi: "3.0.0"
+openapi: "3.1.0"
 info:
   title: "API Example"
   version: "1.0"
@@ -10,6 +10,7 @@ paths:
         - $ref: "#/components/parameters/ListQueryParamExploded"
         - $ref: "#/components/parameters/QueryParam2"
         - $ref: "#/components/parameters/ListQueryParamInt"
+        - $ref: "#/components/parameters/JsonEncodedHeaderParam"
       responses:
         200:
           description: "successful operation"
@@ -217,6 +218,20 @@ components:
         type: boolean
       required: false
 
+    JsonEncodedHeaderParam:
+      name: X-Json-Encoded-Header
+      in: header
+      description: Json Encoded header
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/JsonEncodedHeader"
+            example:
+              headerProp1: value
+              headerProp2: anotherValue
+              nestedProp:
+                nestedProp1: nestedValue
+
   headers:
     Location:
       description: "The Location header indicates the URL of a newly created resource"
@@ -371,4 +386,12 @@ components:
         error:
           type: string
         subType:
+          type: string
+
+    JsonEncodedHeader:
+      type: "object"
+      properties:
+        headerProp1:
+          type: string
+        headerProp2:
           type: string

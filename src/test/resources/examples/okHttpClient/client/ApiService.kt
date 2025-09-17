@@ -45,10 +45,11 @@ public class ExamplePath1Service(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         intListQueryParam: List<Int>? = null,
+        xJsonEncodedHeader: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExamplePath1(explodeListQueryParam, queryParam2, intListQueryParam, additionalHeaders)
+            apiClient.getExamplePath1(explodeListQueryParam, queryParam2, intListQueryParam, xJsonEncodedHeader, additionalHeaders)
         }
 
     @Throws(ApiException::class)

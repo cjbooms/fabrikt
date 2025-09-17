@@ -25,9 +25,11 @@ public interface ExampleController {
      *
      * @param a
      * @param b
+     * @param xJsonEncodedHeader Json Encoded header
      * @param call The Ktor application call
      */
     public suspend fun `get`(
+        xJsonEncodedHeader: String?,
         a: String,
         b: String,
         call: ApplicationCall,
@@ -41,9 +43,10 @@ public interface ExampleController {
          */
         public fun Route.exampleRoutes(controller: ExampleController) {
             `get`("/example") {
+                val xJsonEncodedHeader = call.request.headers["X-Json-Encoded-Header"]
                 val a = call.request.queryParameters.getTypedOrFail<kotlin.String>("a")
                 val b = call.request.queryParameters.getTypedOrFail<kotlin.String>("b")
-                controller.get(a, b, call)
+                controller.get(xJsonEncodedHeader, a, b, call)
             }
         }
 
