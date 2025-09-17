@@ -188,7 +188,7 @@ class ModelGenerator(
 
     private fun createModels(api: OpenApi3, schemas: List<SchemaInfo>) = schemas
         .filterNot { it.schema.isSimpleType() }
-        .filterNot { it.schema.isOneOfPolymorphicTypes() }
+        .filterNot { it.schema.isOneOfPolymorphicTypes() && SEALED_INTERFACES_FOR_ONE_OF !in options }
         .flatMap { schemaInfo ->
             val properties = schemaInfo.schema.topLevelProperties(HTTP_SETTINGS, api, schemaInfo.schema)
             when {

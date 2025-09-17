@@ -1,6 +1,13 @@
 openapi: 3.0.0
 components:
   schemas:
+    PolymorphicType:
+      discriminator:
+        propertyName: generation
+      oneOf:
+        - $ref: "#/components/schemas/PolymorphicTypeOne"
+        - $ref: "#/components/schemas/polymorphic_type_two"
+
     PolymorphicTypeOneRef:
       $ref: "#/components/schemas/PolymorphicTypeOne"
     PolymorphicTypeOneAnotherRef:
