@@ -24,11 +24,13 @@ public class ExampleClient(
      *
      * @param a
      * @param b
+     * @param xJsonEncodedHeader Json Encoded header
      */
     @Throws(ApiException::class)
     public fun getExample(
         a: String,
         b: String,
+        xJsonEncodedHeader: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
@@ -41,7 +43,10 @@ public class ExampleClient(
                 .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
                 .build()
 
-        val headerBuilder = Headers.Builder()
+        val headerBuilder =
+            Headers
+                .Builder()
+                .`header`("X-Json-Encoded-Header", xJsonEncodedHeader)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
