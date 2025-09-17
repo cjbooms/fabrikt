@@ -13,6 +13,7 @@ import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
+import com.cjbooms.fabrikt.util.ResourceHelper.getFileNamesInFolder
 import com.cjbooms.fabrikt.util.ResourceHelper.readFolder
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
@@ -65,7 +66,6 @@ class ModelGeneratorTest {
         "openapi310",
         "binary",
         "oneOfMarkerInterface",
-        "byteArrayStream",
         "untypedObject",
         "primitiveTypes"
     )
@@ -79,7 +79,7 @@ class ModelGeneratorTest {
     }
 
     @Test
-    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("discriminatedOneOf")
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("polymorphicModels")
 
     @ParameterizedTest
     @MethodSource("testCases")
@@ -102,7 +102,8 @@ class ModelGeneratorTest {
         val basePackage = "examples.${testCaseName.replace("/", ".")}"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
-        val expectedModels = readFolder(Path.of("src/test/resources/examples/$testCaseName/models/"))
+        val expectedModelsPath = "/examples/$testCaseName/models/"
+        val expectedModels = getFileNamesInFolder(Path.of("src/test/resources$expectedModelsPath"))
 
         val models = ModelGenerator(
             Packages(basePackage),
@@ -121,13 +122,17 @@ class ModelGeneratorTest {
             ?.let(::readFolder)
             ?: emptyMap()
         tempFolderContents.forEach {
-            if (expectedModels.containsKey(it.key)) {
-                assertThat((it.value))
-                    .describedAs("expected model '${it.key}' does not match the given value.")
-                    .isEqualTo(expectedModels[it.key])
+            if (expectedModels.contains(it.key)) {
+                assertThatGenerated(it.value)
+                    .isEqualTo( "$expectedModelsPath${it.key}")
             } else {
                 assertThat(it.value).isEqualTo("File not found in expected models")
             }
+        }
+        expectedModels.forEach {
+            assertThat(tempFolderContents.contains(it))
+                .withFailMessage { "Expected model file $it not found in generated models" }
+                .isTrue()
         }
 
         tempDirectory.toFile().deleteRecursively()
