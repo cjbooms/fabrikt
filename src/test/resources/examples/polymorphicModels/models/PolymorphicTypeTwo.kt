@@ -31,4 +31,4 @@ public data class PolymorphicTypeTwo(
   @get:NotNull
   @param:JsonProperty("generation")
   override val generation: String = "polymorphic_type_two",
-) : PolymorphicSuperType(firstName, lastName, pets)
+) : PolymorphicSuperType(firstName, lastName, pets), PolymorphicType

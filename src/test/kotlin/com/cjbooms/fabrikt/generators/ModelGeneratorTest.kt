@@ -90,7 +90,7 @@ class ModelGeneratorTest {
         if (testCaseName == "instantDateTime") {
             MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
         }
-        if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface") {
+        if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface" || testCaseName == "polymorphicModels") {
             MutableSettings.addOption(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF)
         }
         if (testCaseName == "mapExamplesNonNullValues") {

@@ -27,4 +27,4 @@ public data class PolymorphicTypeOneAnotherRef(
   @get:NotNull
   @param:JsonProperty("generation")
   override val generation: String = "PolymorphicTypeOne",
-) : PolymorphicSuperType(firstName, lastName, pets)
+) : PolymorphicSuperType(firstName, lastName, pets), PolymorphicType
