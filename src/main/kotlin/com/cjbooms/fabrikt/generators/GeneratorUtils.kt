@@ -2,8 +2,11 @@ package com.cjbooms.fabrikt.generators
 
 import com.cjbooms.fabrikt.generators.model.ModelGenerator.Companion.toModelType
 import com.cjbooms.fabrikt.model.BodyParameter
+import com.cjbooms.fabrikt.model.HeaderParam
 import com.cjbooms.fabrikt.model.IncomingParameter
 import com.cjbooms.fabrikt.model.KotlinTypeInfo
+import com.cjbooms.fabrikt.model.PathParam
+import com.cjbooms.fabrikt.model.QueryParam
 import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.safeName
 import com.cjbooms.fabrikt.util.NormalisedString.camelCase
@@ -21,6 +24,7 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import java.util.function.Predicate
@@ -170,6 +174,7 @@ object GeneratorUtils {
         basePackage: String,
         pathParameters: List<Parameter>,
         extraParameters: List<IncomingParameter>,
+        avoidNameClashes: Boolean = true,
     ): List<IncomingParameter> {
 
         val bodies = requestBody.contentMediaTypes.values
@@ -194,11 +199,20 @@ object GeneratorUtils {
             }
             .sortedBy { it.type.isNullable }
 
-        return detectAndAvoidNameClashes(bodies + parameters + extraParameters)
+        val allParameters = bodies + parameters + extraParameters
+
+        return if (avoidNameClashes) {
+            detectAndAvoidNameClashes(allParameters)
+        } else {
+            allParameters
+        }
     }
 
+    fun List<IncomingParameter>.hasNameClashes(): Boolean =
+        map { it.name }.toSet().size != size
+
     private fun detectAndAvoidNameClashes(parameters: List<IncomingParameter>): List<IncomingParameter> {
-        if (parameters.map { it.name }.toSet().size == parameters.size) {
+        if (!parameters.hasNameClashes()) {
             return parameters
         }
 
@@ -225,6 +239,24 @@ object GeneratorUtils {
                 )
             }
         }
+    }
+
+    data class IncomingParametersByType(
+        val pathParams: List<RequestParameter>,
+        val queryParams: List<RequestParameter>,
+        val headerParams: List<RequestParameter>,
+        val bodyParams: List<BodyParameter>,
+    )
+
+    fun List<IncomingParameter>.splitByType(): IncomingParametersByType {
+        val requestParams = this.filterIsInstance<RequestParameter>()
+
+        return IncomingParametersByType(
+            pathParams = requestParams.filter { it.parameterLocation is PathParam },
+            queryParams = requestParams.filter { it.parameterLocation is QueryParam },
+            headerParams = requestParams.filter { it.parameterLocation is HeaderParam },
+            bodyParams = this.filterIsInstance<BodyParameter>()
+        )
     }
 
     private fun isNullable(parameter: Parameter): Boolean = !parameter.isRequired && parameter.schema.default == null
@@ -257,4 +289,6 @@ object GeneratorUtils {
 
         return objectBuilder.build()
     }
+
+    fun TypeName.isUnit(): Boolean = this == Unit::class.asTypeName()
 }

@@ -12,6 +12,7 @@ import com.cjbooms.fabrikt.generators.client.SpringHttpInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
+import com.cjbooms.fabrikt.generators.controller.KtorClientGenerator
 import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.generators.model.QuarkusReflectionModelGenerator
 import com.cjbooms.fabrikt.model.GeneratedFile
@@ -50,6 +51,7 @@ class CodeGenerator(
             ClientCodeGenTargetType.OK_HTTP -> OkHttpClientGenerator(packages, sourceApi, srcPath)
             ClientCodeGenTargetType.OPEN_FEIGN -> OpenFeignInterfaceGenerator(packages, sourceApi)
             ClientCodeGenTargetType.SPRING_HTTP_INTERFACE -> SpringHttpInterfaceGenerator(packages, sourceApi)
+            ClientCodeGenTargetType.KTOR -> KtorClientGenerator(packages, sourceApi)
         }
         val options = MutableSettings.clientOptions
         val clientFiles = clientGenerator.generate(options).files

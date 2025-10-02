@@ -12,6 +12,7 @@ import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.deriveClientPa
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.enhancedClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
+import com.cjbooms.fabrikt.generators.model.JacksonMetadata.TYPE_REFERENCE_IMPORT
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Destinations
 import com.cjbooms.fabrikt.model.GeneratedFile
@@ -126,7 +127,7 @@ class OkHttpEnhancedClientGenerator(
             .addFunctions(funSpecs)
             .build()
 
-        return ClientType(clientType, packages.base)
+        return ClientType(clientType, packages.base, setOf(TYPE_REFERENCE_IMPORT))
     }
 
     fun generateLibrary(options: Set<ClientCodeGenOptionType>): Collection<GeneratedFile> {

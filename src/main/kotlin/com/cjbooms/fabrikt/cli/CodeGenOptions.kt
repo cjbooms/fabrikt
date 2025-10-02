@@ -43,6 +43,7 @@ enum class ClientCodeGenTargetType(val description: String) {
     OK_HTTP("Generate OkHttp client."),
     OPEN_FEIGN("Generate OpenFeign client."),
     SPRING_HTTP_INTERFACE("Generate Spring HTTP Interface."),
+    KTOR("Generate Ktor client.")
     ;
 
     override fun toString() = "`${super.toString()}` - $description"

@@ -1,0 +1,224 @@
+openapi: "3.0.2"
+info:
+  title: Example API
+  version: "1.0"
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /items:
+    get:
+      summary: Retrieve a list of items
+      operationId: getItems
+      parameters:
+        - name: category
+          in: query
+          description: Filter items by category
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of items to return
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: priceLimit
+          in: query
+          description: Maximum price of items to return
+          required: false
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: A list of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+  /catalogs/{catalogId}/items:
+    post:
+      summary: Create a new item
+      operationId: createItem
+      parameters:
+        - name: catalogId
+          in: path
+          description: The ID of the catalog
+          required: true
+          schema:
+            type: string
+        - name: X-Request-ID
+          in: header
+          description: Unique identifier for the request
+          required: true
+          schema:
+            type: string
+        - name: X-Tracing-ID
+          in: header
+          description: Unique identifier for the tracing
+          required: false
+          schema:
+            type: string
+        - name: randomNumber
+          in: query
+          description: Just a test query param
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        description: The item to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      responses:
+        '201':
+          description: Item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+
+  /items/{itemId}/subitems/{subItemId}:
+    get:
+      summary: Retrieve a specific subitem of an item
+      operationId: getSubItem
+      parameters:
+        - name: itemId
+          in: path
+          description: The ID of the item
+          required: true
+          schema:
+            type: string
+        - name: subItemId
+          in: path
+          description: The ID of the subitem
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Subitem details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: Subitem not found
+
+  /catalogs/{catalogId}/search:
+    get:
+      summary: Search for items
+      operationId: searchCatalogItems
+      parameters:
+        - name: catalogId
+          in: path
+          description: The ID of the catalog
+          required: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          description: The search query
+          required: true
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: Sort order
+          required: false
+          schema:
+            $ref: '#/components/schemas/SortOrder'
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+  /catalogs/{catalogId}/items/{itemId}/availability:
+    get:
+      summary: Check item availability
+      # operationId: healthCheck # No operation ID to test name generation
+      parameters:
+        - name: catalogId
+          in: path
+          description: The ID of the catalog
+          required: true
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          description: The ID of the item
+          required: true
+          schema:
+              type: string
+      responses:
+        '204':
+          description: No content
+    put:
+        summary: Update item availability
+        parameters:
+          - name: catalogId
+            in: path
+            description: The ID of the catalog
+            required: true
+            schema:
+              type: string
+          - name: itemId
+            in: path
+            description: The ID of the item
+            required: true
+            schema:
+              type: string
+        responses:
+          '204':
+            description: No content
+  /uptime:
+    get:
+      summary: Get the uptime of the system
+      operationId: Get_System-Uptime # Test operation ID with special characters
+      responses:
+        '200':
+          description: Uptime
+          content:
+            application/json:
+              schema:
+                type: string
+
+components:
+  schemas:
+    SortOrder:
+      type: string
+      enum:
+        - asc
+        - desc
+    Item:
+      type: object
+      required:
+        - id
+        - name
+        - price
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: double
