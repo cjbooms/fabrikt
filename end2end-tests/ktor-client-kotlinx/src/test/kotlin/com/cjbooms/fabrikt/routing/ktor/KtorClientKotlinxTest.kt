@@ -51,6 +51,16 @@ class KtorClientKotlinxTest {
         wiremock.start()
     }
 
+    private fun createHttpClient() = HttpClient(CIO) {
+        install(Resources)
+        install(ContentNegotiation) {
+            json()
+        }
+        defaultRequest {
+            url(wiremock.baseUrl())
+        }
+    }
+
     @Nested
     inner class Client {
         @Test
@@ -70,16 +80,7 @@ class KtorClientKotlinxTest {
                 header = "Content-Type" to "application/json"
             }
 
-            val httpClient = HttpClient(CIO) {
-                install(Resources)
-                install(ContentNegotiation) {
-                    json()
-                }
-                defaultRequest {
-                    url(wiremock.baseUrl())
-                }
-            }
-            val client = CatalogsItemsClient(httpClient)
+            val client = CatalogsItemsClient(createHttpClient())
 
             runBlocking {
                 val result = client.createItem(
@@ -115,16 +116,7 @@ class KtorClientKotlinxTest {
                 body = "Not found"
             }
 
-            val httpClient = HttpClient(CIO) {
-                install(Resources)
-                install(ContentNegotiation) {
-                    json()
-                }
-                defaultRequest {
-                    url(wiremock.baseUrl())
-                }
-            }
-            val client = CatalogsItemsClient(httpClient)
+            val client = CatalogsItemsClient(createHttpClient())
 
             runBlocking {
                 val result = client.createItem(
