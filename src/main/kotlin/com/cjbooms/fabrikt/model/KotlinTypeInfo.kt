@@ -94,10 +94,12 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
 
                 OasType.DateTime -> {
                     if (MutableSettings.typeOverrides.contains(CodeGenTypeOverride.DATETIME_AS_STRING)) Text
+                    else if (MutableSettings.typeOverrides.contains(CodeGenTypeOverride.DATETIME_AS_INSTANT)) Instant
+                    else if (MutableSettings.typeOverrides.contains(CodeGenTypeOverride.DATETIME_AS_LOCALDATETIME)) LocalDateTime
                     else if (MutableSettings.serializationLibrary == KOTLINX_SERIALIZATION)
                         if (MutableSettings.instantLibrary == InstantLibrary.KOTLINX_INSTANT) KotlinxInstant
                         else KotlinInstant
-                    else getOverridableDateTimeType()
+                    else DateTime
                 }
 
                 OasType.Text -> Text
@@ -173,15 +175,6 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     } else {
                         AnyType
                     }
-            }
-        }
-
-        private fun getOverridableDateTimeType(): KotlinTypeInfo {
-            val typeOverrides = MutableSettings.typeOverrides
-            return when {
-                CodeGenTypeOverride.DATETIME_AS_INSTANT in typeOverrides -> Instant
-                CodeGenTypeOverride.DATETIME_AS_LOCALDATETIME in typeOverrides -> LocalDateTime
-                else -> DateTime
             }
         }
 

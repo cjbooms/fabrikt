@@ -50,7 +50,9 @@ object KotlinxSerializationAnnotations : SerializationAnnotations {
             is KotlinTypeInfo.Numeric,
             is KotlinTypeInfo.Uri,
             is KotlinTypeInfo.Uuid,
-            is KotlinTypeInfo.ByteArray -> {
+            is KotlinTypeInfo.ByteArray,
+            is KotlinTypeInfo.Instant,
+            is KotlinTypeInfo.LocalDateTime -> {
                 propertySpecBuilder.addAnnotation(AnnotationSpec.builder(Contextual::class).build())
             }
             else -> {}
