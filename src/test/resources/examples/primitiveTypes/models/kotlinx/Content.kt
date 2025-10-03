@@ -10,6 +10,7 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.collections.List
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Contextual
@@ -51,4 +52,8 @@ public data class Content(
   @Contextual
   @SerialName("binary")
   public val binary: ByteArray? = null,
+  @SerialName("arrayOfString")
+  public val arrayOfString: List<String>? = null,
+  @SerialName("arrayOfUuid")
+  public val arrayOfUuid: List<@Contextual UUID>? = null,
 )

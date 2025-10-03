@@ -34,7 +34,12 @@ class PrimitiveTypesTest {
         numberFloat = 1.23f,
         numberDouble = 4.56,
         byte = javaClass.getResource("/primitive_types/test.bin")!!.readBytes(),
-        binary = javaClass.getResource("/primitive_types/test.bin")!!.readBytes()
+        binary = javaClass.getResource("/primitive_types/test.bin")!!.readBytes(),
+        arrayOfString = listOf("one", "two", "three"),
+        arrayOfUuid = listOf(
+            UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
+            UUID.fromString("123e4567-e89b-12d3-a456-426614174001")
+        ),
     )
 
     @Test

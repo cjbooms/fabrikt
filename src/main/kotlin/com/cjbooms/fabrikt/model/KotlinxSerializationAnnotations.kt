@@ -46,19 +46,34 @@ object KotlinxSerializationAnnotations : SerializationAnnotations {
         oasKey: String,
         kotlinTypeInfo: KotlinTypeInfo
     ): PropertySpec.Builder {
-        when (kotlinTypeInfo) {
-            is KotlinTypeInfo.Numeric,
-            is KotlinTypeInfo.Uri,
-            is KotlinTypeInfo.Uuid,
-            is KotlinTypeInfo.ByteArray -> {
-                propertySpecBuilder.addAnnotation(AnnotationSpec.builder(Contextual::class).build())
-            }
-            else -> {}
+        if (needsContextualAnnotation(kotlinTypeInfo)) {
+            propertySpecBuilder.addAnnotation(AnnotationSpec.builder(Contextual::class).build())
         }
         return propertySpecBuilder.addAnnotation(
             AnnotationSpec.builder(SerialName::class).addMember("%S", oasKey).build()
         )
     }
+
+    override fun annotateArrayElementType(elementType: TypeName, elementTypeInfo: KotlinTypeInfo): TypeName =
+        if (needsContextualAnnotation(elementTypeInfo)) {
+            val contextualAnnotation = AnnotationSpec.builder(Contextual::class).build()
+            elementType.copy(annotations = listOf(contextualAnnotation))
+        } else {
+            elementType
+        }
+
+    private fun needsContextualAnnotation(typeInfo: KotlinTypeInfo): Boolean =
+        when (typeInfo) {
+            is KotlinTypeInfo.Numeric,
+            is KotlinTypeInfo.Uri,
+            is KotlinTypeInfo.Uuid,
+            is KotlinTypeInfo.ByteArray,
+            is KotlinTypeInfo.Instant,
+            is KotlinTypeInfo.Date,
+            is KotlinTypeInfo.DateTime,
+            is KotlinTypeInfo.LocalDateTime -> true
+            else -> false
+        }
 
     override fun addParameter(propertySpecBuilder: PropertySpec.Builder, oasKey: String) =
         propertySpecBuilder // not applicable

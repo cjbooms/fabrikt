@@ -44,3 +44,12 @@ components:
         binary:
           type: string
           format: binary
+        arrayOfString:
+          type: array
+          items:
+            type: string
+        arrayOfUuid:
+          type: array
+          items:
+            type: string
+            format: uuid

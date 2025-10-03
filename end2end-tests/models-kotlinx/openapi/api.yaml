@@ -53,6 +53,11 @@ components:
         imageUrl:
           type: string
           format: uri
+        aListOfUuids:
+          type: array
+          items:
+            type: string
+            format: uuid
     Pets:
       type: array
       maxItems: 100
