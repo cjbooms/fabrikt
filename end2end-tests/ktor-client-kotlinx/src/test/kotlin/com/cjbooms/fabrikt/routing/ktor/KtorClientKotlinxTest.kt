@@ -149,6 +149,7 @@ class KtorClientKotlinxTest {
             val capturedQuery = slot<String?>()
             val capturedPage = slot<String?>()
             val capturedSort = slot<String?>()
+            val capturedXTracingID = slot<String?>()
 
             testApplication {
                 routing {
@@ -157,11 +158,13 @@ class KtorClientKotlinxTest {
                         val query = call.request.queryParameters["query"]
                         val page = call.request.queryParameters["page"]
                         val sort = call.request.queryParameters["sort"]
+                        val xTracingID = call.request.headers["X-Tracing-ID"]
 
                         capturedCatalogId.captured = catalogId
                         capturedQuery.captured = query
                         capturedPage.captured = page
                         capturedSort.captured = sort
+                        capturedXTracingID.captured = xTracingID
 
                         call.response.headers.append("Content-Type", "application/json")
                         call.respond("""
@@ -186,13 +189,20 @@ class KtorClientKotlinxTest {
 
                 val client = CatalogsSearchClient(httpClient)
 
-                val response = client.searchCatalogItems("catalog-a", "query", 10, SortOrder.DESC)
+                val response = client.searchCatalogItems(
+                    catalogId = "catalog-a",
+                    query = "query",
+                    page = 10,
+                    sort = SortOrder.DESC,
+                    xTracingID = "request-id-123"
+                )
 
                 assertInstanceOf<CatalogsSearchClient.SearchCatalogItemsResult.Success>(response)
                 assertEquals("catalog-a", capturedCatalogId.captured)
                 assertEquals("query", capturedQuery.captured)
                 assertEquals("10", capturedPage.captured)
                 assertEquals("desc", capturedSort.captured)
+                assertEquals("request-id-123", capturedXTracingID.captured)
             }
         }
     }

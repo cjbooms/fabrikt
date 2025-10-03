@@ -140,6 +140,12 @@ paths:
           schema:
             type: integer
             default: 1
+        - name: X-Tracing-ID
+          in: header
+          description: Unique identifier for the tracing
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Search results

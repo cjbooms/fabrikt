@@ -242,6 +242,7 @@ public class CatalogsSearchClient(
      * 	 @param query The search query
      * 	 @param page Page number
      * 	 @param sort Sort order
+     * 	 @param xTracingID Unique identifier for the tracing
      *
      * Returns:
      * 	[kotlin.collections.List<examples.ktorClient.models.Item>] if the request was successful.
@@ -251,6 +252,7 @@ public class CatalogsSearchClient(
         query: String,
         page: Int? = null,
         sort: SortOrder? = null,
+        xTracingID: String? = null,
     ): SearchCatalogItemsResult {
         val response =
             httpClient.`get`(
@@ -263,6 +265,7 @@ public class CatalogsSearchClient(
                 ),
             ) {
                 `header`("Accept", "application/json")
+                `header`("X-Tracing-ID", xTracingID)
             }
         return if (response.status.isSuccess()) {
             SearchCatalogItemsResult.Success(response.body(), response)
@@ -290,6 +293,9 @@ public class CatalogsSearchClient(
      * Response:
      * 	A successful request returns an HTTP 200 response with
      * [kotlin.collections.List<examples.ktorClient.models.Item>] in the response body.
+     *
+     * Request headers:
+     * 	"X-Tracing-ID" (optional) Unique identifier for the tracing
      *
      * Request parameters:
      * 	 @param catalogId The ID of the catalog
