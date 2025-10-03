@@ -226,6 +226,8 @@ class KtorClientGenerator(
                         )
                     }
 
+                    clientFunctionBuilder.addKdoc(buildFunKdoc(operation, params, verb))
+
                     clientClassBuilder.addType(resultClassBuilder.build())
                     clientClassBuilder.addFunction(clientFunctionBuilder.build())
 
@@ -313,6 +315,33 @@ class KtorClientGenerator(
                 kDoc.add("\t @param %L %L\n", it.name.toKCodeName(), it.description?.trimIndent().orEmpty()).build()
             }
         }
+
+        return kDoc.build()
+    }
+
+    private fun buildFunKdoc(operation: Operation, parameters: List<IncomingParameter>, verb: String): CodeBlock {
+        val (pathParams, queryParams, headerParams, bodyParams) = parameters.splitByType()
+        val kDoc = CodeBlock.builder()
+
+        // add summary and description
+        val methodDesc = listOf(operation.summary.orEmpty(), operation.description.orEmpty()).filter { it.isNotEmpty() }
+        if (methodDesc.isNotEmpty()) {
+            methodDesc.forEach { kDoc.add("%L\n", it) }
+            kDoc.add("\n")
+        }
+
+        // document parameters
+        if (parameters.isNotEmpty()) {
+            kDoc.add("Parameters:\n")
+            (bodyParams + pathParams + queryParams + headerParams).forEach {
+                kDoc.add("\t @param %L %L\n", it.name.toKCodeName(), it.description?.trimIndent().orEmpty()).build()
+            }
+        }
+
+        // document response
+        val happyPathResponse = operation.happyPathResponse(packages.base)
+        kDoc.add("\nReturns:\n")
+        kDoc.add("\t[%L] if the request was successful.\n", happyPathResponse.toString())
 
         return kDoc.build()
     }

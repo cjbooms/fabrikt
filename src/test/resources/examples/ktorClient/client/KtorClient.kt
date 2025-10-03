@@ -23,6 +23,17 @@ public object Items
 public class ItemsClient(
     public val httpClient: HttpClient,
 ) {
+    /**
+     * Retrieve a list of items
+     *
+     * Parameters:
+     * 	 @param limit Maximum number of items to return
+     * 	 @param category Filter items by category
+     * 	 @param priceLimit Maximum price of items to return
+     *
+     * Returns:
+     * 	[kotlin.collections.List<examples.ktorClient.models.Item>] if the request was successful.
+     */
     public suspend fun getItems(
         limit: Int? = null,
         category: String? = null,
@@ -84,6 +95,19 @@ public object CatalogsItems
 public class CatalogsItemsClient(
     public val httpClient: HttpClient,
 ) {
+    /**
+     * Create a new item
+     *
+     * Parameters:
+     * 	 @param item The item to create
+     * 	 @param catalogId The ID of the catalog
+     * 	 @param randomNumber Just a test query param
+     * 	 @param xRequestID Unique identifier for the request
+     * 	 @param xTracingID Unique identifier for the tracing
+     *
+     * Returns:
+     * 	[examples.ktorClient.models.Item] if the request was successful.
+     */
     public suspend fun createItem(
         item: Item,
         catalogId: String,
@@ -149,6 +173,16 @@ public object ItemsSubitems
 public class ItemsSubitemsClient(
     public val httpClient: HttpClient,
 ) {
+    /**
+     * Retrieve a specific subitem of an item
+     *
+     * Parameters:
+     * 	 @param itemId The ID of the item
+     * 	 @param subItemId The ID of the subitem
+     *
+     * Returns:
+     * 	[examples.ktorClient.models.Item] if the request was successful.
+     */
     public suspend fun getSubItem(
         itemId: String,
         subItemId: String,
@@ -200,6 +234,18 @@ public object CatalogsSearch
 public class CatalogsSearchClient(
     public val httpClient: HttpClient,
 ) {
+    /**
+     * Search for items
+     *
+     * Parameters:
+     * 	 @param catalogId The ID of the catalog
+     * 	 @param query The search query
+     * 	 @param page Page number
+     * 	 @param sort Sort order
+     *
+     * Returns:
+     * 	[kotlin.collections.List<examples.ktorClient.models.Item>] if the request was successful.
+     */
     public suspend fun searchCatalogItems(
         catalogId: String,
         query: String,
@@ -265,6 +311,16 @@ public object CatalogsItemsAvailability
 public class CatalogsItemsAvailabilityClient(
     public val httpClient: HttpClient,
 ) {
+    /**
+     * Check item availability
+     *
+     * Parameters:
+     * 	 @param catalogId The ID of the catalog
+     * 	 @param itemId The ID of the item
+     *
+     * Returns:
+     * 	[kotlin.Unit] if the request was successful.
+     */
     public suspend fun getByCatalogIdAndItemId(
         catalogId: String,
         itemId: String,
@@ -280,6 +336,16 @@ public class CatalogsItemsAvailabilityClient(
         }
     }
 
+    /**
+     * Update item availability
+     *
+     * Parameters:
+     * 	 @param catalogId The ID of the catalog
+     * 	 @param itemId The ID of the item
+     *
+     * Returns:
+     * 	[kotlin.Unit] if the request was successful.
+     */
     public suspend fun putByCatalogIdAndItemId(
         catalogId: String,
         itemId: String,
@@ -359,6 +425,13 @@ public object Uptime
 public class UptimeClient(
     public val httpClient: HttpClient,
 ) {
+    /**
+     * Get the uptime of the system
+     *
+     *
+     * Returns:
+     * 	[kotlin.String] if the request was successful.
+     */
     public suspend fun `get_System-Uptime`(): `Get_System-UptimeResult` {
         val response =
             httpClient.`get`(`Get_System-Uptime`()) {
