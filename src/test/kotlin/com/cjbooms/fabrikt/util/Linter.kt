@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.util
 import com.pinterest.ktlint.rule.engine.api.Code
 import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
 import com.pinterest.ktlint.ruleset.standard.StandardRuleSetProvider
+import com.pinterest.ktlint.rule.engine.core.api.AutocorrectDecision
 
 object Linter {
 
@@ -10,7 +11,10 @@ object Linter {
         val code = Code.fromSnippet(rawText)
         val result = KtLintRuleEngine(
             ruleProviders = StandardRuleSetProvider().getRuleProviders(),
-        ).format(code)
+        ).format(
+            code,
+            rerunAfterAutocorrect = true,
+            callback = { _ -> AutocorrectDecision.ALLOW_AUTOCORRECT })
         return result
     }
 }

@@ -84,10 +84,16 @@ object GeneratorUtils {
         val kdoc = CodeBlock.builder().add("${this.summary.orEmpty()}\n${this.description.orEmpty()}\n")
 
         parameters.forEach {
-            kdoc.add("@param %L %L\n", it.name.toKCodeName(), it.description.orEmpty()).build()
+            kdoc.add("@param %L %L\n", it.name.toKCodeName(), it.description.orEmpty())
         }
 
         return kdoc.build()
+    }
+
+    fun Schema.toKDoc(): CodeBlock? {
+        return this.description?.takeIf(String::isNotEmpty)?.let { description ->
+            CodeBlock.builder().add("%L", "$description\n")
+        }?.build()
     }
 
     fun TypeSpec.Builder.primaryPropertiesConstructor(vararg properties: PropertySpec): TypeSpec.Builder {
@@ -175,6 +181,7 @@ object GeneratorUtils {
                     it.schema
                 )
             }
+            .distinctBy { it.schema.safeName().toKotlinParameterName().ifEmpty { it.schema.toVarName() } }
 
         val parameters = mergeParameters(pathParameters, parameters)
             .map {

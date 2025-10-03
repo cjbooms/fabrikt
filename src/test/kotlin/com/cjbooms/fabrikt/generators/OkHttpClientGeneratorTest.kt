@@ -17,18 +17,19 @@ import com.cjbooms.fabrikt.model.Clients
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SimpleFile
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
-import java.nio.file.Paths
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import java.nio.file.Paths
 import java.util.stream.Stream
-import org.junit.jupiter.api.Test
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OkHttpClientGeneratorTest {
@@ -61,8 +62,8 @@ class OkHttpClientGeneratorTest {
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
-        val expectedModel = readTextResource("/examples/$testCaseName/models/ClientModels.kt")
-        val expectedClient = readTextResource("/examples/$testCaseName/client/ApiClient.kt")
+        val expectedModel = "/examples/$testCaseName/models/ClientModels.kt"
+        val expectedClient = "/examples/$testCaseName/client/ApiClient.kt"
 
         val models = ModelGenerator(
             packages,
@@ -75,8 +76,8 @@ class OkHttpClientGeneratorTest {
             .generateDynamicClientCode()
             .toSingleFile()
 
-        assertThat(models).isEqualTo(expectedModel)
-        assertThat(simpleClientCode).isEqualTo(expectedClient)
+        assertThatGenerated(models).isEqualTo(expectedModel)
+        assertThatGenerated(simpleClientCode).isEqualTo(expectedClient)
     }
 
     @ParameterizedTest
@@ -86,8 +87,8 @@ class OkHttpClientGeneratorTest {
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
-        val expectedLibUtil = readTextResource("/examples/$testCaseName/client/HttpResilience4jUtil.kt")
-        val expectedClientCode = readTextResource("/examples/$testCaseName/client/ApiService.kt")
+        val expectedLibUtil = "/examples/$testCaseName/client/HttpResilience4jUtil.kt"
+        val expectedClientCode = "/examples/$testCaseName/client/ApiService.kt"
 
         val generator =
             OkHttpEnhancedClientGenerator(packages, sourceApi)
@@ -96,8 +97,8 @@ class OkHttpClientGeneratorTest {
             .first { it.path.fileName.toString() == "HttpResilience4jUtil.kt" }
         val enhancedClientCode = generator.generateDynamicClientCode(setOf(ClientCodeGenOptionType.RESILIENCE4J))
 
-        assertThat(enhancedLibUtil.content).isEqualTo(expectedLibUtil)
-        assertThat(enhancedClientCode.toSingleFile()).isEqualTo(expectedClientCode)
+        assertThatGenerated(enhancedLibUtil.content).isEqualTo(expectedLibUtil)
+        assertThatGenerated(enhancedClientCode.toSingleFile()).isEqualTo(expectedClientCode)
     }
 
     @ParameterizedTest
@@ -123,7 +124,7 @@ class OkHttpClientGeneratorTest {
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
-        val expectedHttpUtils = readTextResource("/examples/$testCaseName/client/HttpUtil.kt")
+        val expectedHttpUtils = "/examples/$testCaseName/client/HttpUtil.kt"
 
         val generatedHttpUtils = OkHttpSimpleClientGenerator(
             packages,
@@ -131,7 +132,7 @@ class OkHttpClientGeneratorTest {
         ).generateLibrary().filterIsInstance<SimpleFile>()
             .first { it.path.fileName.toString() == "HttpUtil.kt" }
 
-        assertThat(generatedHttpUtils.content).isEqualTo(expectedHttpUtils)
+        assertThatGenerated(generatedHttpUtils.content).isEqualTo(expectedHttpUtils)
     }
 
     @Test
@@ -140,9 +141,9 @@ class OkHttpClientGeneratorTest {
         val apiLocation = javaClass.getResource("/examples/externalReferences/aggressive/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
 
-        val expectedModel = readTextResource("/examples/externalReferences/aggressive/models/ClientModels.kt")
-        val expectedClient = readTextResource("/examples/externalReferences/aggressive/client/ApiClient.kt")
-        val expectedClientCode = readTextResource("/examples/externalReferences/aggressive/client/ApiService.kt")
+        val expectedModel = "/examples/externalReferences/aggressive/models/ClientModels.kt"
+        val expectedClient = "/examples/externalReferences/aggressive/client/ApiClient.kt"
+        val expectedClientCode = "/examples/externalReferences/aggressive/client/ApiService.kt"
         MutableSettings.updateSettings(
             externalRefResolutionMode = ExternalReferencesResolutionMode.AGGRESSIVE,
         )
@@ -162,9 +163,9 @@ class OkHttpClientGeneratorTest {
         val enhancedClientCode = generator.generateDynamicClientCode(setOf(ClientCodeGenOptionType.RESILIENCE4J))
             .toSingleFile()
 
-        assertThat(models).isEqualTo(expectedModel)
-        assertThat(simpleClientCode).isEqualTo(expectedClient)
-        assertThat(enhancedClientCode).isEqualTo(expectedClientCode)
+        assertThatGenerated(models).isEqualTo(expectedModel)
+        assertThatGenerated(simpleClientCode).isEqualTo(expectedClient)
+        assertThatGenerated(enhancedClientCode).isEqualTo(expectedClientCode)
     }
 
     @Test

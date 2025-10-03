@@ -58,7 +58,7 @@ object ModelNameRegistry {
         if (valueSuffix) {
             append("Value")
         }
-        val modelClassNameSuffix = MutableSettings.modelSuffix()
+        val modelClassNameSuffix = MutableSettings.modelSuffix
         append(modelClassNameSuffix)
     }
 

@@ -1,21 +1,47 @@
 package com.cjbooms.fabrikt.generators
 
-import com.cjbooms.fabrikt.cli.*
+import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
+import com.cjbooms.fabrikt.cli.ClientCodeGenTargetType
+import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
+import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
+import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
+import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
+import com.cjbooms.fabrikt.cli.InstantLibrary
+import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.OutputOptionType
+import com.cjbooms.fabrikt.cli.SerializationLibrary
+import com.cjbooms.fabrikt.cli.ValidationLibrary
 
 object MutableSettings {
-    private lateinit var generationTypes: MutableSet<CodeGenerationType>
-    private lateinit var controllerOptions: MutableSet<ControllerCodeGenOptionType>
-    private lateinit var controllerTarget: ControllerCodeGenTargetType
-    private lateinit var modelOptions: MutableSet<ModelCodeGenOptionType>
-    private lateinit var modelSuffix: String
-    private lateinit var clientOptions: MutableSet<ClientCodeGenOptionType>
-    private lateinit var clientTarget: ClientCodeGenTargetType
-    private lateinit var openfeignClientName: String
-    private lateinit var typeOverrides: MutableSet<CodeGenTypeOverride>
-    private lateinit var validationLibrary: ValidationLibrary
-    private lateinit var externalRefResolutionMode: ExternalReferencesResolutionMode
-    private lateinit var serializationLibrary: SerializationLibrary
-    private lateinit var outputOptions: MutableSet<OutputOptionType>
+    var generationTypes: Set<CodeGenerationType> = mutableSetOf()
+        private set
+    var controllerOptions: Set<ControllerCodeGenOptionType> = mutableSetOf()
+        private set
+    var controllerTarget: ControllerCodeGenTargetType = ControllerCodeGenTargetType.default
+        private set
+    var modelOptions: Set<ModelCodeGenOptionType> = mutableSetOf()
+        private set
+    var modelSuffix: String = ""
+        private set
+    var clientOptions: Set<ClientCodeGenOptionType> = mutableSetOf()
+        private set
+    var clientTarget: ClientCodeGenTargetType = ClientCodeGenTargetType.default
+        private set
+    var openfeignClientName: String = ClientCodeGenOptionType.DEFAULT_OPEN_FEIGN_CLIENT_NAME
+        private set
+    var typeOverrides: Set<CodeGenTypeOverride> = mutableSetOf()
+        private set
+    var validationLibrary: ValidationLibrary = ValidationLibrary.default
+        private set
+    var externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.default
+        private set
+    var serializationLibrary: SerializationLibrary = SerializationLibrary.default
+        private set
+    var instantLibrary: InstantLibrary = InstantLibrary.default
+        private set
+    var outputOptions: Set<OutputOptionType> = mutableSetOf()
+        private set
 
     fun updateSettings(
         genTypes: Set<CodeGenerationType> = emptySet(),
@@ -30,37 +56,30 @@ object MutableSettings {
         validationLibrary: ValidationLibrary = ValidationLibrary.default,
         externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.default,
         serializationLibrary: SerializationLibrary = SerializationLibrary.default,
+        instantLibrary: InstantLibrary = InstantLibrary.default,
         outputOptions: Set<OutputOptionType> = emptySet()
     ) {
-        this.generationTypes = genTypes.toMutableSet()
-        this.controllerOptions = controllerOptions.toMutableSet()
+        this.generationTypes = genTypes
+        this.controllerOptions = controllerOptions
         this.controllerTarget = controllerTarget
-        this.modelOptions = modelOptions.toMutableSet()
+        this.modelOptions = modelOptions
         this.modelSuffix = modelSuffix
-        this.clientOptions = clientOptions.toMutableSet()
+        this.clientOptions = clientOptions
         this.clientTarget = clientTarget
         this.openfeignClientName = openfeignClientName
-        this.typeOverrides = typeOverrides.toMutableSet()
+        this.typeOverrides = typeOverrides
         this.validationLibrary = validationLibrary
         this.externalRefResolutionMode = externalRefResolutionMode
         this.serializationLibrary = serializationLibrary
-        this.outputOptions = outputOptions.toMutableSet()
+        this.instantLibrary = instantLibrary
+        this.outputOptions = outputOptions
     }
 
-    fun addOption(option: ModelCodeGenOptionType) = modelOptions.add(option)
-    fun addOption(override: CodeGenTypeOverride) = typeOverrides.add(override)
+    fun addOption(option: ModelCodeGenOptionType) {
+        modelOptions += option
+    }
 
-    fun generationTypes() = this.generationTypes.toSet()
-    fun controllerOptions() = this.controllerOptions.toSet()
-    fun controllerTarget() = this.controllerTarget
-    fun modelOptions() = this.modelOptions.toSet()
-    fun modelSuffix() = this.modelSuffix
-    fun clientOptions() = this.clientOptions.toSet()
-    fun clientTarget() = this.clientTarget
-    fun openfeignClientName() = this.openfeignClientName
-    fun typeOverrides() = this.typeOverrides.toSet()
-    fun validationLibrary() = this.validationLibrary
-    fun externalRefResolutionMode() = this.externalRefResolutionMode
-    fun serializationLibrary() = this.serializationLibrary
-    fun outputOptions() = this.outputOptions.toSet()
+    fun addOption(override: CodeGenTypeOverride) {
+        typeOverrides += override
+    }
 }

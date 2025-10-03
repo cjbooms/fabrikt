@@ -11,7 +11,6 @@ import com.reprezen.kaizen.oasparser.model3.OpenApi3
 import com.reprezen.kaizen.oasparser.model3.Path
 import com.reprezen.kaizen.oasparser.model3.Schema
 import java.net.URI
-import java.util.logging.Logger
 
 object KaizenParserExtensions {
 
@@ -86,7 +85,7 @@ object KaizenParserExtensions {
 
     fun Schema.isEnumDefinition(): Boolean = this.type == OasType.Text.type && (
         this.hasEnums() || (
-            MutableSettings.modelOptions().contains(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS) &&
+            MutableSettings.modelOptions.contains(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS) &&
                 extensions.containsKey(EXTENSIBLE_ENUM_KEY)
             )
         )
@@ -97,7 +96,7 @@ object KaizenParserExtensions {
     @Suppress("UNCHECKED_CAST")
     fun Schema.getEnumValues(): List<String> = when {
         this.hasEnums() -> this.enums.filterNotNull().map { it.toString() }.filterNot { it.isBlank() }
-        !MutableSettings.modelOptions().contains(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS) -> emptyList()
+        !MutableSettings.modelOptions.contains(ModelCodeGenOptionType.X_EXTENSIBLE_ENUMS) -> emptyList()
         else -> extensions[EXTENSIBLE_ENUM_KEY]?.let { it as List<String?> }?.filterNotNull()
             ?.filterNot { it.isBlank() } ?: emptyList()
     }
@@ -174,7 +173,7 @@ object KaizenParserExtensions {
             }
 
     fun Schema.findOneOfSuperInterface(allSchemas: List<Schema>): Set<Schema> {
-        if (ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF !in MutableSettings.modelOptions()) {
+        if (ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF !in MutableSettings.modelOptions) {
             return emptySet()
         }
         return allSchemas
@@ -291,11 +290,16 @@ object KaizenParserExtensions {
     fun Schema.isOneOfPolymorphicTypes() =
         this.oneOfSchemas?.firstOrNull()?.allOfSchemas?.firstOrNull() != null
 
-    fun Schema.isInlinedOneOfSuperInterface() = isOneOfSuperInterface() && isInlinedPropertySchema()
+    fun Schema.isInlinedOneOfSuperInterface() = isOneOfSuperInterfaceOnly() && isInlinedPropertySchema()
+
+    // Not part of any other aggregations
+    fun Schema.isOneOfSuperInterfaceOnly() =
+        oneOfSchemas.isNotEmpty() && allOfSchemas.isEmpty() && anyOfSchemas.isEmpty() && properties.isEmpty() &&
+            oneOfSchemas.all { it.isObjectType() }
 
     fun Schema.isOneOfSuperInterface() =
         oneOfSchemas.isNotEmpty() && allOfSchemas.isEmpty() && anyOfSchemas.isEmpty() && properties.isEmpty() &&
-            oneOfSchemas.all { it.isObjectType() }
+            oneOfSchemas.all { it.isObjectType() || it.isAggregatedObject() }
 
     fun Schema.isOneOfSuperInterfaceWithDiscriminator() =
         discriminator != null && discriminator.propertyName != null && isOneOfSuperInterface()

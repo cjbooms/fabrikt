@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 val fabrikt: Configuration by configurations.creating
 
 val generationDir = "$buildDir/generated"
@@ -45,6 +47,7 @@ fun createGenerateCodeTask(name: String, apiFilePath: String, basePackage: Strin
             "--validation-library", "NO_VALIDATION",
             "--targets", "http_models",
             "--serialization-library", "KOTLINX_SERIALIZATION",
+            "--instant-library", "KOTLIN_TIME_INSTANT",
             "--http-model-opts", "SEALED_INTERFACES_FOR_ONE_OF",
         ).plus(additionalArgs)
         dependsOn(":jar")
@@ -77,7 +80,11 @@ tasks {
     )
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
+        compilerOptions {
+            optIn.add("kotlinx.serialization.ExperimentalSerializationApi")
+            optIn.add("kotlin.time.ExperimentalTime")
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
         dependsOn(generateCodeTask)
         dependsOn(generatePrimitiveTypesCodeTask)
         dependsOn(generateStringFormatOverrideCodeTask)

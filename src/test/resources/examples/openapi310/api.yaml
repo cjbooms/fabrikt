@@ -5,6 +5,8 @@ components:
       type: object
       required:
         - simpleNullable
+        - requiredNullableRef
+        - singleRequiredFieldNullableRef
       properties:
         simpleNullable:
           type:
@@ -15,6 +17,14 @@ components:
           oneOf:
             - type: 'null'
             - $ref: '#/components/schemas/OneObject'
+        requiredNullableRef:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/OneObject'
+        singleRequiredFieldNullableRef:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/SingleRequiredFieldNullableObject'
         complexNullable:
           anyOf:
             - items:
@@ -40,3 +50,11 @@ components:
       properties:
         type:
           type: string
+    SingleRequiredFieldNullableObject:
+      required:
+        - requiredNullableRef
+      properties:
+        requiredNullableRef:
+          oneOf:
+            - "$ref": "#/components/schemas/OneObject"
+            - type: 'null'

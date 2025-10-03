@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   version: '1'
   title: pathLevelParameters
@@ -10,6 +10,18 @@ paths:
         required: true
         schema:
           type: string
+      - name: X-Json-Encoded-Header
+        in: header
+        description: Json Encoded header
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JsonEncodedHeader"
+              example:
+                headerProp1: value
+                headerProp2: anotherValue
+                nestedProp:
+                  nestedProp1: nestedValue
     get:
       parameters:
         - in: query
@@ -20,3 +32,13 @@ paths:
       responses:
         '204':
           description: example
+
+components:
+  schemas:
+    JsonEncodedHeader:
+      type: "object"
+      properties:
+        headerProp1:
+          type: string
+        headerProp2:
+          type: string

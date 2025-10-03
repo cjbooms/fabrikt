@@ -10,6 +10,7 @@ import io.micronaut.http.`annotation`.Get
 import io.micronaut.http.`annotation`.Post
 import io.micronaut.http.`annotation`.Produces
 import io.micronaut.http.`annotation`.QueryValue
+import io.micronaut.security.rules.SecurityRule
 import javax.validation.Valid
 
 @Controller
@@ -21,7 +22,9 @@ public interface ExampleController {
      */
     @Get(uri = "/example")
     @Produces(value = ["application/json"])
-    public fun `get`(@QueryValue(value = "mode") mode: ModeParameterDto): HttpResponse<RootTypeDto>
+    public fun `get`(
+        @QueryValue(value = "mode") mode: ModeParameterDto,
+    ): HttpResponse<RootTypeDto>
 
     /**
      *
@@ -31,5 +34,7 @@ public interface ExampleController {
     @Post(uri = "/example")
     @Consumes(value = ["application/json"])
     @Produces(value = ["application/json"])
-    public fun post(@Body @Valid rootType: RootTypeDto): HttpResponse<RootTypeDto>
+    public fun post(
+        @Body @Valid rootType: RootTypeDto,
+    ): HttpResponse<RootTypeDto>
 }

@@ -8,6 +8,8 @@ import javax.validation.Valid
 import javax.validation.constraints.NotNull
 import kotlin.Boolean
 import kotlin.ByteArray
+import kotlin.Double
+import kotlin.Float
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
@@ -42,6 +44,11 @@ public data class PersonWithDefaults(
   @get:JsonProperty("string_phrase")
   @get:NotNull
   public val stringPhrase: String = "Cowabunga Dude",
+  /**
+   * An absolute URI that identifies the problem type.  When dereferenced,
+   * it SHOULD provide human-readable documentation for the problem type
+   * (e.g., using HTML).
+   */
   @param:JsonProperty("uri_type")
   @get:JsonProperty("uri_type")
   @get:NotNull
@@ -57,4 +64,20 @@ public data class PersonWithDefaults(
   @get:JsonProperty("ignored_object_default")
   @get:Valid
   public val ignoredObjectDefault: PersonWithDefaultsIgnoredObjectDefault? = null,
+  @param:JsonProperty("float_with_default_integer")
+  @get:JsonProperty("float_with_default_integer")
+  @get:NotNull
+  public val floatWithDefaultInteger: Float = 0f,
+  @param:JsonProperty("double_with_default_integer")
+  @get:JsonProperty("double_with_default_integer")
+  @get:NotNull
+  public val doubleWithDefaultInteger: Double = 0.0,
+  @param:JsonProperty("float_with_default_float")
+  @get:JsonProperty("float_with_default_float")
+  @get:NotNull
+  public val floatWithDefaultFloat: Float = 0.1f,
+  @param:JsonProperty("double_with_default_float")
+  @get:JsonProperty("double_with_default_float")
+  @get:NotNull
+  public val doubleWithDefaultFloat: Double = 0.1,
 )

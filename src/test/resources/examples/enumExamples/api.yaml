@@ -45,6 +45,7 @@ components:
         - 4
         - -5
         - _6
+        - really long enum value goes here and it is very descriptive
 
     ExtensibleEnumObject:
       type: string

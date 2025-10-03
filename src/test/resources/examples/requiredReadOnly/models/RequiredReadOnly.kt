@@ -13,4 +13,7 @@ public data class RequiredReadOnly(
   @param:JsonProperty("created")
   @get:JsonProperty("created")
   public val created: OffsetDateTime? = null,
+  @param:JsonProperty("created_by")
+  @get:JsonProperty("created_by")
+  public val createdBy: String? = null,
 )

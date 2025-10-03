@@ -31,7 +31,10 @@ public interface ExampleController {
      * @param mode
      * @param call Decorated ApplicationCall with additional typed respond methods
      */
-    public suspend fun `get`(mode: ModeParameterDto, call: TypedApplicationCall<RootTypeDto>)
+    public suspend fun `get`(
+        mode: ModeParameterDto,
+        call: TypedApplicationCall<RootTypeDto>,
+    )
 
     /**
      * Route is expected to respond with [examples.modelSuffix.models.RootTypeDto].
@@ -40,7 +43,10 @@ public interface ExampleController {
      * @param rootType
      * @param call Decorated ApplicationCall with additional typed respond methods
      */
-    public suspend fun post(rootType: RootTypeDto, call: TypedApplicationCall<RootTypeDto>)
+    public suspend fun post(
+        rootType: RootTypeDto,
+        call: TypedApplicationCall<RootTypeDto>,
+    )
 
     public companion object {
         /**
@@ -123,8 +129,9 @@ public interface ExampleController {
          * Throws:
          *   BadRequestException - when the name is not present
          */
-        private fun Headers.getOrFail(name: String): String = this[name] ?: throw
-            BadRequestException("Header " + name + " is required")
+        private fun Headers.getOrFail(name: String): String =
+            this[name] ?: throw
+                BadRequestException("Header " + name + " is required")
     }
 }
 
@@ -144,7 +151,10 @@ public class TypedApplicationCall<R : Any>(
     }
 
     @Suppress("unused")
-    public suspend inline fun <reified T : R> respondTyped(status: HttpStatusCode, message: T) {
+    public suspend inline fun <reified T : R> respondTyped(
+        status: HttpStatusCode,
+        message: T,
+    ) {
         respond(status, message)
     }
 }

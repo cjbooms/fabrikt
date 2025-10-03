@@ -18,7 +18,7 @@ import kotlin.jvm.Throws
 public class ExampleClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      *
@@ -28,23 +28,26 @@ public class ExampleClient(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUrl: HttpUrl = "$baseUrl/example"
-            .toHttpUrl()
-            .newBuilder()
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example"
+                .toHttpUrl()
+                .newBuilder()
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
         val headerBuilder = Headers.Builder()
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .put(ByteArray(0).toRequestBody())
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .put(ByteArray(0).toRequestBody())
+                .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -55,23 +58,26 @@ public class ExampleClient(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUrl: HttpUrl = "$baseUrl/example"
-            .toHttpUrl()
-            .newBuilder()
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example"
+                .toHttpUrl()
+                .newBuilder()
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
         val headerBuilder = Headers.Builder()
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .post(ByteArray(0).toRequestBody())
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .post(ByteArray(0).toRequestBody())
+                .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -82,22 +88,25 @@ public class ExampleClient(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUrl: HttpUrl = "$baseUrl/example"
-            .toHttpUrl()
-            .newBuilder()
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example"
+                .toHttpUrl()
+                .newBuilder()
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
         val headerBuilder = Headers.Builder()
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .patch(ByteArray(0).toRequestBody())
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .patch(ByteArray(0).toRequestBody())
+                .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }

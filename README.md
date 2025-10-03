@@ -151,7 +151,7 @@ Latest version of the plugin: [![Gradle Plugin Portal Version](https://img.shiel
 ```kotlin
 plugins {
     // find latest version: https://github.com/acanda/fabrikt-gradle-plugin/releases
-    id("ch.acanda.gradle.fabrikt") version "1.15.1"
+    id("ch.acanda.gradle.fabrikt") version "1.20.0"
 }
 
 fabrikt {
@@ -222,6 +222,10 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               |   `SEALED_INTERFACES_FOR_ONE_OF` - This option enables the generation of interfaces for discriminated oneOf types |
 |                               |   `NON_NULL_MAP_VALUES` - This option makes map values non-null. The default (since v15) and most spec compliant is make map values nullable |
 |   `--http-model-suffix`       | Specify custom suffix for all generated model classes. Defaults to no suffix. |
+|   `--instant-library`         | Specify which Instant library to use in generated model classes for kotlinx.serialization. Default: KOTLINX_INSTANT |
+|                               | CHOOSE ONE OF: |
+|                               |   `KOTLINX_INSTANT` - Use `kotlinx.datetime` Instant in generated classes (default) |
+|                               |   `KOTLIN_TIME_INSTANT` - Use `kotlin.time` Instant in generated classes |
 |   `--openfeign-client-name`   | Specify openfeign client name for spring-cloud-starter-openfeign. Defaults to 'fabrikt-client'. |
 |   `--output-directory`        | Allows the generation dir to be overridden. Defaults to current dir |
 |   `--output-opts`             | Select options for the output. |
@@ -265,18 +269,6 @@ template-based generation. This library leverages the rich OpenAPI 3 model provi
 programmatically construct Kotlin classes for maximum flexibility.
 
 This project was started by engineers from [Zalando Tech](https://opensource.zalando.com/) and is battle-tested heavily in production there.
-
-## Building Locally
-
-Fabrikt is built with Gradle and requires an initialised git repository. The easiest way to build it is to clone the repo locally before executing the build command:
-```
-git clone git@github.com:cjbooms/fabrikt.git
-cd fabrikt/
-./gradlew clean build
-```
-
-## Publishing
-This library is published to [Sonatype's OSS](https://s01.oss.sonatype.org/#welcome) staging repository using Github actions when a release is drafted. It can be manually promoted from there to the release repository which is indexed by Maven Central.
 
 ## Specific Features
 
@@ -425,3 +417,28 @@ data class Responses(
     val entries: List<ChildDefinition>? = null
 )
 ```
+
+## Contributing
+
+### Building Locally
+
+Fabrikt is built with Gradle and requires an initialised git repository. The easiest way to build it is to clone the repo locally before executing the build command:
+```
+git clone git@github.com:cjbooms/fabrikt.git
+cd fabrikt/
+./gradlew clean build
+```
+
+### Adjusting Test Examples
+
+A utility function is available in [GeneratedCodeAsserter.kt](src/test/kotlin/com/cjbooms/fabrikt/util/GeneratedCodeAsserter.kt) to mass change all of the code generation examples in the test resources folder. This is useful when a global change is made to the code generation logic and all of the examples need to be updated.
+
+### Publishing
+
+1. Go to [Release Tab](https://github.com/cjbooms/fabrikt/releases)
+2. Select `Draft a new release`.
+3. Set tag to a version greater than current using symantic versioning, anticipating whether the changes made could break builds.
+4. Click `Generate release notes`. Ensure that the tag and release version match.
+5. Click `Publish release` buttom at the bottom.
+
+Github Actions will publish the deployment to [Sonatype Central](https://central.sonatype.com/publishing/deployments). You must then log in to Sonatype and decide to either release or drop that deployment. After 30 minutes or so, Maven Central will have indexed the promoted release.

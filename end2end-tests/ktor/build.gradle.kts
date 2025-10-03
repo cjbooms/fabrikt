@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 val fabrikt: Configuration by configurations.creating
 
 val generationDir = "$buildDir/generated"
@@ -87,7 +89,10 @@ tasks {
     )
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
+        compilerOptions {
+            optIn.add("kotlin.time.ExperimentalTime")
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
         dependsOn(generateKtorCode)
         dependsOn(generateKtorAuthCode)
         dependsOn(generateKtorInstantDateTimeCode)
@@ -118,6 +123,7 @@ fun TaskContainer.createCodeGenerationTask(
         "--targets", "http_models",
         "--targets", "controllers",
         "--http-controller-target", "ktor",
+        "--instant-library", "KOTLINX_INSTANT",
     ) + opts
     dependsOn(":jar")
     dependsOn(":shadowJar")

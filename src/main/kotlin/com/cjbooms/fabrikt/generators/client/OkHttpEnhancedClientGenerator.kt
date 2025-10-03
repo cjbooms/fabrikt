@@ -95,7 +95,7 @@ class OkHttpEnhancedClientGenerator(
                 .build()
 
         val clientProperty = PropertySpec.builder("apiClient", apiClientClassName, KModifier.PRIVATE)
-            .initializer("%T(objectMapper, baseUrl, client)", apiClientClassName)
+            .initializer("%T(objectMapper, baseUrl, okHttpClient)", apiClientClassName)
             .build()
 
         val circuitBreakerRegistryProperty =
@@ -112,7 +112,7 @@ class OkHttpEnhancedClientGenerator(
                     ).build(),
                     ParameterSpec.builder("objectMapper", ObjectMapper::class.asTypeName()).build(),
                     ParameterSpec.builder("baseUrl", String::class.asTypeName()).build(),
-                    ParameterSpec.builder("client", "OkHttpClient".toClassName("okhttp3")).build()
+                    ParameterSpec.builder("okHttpClient", "OkHttpClient".toClassName("okhttp3")).build()
                 )
             ).build()
 

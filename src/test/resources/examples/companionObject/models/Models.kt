@@ -103,7 +103,7 @@ public data class Error(
     JsonSubTypes.Type(value = Cat::class, name = "Cat"),
     JsonSubTypes.Type(
         value =
-        Dog::class,
+            Dog::class,
         name = "Dog",
     ),
 )

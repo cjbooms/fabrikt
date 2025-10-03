@@ -14,6 +14,7 @@ import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.model.toFileSpec
+import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readFolder
@@ -108,8 +109,8 @@ class SpringHttpInterfaceGeneratorTest {
         val packages = Packages("examples.$testCaseName")
         val sourceApi = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
 
-        val expectedModel = readTextResource("/examples/$testCaseName/models/ClientModels.kt")
-        val expectedClient = readTextResource("/examples/$testCaseName/client/$clientFileName")
+        val expectedModel = "/examples/$testCaseName/models/ClientModels.kt"
+        val expectedClient = "/examples/$testCaseName/client/$clientFileName"
 
         val models = ModelGenerator(
             packages,
@@ -123,8 +124,8 @@ class SpringHttpInterfaceGeneratorTest {
             .clients
             .toSingleFile()
 
-        assertThat(clientCode).isEqualTo(expectedClient)
-        assertThat(models).isEqualTo(expectedModel)
+        assertThatGenerated(clientCode).isEqualTo(expectedClient)
+        assertThatGenerated(models).isEqualTo(expectedModel)
     }
 
     private fun Collection<ClientType>.toSingleFile(): String {

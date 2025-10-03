@@ -1,6 +1,7 @@
 package examples.parameterNameClash.controllers
 
 import examples.parameterNameClash.models.SomeObject
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.`annotation`.Validated
@@ -49,7 +50,7 @@ public interface ExampleController {
         @RequestBody @Valid bodySomeObject: SomeObject,
         @RequestParam(
             value =
-            "querySomeObject",
+                "querySomeObject",
             required = true,
         ) querySomeObject: String,
     ): ResponseEntity<Unit>

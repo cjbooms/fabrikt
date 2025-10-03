@@ -13,4 +13,7 @@ object ResourceHelper {
 
     fun readFolder(path: Path): Map<String, String> =
         path.listDirectoryEntries().filterNot { it.isDirectory() }.associate { it.name to it.readText() }
+
+    fun getFileNamesInFolder(path: Path): List<String> =
+         path.listDirectoryEntries().filterNot { it.isDirectory() }.map { it.name }.toList()
 }

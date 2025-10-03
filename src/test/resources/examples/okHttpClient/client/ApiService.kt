@@ -1,6 +1,7 @@
 package examples.okHttpClient.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import examples.okHttpClient.models.Content
 import examples.okHttpClient.models.FirstModel
 import examples.okHttpClient.models.QueryResult
@@ -28,21 +29,27 @@ public class ExamplePath1Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "examplePath1Client"
 
-    private val apiClient: ExamplePath1Client = ExamplePath1Client(objectMapper, baseUrl, client)
+    private val apiClient: ExamplePath1Client =
+        ExamplePath1Client(
+            objectMapper,
+            baseUrl,
+            okHttpClient,
+        )
 
     @Throws(ApiException::class)
     public fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         intListQueryParam: List<Int>? = null,
+        xJsonEncodedHeader: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExamplePath1(explodeListQueryParam, queryParam2, intListQueryParam, additionalHeaders)
+            apiClient.getExamplePath1(explodeListQueryParam, queryParam2, intListQueryParam, xJsonEncodedHeader, additionalHeaders)
         }
 
     @Throws(ApiException::class)
@@ -69,11 +76,16 @@ public class ExamplePath2Service(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "examplePath2Client"
 
-    private val apiClient: ExamplePath2Client = ExamplePath2Client(objectMapper, baseUrl, client)
+    private val apiClient: ExamplePath2Client =
+        ExamplePath2Client(
+            objectMapper,
+            baseUrl,
+            okHttpClient,
+        )
 
     @Throws(ApiException::class)
     public fun getExamplePath2PathParam(
@@ -123,15 +135,16 @@ public class ExamplePath3SubresourceService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "examplePath3SubresourceClient"
 
-    private val apiClient: ExamplePath3SubresourceClient = ExamplePath3SubresourceClient(
-        objectMapper,
-        baseUrl,
-        client,
-    )
+    private val apiClient: ExamplePath3SubresourceClient =
+        ExamplePath3SubresourceClient(
+            objectMapper,
+            baseUrl,
+            okHttpClient,
+        )
 
     @Throws(ApiException::class)
     public fun putExamplePath3PathParamSubresource(
@@ -159,12 +172,12 @@ public class ExamplePath4OnlyFailureResponseService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "examplePath4OnlyFailureResponseClient"
 
     private val apiClient: ExamplePath4OnlyFailureResponseClient =
-        ExamplePath4OnlyFailureResponseClient(objectMapper, baseUrl, client)
+        ExamplePath4OnlyFailureResponseClient(objectMapper, baseUrl, okHttpClient)
 
     @Throws(ApiException::class)
     public fun postExamplePath4OnlyFailureResponse(

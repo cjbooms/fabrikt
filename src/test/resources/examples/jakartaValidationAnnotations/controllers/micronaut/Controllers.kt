@@ -6,6 +6,7 @@ import io.micronaut.http.`annotation`.Get
 import io.micronaut.http.`annotation`.Header
 import io.micronaut.http.`annotation`.PathVariable
 import io.micronaut.http.`annotation`.QueryValue
+import io.micronaut.security.rules.SecurityRule
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import kotlin.Long

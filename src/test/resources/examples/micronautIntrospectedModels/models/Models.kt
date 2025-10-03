@@ -25,26 +25,47 @@ import kotlin.collections.Map
     JsonSubTypes.Type(
         value = FirstModel::class,
         name =
-        "first_model",
+            "first_model",
     ),
     JsonSubTypes.Type(
         value = SecondModel::class,
         name =
-        "second_model",
+            "second_model",
     ),
     JsonSubTypes.Type(value = ThirdModel::class, name = "third_model"),
 )
 @Introspected
 public sealed class Content(
+    /**
+     * The unique resource id
+     */
     public open val id: String? = null,
+    /**
+     * The attribute 1
+     */
     public open val firstAttr: OffsetDateTime? = null,
+    /**
+     * The attribute 2
+     */
     public open val secondAttr: String? = null,
+    /**
+     * Enum types for attribute 3
+     */
     public open val thirdAttr: ContentThirdAttr? = null,
+    /**
+     * Etag value to be used in conjunction with If-Match headers for optimistic locking purposes
+     */
     public open val etag: String? = null,
 ) {
+    /**
+     * The model discrimination type
+     */
     public abstract val modelType: ContentModelType
 }
 
+/**
+ * The model discrimination type
+ */
 @Introspected
 public enum class ContentModelType(
     @JsonValue
@@ -63,6 +84,9 @@ public enum class ContentModelType(
     }
 }
 
+/**
+ * Enum types for attribute 3
+ */
 @Introspected
 public enum class ContentThirdAttr(
     @JsonValue
@@ -82,24 +106,45 @@ public enum class ContentThirdAttr(
 
 @Introspected
 public data class FirstModel(
+    /**
+     * The unique resource id
+     */
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     override val id: String? = null,
+    /**
+     * The attribute 1
+     */
     @param:JsonProperty("first_attr")
     @get:JsonProperty("first_attr")
     override val firstAttr: OffsetDateTime? = null,
+    /**
+     * The attribute 2
+     */
     @param:JsonProperty("second_attr")
     @get:JsonProperty("second_attr")
     override val secondAttr: String? = null,
+    /**
+     * Enum types for attribute 3
+     */
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
     override val thirdAttr: ContentThirdAttr? = null,
+    /**
+     * Etag value to be used in conjunction with If-Match headers for optimistic locking purposes
+     */
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
     override val etag: String? = null,
+    /**
+     * The attribute 1 for model 1
+     */
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
     public val extraFirstAttr: List<String>? = null,
+    /**
+     * The model discrimination type
+     */
     @get:JsonProperty("model_type")
     @get:NotNull
     @param:JsonProperty("model_type")
@@ -118,27 +163,51 @@ public data class QueryResult(
 
 @Introspected
 public data class SecondModel(
+    /**
+     * The unique resource id
+     */
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     override val id: String? = null,
+    /**
+     * The attribute 1
+     */
     @param:JsonProperty("first_attr")
     @get:JsonProperty("first_attr")
     override val firstAttr: OffsetDateTime? = null,
+    /**
+     * The attribute 2
+     */
     @param:JsonProperty("second_attr")
     @get:JsonProperty("second_attr")
     override val secondAttr: String? = null,
+    /**
+     * Enum types for attribute 3
+     */
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
     override val thirdAttr: ContentThirdAttr? = null,
+    /**
+     * Etag value to be used in conjunction with If-Match headers for optimistic locking purposes
+     */
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
     override val etag: String? = null,
+    /**
+     * The attribute 1 for model 2
+     */
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
     public val extraFirstAttr: String? = null,
+    /**
+     * The attribute 2 for model 2
+     */
     @param:JsonProperty("extra_second_attr")
     @get:JsonProperty("extra_second_attr")
     public val extraSecondAttr: Boolean? = null,
+    /**
+     * The model discrimination type
+     */
     @get:JsonProperty("model_type")
     @get:NotNull
     @param:JsonProperty("model_type")
@@ -147,27 +216,51 @@ public data class SecondModel(
 
 @Introspected
 public data class ThirdModel(
+    /**
+     * The unique resource id
+     */
     @param:JsonProperty("id")
     @get:JsonProperty("id")
     override val id: String? = null,
+    /**
+     * The attribute 1
+     */
     @param:JsonProperty("first_attr")
     @get:JsonProperty("first_attr")
     override val firstAttr: OffsetDateTime? = null,
+    /**
+     * The attribute 2
+     */
     @param:JsonProperty("second_attr")
     @get:JsonProperty("second_attr")
     override val secondAttr: String? = null,
+    /**
+     * Enum types for attribute 3
+     */
     @param:JsonProperty("third_attr")
     @get:JsonProperty("third_attr")
     override val thirdAttr: ContentThirdAttr? = null,
+    /**
+     * Etag value to be used in conjunction with If-Match headers for optimistic locking purposes
+     */
     @param:JsonProperty("etag")
     @get:JsonProperty("etag")
     override val etag: String? = null,
+    /**
+     * The attribute 1 for model 3
+     */
     @param:JsonProperty("extra_first_attr")
     @get:JsonProperty("extra_first_attr")
     public val extraFirstAttr: OffsetDateTime? = null,
+    /**
+     * The attribute 2 for model 3
+     */
     @param:JsonProperty("extra_second_attr")
     @get:JsonProperty("extra_second_attr")
     public val extraSecondAttr: Int? = null,
+    /**
+     * The model discrimination type
+     */
     @get:JsonProperty("model_type")
     @get:NotNull
     @param:JsonProperty("model_type")

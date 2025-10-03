@@ -2,6 +2,7 @@ package com.cjbooms.fabrikt.model
 
 import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
+import com.cjbooms.fabrikt.cli.InstantLibrary
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary.KOTLINX_SERIALIZATION
 import com.cjbooms.fabrikt.generators.MutableSettings
@@ -30,7 +31,9 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
     object KotlinxLocalDate : KotlinTypeInfo(kotlinx.datetime.LocalDate::class)
     object DateTime : KotlinTypeInfo(OffsetDateTime::class)
     object Instant : KotlinTypeInfo(java.time.Instant::class)
+    @Suppress("DEPRECATION")
     object KotlinxInstant : KotlinTypeInfo(kotlinx.datetime.Instant::class)
+    object KotlinInstant : KotlinTypeInfo(kotlin.time.Instant::class)
     object LocalDateTime : KotlinTypeInfo(java.time.LocalDateTime::class)
     object Double : KotlinTypeInfo(kotlin.Double::class)
     object Float : KotlinTypeInfo(kotlin.Float::class)
@@ -84,14 +87,16 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
             }
             return when (schema.toOasType(oasKey)) {
                 OasType.Date -> {
-                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.DATE_AS_STRING)) Text
-                    else if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) KotlinxLocalDate
+                    if (MutableSettings.typeOverrides.contains(CodeGenTypeOverride.DATE_AS_STRING)) Text
+                    else if (MutableSettings.serializationLibrary == KOTLINX_SERIALIZATION) KotlinxLocalDate
                     else Date
                 }
 
                 OasType.DateTime -> {
-                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.DATETIME_AS_STRING)) Text
-                    else if (MutableSettings.serializationLibrary() == KOTLINX_SERIALIZATION) KotlinxInstant
+                    if (MutableSettings.typeOverrides.contains(CodeGenTypeOverride.DATETIME_AS_STRING)) Text
+                    else if (MutableSettings.serializationLibrary == KOTLINX_SERIALIZATION)
+                        if (MutableSettings.instantLibrary == InstantLibrary.KOTLINX_INSTANT) KotlinxInstant
+                        else KotlinInstant
                     else getOverridableDateTimeType()
                 }
 
@@ -100,22 +105,22 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                     Enum(schema.getEnumValues(), ModelNameRegistry.getOrRegister(schema, enclosingSchema))
 
                 OasType.Uuid -> {
-                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.UUID_AS_STRING)) Text
+                    if (MutableSettings.typeOverrides.contains(CodeGenTypeOverride.UUID_AS_STRING)) Text
                     else Uuid
                 }
 
                 OasType.Uri -> {
-                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.URI_AS_STRING)) Text
+                    if (MutableSettings.typeOverrides.contains(CodeGenTypeOverride.URI_AS_STRING)) Text
                     else Uri
                 }
 
                 OasType.Base64String -> {
-                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.BYTE_AS_STRING)) Text
+                    if (MutableSettings.typeOverrides.contains(CodeGenTypeOverride.BYTE_AS_STRING)) Text
                     else ByteArray
                 }
 
                 OasType.Binary -> {
-                    if (MutableSettings.typeOverrides().contains(CodeGenTypeOverride.BINARY_AS_STRING)) Text
+                    if (MutableSettings.typeOverrides.contains(CodeGenTypeOverride.BINARY_AS_STRING)) Text
                     else getOverridableByteArray()
                 }
 
@@ -162,7 +167,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
                 OasType.Any -> AnyType
                 OasType.OneOfAny ->
                     if (schema.isOneOfSuperInterfaceWithDiscriminator() &&
-                        ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF in MutableSettings.modelOptions()
+                        ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF in MutableSettings.modelOptions
                     ) {
                         Object(ModelNameRegistry.getOrRegister(schema, enclosingSchema))
                     } else {
@@ -172,7 +177,7 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         }
 
         private fun getOverridableDateTimeType(): KotlinTypeInfo {
-            val typeOverrides = MutableSettings.typeOverrides()
+            val typeOverrides = MutableSettings.typeOverrides
             return when {
                 CodeGenTypeOverride.DATETIME_AS_INSTANT in typeOverrides -> Instant
                 CodeGenTypeOverride.DATETIME_AS_LOCALDATETIME in typeOverrides -> LocalDateTime
@@ -181,8 +186,8 @@ sealed class KotlinTypeInfo(val modelKClass: KClass<*>, val generatedModelClassN
         }
 
         private fun getOverridableByteArray(): KotlinTypeInfo {
-            val types: Set<CodeGenerationType> = MutableSettings.generationTypes()
-            val typeOverrides = MutableSettings.typeOverrides()
+            val types: Set<CodeGenerationType> = MutableSettings.generationTypes
+            val typeOverrides = MutableSettings.typeOverrides
             return when {
                 CodeGenerationType.CLIENT in types && CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM in typeOverrides -> {
                     logger.log(

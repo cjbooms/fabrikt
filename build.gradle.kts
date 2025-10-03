@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.0.20"
+    id("org.jetbrains.kotlin.jvm") version "2.2.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.jetbrains.dokka") version "1.8.10"
     id("com.palantir.git-version") version "3.0.0"
@@ -41,8 +41,8 @@ allprojects {
 val jacksonVersion by extra { "2.15.1" }
 val junitVersion by extra { "5.9.2" }
 val ktorVersion by extra { "3.0.1" }
-val kotlinxSerializationVersion by extra { "1.7.3" }
-val kotlinxDateTimeVersion by extra { "0.6.1" }
+val kotlinxSerializationVersion by extra { "1.9.0" }
+val kotlinxDateTimeVersion by extra { "0.7.1-0.6.x-compat" }
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -80,9 +80,8 @@ dependencies {
     testImplementation("io.ktor:ktor-server-core:$ktorVersion")
     testImplementation("io.ktor:ktor-server-auth:$ktorVersion")
 
-    testImplementation(platform("com.pinterest.ktlint:ktlint-bom:0.49.0"))
-    testImplementation("com.pinterest:ktlint")
-    testImplementation("com.pinterest.ktlint:ktlint-core")
+    testImplementation(platform("com.pinterest.ktlint:ktlint-bom:1.7.1"))
+    testImplementation("com.pinterest.ktlint:ktlint-rule-engine-core")
     testImplementation("com.pinterest.ktlint:ktlint-rule-engine")
     testImplementation("com.pinterest.ktlint:ktlint-ruleset-standard")
 }
@@ -128,8 +127,9 @@ tasks {
     }
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_17.toString()
+        compilerOptions {
+            optIn.add("kotlin.time.ExperimentalTime")
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }
 
@@ -142,8 +142,8 @@ tasks {
 publishing {
     repositories {
         maven {
-            name = "OSSRH"
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2")
+            name = "ossrh-staging-api"
+            url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
             credentials {
                 username = System.getenv("OSSRH_USER_TOKEN_USERNAME")
                 password = System.getenv("OSSRH_USER_TOKEN_PASSWORD")

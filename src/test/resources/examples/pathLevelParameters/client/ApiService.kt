@@ -1,6 +1,7 @@
 package examples.pathLevelParameters.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import okhttp3.OkHttpClient
 import kotlin.String
@@ -22,19 +23,20 @@ public class ExampleService(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     objectMapper: ObjectMapper,
     baseUrl: String,
-    client: OkHttpClient,
+    okHttpClient: OkHttpClient,
 ) {
     public var circuitBreakerName: String = "exampleClient"
 
-    private val apiClient: ExampleClient = ExampleClient(objectMapper, baseUrl, client)
+    private val apiClient: ExampleClient = ExampleClient(objectMapper, baseUrl, okHttpClient)
 
     @Throws(ApiException::class)
     public fun getExample(
         a: String,
         b: String,
+        xJsonEncodedHeader: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExample(a, b, additionalHeaders)
+            apiClient.getExample(a, b, xJsonEncodedHeader, additionalHeaders)
         }
 }

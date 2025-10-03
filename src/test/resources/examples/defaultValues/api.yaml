@@ -61,4 +61,19 @@ components:
           default:
             name: "John Doe"
             age: 30
-
+        float_with_default_integer:
+          type: number
+          format: float
+          default: 0
+        double_with_default_integer:
+          type: number
+          format: double
+          default: 0
+        float_with_default_float:
+          type: number
+          format: float
+          default: 0.1
+        double_with_default_float:
+          type: number
+          format: double
+          default: 0.1

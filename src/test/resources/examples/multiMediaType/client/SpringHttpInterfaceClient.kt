@@ -29,9 +29,9 @@ public interface ExamplePath1Client {
         accept = ["application/vnd.custom.media+xml"],
     )
     public fun getExamplePath1(
-        @RequestParam("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
-        @RequestParam("queryParam2") queryParam2: Int? = null,
-        @RequestHeader("acceptHeader") acceptHeader: String = "application/vnd.custom.media+xml",
+        @RequestParam("explode_list_query_param") explodeListQueryParam: List<String>? = null,
+        @RequestParam("query_param2") queryParam2: Int? = null,
+        @RequestHeader("Accept") acceptHeader: String = "application/vnd.custom.media+xml",
         @RequestHeader additionalHeaders: Map<String, Any> = emptyMap(),
         @RequestParam additionalQueryParameters: Map<String, Any> = emptyMap(),
     ): QueryResult
@@ -52,9 +52,9 @@ public interface ExamplePath2Client {
         accept = ["application/vnd.custom.media+xml"],
     )
     public fun getExamplePath2(
-        @RequestParam("explodeListQueryParam") explodeListQueryParam: List<String>? = null,
-        @RequestParam("queryParam2") queryParam2: Int? = null,
-        @RequestHeader("accept") accept: ContentType? = null,
+        @RequestParam("explode_list_query_param") explodeListQueryParam: List<String>? = null,
+        @RequestParam("query_param2") queryParam2: Int? = null,
+        @RequestHeader("Accept") accept: ContentType? = null,
         @RequestHeader additionalHeaders: Map<String, Any> = emptyMap(),
         @RequestParam additionalQueryParameters: Map<String, Any> = emptyMap(),
     ): QueryResult
@@ -73,7 +73,7 @@ public interface MultipleResponseSchemasClient {
         accept = ["application/json"],
     )
     public fun getMultipleResponseSchemas(
-        @RequestHeader("accept") accept: ContentType? = null,
+        @RequestHeader("Accept") accept: ContentType? = null,
         @RequestHeader additionalHeaders: Map<String, Any> = emptyMap(),
         @RequestParam additionalQueryParameters: Map<String, Any> = emptyMap(),
     ): JsonNode

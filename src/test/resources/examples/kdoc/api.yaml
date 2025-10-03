@@ -1,0 +1,34 @@
+openapi: 3.1.0
+info:
+  version: ''
+  title: ''
+paths: { }
+components:
+  schemas:
+    promotion:
+      type: object
+      required:
+        - id
+        - type
+      description: |
+        A %-based or fixed-amount discount on your purchase.
+      properties:
+        id:
+          type: string
+          description: The unique identifier of this promotion.
+        type:
+          $ref: '#/components/schemas/promotion_type'
+        name:
+          type: string
+          description: The name of this promotion.
+
+    promotion_type:
+      type: string
+      description: |
+        The type of the promotion.
+
+        - PERCENTAGE: A %-based discount.
+        - FIXED_AMOUNT: A fixed amount discount.
+      enum:
+        - PERCENTAGE
+        - FIXED_AMOUNT

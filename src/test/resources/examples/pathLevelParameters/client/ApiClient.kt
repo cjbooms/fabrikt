@@ -17,39 +17,47 @@ import kotlin.jvm.Throws
 public class ExampleClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      *
      *
      * @param a
      * @param b
+     * @param xJsonEncodedHeader Json Encoded header
      */
     @Throws(ApiException::class)
     public fun getExample(
         a: String,
         b: String,
+        xJsonEncodedHeader: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUrl: HttpUrl = "$baseUrl/example"
-            .toHttpUrl()
-            .newBuilder()
-            .queryParam("a", a)
-            .queryParam("b", b)
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example"
+                .toHttpUrl()
+                .newBuilder()
+                .queryParam("a", a)
+                .queryParam("b", b)
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
-        val headerBuilder = Headers.Builder()
+        val headerBuilder =
+            Headers
+                .Builder()
+                .`header`("X-Json-Encoded-Header", xJsonEncodedHeader)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .get()
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .get()
+                .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }

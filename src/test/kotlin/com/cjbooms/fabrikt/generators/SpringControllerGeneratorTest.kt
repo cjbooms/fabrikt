@@ -10,6 +10,7 @@ import com.cjbooms.fabrikt.generators.controller.SpringControllers
 import com.cjbooms.fabrikt.generators.controller.metadata.SpringImports
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
@@ -41,6 +42,7 @@ class SpringControllerGeneratorTest {
         "jakartaValidationAnnotations",
         "modelSuffix",
         "unsupportedInlinedDefinitions",
+        "httpStatusCodeRangeDefinition"
     )
 
     private fun setupGithubApiTestEnv(annotations: ValidationAnnotations = JavaxValidationAnnotations) {
@@ -62,7 +64,7 @@ class SpringControllerGeneratorTest {
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         val basePackage = "examples.$testCaseName"
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
-        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/spring/Controllers.kt")
+        val expectedControllers = "/examples/$testCaseName/controllers/spring/Controllers.kt"
 
         if (testCaseName == "modelSuffix") {
             MutableSettings.updateSettings(modelSuffix = "Dto")
@@ -74,14 +76,14 @@ class SpringControllerGeneratorTest {
             JavaxValidationAnnotations,
         ).generate().toSingleFile()
 
-        assertThat(controllers).isEqualTo(expectedControllers)
+        assertThatGenerated(controllers).isEqualTo(expectedControllers)
     }
 
     @Test
     fun `correct models are generated for ControllerCodeGenOptionType_AUTHENTICATION`() {
         val basePackage = "examples.authentication"
         val api = SourceApi(readTextResource("/examples/authentication/api.yaml"))
-        val expectedControllers = readTextResource("/examples/authentication/controllers/spring/Controllers.kt")
+        val expectedControllers = "/examples/authentication/controllers/spring/Controllers.kt"
 
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
@@ -90,7 +92,7 @@ class SpringControllerGeneratorTest {
             setOf(ControllerCodeGenOptionType.AUTHENTICATION),
         ).generate().toSingleFile()
 
-        assertThat(controllers).isEqualTo(expectedControllers)
+        assertThatGenerated(controllers).isEqualTo(expectedControllers)
     }
 
     @Test
@@ -238,9 +240,9 @@ class SpringControllerGeneratorTest {
         val controllers =
             SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate()
                 .toSingleFile()
-        val expectedControllers = readTextResource("/examples/springFormatDateAndDateTime/controllers/Controllers.kt")
+        val expectedControllers = "/examples/springFormatDateAndDateTime/controllers/Controllers.kt"
 
-        assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
+        assertThatGenerated(controllers.trim()).isEqualTo(expectedControllers)
     }
 
     @Test
@@ -249,9 +251,9 @@ class SpringControllerGeneratorTest {
         val controllers =
             SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate()
                 .toSingleFile()
-        val expectedControllers = readTextResource("/examples/binary/controllers/spring/Controllers.kt")
+        val expectedControllers = "/examples/binary/controllers/spring/Controllers.kt"
 
-        assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
+        assertThatGenerated(controllers.trim()).isEqualTo(expectedControllers)
     }
 
     @Test
@@ -259,16 +261,15 @@ class SpringControllerGeneratorTest {
         MutableSettings.addOption(CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM)
         val api = SourceApi(readTextResource("/examples/byteArrayStream/api.yaml"))
         val controllers = SpringControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate().toSingleFile()
-        val expectedControllers = readTextResource("/examples/byteArrayStream/controllers/spring/Controllers.kt")
+        val expectedControllers = "/examples/byteArrayStream/controllers/spring/Controllers.kt"
 
-        assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
+        assertThatGenerated(controllers.trim()).isEqualTo(expectedControllers)
     }
     
     fun `controller functions are wrapped by CompletionStage`() {
         val basePackage = "examples.completionStage"
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val expectedControllers =
-            readTextResource("/examples/githubApi/controllers/spring-completion-stage/Controllers.kt")
+        val expectedControllers = "/examples/githubApi/controllers/spring-completion-stage/Controllers.kt"
 
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
@@ -277,15 +278,14 @@ class SpringControllerGeneratorTest {
             setOf(ControllerCodeGenOptionType.COMPLETION_STAGE),
         ).generate().toSingleFile()
 
-        assertThat(controllers).isEqualTo(expectedControllers)
+        assertThatGenerated(controllers).isEqualTo(expectedControllers)
     }
 
     @Test
     fun `controller functions with x-async-support=false extension are NOT wrapped by CompletionStage`() {
         val basePackage = "examples.completionStage"
         val api = SourceApi(readTextResource("/examples/githubApi/api.yaml"))
-        val expectedControllers =
-            readTextResource("/examples/githubApi/controllers/spring-completion-stage/Controllers.kt")
+        val expectedControllers = "/examples/githubApi/controllers/spring-completion-stage/Controllers.kt"
 
         val controllers = SpringControllerInterfaceGenerator(
             Packages(basePackage),
@@ -294,6 +294,6 @@ class SpringControllerGeneratorTest {
             setOf(ControllerCodeGenOptionType.COMPLETION_STAGE),
         ).generate().toSingleFile()
 
-        assertThat(controllers).isEqualTo(expectedControllers)
+        assertThatGenerated(controllers).isEqualTo(expectedControllers)
     }
 }

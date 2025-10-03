@@ -23,6 +23,7 @@ import io.micronaut.http.`annotation`.Post
 import io.micronaut.http.`annotation`.Produces
 import io.micronaut.http.`annotation`.Put
 import io.micronaut.http.`annotation`.QueryValue
+import io.micronaut.security.rules.SecurityRule
 import java.util.UUID
 import javax.validation.Valid
 import javax.validation.constraints.Max
@@ -43,7 +44,9 @@ public interface InternalEventsController {
     @Post(uri = "/internal/events")
     @Consumes(value = ["application/json"])
     @Produces(value = ["application/json", "application/problem+json"])
-    public fun post(@Body @Valid bulkEntityDetails: BulkEntityDetails): HttpResponse<EventResults>
+    public fun post(
+        @Body @Valid bulkEntityDetails: BulkEntityDetails,
+    ): HttpResponse<EventResults>
 }
 
 @Controller

@@ -43,7 +43,7 @@ object ClientGeneratorUtils {
      * If no response body is found, Unit is returned.
      */
     fun Operation.getReturnType(packages: Packages): TypeName {
-        return if(!hasAnySuccessResponseSchemas()){
+        return if (!hasAnySuccessResponseSchemas()) {
             Unit::class.asTypeName()
         } else if (hasMultipleSuccessResponseSchemas()) {
             JsonNode::class.asTypeName()
@@ -105,7 +105,7 @@ object ClientGeneratorUtils {
         annotateBodyParameterWith: ((parameter: BodyParameter) -> AnnotationSpec?)? = null,
     ): FunSpec.Builder {
         val specs = parameters.map {
-            val builder = it.toParameterSpecBuilder()
+            val builder = it.toParameterSpecBuilder(treatAnyTypeHeadersAsStrings = true)
             if (it is RequestParameter) {
                 if (it.defaultValue != null) OasDefault.from(it.typeInfo, it.type, it.defaultValue)
                     ?.let { t -> builder.defaultValue(t.getDefault()) }

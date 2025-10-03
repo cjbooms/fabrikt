@@ -19,26 +19,29 @@ object CodeGen {
         if (Files.notExists(codeGenArgs.apiFile))
             throw ParameterException("Could not find api file '${codeGenArgs.apiFile}', Specify its location with the -a option. Use --help for further information.")
 
+        MutableSettings.updateSettings(
+            genTypes = codeGenArgs.targets,
+            controllerOptions = codeGenArgs.controllerOptions,
+            controllerTarget = codeGenArgs.controllerTarget,
+            modelOptions = codeGenArgs.modelOptions,
+            modelSuffix = codeGenArgs.modelSuffix,
+            clientOptions = codeGenArgs.clientOptions,
+            clientTarget = codeGenArgs.clientTarget,
+            openfeignClientName = codeGenArgs.openfeignClientName,
+            typeOverrides = codeGenArgs.typeOverrides,
+            validationLibrary = codeGenArgs.validationLibrary,
+            externalRefResolutionMode = codeGenArgs.externalRefResolutionMode,
+            serializationLibrary = codeGenArgs.serializationLibrary,
+            instantLibrary = codeGenArgs.instantLibrary,
+            outputOptions = codeGenArgs.outputOptions,
+        )
         generate(
-            codeGenArgs.basePackage,
-            codeGenArgs.apiFile.toAbsolutePath(),
-            codeGenArgs.outputDirectory,
-            codeGenArgs.targets,
-            codeGenArgs.apiFragments.map { it.toFile().readText() },
-            codeGenArgs.controllerOptions,
-            codeGenArgs.controllerTarget,
-            codeGenArgs.modelOptions,
-            codeGenArgs.modelSuffix,
-            codeGenArgs.clientOptions,
-            codeGenArgs.clientTarget,
-            codeGenArgs.openfeignClientName,
-            codeGenArgs.typeOverrides,
-            codeGenArgs.srcPath,
-            codeGenArgs.resourcesPath,
-            codeGenArgs.validationLibrary,
-            codeGenArgs.externalRefResolutionMode,
-            codeGenArgs.serializationLibrary,
-            codeGenArgs.outputOptions,
+            basePackage = codeGenArgs.basePackage,
+            pathToApi = codeGenArgs.apiFile.toAbsolutePath(),
+            outputDir = codeGenArgs.outputDirectory,
+            apiFragments = codeGenArgs.apiFragments.map { it.toFile().readText() },
+            srcPath = codeGenArgs.srcPath,
+            resourcesPath = codeGenArgs.resourcesPath,
         )
     }
 
@@ -46,38 +49,10 @@ object CodeGen {
         basePackage: String,
         pathToApi: Path,
         outputDir: Path,
-        codeGenTypes: Set<CodeGenerationType>,
         apiFragments: List<String> = emptyList(),
-        controllerOptions: Set<ControllerCodeGenOptionType>,
-        controllerTarget: ControllerCodeGenTargetType,
-        modelOptions: Set<ModelCodeGenOptionType>,
-        modelSuffix: String,
-        clientOptions: Set<ClientCodeGenOptionType>,
-        clientTarget: ClientCodeGenTargetType,
-        openfeignClientName: String,
-        typeOverrides: Set<CodeGenTypeOverride>,
         srcPath: Path,
         resourcesPath: Path,
-        validationLibrary: ValidationLibrary,
-        externalRefResolutionMode: ExternalReferencesResolutionMode,
-        serializationLibrary: SerializationLibrary,
-        generatorOptions: Set<OutputOptionType>,
     ) {
-        MutableSettings.updateSettings(
-            codeGenTypes,
-            controllerOptions,
-            controllerTarget,
-            modelOptions,
-            modelSuffix,
-            clientOptions,
-            clientTarget,
-            openfeignClientName,
-            typeOverrides,
-            validationLibrary,
-            externalRefResolutionMode,
-            serializationLibrary,
-            generatorOptions,
-        )
 
         val suppliedApi = pathToApi.toFile().readText()
         val baseDir = pathToApi.parent

@@ -11,8 +11,10 @@ import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.model.KotlinSourceSet
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
+import com.cjbooms.fabrikt.util.ResourceHelper.getFileNamesInFolder
 import com.cjbooms.fabrikt.util.ResourceHelper.readFolder
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
@@ -65,7 +67,6 @@ class ModelGeneratorTest {
         "openapi310",
         "binary",
         "oneOfMarkerInterface",
-        "byteArrayStream",
         "untypedObject",
         "primitiveTypes"
     )
@@ -79,7 +80,7 @@ class ModelGeneratorTest {
     }
 
     @Test
-    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("discriminatedOneOf")
+    fun `debug single test`() = `correct models are generated for different OpenApi Specifications`("polymorphicModels")
 
     @ParameterizedTest
     @MethodSource("testCases")
@@ -90,7 +91,7 @@ class ModelGeneratorTest {
         if (testCaseName == "instantDateTime") {
             MutableSettings.addOption(CodeGenTypeOverride.DATETIME_AS_INSTANT)
         }
-        if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface") {
+        if (testCaseName == "discriminatedOneOf" || testCaseName == "oneOfMarkerInterface" || testCaseName == "polymorphicModels") {
             MutableSettings.addOption(ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF)
         }
         if (testCaseName == "mapExamplesNonNullValues") {
@@ -102,7 +103,8 @@ class ModelGeneratorTest {
         val basePackage = "examples.${testCaseName.replace("/", ".")}"
         val apiLocation = javaClass.getResource("/examples/$testCaseName/api.yaml")!!
         val sourceApi = SourceApi(apiLocation.readText(), baseDir = Paths.get(apiLocation.toURI()))
-        val expectedModels = readFolder(Path.of("src/test/resources/examples/$testCaseName/models/"))
+        val expectedModelsPath = "/examples/$testCaseName/models/"
+        val expectedModels = getFileNamesInFolder(Path.of("src/test/resources$expectedModelsPath"))
 
         val models = ModelGenerator(
             Packages(basePackage),
@@ -121,13 +123,17 @@ class ModelGeneratorTest {
             ?.let(::readFolder)
             ?: emptyMap()
         tempFolderContents.forEach {
-            if (expectedModels.containsKey(it.key)) {
-                assertThat((it.value))
-                    .describedAs("expected model '${it.key}' does not match the given value.")
-                    .isEqualTo(expectedModels[it.key])
+            if (expectedModels.contains(it.key)) {
+                assertThatGenerated(it.value)
+                    .isEqualTo( "$expectedModelsPath${it.key}")
             } else {
                 assertThat(it.value).isEqualTo("File not found in expected models")
             }
+        }
+        expectedModels.forEach {
+            assertThat(tempFolderContents.contains(it))
+                .withFailMessage { "Expected model file $it not found in generated models" }
+                .isTrue()
         }
 
         tempDirectory.toFile().deleteRecursively()
@@ -183,7 +189,7 @@ class ModelGeneratorTest {
     fun `generate models using jakarta validation`() {
         val basePackage = "examples.jakartaValidationAnnotations"
         val spec = readTextResource("/examples/jakartaValidationAnnotations/api.yaml")
-        val expectedJakartaModel = readTextResource("/examples/jakartaValidationAnnotations/models/Models.kt")
+        val expectedJakartaModel = "/examples/jakartaValidationAnnotations/models/Models.kt"
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
             validationLibrary = ValidationLibrary.JAKARTA_VALIDATION
@@ -196,7 +202,7 @@ class ModelGeneratorTest {
         assertThat(models.files.size).isEqualTo(4)
         val validationAnnotationsModel = models.files.first { it.name == "ValidationAnnotations" }
         assertThat(validationAnnotationsModel).isNotNull
-        assertThat(Linter.lintString(validationAnnotationsModel.toString())).isEqualTo(expectedJakartaModel)
+        assertThatGenerated(Linter.lintString(validationAnnotationsModel.toString())).isEqualTo(expectedJakartaModel)
     }
 
 
@@ -204,7 +210,7 @@ class ModelGeneratorTest {
     fun `generate models using no validation annotations`() {
         val basePackage = "examples.noValidationAnnotations"
         val spec = readTextResource("/examples/noValidationAnnotations/api.yaml")
-        val expectedJakartaModel = readTextResource("/examples/noValidationAnnotations/models/Models.kt")
+        val expectedJakartaModel = "/examples/noValidationAnnotations/models/Models.kt"
         MutableSettings.updateSettings(
             genTypes = setOf(CodeGenerationType.HTTP_MODELS),
             validationLibrary = ValidationLibrary.NO_VALIDATION
@@ -217,14 +223,14 @@ class ModelGeneratorTest {
         assertThat(models.files.size).isEqualTo(4)
         val validationAnnotationsModel = models.files.first { it.name == "ValidationAnnotations" }
         assertThat(validationAnnotationsModel).isNotNull
-        assertThat(Linter.lintString(validationAnnotationsModel.toString())).isEqualTo(expectedJakartaModel)
+        assertThatGenerated(Linter.lintString(validationAnnotationsModel.toString())).isEqualTo(expectedJakartaModel)
     }
 
     @Test
     fun `serializable models are generated from a full API definition when the java-serialized option is set`() {
         val basePackage = "examples.javaSerializableModels"
         val spec = readTextResource("/examples/javaSerializableModels/api.yaml")
-        val expectedModels = readTextResource("/examples/javaSerializableModels/models/Models.kt")
+        val expectedModels = "/examples/javaSerializableModels/models/Models.kt"
         MutableSettings.updateSettings(
             modelOptions = setOf(ModelCodeGenOptionType.JAVA_SERIALIZATION),
         )
@@ -235,7 +241,7 @@ class ModelGeneratorTest {
             .generate()
             .toSingleFile()
 
-        assertThat(models).isEqualTo(expectedModels)
+        assertThatGenerated(models).isEqualTo(expectedModels)
     }
 
     @Test
@@ -282,7 +288,7 @@ class ModelGeneratorTest {
     fun `quarkus reflection models are generated from a full API definition when the quarkus-reflection option is set`() {
         val basePackage = "examples.quarkusReflectionModels"
         val spec = readTextResource("/examples/quarkusReflectionModels/api.yaml")
-        val expectedModels = readTextResource("/examples/quarkusReflectionModels/models/Models.kt")
+        val expectedModels = "/examples/quarkusReflectionModels/models/Models.kt"
         MutableSettings.updateSettings(
             modelOptions = setOf(ModelCodeGenOptionType.QUARKUS_REFLECTION),
         )
@@ -294,14 +300,14 @@ class ModelGeneratorTest {
             .generate()
             .toSingleFile()
 
-        assertThat(models).isEqualTo(expectedModels)
+        assertThatGenerated(models).isEqualTo(expectedModels)
     }
 
     @Test
     fun `micronaut introspected models are generated from a full API definition when the micronaut-introspection option is set`() {
         val basePackage = "examples.micronautIntrospectedModels"
         val spec = readTextResource("/examples/micronautIntrospectedModels/api.yaml")
-        val expectedModels = readTextResource("/examples/micronautIntrospectedModels/models/Models.kt")
+        val expectedModels = "/examples/micronautIntrospectedModels/models/Models.kt"
         MutableSettings.updateSettings(
             modelOptions = setOf(ModelCodeGenOptionType.MICRONAUT_INTROSPECTION),
         )
@@ -313,14 +319,14 @@ class ModelGeneratorTest {
             .generate()
             .toSingleFile()
 
-        assertThat(models).isEqualTo(expectedModels)
+        assertThatGenerated(models).isEqualTo(expectedModels)
     }
 
     @Test
     fun `micronaut reflection models are generated from a full API definition when the micronaut-reflection option is set`() {
         val basePackage = "examples.micronautReflectionModels"
         val spec = readTextResource("/examples/micronautReflectionModels/api.yaml")
-        val expectedModels = readTextResource("/examples/micronautReflectionModels/models/Models.kt")
+        val expectedModels = "/examples/micronautReflectionModels/models/Models.kt"
         MutableSettings.updateSettings(
             modelOptions = setOf(ModelCodeGenOptionType.MICRONAUT_REFLECTION),
         )
@@ -332,14 +338,14 @@ class ModelGeneratorTest {
             .generate()
             .toSingleFile()
 
-        assertThat(models).isEqualTo(expectedModels)
+        assertThatGenerated(models).isEqualTo(expectedModels)
     }
 
     @Test
     fun `companion object is added to models when generated from a full API definition when the companion object option is set`() {
         val basePackage = "examples.companionObject"
         val spec = readTextResource("/examples/companionObject/api.yaml")
-        val expectedModels = readTextResource("/examples/companionObject/models/Models.kt")
+        val expectedModels = "/examples/companionObject/models/Models.kt"
         MutableSettings.updateSettings(
             modelOptions = setOf(ModelCodeGenOptionType.INCLUDE_COMPANION_OBJECT),
         )
@@ -351,7 +357,27 @@ class ModelGeneratorTest {
             .generate()
             .toSingleFile()
 
-        assertThat(models).isEqualTo(expectedModels)
+        assertThatGenerated(models).isEqualTo(expectedModels)
+    }
+
+    @Test
+    fun `kdoc is added to models correctly when the description contains percentage sign`() {
+        val basePackage = "examples.kdoc"
+        val spec = readTextResource("/examples/kdoc/api.yaml")
+        val expectedModels = "/examples/kdoc/models/Models.kt"
+        MutableSettings.updateSettings(
+            genTypes = setOf(CodeGenerationType.HTTP_MODELS),
+            validationLibrary = ValidationLibrary.NO_VALIDATION,
+        )
+
+        val models = ModelGenerator(
+            Packages(basePackage),
+            SourceApi(spec),
+        )
+            .generate()
+            .toSingleFile()
+
+        assertThatGenerated(models).isEqualTo(expectedModels)
     }
 
     private fun Models.toSingleFile(): String {

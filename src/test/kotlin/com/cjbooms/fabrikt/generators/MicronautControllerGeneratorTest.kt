@@ -13,6 +13,7 @@ import com.cjbooms.fabrikt.generators.controller.metadata.MicronautImports
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.model.toFileSpec
+import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readFolder
@@ -68,7 +69,7 @@ class MicronautControllerGeneratorTest {
     fun `correct models are generated for different OpenApi Specifications`(testCaseName: String) {
         val basePackage = "examples.$testCaseName"
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
-        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/micronaut/Controllers.kt")
+        val pathToExpected = "/examples/$testCaseName/controllers/micronaut/Controllers.kt"
 
         if (testCaseName == "modelSuffix") {
             MutableSettings.updateSettings(modelSuffix = "Dto")
@@ -80,14 +81,14 @@ class MicronautControllerGeneratorTest {
             JavaxValidationAnnotations,
         ).generate().toSingleFile()
 
-        assertThat(controllers).isEqualTo(expectedControllers)
+        assertThatGenerated(controllers.trim()).isEqualTo(pathToExpected)
     }
 
     @Test
     fun `correct models are generated for ControllerCodeGenOptionType_AUTHENTICATION`() {
         val basePackage = "examples.authentication"
         val api = SourceApi(readTextResource("/examples/authentication/api.yaml"))
-        val expectedControllers = readTextResource("/examples/authentication/controllers/micronaut/Controllers.kt")
+        val pathToExpected = "/examples/authentication/controllers/micronaut/Controllers.kt"
 
         val controllers = MicronautControllerInterfaceGenerator(
             Packages(basePackage),
@@ -96,7 +97,7 @@ class MicronautControllerGeneratorTest {
             setOf(ControllerCodeGenOptionType.AUTHENTICATION),
         ).generate().toSingleFile()
 
-        assertThat(controllers).isEqualTo(expectedControllers)
+        assertThatGenerated(controllers.trim()).isEqualTo(pathToExpected)
     }
 
     @Test
@@ -261,9 +262,9 @@ class MicronautControllerGeneratorTest {
     fun `ensure generates ByteArray body parameter and response for string with format binary`() {
         val api = SourceApi(readTextResource("/examples/binary/api.yaml"))
         val controllers = MicronautControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate().toSingleFile()
-        val expectedControllers = readTextResource("/examples/binary/controllers/micronaut/Controllers.kt")
+        val expectedControllers = "/examples/binary/controllers/micronaut/Controllers.kt"
 
-        assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
+        assertThatGenerated(controllers.trim()).isEqualTo(expectedControllers)
     }
 
     @Test
@@ -271,8 +272,8 @@ class MicronautControllerGeneratorTest {
         MutableSettings.addOption(CodeGenTypeOverride.BYTEARRAY_AS_INPUTSTREAM)
         val api = SourceApi(readTextResource("/examples/byteArrayStream/api.yaml"))
         val controllers = MicronautControllerInterfaceGenerator(Packages(basePackage), api, JavaxValidationAnnotations).generate().toSingleFile()
-        val expectedControllers = readTextResource("/examples/byteArrayStream/controllers/micronaut/Controllers.kt")
+        val expectedControllers = "/examples/byteArrayStream/controllers/micronaut/Controllers.kt"
 
-        assertThat(controllers.trim()).isEqualTo(expectedControllers.trim())
+        assertThatGenerated(controllers.trim()).isEqualTo(expectedControllers)
     }
 }

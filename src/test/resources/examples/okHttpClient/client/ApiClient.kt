@@ -25,7 +25,7 @@ import kotlin.jvm.Throws
 public class ExamplePath1Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      * GET example path 1
@@ -33,35 +33,43 @@ public class ExamplePath1Client(
      * @param explodeListQueryParam
      * @param queryParam2
      * @param intListQueryParam
+     * @param xJsonEncodedHeader Json Encoded header
      */
     @Throws(ApiException::class)
     public fun getExamplePath1(
         explodeListQueryParam: List<String>? = null,
         queryParam2: Int? = null,
         intListQueryParam: List<Int>? = null,
+        xJsonEncodedHeader: String? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
-        val httpUrl: HttpUrl = "$baseUrl/example-path-1"
-            .toHttpUrl()
-            .newBuilder()
-            .queryParam("explode_list_query_param", explodeListQueryParam, true)
-            .queryParam("query_param2", queryParam2)
-            .queryParam("int_list_query_param", intListQueryParam, true)
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example-path-1"
+                .toHttpUrl()
+                .newBuilder()
+                .queryParam("explode_list_query_param", explodeListQueryParam, true)
+                .queryParam("query_param2", queryParam2)
+                .queryParam("int_list_query_param", intListQueryParam, true)
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
-        val headerBuilder = Headers.Builder()
+        val headerBuilder =
+            Headers
+                .Builder()
+                .`header`("X-Json-Encoded-Header", xJsonEncodedHeader)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .get()
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .get()
+                .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -77,24 +85,27 @@ public class ExamplePath1Client(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUrl: HttpUrl = "$baseUrl/example-path-1"
-            .toHttpUrl()
-            .newBuilder()
-            .queryParam("explode_list_query_param", explodeListQueryParam, true)
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example-path-1"
+                .toHttpUrl()
+                .newBuilder()
+                .queryParam("explode_list_query_param", explodeListQueryParam, true)
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
         val headerBuilder = Headers.Builder()
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .post(objectMapper.writeValueAsString(content).toRequestBody("application/json".toMediaType()))
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .post(objectMapper.writeValueAsString(content).toRequestBody("application/json".toMediaType()))
+                .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }
 
@@ -102,7 +113,7 @@ public class ExamplePath1Client(
 public class ExamplePath2Client(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      * GET example path 2
@@ -121,27 +132,32 @@ public class ExamplePath2Client(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Content> {
-        val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
-            .pathParam("{path_param}" to pathParam)
-            .toHttpUrl()
-            .newBuilder()
-            .queryParam("limit", limit)
-            .queryParam("query_param2", queryParam2)
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example-path-2/{path_param}"
+                .pathParam("{path_param}" to pathParam)
+                .toHttpUrl()
+                .newBuilder()
+                .queryParam("limit", limit)
+                .queryParam("query_param2", queryParam2)
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
-        val headerBuilder = Headers.Builder()
-            .`header`("If-None-Match", ifNoneMatch)
+        val headerBuilder =
+            Headers
+                .Builder()
+                .`header`("If-None-Match", ifNoneMatch)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .get()
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .get()
+                .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -159,26 +175,31 @@ public class ExamplePath2Client(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
-            .pathParam("{path_param}" to pathParam)
-            .toHttpUrl()
-            .newBuilder()
-            .queryParam("query_param3", queryParam3)
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example-path-2/{path_param}"
+                .pathParam("{path_param}" to pathParam)
+                .toHttpUrl()
+                .newBuilder()
+                .queryParam("query_param3", queryParam3)
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
-        val headerBuilder = Headers.Builder()
-            .`header`("If-None-Match", ifNoneMatch)
+        val headerBuilder =
+            Headers
+                .Builder()
+                .`header`("If-None-Match", ifNoneMatch)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .head()
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .head()
+                .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 
     /**
@@ -196,25 +217,30 @@ public class ExamplePath2Client(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUrl: HttpUrl = "$baseUrl/example-path-2/{path_param}"
-            .pathParam("{path_param}" to pathParam)
-            .toHttpUrl()
-            .newBuilder()
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example-path-2/{path_param}"
+                .pathParam("{path_param}" to pathParam)
+                .toHttpUrl()
+                .newBuilder()
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
-        val headerBuilder = Headers.Builder()
-            .`header`("If-Match", ifMatch)
+        val headerBuilder =
+            Headers
+                .Builder()
+                .`header`("If-Match", ifMatch)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .put(objectMapper.writeValueAsString(firstModel).toRequestBody("application/json".toMediaType()))
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .put(objectMapper.writeValueAsString(firstModel).toRequestBody("application/json".toMediaType()))
+                .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }
 
@@ -222,7 +248,7 @@ public class ExamplePath2Client(
 public class ExamplePath3SubresourceClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      * PUT example path 3
@@ -241,26 +267,31 @@ public class ExamplePath3SubresourceClient(
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUrl: HttpUrl = "$baseUrl/example-path-3/{path_param}/subresource"
-            .pathParam("{path_param}" to pathParam)
-            .toHttpUrl()
-            .newBuilder()
-            .queryParam("csv_list_query_param", csvListQueryParam, false)
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example-path-3/{path_param}/subresource"
+                .pathParam("{path_param}" to pathParam)
+                .toHttpUrl()
+                .newBuilder()
+                .queryParam("csv_list_query_param", csvListQueryParam, false)
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
-        val headerBuilder = Headers.Builder()
-            .`header`("If-Match", ifMatch)
+        val headerBuilder =
+            Headers
+                .Builder()
+                .`header`("If-Match", ifMatch)
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .put(objectMapper.writeValueAsString(firstModel).toRequestBody("application/json".toMediaType()))
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .put(objectMapper.writeValueAsString(firstModel).toRequestBody("application/json".toMediaType()))
+                .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }
 
@@ -268,7 +299,7 @@ public class ExamplePath3SubresourceClient(
 public class ExamplePath4OnlyFailureResponseClient(
     private val objectMapper: ObjectMapper,
     private val baseUrl: String,
-    private val client: OkHttpClient,
+    private val okHttpClient: OkHttpClient,
 ) {
     /**
      * POST example path 4
@@ -279,22 +310,25 @@ public class ExamplePath4OnlyFailureResponseClient(
             emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<Unit> {
-        val httpUrl: HttpUrl = "$baseUrl/example-path-4/only-failure-response"
-            .toHttpUrl()
-            .newBuilder()
-            .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
-            .build()
+        val httpUrl: HttpUrl =
+            "$baseUrl/example-path-4/only-failure-response"
+                .toHttpUrl()
+                .newBuilder()
+                .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
+                .build()
 
         val headerBuilder = Headers.Builder()
         additionalHeaders.forEach { headerBuilder.header(it.key, it.value) }
         val httpHeaders: Headers = headerBuilder.build()
 
-        val request: Request = Request.Builder()
-            .url(httpUrl)
-            .headers(httpHeaders)
-            .post(ByteArray(0).toRequestBody())
-            .build()
+        val request: Request =
+            Request
+                .Builder()
+                .url(httpUrl)
+                .headers(httpHeaders)
+                .post(ByteArray(0).toRequestBody())
+                .build()
 
-        return request.execute(client, objectMapper, jacksonTypeRef())
+        return request.execute(okHttpClient, objectMapper, jacksonTypeRef())
     }
 }

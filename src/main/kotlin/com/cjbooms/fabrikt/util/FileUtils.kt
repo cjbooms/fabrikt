@@ -13,13 +13,13 @@ object FileUtils {
     }
 
     fun FileSpec.Builder.addFileDisclaimer(): FileSpec.Builder {
-        if (MutableSettings.outputOptions().contains(OutputOptionType.ADD_FILE_DISCLAIMER)) {
+        if (MutableSettings.outputOptions.contains(OutputOptionType.ADD_FILE_DISCLAIMER)) {
             addFileComment("""
-                
+
                 This file was generated from an OpenAPI specification by Fabrikt.
                 DO NOT EDIT. Changes will be lost the next time the code is generated.
                 Instead, update the spec and re-generate to update.
-                
+
             """.trimIndent())
         }
         return this

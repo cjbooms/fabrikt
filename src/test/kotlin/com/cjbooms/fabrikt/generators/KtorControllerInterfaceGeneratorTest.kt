@@ -11,6 +11,7 @@ import com.cjbooms.fabrikt.model.ControllerLibraryType
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.model.toFileSpec
+import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.cjbooms.fabrikt.util.ResourceHelper.readFolder
@@ -71,7 +72,7 @@ class KtorControllerInterfaceGeneratorTest {
     fun `correct controllers are generated for different OpenApi Specifications`(testCaseName: String) {
         val basePackage = "examples.$testCaseName"
         val api = SourceApi(readTextResource("/examples/$testCaseName/api.yaml"))
-        val expectedControllers = readTextResource("/examples/$testCaseName/controllers/ktor/Controllers.kt")
+        val expectedPath = "/examples/$testCaseName/controllers/ktor/Controllers.kt"
 
         if (testCaseName == "modelSuffix") {
             MutableSettings.updateSettings(modelSuffix = "Dto")
@@ -85,14 +86,14 @@ class KtorControllerInterfaceGeneratorTest {
         val library = ktorControllers.generateLibrary()
         val controllers = ktorControllers.generate().toSingleFile(library)
 
-        assertThat(controllers).isEqualTo(expectedControllers)
+        assertThatGenerated(controllers).isEqualTo(expectedPath)
     }
 
     @Test
     fun `correct controllers are generated for ControllerCodeGenOptionType_AUTHENTICATION`() {
         val basePackage = "examples.authentication"
         val api = SourceApi(readTextResource("/examples/authentication/api.yaml"))
-        val expectedControllers = readTextResource("/examples/authentication/controllers/ktor/Controllers.kt")
+        val expectedPath = "/examples/authentication/controllers/ktor/Controllers.kt"
 
         val generator = KtorControllerInterfaceGenerator(
             Packages(basePackage),
@@ -102,7 +103,7 @@ class KtorControllerInterfaceGeneratorTest {
         val library = generator.generateLibrary()
         val controllers = generator.generate().toSingleFile(library)
 
-        assertThat(controllers).isEqualTo(expectedControllers)
+        assertThatGenerated(controllers).isEqualTo(expectedPath)
     }
 
     @Test
@@ -243,9 +244,8 @@ class KtorControllerInterfaceGeneratorTest {
         val lib = generator.generateLibrary()
 
         val fileStr = controllers.toSingleFile(lib)
-        val expectedControllers = readTextResource("/examples/binary/controllers/ktor/Controllers.kt")
 
-        assertThat(fileStr.trim()).isEqualTo(expectedControllers.trim())
+        assertThatGenerated(fileStr.trim()).isEqualTo("/examples/binary/controllers/ktor/Controllers.kt")
     }
 
     @Test
@@ -260,8 +260,8 @@ class KtorControllerInterfaceGeneratorTest {
         val lib = generator.generateLibrary()
 
         val fileStr = controllers.toSingleFile(lib)
-        val expectedControllers = readTextResource("/examples/byteArrayStream/controllers/ktor/Controllers.kt")
+        val expectedControllers = "/examples/byteArrayStream/controllers/ktor/Controllers.kt"
 
-        assertThat(fileStr.trim()).isEqualTo(expectedControllers.trim())
+        assertThatGenerated(fileStr).isEqualTo(expectedControllers)
     }
 }

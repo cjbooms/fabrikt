@@ -27,6 +27,9 @@ public data class ThirdLevelChild21(
   @get:NotNull
   @get:Valid
   override val metadata: SecondLevelMetadata,
+  /**
+   * timestamp
+   */
   @param:JsonProperty("creationDate")
   @get:JsonProperty("creationDate")
   @get:NotNull

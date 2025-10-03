@@ -5,8 +5,14 @@ import kotlin.String
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * One Object
+ */
 @Serializable
 public data class OneObject(
+  /**
+   * Type Property
+   */
   @SerialName("type")
   @get:NotNull
   public val type: String,

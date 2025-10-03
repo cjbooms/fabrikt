@@ -13,6 +13,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asTypeName
 
 sealed class GeneratedType(val spec: TypeSpec, val destinationPackage: String) {
     val className = ClassName(destinationPackage, spec.name!!)
@@ -70,7 +71,7 @@ fun <T : GeneratedType> Collection<T>.toFileSpec(): Collection<FileSpec> = this
  */
 sealed class IncomingParameter(val oasName: String, val description: String?, val type: TypeName) {
     val name: String = oasName.toKotlinParameterName()
-    open fun toParameterSpecBuilder(): ParameterSpec.Builder =
+    open fun toParameterSpecBuilder(treatAnyTypeHeadersAsStrings: Boolean = false): ParameterSpec.Builder =
         ParameterSpec.builder(name, type)
 }
 
@@ -103,4 +104,12 @@ class RequestParameter(
         explode = parameter.explode,
         defaultValue = parameter.schema.default
     )
+
+    override fun toParameterSpecBuilder(treatAnyTypeHeadersAsStrings: Boolean): ParameterSpec.Builder =
+        if (treatAnyTypeHeadersAsStrings && parameterLocation == HeaderParam && typeInfo == KotlinTypeInfo.AnyType) {
+            ParameterSpec.builder(
+                name = name,
+                type = if (isRequired) String::class.asTypeName() else String::class.asTypeName().copy(nullable = true)
+            )
+        } else super.toParameterSpecBuilder(treatAnyTypeHeadersAsStrings)
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.`annotation`.JsonProperty
 import javax.validation.constraints.NotNull
 import kotlin.String
 
-public data class Person(
+public data class SimpleObjOne(
   @param:JsonProperty("name")
   @get:JsonProperty("name")
   @get:NotNull
