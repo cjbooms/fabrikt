@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.clients.okio3
 
 import com.example.client.*
+import com.example.models.EnumQueryParam
 import com.example.models.Failure
 import com.example.models.FirstModel
 import com.example.models.QueryResult
@@ -107,6 +108,23 @@ class Okio3Test {
                 listOf(FirstModel(id = testInfo.displayName))
             )
         )
+    }
+
+    @Test
+    fun `adds enum_query_param to the query`(testInfo: TestInfo) {
+        wiremock.get {
+            urlPath like "/example-path-1"
+            queryParams contains "enum_query_param" like "ENUM_VALUE_1"
+        } returns {
+            statusCode = 200
+            body = mapper.writeValueAsString(
+                QueryResult(
+                    emptyList()
+                )
+            )
+        }
+
+        examplePath1Client.getExamplePath1(enumQueryParam = EnumQueryParam.ENUM_VALUE_1)
     }
 
     @Test
