@@ -7,6 +7,7 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.collections.List
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -42,4 +43,8 @@ public data class Content(
   public val byte: String? = null,
   @SerialName("binary")
   public val binary: String? = null,
+  @SerialName("arrayOfString")
+  public val arrayOfString: List<String>? = null,
+  @SerialName("arrayOfUuid")
+  public val arrayOfUuid: List<String>? = null,
 )
