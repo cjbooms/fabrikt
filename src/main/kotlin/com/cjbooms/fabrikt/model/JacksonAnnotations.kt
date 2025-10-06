@@ -44,4 +44,7 @@ object JacksonAnnotations : SerializationAnnotations {
 
     override fun addEnumConstantAnnotation(enumSpecBuilder: TypeSpec.Builder, enumValue: String) =
         enumSpecBuilder // not applicable
+
+    override fun annotateArrayElementType(elementType: TypeName, elementTypeInfo: KotlinTypeInfo): TypeName =
+        elementType // Jackson doesn't need array element annotations
 }

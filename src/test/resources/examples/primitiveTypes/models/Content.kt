@@ -13,6 +13,7 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
+import kotlin.collections.List
 
 public data class Content(
   @param:JsonProperty("integer")
@@ -57,4 +58,10 @@ public data class Content(
   @param:JsonProperty("binary")
   @get:JsonProperty("binary")
   public val binary: ByteArray? = null,
+  @param:JsonProperty("arrayOfString")
+  @get:JsonProperty("arrayOfString")
+  public val arrayOfString: List<String>? = null,
+  @param:JsonProperty("arrayOfUuid")
+  @get:JsonProperty("arrayOfUuid")
+  public val arrayOfUuid: List<UUID>? = null,
 )

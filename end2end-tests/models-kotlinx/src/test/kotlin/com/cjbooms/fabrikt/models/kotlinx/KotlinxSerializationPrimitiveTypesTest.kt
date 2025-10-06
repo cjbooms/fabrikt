@@ -53,7 +53,12 @@ class KotlinxSerializationPrimitiveTypesTest {
         numberFloat = 1.23f,
         numberDouble = 4.56,
         byte = binFileContent,
-        binary = binFileContent
+        binary = binFileContent,
+        arrayOfString = listOf("one", "two", "three"),
+        arrayOfUuid = listOf(
+            UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
+            UUID.fromString("123e4567-e89b-12d3-a456-426614174001")
+        )
     )
 
     @Test

@@ -30,7 +30,12 @@ class KotlinxSerializationStringFormatTest {
         stringDate = "2020-02-04",
         stringDateTime = "2024-11-04T12:00:00Z",
         byte = "AETdqhOI3C8/jA184vF3FyUNGesJ9x22cn2TqiQLYpFzvy5Moyie3K1MAy8DVy62HxURtRHwP2SjdV7B+HZQzuCwMsJLxhbNj0okOzdV2EOAr2JV3htYH+vNVJE9NHwzyYTkOA5ZuYpEDZMEL+SqjyeSRXaLimqDbkew6hg1QdU=",
-        binary = "AETdqhOI3C8/jA184vF3FyUNGesJ9x22cn2TqiQLYpFzvy5Moyie3K1MAy8DVy62HxURtRHwP2SjdV7B+HZQzuCwMsJLxhbNj0okOzdV2EOAr2JV3htYH+vNVJE9NHwzyYTkOA5ZuYpEDZMEL+SqjyeSRXaLimqDbkew6hg1QdU="
+        binary = "AETdqhOI3C8/jA184vF3FyUNGesJ9x22cn2TqiQLYpFzvy5Moyie3K1MAy8DVy62HxURtRHwP2SjdV7B+HZQzuCwMsJLxhbNj0okOzdV2EOAr2JV3htYH+vNVJE9NHwzyYTkOA5ZuYpEDZMEL+SqjyeSRXaLimqDbkew6hg1QdU=",
+        arrayOfString = listOf("one", "two", "three"),
+        arrayOfUuid = listOf(
+            "123e4567-e89b-12d3-a456-426614174000",
+            "123e4567-e89b-12d3-a456-426614174001"
+        )
     )
 
     @Test

@@ -1,18 +1,13 @@
 package examples.primitiveTypes.models
 
 import java.math.BigDecimal
-import java.net.URI
-import java.util.UUID
 import kotlin.Boolean
-import kotlin.ByteArray
 import kotlin.Double
 import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.collections.List
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -29,16 +24,14 @@ public data class Content(
   public val boolean: Boolean? = null,
   @SerialName("string")
   public val string: String? = null,
-  @Contextual
   @SerialName("stringUuid")
-  public val stringUuid: UUID? = null,
-  @Contextual
+  public val stringUuid: String? = null,
   @SerialName("stringUri")
-  public val stringUri: URI? = null,
+  public val stringUri: String? = null,
   @SerialName("stringDate")
-  public val stringDate: LocalDate? = null,
+  public val stringDate: String? = null,
   @SerialName("stringDateTime")
-  public val stringDateTime: Instant? = null,
+  public val stringDateTime: String? = null,
   @Contextual
   @SerialName("number")
   public val number: BigDecimal? = null,
@@ -46,14 +39,12 @@ public data class Content(
   public val numberFloat: Float? = null,
   @SerialName("numberDouble")
   public val numberDouble: Double? = null,
-  @Contextual
   @SerialName("byte")
-  public val byte: ByteArray? = null,
-  @Contextual
+  public val byte: String? = null,
   @SerialName("binary")
-  public val binary: ByteArray? = null,
+  public val binary: String? = null,
   @SerialName("arrayOfString")
   public val arrayOfString: List<String>? = null,
   @SerialName("arrayOfUuid")
-  public val arrayOfUuid: List<@Contextual UUID>? = null,
+  public val arrayOfUuid: List<String>? = null,
 )
