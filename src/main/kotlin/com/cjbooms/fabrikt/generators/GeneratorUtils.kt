@@ -198,12 +198,10 @@ object GeneratorUtils {
             }
             .sortedBy { it.type.isNullable }
 
-        val allParameters = bodies + parameters + extraParameters
-
-        return detectAndAvoidNameClashes(allParameters)
+        return detectAndAvoidNameClashes(bodies + parameters + extraParameters)
     }
 
-    fun List<IncomingParameter>.hasNameClashes(): Boolean =
+    private fun List<IncomingParameter>.hasNameClashes(): Boolean =
         map { it.name }.toSet().size != size
 
     private fun detectAndAvoidNameClashes(parameters: List<IncomingParameter>): List<IncomingParameter> {
