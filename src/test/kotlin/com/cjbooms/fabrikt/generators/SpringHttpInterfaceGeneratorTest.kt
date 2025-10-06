@@ -7,13 +7,10 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.OutputOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.SpringHttpInterfaceGenerator
-import com.cjbooms.fabrikt.generators.controller.MicronautControllerInterfaceGenerator
-import com.cjbooms.fabrikt.generators.controller.SpringControllerInterfaceGenerator
 import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SourceApi
-import com.cjbooms.fabrikt.model.toFileSpec
 import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
@@ -75,32 +72,6 @@ class SpringHttpInterfaceGeneratorTest {
         )
     }
 
-    @Test
-    fun `adds disclaimer as comment to files if enabled`() {
-        MutableSettings.updateSettings(
-            outputOptions = setOf(OutputOptionType.ADD_FILE_DISCLAIMER)
-        )
-        val api = SourceApi(readTextResource("/examples/fileComment/api.yaml"))
-        val generator = SpringControllerInterfaceGenerator(
-            Packages("examples.fileComment"),
-            api,
-            JavaxValidationAnnotations
-        )
-
-        val expectedFiles = readFolder(Path.of("src/test/resources/examples/fileComment/controllers/spring"))
-
-        val controllers = generator.generate()
-        val lib = generator.generateLibrary()
-
-        val files = controllers.files + lib.toFileSpec()
-
-        files.forEach { file ->
-            val key = "${file.name}.kt"
-            val content = file.toString()
-            assertThat(content).isEqualTo(expectedFiles[key])
-        }
-    }
-
     private fun runTestCase(
         testCaseName: String,
         clientFileName: String = "SpringHttpInterfaceClient.kt",
@@ -126,6 +97,27 @@ class SpringHttpInterfaceGeneratorTest {
 
         assertThatGenerated(clientCode).isEqualTo(expectedClient)
         assertThatGenerated(models).isEqualTo(expectedModel)
+    }
+
+    @Test
+    fun `adds disclaimer as comment to files if enabled`() {
+        MutableSettings.updateSettings(
+            outputOptions = setOf(OutputOptionType.ADD_FILE_DISCLAIMER)
+        )
+        val api = SourceApi(readTextResource("/examples/fileComment/api.yaml"))
+        val generator = SpringHttpInterfaceGenerator(
+            Packages("examples.fileComment"),
+            api,
+        )
+        val expectedFiles = readFolder(Path.of("src/test/resources/examples/fileComment/client/spring"))
+
+        val clientFiles = generator.generate(emptySet()).files
+
+        clientFiles.forEach { file ->
+            val key = "${file.name}.kt"
+            val content = file.toString()
+            assertThat(content).isEqualTo(expectedFiles[key])
+        }
     }
 
     private fun Collection<ClientType>.toSingleFile(): String {

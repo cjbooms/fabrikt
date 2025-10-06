@@ -1,7 +1,7 @@
 //
 // This file was generated from an OpenAPI specification by Fabrikt.
-// DO NOT EDIT. Changes will be lost the next time the code is generated.
-// Instead, update the spec and re-generate to update.
+// DO NOT EDIT. Any changes will be overwritten the next time the code is generated.
+// To update, modify the specification and re-generate.
 //
 package examples.fileComment.models
 

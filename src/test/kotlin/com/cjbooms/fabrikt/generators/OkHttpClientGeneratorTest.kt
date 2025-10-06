@@ -181,7 +181,7 @@ class OkHttpClientGeneratorTest {
             api
         )
 
-        val expectedClient = readTextResource("/examples/fileComment/client/PetsClient.kt")
+        val expectedClient = readTextResource("/examples/fileComment/client/okhttp/PetsClient.kt")
 
         val clientTypes = generator.generateDynamicClientCode()
 
