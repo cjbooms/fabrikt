@@ -174,7 +174,6 @@ object GeneratorUtils {
         basePackage: String,
         pathParameters: List<Parameter>,
         extraParameters: List<IncomingParameter>,
-        avoidNameClashes: Boolean = true,
     ): List<IncomingParameter> {
 
         val bodies = requestBody.contentMediaTypes.values
@@ -201,11 +200,7 @@ object GeneratorUtils {
 
         val allParameters = bodies + parameters + extraParameters
 
-        return if (avoidNameClashes) {
-            detectAndAvoidNameClashes(allParameters)
-        } else {
-            allParameters
-        }
+        return detectAndAvoidNameClashes(allParameters)
     }
 
     fun List<IncomingParameter>.hasNameClashes(): Boolean =

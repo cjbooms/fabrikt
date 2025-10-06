@@ -4,14 +4,13 @@ import examples.ktorClient.models.Item
 import examples.ktorClient.models.SortOrder
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.plugins.resources.`get`
-import io.ktor.client.plugins.resources.post
-import io.ktor.client.plugins.resources.put
+import io.ktor.client.request.`get`
 import io.ktor.client.request.`header`
+import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.isSuccess
-import io.ktor.resources.Resource
 import kotlin.Double
 import kotlin.Int
 import kotlin.String
@@ -39,15 +38,20 @@ public class ItemsClient(
         category: String? = null,
         priceLimit: Double? = null,
     ): GetItemsResult {
+        val url =
+            buildString {
+                append("""/items""")
+                val params =
+                    buildList {
+                        limit?.let { add("limit=$it") }
+                        category?.let { add("category=$it") }
+                        priceLimit?.let { add("priceLimit=$it") }
+                    }
+                if (params.isNotEmpty()) append("?").append(params.joinToString("&"))
+            }
+
         val response =
-            httpClient.`get`(
-                GetItems(
-                    limit = limit,
-                    category = category,
-                    priceLimit =
-                    priceLimit,
-                ),
-            ) {
+            httpClient.`get`(url) {
                 `header`("Accept", "application/json")
             }
         return if (response.status.isSuccess()) {
@@ -67,27 +71,6 @@ public class ItemsClient(
             public val response: HttpResponse,
         ) : GetItemsResult()
     }
-
-    /**
-     * Retrieve a list of items
-     *
-     * HTTP method: GET
-     *
-     * Response:
-     * 	A successful request returns an HTTP 200 response with
-     * [kotlin.collections.List<examples.ktorClient.models.Item>] in the response body.
-     *
-     * Request parameters:
-     * 	 @param limit Maximum number of items to return
-     * 	 @param category Filter items by category
-     * 	 @param priceLimit Maximum price of items to return
-     */
-    @Resource("/items")
-    public class GetItems(
-        public val limit: Int? = null,
-        public val category: String? = null,
-        public val priceLimit: Double? = null,
-    )
 }
 
 public object CatalogsItems
@@ -115,8 +98,18 @@ public class CatalogsItemsClient(
         xRequestID: String,
         xTracingID: String? = null,
     ): CreateItemResult {
+        val url =
+            buildString {
+                append("""/catalogs/$catalogId/items""")
+                val params =
+                    buildList {
+                        add("randomNumber=$randomNumber")
+                    }
+                if (params.isNotEmpty()) append("?").append(params.joinToString("&"))
+            }
+
         val response =
-            httpClient.post(CreateItem(catalogId = catalogId, randomNumber = randomNumber)) {
+            httpClient.post(url) {
                 `header`("Accept", "application/json")
                 `header`("Content-Type", "application/json")
                 setBody(item)
@@ -140,32 +133,6 @@ public class CatalogsItemsClient(
             public val response: HttpResponse,
         ) : CreateItemResult()
     }
-
-    /**
-     * Create a new item
-     *
-     * HTTP method: POST
-     *
-     * Request body:
-     * 	[examples.ktorClient.models.Item] The item to create
-     *
-     * Response:
-     * 	A successful request returns an HTTP 201 response with [examples.ktorClient.models.Item] in
-     * the response body.
-     *
-     * Request headers:
-     * 	"X-Request-ID" (required) Unique identifier for the request
-     * 	"X-Tracing-ID" (optional) Unique identifier for the tracing
-     *
-     * Request parameters:
-     * 	 @param catalogId The ID of the catalog
-     * 	 @param randomNumber Just a test query param
-     */
-    @Resource("/catalogs/{catalogId}/items")
-    public class CreateItem(
-        public val catalogId: String,
-        public val randomNumber: Int,
-    )
 }
 
 public object ItemsSubitems
@@ -187,8 +154,10 @@ public class ItemsSubitemsClient(
         itemId: String,
         subItemId: String,
     ): GetSubItemResult {
+        val url = """/items/$itemId/subitems/$subItemId"""
+
         val response =
-            httpClient.`get`(GetSubItem(itemId = itemId, subItemId = subItemId)) {
+            httpClient.`get`(url) {
                 `header`("Accept", "application/json")
             }
         return if (response.status.isSuccess()) {
@@ -208,25 +177,6 @@ public class ItemsSubitemsClient(
             public val response: HttpResponse,
         ) : GetSubItemResult()
     }
-
-    /**
-     * Retrieve a specific subitem of an item
-     *
-     * HTTP method: GET
-     *
-     * Response:
-     * 	A successful request returns an HTTP 200 response with [examples.ktorClient.models.Item] in
-     * the response body.
-     *
-     * Request parameters:
-     * 	 @param itemId The ID of the item
-     * 	 @param subItemId The ID of the subitem
-     */
-    @Resource("/items/{itemId}/subitems/{subItemId}")
-    public class GetSubItem(
-        public val itemId: String,
-        public val subItemId: String,
-    )
 }
 
 public object CatalogsSearch
@@ -254,16 +204,20 @@ public class CatalogsSearchClient(
         sort: SortOrder? = null,
         xTracingID: String? = null,
     ): SearchCatalogItemsResult {
+        val url =
+            buildString {
+                append("""/catalogs/$catalogId/search""")
+                val params =
+                    buildList {
+                        add("query=$query")
+                        page?.let { add("page=$it") }
+                        sort?.let { add("sort=$it") }
+                    }
+                if (params.isNotEmpty()) append("?").append(params.joinToString("&"))
+            }
+
         val response =
-            httpClient.`get`(
-                SearchCatalogItems(
-                    catalogId = catalogId,
-                    query = query,
-                    page =
-                    page,
-                    sort = sort,
-                ),
-            ) {
+            httpClient.`get`(url) {
                 `header`("Accept", "application/json")
                 `header`("X-Tracing-ID", xTracingID)
             }
@@ -284,32 +238,6 @@ public class CatalogsSearchClient(
             public val response: HttpResponse,
         ) : SearchCatalogItemsResult()
     }
-
-    /**
-     * Search for items
-     *
-     * HTTP method: GET
-     *
-     * Response:
-     * 	A successful request returns an HTTP 200 response with
-     * [kotlin.collections.List<examples.ktorClient.models.Item>] in the response body.
-     *
-     * Request headers:
-     * 	"X-Tracing-ID" (optional) Unique identifier for the tracing
-     *
-     * Request parameters:
-     * 	 @param catalogId The ID of the catalog
-     * 	 @param query The search query
-     * 	 @param page Page number
-     * 	 @param sort Sort order
-     */
-    @Resource("/catalogs/{catalogId}/search")
-    public class SearchCatalogItems(
-        public val catalogId: String,
-        public val query: String,
-        public val page: Int? = null,
-        public val sort: SortOrder? = null,
-    )
 }
 
 public object CatalogsItemsAvailability
@@ -331,8 +259,10 @@ public class CatalogsItemsAvailabilityClient(
         catalogId: String,
         itemId: String,
     ): GetByCatalogIdAndItemIdResult {
+        val url = """/catalogs/$catalogId/items/$itemId/availability"""
+
         val response =
-            httpClient.`get`(GetByCatalogIdAndItemId(catalogId = catalogId, itemId = itemId)) {
+            httpClient.`get`(url) {
                 `header`("Accept", "application/json")
             }
         return if (response.status.isSuccess()) {
@@ -356,8 +286,10 @@ public class CatalogsItemsAvailabilityClient(
         catalogId: String,
         itemId: String,
     ): PutByCatalogIdAndItemIdResult {
+        val url = """/catalogs/$catalogId/items/$itemId/availability"""
+
         val response =
-            httpClient.put(PutByCatalogIdAndItemId(catalogId = catalogId, itemId = itemId)) {
+            httpClient.put(url) {
                 `header`("Accept", "application/json")
             }
         return if (response.status.isSuccess()) {
@@ -378,24 +310,6 @@ public class CatalogsItemsAvailabilityClient(
         ) : GetByCatalogIdAndItemIdResult()
     }
 
-    /**
-     * Check item availability
-     *
-     * HTTP method: GET
-     *
-     * Response:
-     * 	A successful request returns an HTTP 204 response with an empty body.
-     *
-     * Request parameters:
-     * 	 @param catalogId The ID of the catalog
-     * 	 @param itemId The ID of the item
-     */
-    @Resource("/catalogs/{catalogId}/items/{itemId}/availability")
-    public class GetByCatalogIdAndItemId(
-        public val catalogId: String,
-        public val itemId: String,
-    )
-
     public sealed class PutByCatalogIdAndItemIdResult {
         public data class Success(
             public val `data`: Unit,
@@ -406,24 +320,6 @@ public class CatalogsItemsAvailabilityClient(
             public val response: HttpResponse,
         ) : PutByCatalogIdAndItemIdResult()
     }
-
-    /**
-     * Update item availability
-     *
-     * HTTP method: PUT
-     *
-     * Response:
-     * 	A successful request returns an HTTP 204 response with an empty body.
-     *
-     * Request parameters:
-     * 	 @param catalogId The ID of the catalog
-     * 	 @param itemId The ID of the item
-     */
-    @Resource("/catalogs/{catalogId}/items/{itemId}/availability")
-    public class PutByCatalogIdAndItemId(
-        public val catalogId: String,
-        public val itemId: String,
-    )
 }
 
 public object Uptime
@@ -439,8 +335,10 @@ public class UptimeClient(
      * 	[kotlin.String] if the request was successful.
      */
     public suspend fun `get_System-Uptime`(): `Get_System-UptimeResult` {
+        val url = """/uptime"""
+
         val response =
-            httpClient.`get`(`Get_System-Uptime`()) {
+            httpClient.`get`(url) {
                 `header`("Accept", "application/json")
             }
         return if (response.status.isSuccess()) {
@@ -460,15 +358,4 @@ public class UptimeClient(
             public val response: HttpResponse,
         ) : `Get_System-UptimeResult`()
     }
-
-    /**
-     * Get the uptime of the system
-     *
-     * HTTP method: GET
-     *
-     * Response:
-     * 	A successful request returns an HTTP 200 response with [kotlin.String] in the response body.
-     */
-    @Resource("/uptime")
-    public class `Get_System-Uptime`
 }
