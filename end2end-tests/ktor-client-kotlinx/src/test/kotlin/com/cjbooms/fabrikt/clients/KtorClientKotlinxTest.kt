@@ -1,4 +1,4 @@
-package com.cjbooms.fabrikt.routing.ktor
+package com.cjbooms.fabrikt.clients
 
 import com.example.client.CatalogsItemsClient
 import com.example.client.CatalogsSearchClient
@@ -14,7 +14,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.resources.Resources
 import io.ktor.client.statement.bodyAsText
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.response.respond
@@ -44,7 +43,6 @@ class KtorClientKotlinxTest {
     }
 
     private fun createHttpClient() = HttpClient(CIO) {
-        install(Resources)
         install(ContentNegotiation) {
             json()
         }
@@ -173,7 +171,6 @@ class KtorClientKotlinxTest {
                 }
 
                 val httpClient = createClient {
-                    install(Resources)
                     install(ContentNegotiation) {
                         json()
                     }
