@@ -1,6 +1,7 @@
 package com.cjbooms.fabrikt.clients
 
 import com.example.client.ExamplePath1Client
+import com.example.models.EnumQueryParam
 import com.example.models.FirstModel
 import com.example.models.QueryResult
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -62,6 +63,21 @@ class AdditionalQueryParametersTest {
             body = mapper.writeValueAsString(expectedResponse)
         }
         val result = examplePath1Client.getExamplePath1(additionalQueryParameters = mapOf("unspecified_param" to "some_value"))
+        Assertions.assertThat(result).isEqualTo(expectedResponse)
+    }
+
+    @Test
+    fun `enum query parameters are properly appended to requests`() {
+        val expectedResponse = QueryResult(listOf(FirstModel(id = "the parameter was there!")))
+        wiremock.get {
+            urlPath like "/example-path-1"
+            queryParams contains "enum_query_param" like "ENUM_VALUE_1"
+        } returns {
+            statusCode = 200
+            header = "Content-Type" to "application/json"
+            body = mapper.writeValueAsString(expectedResponse)
+        }
+        val result = examplePath1Client.getExamplePath1(enumQueryParam = EnumQueryParam.ENUM_VALUE_1)
         Assertions.assertThat(result).isEqualTo(expectedResponse)
     }
 }

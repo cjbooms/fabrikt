@@ -3,6 +3,7 @@ package examples.okHttpClient.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import examples.okHttpClient.models.Content
+import examples.okHttpClient.models.EnumQueryParam
 import examples.okHttpClient.models.FirstModel
 import examples.okHttpClient.models.QueryResult
 import okhttp3.Headers
@@ -34,6 +35,7 @@ public class ExamplePath1Client(
      * @param queryParam2
      * @param intListQueryParam
      * @param xJsonEncodedHeader Json Encoded header
+     * @param enumQueryParam
      */
     @Throws(ApiException::class)
     public fun getExamplePath1(
@@ -41,6 +43,7 @@ public class ExamplePath1Client(
         queryParam2: Int? = null,
         intListQueryParam: List<Int>? = null,
         xJsonEncodedHeader: String? = null,
+        enumQueryParam: EnumQueryParam? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
         additionalQueryParameters: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> {
@@ -51,6 +54,7 @@ public class ExamplePath1Client(
                 .queryParam("explode_list_query_param", explodeListQueryParam, true)
                 .queryParam("query_param2", queryParam2)
                 .queryParam("int_list_query_param", intListQueryParam, true)
+                .queryParam("enum_query_param", enumQueryParam)
                 .also { builder -> additionalQueryParameters.forEach { builder.queryParam(it.key, it.value) } }
                 .build()
 
