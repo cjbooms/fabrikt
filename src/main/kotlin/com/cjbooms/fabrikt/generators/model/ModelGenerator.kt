@@ -3,6 +3,7 @@ package com.cjbooms.fabrikt.generators.model
 import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType.SEALED_INTERFACES_FOR_ONE_OF
+import com.cjbooms.fabrikt.cli.SerializationLibrary
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.ClassSettings
 import com.cjbooms.fabrikt.generators.GeneratorUtils.toClassName
@@ -92,20 +93,20 @@ class ModelGenerator(
                     typeInfo,
                 )
             val typeName = when (typeInfo) {
-                is KotlinTypeInfo.Array -> if (typeInfo.hasUniqueItems) {
-                    createSet(
-                        toModelType(
-                            basePackage,
-                            typeInfo.parameterizedType,
-                            typeInfo.isParameterizedTypeNullable
-                        ),)
-                } else createList(
-                    toModelType(
+                is KotlinTypeInfo.Array -> {
+                    val elementType = toModelType(
                         basePackage,
                         typeInfo.parameterizedType,
                         typeInfo.isParameterizedTypeNullable
-                    ),
-                )
+                    )
+                    val annotatedElementType = MutableSettings.serializationLibrary.serializationAnnotations
+                        .annotateArrayElementType(elementType, typeInfo.parameterizedType)
+                    if (typeInfo.hasUniqueItems) {
+                        createSet(annotatedElementType)
+                    } else {
+                        createList(annotatedElementType)
+                    }
+                }
 
                 is KotlinTypeInfo.Map ->
                     when (val paramType = typeInfo.parameterizedType) {
