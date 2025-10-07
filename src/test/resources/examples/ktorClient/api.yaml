@@ -146,6 +146,14 @@ paths:
           required: false
           schema:
             type: string
+        - name: listParam
+          in: query
+          description: A list parameter
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         '200':
           description: Search results

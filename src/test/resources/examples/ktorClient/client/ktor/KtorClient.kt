@@ -192,6 +192,7 @@ public class CatalogsSearchClient(
      * 	 @param query The search query
      * 	 @param page Page number
      * 	 @param sort Sort order
+     * 	 @param listParam A list parameter
      * 	 @param xTracingID Unique identifier for the tracing
      *
      * Returns:
@@ -202,6 +203,7 @@ public class CatalogsSearchClient(
         query: String,
         page: Int? = null,
         sort: SortOrder? = null,
+        listParam: List<String>? = null,
         xTracingID: String? = null,
     ): SearchCatalogItemsResult {
         val url =
@@ -212,6 +214,7 @@ public class CatalogsSearchClient(
                         add("query=$query")
                         page?.let { add("page=$it") }
                         sort?.let { add("sort=$it") }
+                        listParam?.forEach { add("listParam=$it") }
                     }
                 if (params.isNotEmpty()) append("?").append(params.joinToString("&"))
             }

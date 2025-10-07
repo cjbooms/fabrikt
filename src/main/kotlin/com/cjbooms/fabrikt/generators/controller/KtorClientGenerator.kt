@@ -122,10 +122,19 @@ class KtorClientGenerator(
                                         addStatement("val params = buildList {")
                                         indent()
                                         queryParams.forEach { param ->
-                                            if (param.isRequired) {
-                                                addStatement("add(\"%L=\${%L}\")", param.originalName, param.name)
+                                            val isArrayType = param.typeInfo is com.cjbooms.fabrikt.model.KotlinTypeInfo.Array
+                                            if (isArrayType) {
+                                                if (param.isRequired) {
+                                                    addStatement("%L.forEach { add(\"%L=\${it}\") }", param.name, param.originalName)
+                                                } else {
+                                                    addStatement("%L?.forEach { add(\"%L=\${it}\") }", param.name, param.originalName)
+                                                }
                                             } else {
-                                                addStatement("%L?.let { add(\"%L=\${it}\") }", param.name, param.originalName)
+                                                if (param.isRequired) {
+                                                    addStatement("add(\"%L=\${%L}\")", param.originalName, param.name)
+                                                } else {
+                                                    addStatement("%L?.let { add(\"%L=\${it}\") }", param.name, param.originalName)
+                                                }
                                             }
                                         }
                                         unindent()

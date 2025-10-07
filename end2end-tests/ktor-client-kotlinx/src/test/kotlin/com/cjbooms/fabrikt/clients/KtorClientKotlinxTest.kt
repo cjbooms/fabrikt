@@ -140,6 +140,7 @@ class KtorClientKotlinxTest {
             val capturedPage = slot<String?>()
             val capturedSort = slot<String?>()
             val capturedXTracingID = slot<String?>()
+            val capturedListParam = slot<List<String>?>()
 
             testApplication {
                 routing {
@@ -149,12 +150,14 @@ class KtorClientKotlinxTest {
                         val page = call.request.queryParameters["page"]
                         val sort = call.request.queryParameters["sort"]
                         val xTracingID = call.request.headers["X-Tracing-ID"]
+                        val listParam = call.request.queryParameters.getAll("listParam")
 
                         capturedCatalogId.captured = catalogId
                         capturedQuery.captured = query
                         capturedPage.captured = page
                         capturedSort.captured = sort
                         capturedXTracingID.captured = xTracingID
+                        capturedListParam.captured = listParam
 
                         call.response.headers.append("Content-Type", "application/json")
                         call.respond("""
@@ -183,7 +186,8 @@ class KtorClientKotlinxTest {
                     query = "query",
                     page = 10,
                     sort = SortOrder.DESC,
-                    xTracingID = "request-id-123"
+                    xTracingID = "request-id-123",
+                    listParam = listOf("a", "b", "c")
                 )
 
                 assertInstanceOf<CatalogsSearchClient.SearchCatalogItemsResult.Success>(response)
@@ -192,6 +196,7 @@ class KtorClientKotlinxTest {
                 assertEquals("10", capturedPage.captured)
                 assertEquals("DESC", capturedSort.captured)
                 assertEquals("request-id-123", capturedXTracingID.captured)
+                assertEquals(listOf("a", "b", "c"), capturedListParam.captured)
             }
         }
     }
