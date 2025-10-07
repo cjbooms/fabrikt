@@ -138,7 +138,7 @@ class KtorClientGenerator(
                                 .addStatement("")
                                 .addStatement(
                                     "val response = httpClient.%M(url) {",
-                                    MemberName("io.ktor.client.request", verb)
+                                    MemberName("io.ktor.client.request", verb, isExtension = true)
                                 )
                                 .indent()
                                 .apply {
