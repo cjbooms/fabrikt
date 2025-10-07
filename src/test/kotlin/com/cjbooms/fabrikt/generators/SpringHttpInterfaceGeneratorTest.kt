@@ -4,6 +4,7 @@ import com.cjbooms.fabrikt.cli.ClientCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ClientCodeGenTargetType
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.OutputOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.SpringHttpInterfaceGenerator
 import com.cjbooms.fabrikt.generators.model.ModelGenerator
@@ -13,13 +14,16 @@ import com.cjbooms.fabrikt.model.SourceApi
 import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
+import com.cjbooms.fabrikt.util.ResourceHelper.readFolder
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import java.nio.file.Path
 import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -93,6 +97,27 @@ class SpringHttpInterfaceGeneratorTest {
 
         assertThatGenerated(clientCode).isEqualTo(expectedClient)
         assertThatGenerated(models).isEqualTo(expectedModel)
+    }
+
+    @Test
+    fun `adds disclaimer as comment to files if enabled`() {
+        MutableSettings.updateSettings(
+            outputOptions = setOf(OutputOptionType.ADD_FILE_DISCLAIMER)
+        )
+        val api = SourceApi(readTextResource("/examples/fileComment/api.yaml"))
+        val generator = SpringHttpInterfaceGenerator(
+            Packages("examples.fileComment"),
+            api,
+        )
+        val expectedFiles = readFolder(Path.of("src/test/resources/examples/fileComment/client/spring"))
+
+        val clientFiles = generator.generate(emptySet()).files
+
+        clientFiles.forEach { file ->
+            val key = "${file.name}.kt"
+            val content = file.toString()
+            assertThat(content).isEqualTo(expectedFiles[key])
+        }
     }
 
     private fun Collection<ClientType>.toSingleFile(): String {
