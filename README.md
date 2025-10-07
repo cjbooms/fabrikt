@@ -57,6 +57,7 @@ The library currently has support for generating:
 * Clients
   * **OkHttp Client (w/ Jackson Models)** - with the option for a resilience4j fault-tolerance wrapper
   * **OpenFeign** annotated client interfaces
+  * **Ktor Client (w/ Kotlinx.serialization Models)**
 * Controllers
   * **Spring MVC** annotated controller interfaces
   * **Micronaut** HTTP annotated controller interfaces
@@ -201,6 +202,7 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               |   `OK_HTTP` - Generate OkHttp client. |
 |                               |   `OPEN_FEIGN` - Generate OpenFeign client. |
 |                               |   `SPRING_HTTP_INTERFACE` - Generate Spring HTTP Interface. |
+|                               |   `KTOR` - Generate Ktor client. |
 |   `--http-controller-opts`    | Select the options for the controllers that you want to be generated. |
 |                               | CHOOSE ANY OF: |
 |                               |   `SUSPEND_MODIFIER` - This option adds the suspend modifier to the generated controller functions |

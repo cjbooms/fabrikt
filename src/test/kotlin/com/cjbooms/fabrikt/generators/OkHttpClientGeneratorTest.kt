@@ -9,14 +9,13 @@ import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.client.OkHttpEnhancedClientGenerator
 import com.cjbooms.fabrikt.generators.client.OkHttpSimpleClientGenerator
-import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.generators.model.ModelGenerator
 import com.cjbooms.fabrikt.model.ClientType
-import com.cjbooms.fabrikt.model.Models
 import com.cjbooms.fabrikt.model.SimpleFile
 import com.cjbooms.fabrikt.model.SourceApi
-import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
+import com.cjbooms.fabrikt.util.FileUtils.toSingleFile
 import com.cjbooms.fabrikt.util.Linter
+import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
 import com.cjbooms.fabrikt.util.ModelNameRegistry
 import com.squareup.kotlinpoet.FileSpec
 import org.assertj.core.api.Assertions.assertThat
@@ -163,30 +162,5 @@ class OkHttpClientGeneratorTest {
         assertThatGenerated(models).isEqualTo(expectedModel)
         assertThatGenerated(simpleClientCode).isEqualTo(expectedClient)
         assertThatGenerated(enhancedClientCode).isEqualTo(expectedClientCode)
-    }
-
-    private fun Collection<ClientType>.toSingleFile(): String {
-        val destPackage = if (this.isNotEmpty()) first().destinationPackage else ""
-        val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
-        this.forEach {
-            val builder = singleFileBuilder
-                .addType(it.spec)
-                .addImport(JacksonMetadata.TYPE_REFERENCE_IMPORT.first, JacksonMetadata.TYPE_REFERENCE_IMPORT.second)
-            builder.build()
-        }
-        return Linter.lintString(singleFileBuilder.build().toString())
-    }
-
-    private fun Models.toSingleFile(): String {
-        val destPackage = if (models.isNotEmpty()) models.first().destinationPackage else ""
-        val singleFileBuilder = FileSpec.builder(destPackage, "dummyFilename")
-        models
-            .sortedBy { it.spec.name }
-            .forEach {
-                val builder = singleFileBuilder
-                    .addType(it.spec)
-                builder.build()
-            }
-        return Linter.lintString(singleFileBuilder.build().toString())
     }
 }

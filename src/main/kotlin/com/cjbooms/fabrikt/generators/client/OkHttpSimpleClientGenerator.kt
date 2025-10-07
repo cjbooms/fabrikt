@@ -13,6 +13,7 @@ import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.addIncomingPar
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.deriveClientParameters
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.simpleClientName
 import com.cjbooms.fabrikt.generators.client.ClientGeneratorUtils.toClientReturnType
+import com.cjbooms.fabrikt.generators.model.JacksonMetadata.TYPE_REFERENCE_IMPORT
 import com.cjbooms.fabrikt.model.BodyParameter
 import com.cjbooms.fabrikt.model.ClientType
 import com.cjbooms.fabrikt.model.Destinations
@@ -99,7 +100,7 @@ class OkHttpSimpleClientGenerator(
                 .addFunctions(funcSpecs)
                 .build()
 
-            ClientType(clientType, packages.base)
+            ClientType(clientType, packages.base, setOf(TYPE_REFERENCE_IMPORT))
         }.toSet()
     }
 

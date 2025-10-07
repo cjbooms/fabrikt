@@ -1,6 +1,5 @@
 package com.cjbooms.fabrikt.model
 
-import com.cjbooms.fabrikt.generators.model.JacksonMetadata
 import com.cjbooms.fabrikt.model.Destinations.clientPackage
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.Destinations.modelsPackage
@@ -28,7 +27,11 @@ abstract class KotlinTypes(types: Collection<GeneratedType>) {
 
 class ModelType(spec: TypeSpec, basePackage: String) : GeneratedType(spec, modelsPackage(basePackage))
 
-class ClientType(spec: TypeSpec, basePackage: String) : GeneratedType(spec, clientPackage(basePackage)) {
+class ClientType(
+    spec: TypeSpec,
+    basePackage: String,
+    val imports: Set<Pair<String, String>> = emptySet()
+) : GeneratedType(spec, clientPackage(basePackage)) {
     companion object {
         const val SIMPLE_CLIENT_SUFFIX = "Client"
         const val ENHANCED_CLIENT_SUFFIX = "Service"
@@ -49,11 +52,12 @@ data class Models(val models: Collection<ModelType>) : KotlinTypes(models) {
 }
 
 data class Clients(val clients: Collection<ClientType>) : KotlinTypes(clients) {
-    override val files: Collection<FileSpec> = super.files.map {
-        it.toBuilder()
-            .addImport(JacksonMetadata.TYPE_REFERENCE_IMPORT.first, JacksonMetadata.TYPE_REFERENCE_IMPORT.second)
-            .build()
-    }
+    override val files: Collection<FileSpec> = clients.map {
+        val builder = FileSpec.builder(it.destinationPackage, it.className.simpleName)
+            .addType(it.spec)
+        it.imports.forEach { (pkg, name) -> builder.addImport(pkg, name) }
+        builder.build()
+    }.toSet()
 }
 
 fun <T : GeneratedType> Collection<T>.toFileSpec(): Collection<FileSpec> = this
