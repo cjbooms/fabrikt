@@ -58,3 +58,10 @@ components:
           oneOf:
             - "$ref": "#/components/schemas/OneObject"
             - type: 'null'
+    ContainsUntypedArray:
+      type: object
+      required:
+        - untyped_array
+      properties:
+        untyped_array:
+          type: array
