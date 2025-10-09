@@ -35,8 +35,6 @@ object YamlUtils {
                 .build()
         )
 
-    private val NULL_TYPE: JsonNode = objectMapper.valueToTree("null")
-
     private fun YAMLFactoryBuilder.increaseMaxFileSize(): YAMLFactoryBuilder = loaderOptions(
         LoaderOptions().apply {
             codePointLimit = 100 * 1024 * 1024 // 100MB
@@ -56,7 +54,7 @@ object YamlUtils {
             val root: JsonNode = objectMapper.readTree(input)
             val openapiVersion = root["openapi"]?.asText() ?: ""
             if (openapiVersion.startsWith("3.1.")) {
-                downgradeNullableSyntax(root)
+                OpenApi31Downgrader.downgrade(root)
             }
             cleanEmptyTypes(root)
             OpenApi3Parser().parse(root, inputDir.toUri().toURL())
@@ -86,75 +84,6 @@ object YamlUtils {
 
             node.isArray -> {
                 node.forEach { cleanEmptyTypes(it) }
-            }
-        }
-    }
-
-    private fun downgradeNullableSyntax(
-        node: JsonNode,
-        propertyName: String? = null,
-        parentSchemaObject: ObjectNode? = null
-    ) {
-        // Track the schema object through recursion. Top level attributes, e.g. 'required', may be modified.
-        var schemaObject = parentSchemaObject
-        if (node.has("properties")) {
-            schemaObject = node as ObjectNode
-        }
-        when {
-            node.isObject -> {
-                val objectNode = node as ObjectNode
-                val fieldsToProcess = objectNode.fields().asSequence().toList()
-                var requiresNullable = false
-
-                for ((key, value) in fieldsToProcess) {
-                    // Handle `type: ["object", "null"]`
-                    if (key == "type" && value.isArray && value.contains(NULL_TYPE)) {
-                        val nonNullType = value.first { it != NULL_TYPE }
-                        objectNode.replace("type", nonNullType)
-                        requiresNullable = true
-                    }
-
-                    // Handle `anyOf` or `oneOf` with a `type: null` entry
-                    if ((key == "oneOf" || key == "anyOf")
-                        && value.isArray
-                        && value.size() == 2
-                        && value.any { it.isObject && it.has("type") && it.get("type") == NULL_TYPE }
-                    ) {
-                        val nonNullOption = value.first { !it.has("type") || it.get("type") != NULL_TYPE }
-
-                        if (nonNullOption.isObject) {
-                            // Replace the *entire object* with the non-null option, and add nullable
-                            objectNode.removeAll()
-                            objectNode.setAll<ObjectNode>(nonNullOption.deepCopy<ObjectNode>())
-                            objectNode.put("nullable", true)
-
-                            // In OAS 3.0, the 'nullable' sibling property will be ignored for '$ref' types, but the
-                            // generated Kotlin type still needs to be recognized as nullable. Without modifying the
-                            // referenced schema object or building a new nullable version of that object, we can remove
-                            // the field from 'required', which has the same effect on the generated code.
-                            if (objectNode.has("\$ref")) {
-                                val requiredProperties = schemaObject?.get("required") as? ArrayNode
-                                val newRequiredProperties = requiredProperties?.filter { it.textValue() != propertyName }
-                                if (newRequiredProperties.isNullOrEmpty()) {
-                                    schemaObject?.remove("required")
-                                } else {
-                                    schemaObject?.replace("required", objectMapper.valueToTree(newRequiredProperties))
-                                }
-                            }
-                            return
-                        }
-                    }
-
-                    downgradeNullableSyntax(value, key, schemaObject)
-                }
-
-                if (requiresNullable) {
-                    objectNode.put("nullable", true)
-                }
-            }
-
-            node.isArray -> {
-                node.forEach { downgradeNullableSyntax(it, propertyName, schemaObject) }
             }
         }
     }
