@@ -228,6 +228,9 @@ This section documents the available CLI parameters for controlling what gets ge
 |                               |   `KOTLIN_TIME_INSTANT` - Use `kotlin.time` Instant in generated classes |
 |   `--openfeign-client-name`   | Specify openfeign client name for spring-cloud-starter-openfeign. Defaults to 'fabrikt-client'. |
 |   `--output-directory`        | Allows the generation dir to be overridden. Defaults to current dir |
+|   `--output-opts`             | Select options for the output. |
+|                               | CHOOSE ANY OF: |
+|                               |   `ADD_FILE_DISCLAIMER` - This option adds a disclaimer to the generated files. |
 |   `--resources-path`          | Allows the path for generated resources to be overridden. Defaults to `src/main/resources` |
 |   `--serialization-library`   | Specify which serialization library to use for annotations in generated model classes. Default: JACKSON |
 |                               | CHOOSE ONE OF: |

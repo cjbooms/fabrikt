@@ -4,14 +4,17 @@ import com.cjbooms.fabrikt.cli.CodeGenTypeOverride
 import com.cjbooms.fabrikt.cli.CodeGenerationType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
+import com.cjbooms.fabrikt.cli.OutputOptionType
 import com.cjbooms.fabrikt.configurations.Packages
 import com.cjbooms.fabrikt.generators.controller.KtorControllerInterfaceGenerator
 import com.cjbooms.fabrikt.model.ControllerLibraryType
 import com.cjbooms.fabrikt.model.Destinations.controllersPackage
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.model.toFileSpec
 import com.cjbooms.fabrikt.util.GeneratedCodeAsserter.Companion.assertThatGenerated
 import com.cjbooms.fabrikt.util.Linter
 import com.cjbooms.fabrikt.util.ModelNameRegistry
+import com.cjbooms.fabrikt.util.ResourceHelper.readFolder
 import com.cjbooms.fabrikt.util.ResourceHelper.readTextResource
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -23,6 +26,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import java.nio.file.Path
 import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -185,6 +189,31 @@ class KtorControllerInterfaceGeneratorTest {
                 .flatMap { (it as TypeSpec).funSpecs.map(FunSpec::modifiers) }
                 .all { it.contains(KModifier.SUSPEND) },
         ).isTrue()
+    }
+
+    @Test
+    fun `adds disclaimer as comment to files if enabled`() {
+        MutableSettings.updateSettings(
+            outputOptions = setOf(OutputOptionType.ADD_FILE_DISCLAIMER)
+        )
+        val api = SourceApi(readTextResource("/examples/fileComment/api.yaml"))
+        val generator = KtorControllerInterfaceGenerator(
+            Packages("examples.fileComment"),
+            api
+        )
+
+        val expectedFiles = readFolder(Path.of("src/test/resources/examples/fileComment/controllers/ktor"))
+
+        val controllers = generator.generate()
+        val lib = generator.generateLibrary()
+
+        val files = controllers.files + lib.toFileSpec()
+
+        files.forEach { file ->
+            val key = "${file.name}.kt"
+            val content = file.toString()
+            assertThat(content).isEqualTo(expectedFiles[key])
+        }
     }
 
     private fun KtorControllerInterfaceGenerator.KtorControllers.toSingleFile(extraSpecs: Collection<ControllerLibraryType>): String {

@@ -9,6 +9,7 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.InstantLibrary
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.OutputOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary
 import com.cjbooms.fabrikt.cli.ValidationLibrary
 
@@ -39,6 +40,8 @@ object MutableSettings {
         private set
     var instantLibrary: InstantLibrary = InstantLibrary.default
         private set
+    var outputOptions: Set<OutputOptionType> = mutableSetOf()
+        private set
 
     fun updateSettings(
         genTypes: Set<CodeGenerationType> = emptySet(),
@@ -54,20 +57,22 @@ object MutableSettings {
         externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.default,
         serializationLibrary: SerializationLibrary = SerializationLibrary.default,
         instantLibrary: InstantLibrary = InstantLibrary.default,
+        outputOptions: Set<OutputOptionType> = emptySet()
     ) {
-        this.generationTypes = genTypes.toMutableSet()
-        this.controllerOptions = controllerOptions.toMutableSet()
+        this.generationTypes = genTypes
+        this.controllerOptions = controllerOptions
         this.controllerTarget = controllerTarget
-        this.modelOptions = modelOptions.toMutableSet()
+        this.modelOptions = modelOptions
         this.modelSuffix = modelSuffix
-        this.clientOptions = clientOptions.toMutableSet()
+        this.clientOptions = clientOptions
         this.clientTarget = clientTarget
         this.openfeignClientName = openfeignClientName
-        this.typeOverrides = typeOverrides.toMutableSet()
+        this.typeOverrides = typeOverrides
         this.validationLibrary = validationLibrary
         this.externalRefResolutionMode = externalRefResolutionMode
         this.serializationLibrary = serializationLibrary
         this.instantLibrary = instantLibrary
+        this.outputOptions = outputOptions
     }
 
     fun addOption(option: ModelCodeGenOptionType) {

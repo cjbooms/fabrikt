@@ -79,6 +79,13 @@ class CodeGenArgs {
     var targets: Set<CodeGenerationType> = emptySet()
 
     @Parameter(
+        names = ["--output-opts"],
+        description = "Select options for the output.",
+        converter = OutputOptionConverter::class
+    )
+    var outputOptions: Set<OutputOptionType> = emptySet()
+
+    @Parameter(
         names = ["--http-controller-opts"],
         description = "Select the options for the controllers that you want to be generated.",
         converter = ControllerCodeGenOptionConverter::class
@@ -186,6 +193,10 @@ class ControllerCodeGenOptionConverter : IStringConverter<ControllerCodeGenOptio
 
 class ControllerCodeGenTargetConverter : IStringConverter<ControllerCodeGenTargetType> {
     override fun convert(value: String): ControllerCodeGenTargetType = convertToEnumValue(value)
+}
+
+class OutputOptionConverter :  IStringConverter<OutputOptionType> {
+    override fun convert(value: String): OutputOptionType = convertToEnumValue(value)
 }
 
 class ModelCodeGenOptionConverter : IStringConverter<ModelCodeGenOptionType> {

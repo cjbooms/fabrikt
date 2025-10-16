@@ -21,6 +21,7 @@ import com.cjbooms.fabrikt.model.PathParam
 import com.cjbooms.fabrikt.model.QueryParam
 import com.cjbooms.fabrikt.model.RequestParameter
 import com.cjbooms.fabrikt.model.SourceApi
+import com.cjbooms.fabrikt.util.FileUtils.addFileDisclaimer
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.isSingleResource
 import com.cjbooms.fabrikt.util.KaizenParserExtensions.routeToPaths
 import com.reprezen.kaizen.oasparser.model3.Operation
@@ -231,16 +232,19 @@ class MicronautControllerInterfaceGenerator(
         }
 }
 
-data class MicronautControllers(val controllers: Collection<ControllerType>, val addAuthenticationParameter: Boolean) : KotlinTypes(controllers) {
+data class MicronautControllers(
+    val controllers: Collection<ControllerType>,
+    val addAuthenticationParameter: Boolean
+) : KotlinTypes(controllers) {
 
-    override val files: Collection<FileSpec> =
-        if (addAuthenticationParameter) {
-            super.files.map {
-                it.toBuilder()
-                    .addImport(MicronautImports.SECURITY_RULE.first, MicronautImports.SECURITY_RULE.second)
-                    .build()
+    override val files: Collection<FileSpec> = super.files.map {
+        it.toBuilder()
+            .addFileDisclaimer()
+            .apply {
+                if (addAuthenticationParameter) {
+                    addImport(MicronautImports.SECURITY_RULE.first, MicronautImports.SECURITY_RULE.second)
+                }
             }
-        } else {
-            super.files
-        }
+            .build()
+    }
 }
