@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.OutputOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary
 import com.cjbooms.fabrikt.cli.ValidationLibrary
 import io.ktor.http.Parameters
@@ -24,6 +25,7 @@ data class GenerationSettings(
     val typeOverrides: Set<CodeGenTypeOverride> = emptySet(),
     val validationLibrary: ValidationLibrary = ValidationLibrary.default,
     val externalRefResolutionMode: ExternalReferencesResolutionMode = ExternalReferencesResolutionMode.default,
+    val outputOptions: Set<OutputOptionType> = emptySet(),
     val inputSpec: String,
 ) {
     companion object {
@@ -65,6 +67,9 @@ data class GenerationSettings(
                 )
             } ?: ExternalReferencesResolutionMode.default,
 
+            outputOptions = this.getAll("outputOptions")?.map { OutputOptionType.valueOf(it) }?.toSet()
+                ?: emptySet(),
+
             inputSpec = this["spec"] ?: "")
     }
 
@@ -82,6 +87,7 @@ data class GenerationSettings(
             .plus(typeOverrides.map { "typeOverrides=${it.name}" })
             .plus(validationLibrary.let { "validationLibrary=${it.name}" })
             .plus(externalRefResolutionMode.let { "externalRefResolutionMode=${it.name}" })
+            .plus(outputOptions.map { "outputOptions=${it.name}" })
             .joinToString("&")
     }
 }

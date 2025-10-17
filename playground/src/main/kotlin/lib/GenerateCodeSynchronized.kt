@@ -20,7 +20,8 @@ fun generateCodeSynchronized(
         typeOverrides = generationSettings.typeOverrides,
         validationLibrary = generationSettings.validationLibrary,
         externalRefResolutionMode = generationSettings.externalRefResolutionMode,
-        serializationLibrary = generationSettings.serializationLibrary
+        serializationLibrary = generationSettings.serializationLibrary,
+        outputOptions = generationSettings.outputOptions
     )
 
     val packages = Packages("com.example")
