@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.OutputOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary
 import com.cjbooms.fabrikt.cli.ValidationLibrary
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -29,6 +30,7 @@ class GenerationSettingsTest {
             typeOverrides = setOf(CodeGenTypeOverride.DATETIME_AS_INSTANT),
             validationLibrary = ValidationLibrary.JAVAX_VALIDATION,
             externalRefResolutionMode = ExternalReferencesResolutionMode.TARGETED,
+            outputOptions = setOf(OutputOptionType.ADD_FILE_DISCLAIMER),
             inputSpec = "spec"
         )
 
@@ -46,6 +48,7 @@ class GenerationSettingsTest {
             &typeOverrides=DATETIME_AS_INSTANT
             &validationLibrary=JAVAX_VALIDATION
             &externalRefResolutionMode=TARGETED
+            &outputOptions=ADD_FILE_DISCLAIMER
         """.trimIndent().replace("\n",""), queryParams)
     }
 }

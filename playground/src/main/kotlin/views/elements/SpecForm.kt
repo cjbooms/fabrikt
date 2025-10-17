@@ -8,6 +8,7 @@ import com.cjbooms.fabrikt.cli.ControllerCodeGenOptionType
 import com.cjbooms.fabrikt.cli.ControllerCodeGenTargetType
 import com.cjbooms.fabrikt.cli.ExternalReferencesResolutionMode
 import com.cjbooms.fabrikt.cli.ModelCodeGenOptionType
+import com.cjbooms.fabrikt.cli.OutputOptionType
 import com.cjbooms.fabrikt.cli.SerializationLibrary
 import com.cjbooms.fabrikt.cli.ValidationLibrary
 import kotlinx.html.FlowContent
@@ -70,7 +71,10 @@ fun FlowContent.specForm(settings: GenerationSettings) = div {
 
         div("h3 mt3 mb1") { +"External References" }
         enumSelectBox("externalRefResolutionMode", ExternalReferencesResolutionMode.values(), settings.externalRefResolutionMode.name)
-    }
+
+        div("h3 mt3 mb1") { +"Output Options" }
+            enumCheckboxes("outputOptions", OutputOptionType.values(), settings.outputOptions.map { it.name }.toSet())
+        }
 
     // enable Ace editor and connect with backing field
     script {
