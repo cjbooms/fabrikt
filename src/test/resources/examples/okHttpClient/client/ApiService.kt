@@ -3,6 +3,7 @@ package examples.okHttpClient.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import examples.okHttpClient.models.Content
+import examples.okHttpClient.models.EnumQueryParam
 import examples.okHttpClient.models.FirstModel
 import examples.okHttpClient.models.QueryResult
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
@@ -46,10 +47,18 @@ public class ExamplePath1Service(
         queryParam2: Int? = null,
         intListQueryParam: List<Int>? = null,
         xJsonEncodedHeader: String? = null,
+        enumQueryParam: EnumQueryParam? = null,
         additionalHeaders: Map<String, String> = emptyMap(),
     ): ApiResponse<QueryResult> =
         withCircuitBreaker(circuitBreakerRegistry, circuitBreakerName) {
-            apiClient.getExamplePath1(explodeListQueryParam, queryParam2, intListQueryParam, xJsonEncodedHeader, additionalHeaders)
+            apiClient.getExamplePath1(
+                explodeListQueryParam,
+                queryParam2,
+                intListQueryParam,
+                xJsonEncodedHeader,
+                enumQueryParam,
+                additionalHeaders,
+            )
         }
 
     @Throws(ApiException::class)

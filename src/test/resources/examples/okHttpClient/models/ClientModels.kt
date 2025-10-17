@@ -101,6 +101,22 @@ public enum class ContentThirdAttr(
     }
 }
 
+public enum class EnumQueryParam(
+    @JsonValue
+    public val `value`: String,
+) {
+    ENUM_VALUE_1("enum_value_1"),
+    ENUM_VALUE_2("enum_value_2"),
+    ENUM_VALUE_3("enum_value_3"),
+    ;
+
+    public companion object {
+        private val mapping: Map<String, EnumQueryParam> = entries.associateBy(EnumQueryParam::value)
+
+        public fun fromValue(`value`: String): EnumQueryParam? = mapping[value]
+    }
+}
+
 public data class Failure(
     @param:JsonProperty("traceId")
     @get:JsonProperty("traceId")
